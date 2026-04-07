@@ -161,6 +161,11 @@ export default function InlineLogin() {
           >
             {loading ? 'Přihlašuji...' : 'Přihlásit se →'}
           </button>
+          <p className="text-center mt-2">
+            <a href="/forgot-password" className="text-blue-300 text-xs hover:text-white transition-colors underline">
+              Zapomenuté heslo?
+            </a>
+          </p>
         </form>
       )}
 

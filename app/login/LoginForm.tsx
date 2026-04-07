@@ -112,6 +112,11 @@ export default function LoginForm() {
             >
               {loading ? 'Přihlašuji...' : 'Přihlásit se'}
             </button>
+            <p className="text-center mt-1">
+              <a href="/forgot-password" className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">
+                Zapomenuté heslo?
+              </a>
+            </p>
           </form>
         </div>
       </div>
