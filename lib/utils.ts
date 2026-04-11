@@ -1,4 +1,10 @@
 import type { Profile } from '@/lib/types/database'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 // Výpočet skóre finančního zdraví (0–100)
 export function calcHealthScore(profile: Profile): number {

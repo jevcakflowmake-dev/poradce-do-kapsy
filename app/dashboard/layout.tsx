@@ -1,7 +1,5 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import DashboardNav from '@/components/dashboard/DashboardNav'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -14,35 +12,27 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
-  const { count: unreadCount } = await supabase
-    .from('messages')
-    .select('*', { count: 'exact', head: true })
-    .eq('client_id', user.id)
-    .eq('sender_role', 'advisor')
-    .eq('is_read', false)
-
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Klient'
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Top nav */}
       <nav className="bg-white border-b border-slate-100 px-4 py-3 sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0f2d52, #1a4170)' }}>
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <a href="/dashboard" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center shadow-sm">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <span className="font-bold text-slate-900 hidden sm:block">Poradce do kapsy</span>
-          </div>
+            <span className="font-bold text-slate-900 hidden sm:block text-lg">Poradce do kapsy</span>
+          </a>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #d4a843, #f0c96a)', color: '#0f2d52' }}>
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-sm font-bold text-white shadow-sm">
               {firstName[0].toUpperCase()}
             </div>
             <span className="text-sm font-medium text-slate-700 hidden sm:block">{firstName}</span>
             <form action="/api/auth/signout" method="POST">
-              <button className="text-sm text-slate-400 hover:text-slate-600 transition-colors">
+              <button className="text-slate-400 hover:text-slate-600 transition-colors p-1">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
@@ -51,14 +41,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
         </div>
       </nav>
-
-      {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 py-6 flex gap-6 pb-20 md:pb-6">
-        <DashboardNav unreadMessages={unreadCount ?? 0} />
-        <main className="flex-1 min-w-0">
-          {children}
-        </main>
-      </div>
+      <main>{children}</main>
     </div>
   )
 }
