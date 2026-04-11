@@ -12,11 +12,16 @@ import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
+interface ParamDetail {
+  value: string
+  note: string
+}
+
 interface Variant {
   company: string
   logo: string
   monthlyPayment: string
-  params: Record<string, string>
+  params: Record<string, ParamDetail>
 }
 
 const paramLabels: Record<string, string> = {
@@ -34,15 +39,45 @@ const paramLabels: Record<string, string> = {
 const incomeVariants: Variant[] = [
   {
     company: 'Kooperativa', logo: 'K', monthlyPayment: '1 450 Kč',
-    params: { dailyInjury: '300 Kč/den', sickLeaveDaily: '500 Kč/den od 15. dne', permanentConsequences: '1 000 000 Kč (progrese 5x)', invalidityI: '300 000 Kč', invalidityII: '500 000 Kč', invalidityIII: '1 000 000 Kč', seriousIllness: '500 000 Kč', selfSufficiency: '500 000 Kč', death: '1 500 000 Kč' },
+    params: {
+      dailyInjury: { value: '300 Kč/den', note: 'Pokryje ušlý příjem při kratším úrazu, vychází z vašeho denního výdělku.' },
+      sickLeaveDaily: { value: '500 Kč/den od 15. dne', note: 'Doplní nemocenskou od zaměstnavatele, která pokrývá jen 60 % platu.' },
+      permanentConsequences: { value: '1 000 000 Kč (progrese 5x)', note: 'Při 100% trvalých následcích získáte až 5 mil. Kč na pokrytí celoživotních nákladů.' },
+      invalidityI: { value: '300 000 Kč', note: 'Jednorázová výplata při přiznání invalidity I. stupně pro překlenutí přechodného období.' },
+      invalidityII: { value: '500 000 Kč', note: 'Pokryje nutné úpravy bydlení a přizpůsobení životního stylu.' },
+      invalidityIII: { value: '1 000 000 Kč', note: 'Plná invalidita — částka zajistí finanční stabilitu na několik let.' },
+      seriousIllness: { value: '500 000 Kč', note: 'Okamžitá výplata při diagnóze — na léčbu, rekonvalescenci a výpadek příjmu.' },
+      selfSufficiency: { value: '500 000 Kč', note: 'Pokryje náklady na péči, pokud nebudete schopni se o sebe postarat.' },
+      death: { value: '1 500 000 Kč', note: 'Zajistí splacení hypotéky a finanční stabilitu rodiny.' },
+    },
   },
   {
     company: 'ČPP', logo: 'Č', monthlyPayment: '1 280 Kč',
-    params: { dailyInjury: '250 Kč/den', sickLeaveDaily: '400 Kč/den od 29. dne', permanentConsequences: '800 000 Kč (progrese 4x)', invalidityI: '200 000 Kč', invalidityII: '400 000 Kč', invalidityIII: '800 000 Kč', seriousIllness: '400 000 Kč', selfSufficiency: '300 000 Kč', death: '1 200 000 Kč' },
+    params: {
+      dailyInjury: { value: '250 Kč/den', note: 'Nižší sazba za nižší cenu — vhodné při menších měsíčních výdajích.' },
+      sickLeaveDaily: { value: '400 Kč/den od 29. dne', note: 'Delší karenční doba snižuje cenu, vhodné pokud máte úspory na první měsíc.' },
+      permanentConsequences: { value: '800 000 Kč (progrese 4x)', note: 'Nižší progrese, ale stále dostatečná pro většinu scénářů.' },
+      invalidityI: { value: '200 000 Kč', note: 'Základní zajištění pro invaliditu I. stupně.' },
+      invalidityII: { value: '400 000 Kč', note: 'Střední úroveň pokrytí při částečné invaliditě.' },
+      invalidityIII: { value: '800 000 Kč', note: 'Nižší částka kompenzována nižší měsíční platbou.' },
+      seriousIllness: { value: '400 000 Kč', note: 'Pokryje základní léčebné náklady a výpadek příjmu.' },
+      selfSufficiency: { value: '300 000 Kč', note: 'Základní krytí péče — zvažte navýšení dle vašich potřeb.' },
+      death: { value: '1 200 000 Kč', note: 'Pokryje většinu závazků rodiny.' },
+    },
   },
   {
     company: 'MetLife', logo: 'M', monthlyPayment: '1 650 Kč',
-    params: { dailyInjury: '400 Kč/den', sickLeaveDaily: '600 Kč/den od 15. dne', permanentConsequences: '1 200 000 Kč (progrese 6x)', invalidityI: '400 000 Kč', invalidityII: '700 000 Kč', invalidityIII: '1 500 000 Kč', seriousIllness: '700 000 Kč', selfSufficiency: '600 000 Kč', death: '2 000 000 Kč' },
+    params: {
+      dailyInjury: { value: '400 Kč/den', note: 'Nejvyšší denní dávka — plně nahradí váš čistý denní příjem.' },
+      sickLeaveDaily: { value: '600 Kč/den od 15. dne', note: 'Rychlý začátek výplaty + vysoká částka pro maximální komfort.' },
+      permanentConsequences: { value: '1 200 000 Kč (progrese 6x)', note: 'Nejvyšší progrese na trhu — při vážném úrazu až 7,2 mil. Kč.' },
+      invalidityI: { value: '400 000 Kč', note: 'Nadstandardní krytí i při nižším stupni invalidity.' },
+      invalidityII: { value: '700 000 Kč', note: 'Vysoké pokrytí umožňuje udržet životní standard.' },
+      invalidityIII: { value: '1 500 000 Kč', note: 'Maximální zajištění — pokryje veškeré náklady na několik let.' },
+      seriousIllness: { value: '700 000 Kč', note: 'Umožní přístup k nadstandardní léčbě a delší rekonvalescenci.' },
+      selfSufficiency: { value: '600 000 Kč', note: 'Dostatečné pokrytí profesionální domácí péče.' },
+      death: { value: '2 000 000 Kč', note: 'Plné splacení závazků + finanční rezerva pro pozůstalé.' },
+    },
   },
 ]
 
@@ -92,11 +127,14 @@ function VariantCard({ variant, index }: { variant: Variant; index: number }) {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
             <div className="px-4 pb-4">
               <Separator className="mb-3" />
-              <div className="space-y-2.5">
-                {Object.entries(variant.params).map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between py-1.5">
-                    <span className="text-sm text-slate-600">{paramLabels[key] || key}</span>
-                    <span className="text-sm font-semibold text-slate-900 bg-slate-50 px-3 py-1 rounded-lg">{value}</span>
+              <div className="space-y-3">
+                {Object.entries(variant.params).map(([key, detail]) => (
+                  <div key={key} className="bg-slate-50/70 rounded-lg px-4 py-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium text-slate-700">{paramLabels[key] || key}</span>
+                      <span className="text-sm font-bold text-slate-900 bg-white px-3 py-0.5 rounded-md shadow-sm">{detail.value}</span>
+                    </div>
+                    <p className="text-xs text-slate-400 leading-relaxed">{detail.note}</p>
                   </div>
                 ))}
               </div>
