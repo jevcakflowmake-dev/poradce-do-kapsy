@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, ArrowRight, Check, Upload, Shield, Home, Clock, Baby,
@@ -133,10 +133,41 @@ export default function AnalyzaPage() {
     return Math.round((answered / s.questions.length) * 100)
   }
 
+  // Load existing responses on mount
+  useEffect(() => {
+    async function loadExisting() {
+      const res = await fetch(`/api/analysis?clientId=${id}`)
+      if (res.ok) {
+        const { responses } = await res.json()
+        if (responses && Object.keys(responses).length > 0) {
+          setData(responses)
+        }
+      }
+    }
+    loadExisting()
+  }, [id])
+
+  // Auto-save on field change (debounced)
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    if (Object.keys(data).length === 0) return
+    if (saveTimeout.current) clearTimeout(saveTimeout.current)
+    saveTimeout.current = setTimeout(() => {
+      fetch('/api/analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: id, responses: data }),
+      })
+    }, 2000)
+  }, [data, id])
+
   async function handleSubmit() {
     setLoading(true)
-    // TODO: save analysis data to Supabase
-    await new Promise(r => setTimeout(r, 1000))
+    await fetch('/api/analysis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId: id, responses: data }),
+    })
     setSubmitted(true)
     setLoading(false)
   }
