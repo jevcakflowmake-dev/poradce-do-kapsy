@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, ArrowRight, Check, Upload, Shield, Home, Clock, Baby,
-  TrendingUp, Building2, ChevronDown, ChevronUp, FileText, X
+  TrendingUp, Building2, ChevronDown, ChevronUp, FileText, X, UserCircle
 } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -49,11 +49,12 @@ const sections = [
     icon: Home,
     color: 'from-emerald-600 to-teal-700',
     questions: [
-      { id: 'housing_type', label: 'Typ bydlení', type: 'select', options: ['Vlastní byt', 'Vlastní dům', 'Nájem', 'Družstevní', 'U rodičů'] },
-      { id: 'mortgage', label: 'Máte hypotéku?', type: 'select', options: ['Ano', 'Ne', 'Plánuji'] },
-      { id: 'mortgage_payment', label: 'Měsíční splátka hypotéky (Kč)', type: 'number', placeholder: '0' },
-      { id: 'rent', label: 'Měsíční nájem (Kč)', type: 'number', placeholder: '0' },
-      { id: 'property_insurance', label: 'Máte pojištění nemovitosti/domácnosti?', type: 'select', options: ['Ano, obojí', 'Jen nemovitost', 'Jen domácnost', 'Ne'] },
+      { id: 'has_mortgage', label: 'Máte hypotéku?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'plan_mortgage', label: 'Pokud ne, plánujete ji řešit?', type: 'select', options: ['Ano', 'Ne', 'Možná v budoucnu'] },
+      { id: 'mortgage_amount', label: 'Jakou výši úvěru chcete?', type: 'number', placeholder: '3 000 000' },
+      { id: 'property_type', label: 'Jakou nemovitost chcete koupit?', type: 'select', options: ['Byt', 'Dům', 'Pozemek', 'Jiné'] },
+      { id: 'mortgage_timeline', label: 'Za jak dlouho plánujete koupi?', type: 'select', options: ['Do 6 měsíců', 'Do 1 roku', 'Do 2 let', 'Do 5 let', 'Nevím'] },
+      { id: 'mortgage_location', label: 'Kde chcete nemovitost koupit?', type: 'text', placeholder: 'Praha, Brno, ...' },
     ],
   },
   {
@@ -62,11 +63,9 @@ const sections = [
     icon: Clock,
     color: 'from-amber-500 to-orange-600',
     questions: [
-      { id: 'age', label: 'Váš věk', type: 'number', placeholder: '35' },
-      { id: 'retirement_savings', label: 'Máte penzijní spoření?', type: 'select', options: ['Ano, doplňkové', 'Ano, transformované', 'Ne'] },
-      { id: 'pension_contribution', label: 'Měsíční příspěvek na penzijko (Kč)', type: 'number', placeholder: '1 000' },
-      { id: 'employer_contribution', label: 'Přispívá zaměstnavatel?', type: 'select', options: ['Ano', 'Ne', 'Nevím'] },
-      { id: 'expected_retirement', label: 'Plánovaný věk odchodu do důchodu', type: 'number', placeholder: '65' },
+      { id: 'current_savings', label: 'Kolik si aktuálně odkládáte na důchod? (Kč/měsíc)', type: 'number', placeholder: '500' },
+      { id: 'pension_gap', label: 'Když byste od zítra pobírali důchod 9 000 Kč, kolik Kč byste ještě potřebovali k tomu?', type: 'number', placeholder: '15 000' },
+      { id: 'monthly_pension_budget', label: 'Kolik si můžete měsíčně odkládat na důchod? (Kč)', type: 'number', placeholder: '2 000' },
     ],
   },
   {
@@ -75,10 +74,12 @@ const sections = [
     icon: Baby,
     color: 'from-pink-500 to-rose-600',
     questions: [
-      { id: 'children_count', label: 'Počet dětí', type: 'number', placeholder: '0' },
-      { id: 'children_ages', label: 'Věk dětí (oddělte čárkou)', type: 'text', placeholder: '5, 8, 12' },
-      { id: 'children_savings', label: 'Spoříte dětem na budoucnost?', type: 'select', options: ['Ano, stavební spoření', 'Ano, investice', 'Ano, spořicí účet', 'Ne'] },
-      { id: 'children_insurance', label: 'Jsou děti pojištěny?', type: 'select', options: ['Ano', 'Ne', 'Částečně'] },
+      { id: 'children_count', label: 'Kolik máte dětí?', type: 'number', placeholder: '0' },
+      { id: 'children_ages', label: 'Jaký je jejich věk? (oddělte čárkou)', type: 'text', placeholder: '5, 8, 12' },
+      { id: 'children_insurance', label: 'Přejete si je pojistit v případě úrazu/nemoci?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'children_savings', label: 'Přejete si spořit dítěti?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'children_monthly', label: 'Kolik můžete měsíčně spořit? (Kč)', type: 'number', placeholder: '1 000' },
+      { id: 'children_notes', label: 'Poznámky', type: 'text', placeholder: 'Další informace...' },
     ],
   },
   {
@@ -88,7 +89,7 @@ const sections = [
     color: 'from-violet-600 to-purple-700',
     questions: [
       { id: 'investing_experience', label: 'Zkušenosti s investováním', type: 'select', options: ['Žádné', 'Začátečník', 'Mírně pokročilý', 'Pokročilý'] },
-      { id: 'risk_tolerance', label: 'Tolerance k riziku', type: 'select', options: ['Konzervativní — nechci ztráty', 'Vyvážený — akceptuji mírné výkyvy', 'Dynamický — chci vyšší výnos', 'Agresivní — maximální výnos'] },
+      { id: 'risk_tolerance', label: 'Tolerance k riziku', type: 'select', options: ['Konzervativní', 'Vyvážený', 'Dynamický', 'Agresivní'] },
       { id: 'investment_horizon', label: 'Investiční horizont', type: 'select', options: ['1–3 roky', '3–5 let', '5–10 let', '10+ let'] },
       { id: 'monthly_invest', label: 'Kolik měsíčně chcete investovat (Kč)', type: 'number', placeholder: '3 000' },
       { id: 'current_investments', label: 'Stávající investice', type: 'select', options: ['Nemám žádné', 'Podílové fondy', 'ETF / akcie', 'Krypto', 'Kombinace'] },
@@ -100,10 +101,33 @@ const sections = [
     icon: Building2,
     color: 'from-cyan-600 to-sky-700',
     questions: [
-      { id: 'vehicle', label: 'Vlastníte automobil?', type: 'select', options: ['Ano, 1', 'Ano, 2+', 'Ne'] },
-      { id: 'vehicle_insurance', label: 'Typ pojištění vozidla', type: 'select', options: ['Povinné ručení', 'Povinné ručení + havarijní', 'Nemám auto', 'Nemám pojištění'] },
-      { id: 'valuable_items', label: 'Máte cenné předměty k pojištění?', type: 'select', options: ['Elektronika', 'Šperky / umění', 'Sportovní vybavení', 'Ne'] },
-      { id: 'liability_insurance', label: 'Máte pojištění odpovědnosti?', type: 'select', options: ['Ano', 'Ne', 'Nevím'] },
+      { id: 'has_car', label: 'Vlastníte auto?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'car_insurance', label: 'Jak jej máte pojištěné?', type: 'select', options: ['Povinné ručení', 'Povinné ručení + havarijní', 'Nemám pojištění', 'Nevlastním auto'] },
+      { id: 'car_recalculate', label: 'Chcete přepočítat stávající pojištění?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'has_property', label: 'Vlastníte nemovitost?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'property_type', label: 'Jakou nemovitost?', type: 'select', options: ['Byt', 'Dům', 'Chata/chalupa', 'Více nemovitostí', 'Nevlastním'] },
+      { id: 'property_insured', label: 'Máte ji pojištěnou?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'want_property_insurance', label: 'Přejete si ji pojistit?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'property_value', label: 'Pokud ano, jakou má hodnotu? (Kč)', type: 'number', placeholder: '3 000 000' },
+      { id: 'combined_insurance', label: 'Přejete si pojistit nemovitost i domácnost dohromady?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'property_notes', label: 'Poznámky', type: 'text', placeholder: 'Další informace...' },
+    ],
+  },
+  {
+    id: 'personal',
+    title: 'Osobní údaje',
+    icon: UserCircle,
+    color: 'from-slate-600 to-slate-800',
+    questions: [
+      { id: 'full_name', label: 'Jméno a příjmení', type: 'text', placeholder: 'Jan Novák' },
+      { id: 'email', label: 'E-mail', type: 'text', placeholder: 'jan@email.cz' },
+      { id: 'phone', label: 'Telefon', type: 'text', placeholder: '+420 777 123 456' },
+      { id: 'age', label: 'Věk', type: 'number', placeholder: '35' },
+      { id: 'height', label: 'Výška (cm)', type: 'number', placeholder: '178' },
+      { id: 'weight', label: 'Váha (kg)', type: 'number', placeholder: '80' },
+      { id: 'serious_illness', label: 'Vážné nemoci za posledních 5 let?', type: 'text', placeholder: 'Žádné / popište...' },
+      { id: 'injury', label: 'Úraz za posledních 5 let?', type: 'text', placeholder: 'Žádný / popište...' },
+      { id: 'occupation', label: 'Jaké je vaše zaměstnání?', type: 'text', placeholder: 'Účetní, řidič, IT...' },
     ],
   },
 ]

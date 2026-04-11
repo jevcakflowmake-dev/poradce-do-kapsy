@@ -88,10 +88,11 @@ const STEPS = [
 ]
 
 const PRODUCTS = [
-  { icon: '🛡️', title: 'Životní pojištění', desc: 'Zabezpečení pro vás a vaši rodinu' },
-  { icon: '🏖️', title: 'Penzijní připojištění', desc: 'Klidný důchod s příspěvkem od státu' },
-  { icon: '📈', title: 'Investiční produkty', desc: 'Nechte peníze pracovat za vás' },
-  { icon: '🏠', title: 'Hypotéka', desc: 'Financování vlastního bydlení' },
+  { icon: '🛡️', title: 'Zajištění příjmů', desc: 'Ochrana vašeho příjmu a životní úrovně' },
+  { icon: '🏖️', title: 'Příprava na penzi', desc: 'Klidný důchod s příspěvkem od státu' },
+  { icon: '🏠', title: 'Pojištění majetku', desc: 'Ochrana vašeho domova a věcí' },
+  { icon: '📈', title: 'Investování', desc: 'Nechte peníze pracovat za vás' },
+  { icon: '🔑', title: 'Hypotéka', desc: 'Financování vlastního bydlení' },
 ]
 
 export default async function HomePage() {
