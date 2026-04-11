@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
 import type { Profile } from '@/lib/types/database'
 
@@ -12,11 +12,11 @@ export default async function KlientLayout({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data } = await supabase.from('profiles').select('*').eq('id', id).single()
   if (!data) notFound()
   const profile = data as Profile
-  const firstName = profile.full_name?.split(' ')[0] ?? 'Klient'
+  const firstName = (profile.full_name && profile.full_name.length > 0) ? profile.full_name.split(' ')[0] : 'Klient'
 
   return (
     <div className="min-h-screen bg-slate-50">
