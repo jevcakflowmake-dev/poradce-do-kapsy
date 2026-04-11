@@ -22,9 +22,15 @@ const sections = [
     questions: [
       { id: 'employment', label: 'Jaký je váš pracovní poměr?', type: 'select', options: ['Zaměstnanec', 'OSVČ', 'Kombinace', 'Student', 'Důchodce'] },
       { id: 'monthly_income', label: 'Čistý měsíční příjem (Kč)', type: 'number', placeholder: '35 000' },
-      { id: 'partner_income', label: 'Příjem partnera/ky (Kč)', type: 'number', placeholder: '0' },
-      { id: 'sick_leave', label: 'Máte zajištěný příjem při pracovní neschopnosti?', type: 'select', options: ['Ano, pojištěním', 'Ano, úsporami', 'Ne'] },
-      { id: 'life_insurance', label: 'Máte životní pojištění?', type: 'select', options: ['Ano', 'Ne', 'Nevím'] },
+      { id: 'income_drop', label: 'Když vám klesne příjem na 60 %, kolik Kč chcete dostat, aby peníze nebyl problém?', type: 'number', placeholder: '20 000' },
+      { id: 'permanent_consequences', label: 'V případě trvalých následků chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'invalidity', label: 'V případě invalidity chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'serious_illness', label: 'V případě závažné nemoci chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'long_term_care', label: 'Chcete být zajištěn/a v případě dlouhodobé péče?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'death_coverage', label: 'V případě smrti chcete mít zajištěné splacení závazku?', type: 'select', options: ['Ano', 'Ne'] },
+      { id: 'death_coverage_amount', label: 'Pokud ano, kolik Kč je potřeba na splacení závazků?', type: 'number', placeholder: '1 000 000' },
+      { id: 'monthly_budget', label: 'Kolik Kč jste ochotný/á platit za tento produkt měsíčně?', type: 'number', placeholder: '1 500' },
+      { id: 'preferred_companies', label: 'Máte nějaké společnosti, které preferujete?', type: 'checkbox', options: ['ČPP', 'Kooperativa', 'Allianz', 'MetLife', 'Generali', 'NN', 'Uniqa', 'Všechny'] },
     ],
   },
   {
@@ -180,6 +186,27 @@ export default function AnalyzaPage() {
                               <option value="">Vyberte...</option>
                               {q.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                             </select>
+                          ) : q.type === 'checkbox' ? (
+                            <div className="grid grid-cols-2 gap-2 mt-1">
+                              {q.options?.map(opt => {
+                                const current = (data[section.id]?.[q.id] || '').split(',').filter(Boolean)
+                                const checked = current.includes(opt)
+                                return (
+                                  <label key={opt} className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border cursor-pointer transition-all text-sm ${checked ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`}>
+                                    <input
+                                      type="checkbox"
+                                      checked={checked}
+                                      onChange={() => {
+                                        const next = checked ? current.filter(c => c !== opt) : [...current, opt]
+                                        updateField(section.id, q.id, next.join(','))
+                                      }}
+                                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    {opt}
+                                  </label>
+                                )
+                              })}
+                            </div>
                           ) : (
                             <Input type={q.type} placeholder={q.placeholder} value={data[section.id]?.[q.id] || ''} onChange={e => updateField(section.id, q.id, e.target.value)} />
                           )}
