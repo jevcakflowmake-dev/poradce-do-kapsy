@@ -86,8 +86,8 @@ export default async function HomePage() {
       <HeroSection />
 
       {/* Proč si vybrat nás — inspired by ProfiFP */}
-      <section className="px-4 py-24 bg-white">
-        <div className="max-w-6xl mx-auto">
+      <section className="px-6 md:px-12 lg:px-20 py-24 bg-white">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <div className="w-16 h-1 bg-[#009EE2] mx-auto mb-6 rounded-full" />
             <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#162459' }}>
@@ -117,8 +117,8 @@ export default async function HomePage() {
       </section>
 
       {/* Služby — dark section inspired by ProfiFP */}
-      <section id="sluzby" className="px-4 py-24" style={{ background: 'linear-gradient(160deg, #162459, #243471)' }}>
-        <div className="max-w-5xl mx-auto">
+      <section id="sluzby" className="px-6 md:px-12 lg:px-20 py-24" style={{ background: 'linear-gradient(160deg, #162459, #243471)' }}>
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <div className="w-16 h-1 bg-[#009EE2] mx-auto mb-6 rounded-full" />
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -144,8 +144,8 @@ export default async function HomePage() {
       </section>
 
       {/* Jak to funguje */}
-      <section id="jak-to-funguje" className="px-4 py-24" style={{ background: '#f8f9fc' }}>
-        <div className="max-w-4xl mx-auto">
+      <section id="jak-to-funguje" className="px-6 md:px-12 lg:px-20 py-24" style={{ background: '#f8f9fc' }}>
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <div className="w-16 h-1 bg-[#009EE2] mx-auto mb-6 rounded-full" />
             <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: '#162459' }}>
@@ -155,7 +155,7 @@ export default async function HomePage() {
               Čtyři jednoduché kroky k vašemu finančnímu plánu
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {STEPS.map(step => (
               <div key={step.num} className="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm hover:shadow-md transition-all">
                 <div className="flex items-start gap-5">
@@ -187,8 +187,8 @@ export default async function HomePage() {
       </section>
 
       {/* Přihlášení / CTA */}
-      <section id="prihlaseni" className="px-4 py-24" style={{ background: 'linear-gradient(135deg, #0e1a3d 0%, #162459 100%)' }}>
-        <div className="max-w-3xl mx-auto">
+      <section id="prihlaseni" className="px-6 md:px-12 lg:px-20 py-24" style={{ background: 'linear-gradient(135deg, #0e1a3d 0%, #162459 100%)' }}>
+        <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
               <div className="w-16 h-1 bg-[#009EE2] mb-6 rounded-full" />
@@ -218,8 +218,8 @@ export default async function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="px-4 py-10 border-t border-slate-100 bg-white">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="px-6 md:px-12 lg:px-20 py-10 border-t border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#162459] flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

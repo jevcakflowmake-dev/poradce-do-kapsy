@@ -25,7 +25,7 @@ export default function HeroSection() {
     <ParticleHero className="min-h-screen flex items-center">
       {/* Navbar overlay */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#162459]/80 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-[#009EE2] flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
@@ -58,8 +58,8 @@ export default function HeroSection() {
       </nav>
 
       {/* Hero content */}
-      <div className="pt-32 pb-20 md:pt-40 md:pb-28 px-4 w-full">
-        <div className="max-w-5xl mx-auto text-center">
+      <div className="pt-32 pb-20 md:pt-40 md:pb-28 px-6 md:px-12 lg:px-20 w-full">
+        <div className="max-w-6xl mx-auto text-center">
           <motion.div
             custom={0}
             variants={fadeUp}
