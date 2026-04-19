@@ -11,15 +11,26 @@ const schema = z.object({
   password: z.string().min(6, 'Heslo musí mít alespoň 6 znaků'),
 })
 
+const magicLinkSchema = z.object({
+  email: z.string().email('Zadejte platný e-mail'),
+})
+
 type FormData = z.infer<typeof schema>
+type MagicLinkData = z.infer<typeof magicLinkSchema>
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [magicLink, setMagicLink] = useState(false)
+  const [magicLinkSent, setMagicLinkSent] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
+  })
+
+  const magicLinkForm = useForm<MagicLinkData>({
+    resolver: zodResolver(magicLinkSchema),
   })
 
   async function onSubmit(data: FormData) {
@@ -28,6 +39,21 @@ export default function LoginForm() {
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword(data)
     if (error) setError('Nesprávný e-mail nebo heslo')
+    setLoading(false)
+  }
+
+  async function onMagicLink(data: MagicLinkData) {
+    setLoading(true)
+    setError(null)
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOtp({
+      email: data.email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+    if (error) setError(error.message)
+    else setMagicLinkSent(true)
     setLoading(false)
   }
 
@@ -40,6 +66,33 @@ export default function LoginForm() {
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
     setGoogleLoading(false)
+  }
+
+  if (magicLinkSent) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-4" style={{ background: 'rgba(0, 158, 226, 0.1)' }}>
+              <svg className="w-7 h-7" style={{ color: '#009EE2' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold" style={{ color: '#162459' }}>Zkontrolujte e-mail</h2>
+            <p className="text-sm mt-2" style={{ color: '#818EAF' }}>
+              Poslali jsme vám přihlašovací odkaz. Klikněte na něj pro přihlášení.
+            </p>
+            <button
+              onClick={() => { setMagicLinkSent(false); setMagicLink(false) }}
+              className="text-sm mt-4 underline transition-colors hover:opacity-80"
+              style={{ color: '#009EE2' }}
+            >
+              Zpět na přihlášení
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -83,41 +136,85 @@ export default function LoginForm() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">E-mail</label>
-              <input
-                {...register('email')}
-                type="email"
-                placeholder="vas@email.cz"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Heslo</label>
-              <input
-                {...register('password')}
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 font-medium rounded-xl text-white transition-colors disabled:opacity-50"
-              style={{ background: '#162459' }}
-            >
-              {loading ? 'Přihlašuji...' : 'Přihlásit se'}
-            </button>
-            <p className="text-center mt-1">
-              <a href="/forgot-password" className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">
-                Zapomenuté heslo?
-              </a>
-            </p>
-          </form>
+          {/* Password login */}
+          {!magicLink && (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">E-mail</label>
+                <input
+                  {...register('email')}
+                  type="email"
+                  placeholder="vas@email.cz"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+                />
+                {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Heslo</label>
+                <input
+                  {...register('password')}
+                  type="password"
+                  placeholder="••••••••"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+                />
+                {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 font-medium rounded-xl text-white transition-colors disabled:opacity-50 hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+              >
+                {loading ? 'Přihlašuji...' : 'Přihlásit se'}
+              </button>
+              <div className="flex items-center justify-between mt-1">
+                <a href="/forgot-password" className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">
+                  Zapomenuté heslo?
+                </a>
+                <button
+                  type="button"
+                  onClick={() => { setMagicLink(true); setError(null) }}
+                  className="text-xs underline transition-colors hover:opacity-80"
+                  style={{ color: '#009EE2' }}
+                >
+                  Přihlásit se přes magic link
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Magic link login */}
+          {magicLink && (
+            <form onSubmit={magicLinkForm.handleSubmit(onMagicLink)} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">E-mail</label>
+                <input
+                  {...magicLinkForm.register('email')}
+                  type="email"
+                  placeholder="vas@email.cz"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+                />
+                {magicLinkForm.formState.errors.email && <p className="mt-1 text-xs text-red-600">{magicLinkForm.formState.errors.email.message}</p>}
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 font-medium rounded-xl text-white transition-colors disabled:opacity-50 hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+              >
+                {loading ? 'Odesílám...' : 'Odeslat přihlašovací odkaz'}
+              </button>
+              <p className="text-center mt-1">
+                <button
+                  type="button"
+                  onClick={() => { setMagicLink(false); setError(null) }}
+                  className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline"
+                >
+                  Přihlásit se heslem
+                </button>
+              </p>
+            </form>
+          )}
         </div>
       </div>
     </div>

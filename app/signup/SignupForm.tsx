@@ -4,11 +4,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useRouter } from 'next/navigation'
 
 const schema = z.object({
   full_name: z.string().min(2, 'Zadejte jméno a příjmení'),
   email: z.string().email('Zadejte platný e-mail'),
+  phone: z.string().min(9, 'Zadejte platné telefonní číslo'),
 })
 
 type FormData = z.infer<typeof schema>
@@ -16,7 +16,7 @@ type FormData = z.infer<typeof schema>
 export default function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
+  const [success, setSuccess] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -40,7 +40,28 @@ export default function SignupForm() {
       return
     }
 
-    router.push(`/klient/${result.id}`)
+    setSuccess(true)
+    setLoading(false)
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-4" style={{ background: 'rgba(0, 158, 226, 0.1)' }}>
+              <svg className="w-7 h-7" style={{ color: '#009EE2' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold" style={{ color: '#162459' }}>Zkontrolujte e-mail</h2>
+            <p className="text-sm mt-2" style={{ color: '#818EAF' }}>
+              Na váš e-mail jsme odeslali přihlašovací odkaz. Klikněte na něj pro přístup do portálu.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -48,13 +69,13 @@ export default function SignupForm() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 bg-gradient-to-br from-slate-800 to-slate-900">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 bg-gradient-to-br from-[#162459] to-[#243471]">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">Začít zdarma</h1>
-            <p className="text-slate-500 mt-1 text-sm">Vyplňte údaje a dostanete přístup k portálu</p>
+            <h1 className="text-2xl font-bold" style={{ color: '#162459' }}>Začít zdarma</h1>
+            <p className="mt-1 text-sm" style={{ color: '#818EAF' }}>Vyplňte údaje a dostanete přístup k portálu</p>
           </div>
 
           {error && (
@@ -65,35 +86,46 @@ export default function SignupForm() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Jméno a příjmení</label>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#162459' }}>Jméno a příjmení</label>
               <input
                 {...register('full_name')}
                 type="text"
                 placeholder="Jan Novák"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
               />
               {errors.full_name && <p className="mt-1 text-xs text-red-600">{errors.full_name.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">E-mail</label>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#162459' }}>E-mail</label>
               <input
                 {...register('email')}
                 type="email"
                 placeholder="vas@email.cz"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
               />
               {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#162459' }}>Telefon</label>
+              <input
+                {...register('phone')}
+                type="tel"
+                placeholder="+420 123 456 789"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+              />
+              {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>}
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 font-medium rounded-xl text-white transition-colors disabled:opacity-50 bg-gradient-to-r from-slate-800 to-slate-900 hover:opacity-90"
+              className="w-full py-3 font-medium rounded-xl text-white transition-colors disabled:opacity-50 hover:opacity-90"
+              style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
             >
-              {loading ? 'Vytvářím...' : 'Pokračovat na dotazník →'}
+              {loading ? 'Odesílám...' : 'Registrovat se →'}
             </button>
           </form>
 
-          <p className="text-center text-xs text-slate-400 mt-4">
+          <p className="text-center text-xs mt-4" style={{ color: '#818EAF' }}>
             Registrací souhlasíte se zpracováním osobních údajů
           </p>
         </div>

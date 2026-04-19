@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           id: string
           full_name: string | null
+          phone: string | null
           age: number | null
           income: string | null
           family_status: 'single' | 'partner' | 'family' | 'single_parent' | null
@@ -25,6 +26,7 @@ export type Database = {
         Insert: {
           id: string
           full_name?: string | null
+          phone?: string | null
           age?: number | null
           income?: string | null
           family_status?: 'single' | 'partner' | 'family' | 'single_parent' | null
@@ -37,6 +39,7 @@ export type Database = {
         Update: {
           id?: string
           full_name?: string | null
+          phone?: string | null
           age?: number | null
           income?: string | null
           family_status?: 'single' | 'partner' | 'family' | 'single_parent' | null

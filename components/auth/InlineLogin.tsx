@@ -11,9 +11,14 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Heslo musí mít alespoň 6 znaků'),
 })
 
+const magicLinkSchema = z.object({
+  email: z.string().email('Zadejte platný e-mail'),
+})
+
 const registerSchema = z.object({
   full_name: z.string().min(2, 'Zadejte jméno a příjmení'),
   email: z.string().email('Zadejte platný e-mail'),
+  phone: z.string().min(9, 'Zadejte platné telefonní číslo'),
   password: z.string().min(6, 'Heslo musí mít alespoň 6 znaků'),
   confirm_password: z.string(),
 }).refine((d) => d.password === d.confirm_password, {
@@ -22,16 +27,20 @@ const registerSchema = z.object({
 })
 
 type LoginForm = z.infer<typeof loginSchema>
+type MagicLinkForm = z.infer<typeof magicLinkSchema>
 type RegisterForm = z.infer<typeof registerSchema>
 
 export default function InlineLogin() {
   const [tab, setTab] = useState<'login' | 'register'>('login')
+  const [loginMode, setLoginMode] = useState<'password' | 'magiclink'>('password')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [registered, setRegistered] = useState(false)
+  const [magicLinkSent, setMagicLinkSent] = useState(false)
 
   const loginForm = useForm<LoginForm>({ resolver: zodResolver(loginSchema) })
+  const magicLinkForm = useForm<MagicLinkForm>({ resolver: zodResolver(magicLinkSchema) })
   const registerForm = useForm<RegisterForm>({ resolver: zodResolver(registerSchema) })
 
   async function onLogin(data: LoginForm) {
@@ -40,6 +49,21 @@ export default function InlineLogin() {
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword(data)
     if (error) setError('Nesprávný e-mail nebo heslo')
+    setLoading(false)
+  }
+
+  async function onMagicLink(data: MagicLinkForm) {
+    setLoading(true)
+    setError(null)
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOtp({
+      email: data.email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+    if (error) setError(error.message)
+    else setMagicLinkSent(true)
     setLoading(false)
   }
 
@@ -52,7 +76,7 @@ export default function InlineLogin() {
       password: data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
-        data: { full_name: data.full_name, role: 'client' },
+        data: { full_name: data.full_name, phone: data.phone, role: 'client' },
       },
     })
     if (error) setError(error.message)
@@ -91,12 +115,32 @@ export default function InlineLogin() {
     )
   }
 
+  if (magicLinkSent) {
+    return (
+      <div className="text-center py-6">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(255,255,255,0.15)' }}>
+          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h3 className="font-semibold text-white text-lg">Zkontrolujte e-mail</h3>
+        <p className="text-blue-200 text-sm mt-2">Poslali jsme vám přihlašovací odkaz. Klikněte na něj pro přihlášení.</p>
+        <button
+          onClick={() => { setMagicLinkSent(false); setLoginMode('password') }}
+          className="text-blue-300 text-xs mt-4 hover:text-white transition-colors underline"
+        >
+          Zpět na přihlášení
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Tab přepínač */}
       <div className="flex bg-white/10 rounded-xl p-1 mb-5">
         <button
-          onClick={() => { setTab('login'); setError(null) }}
+          onClick={() => { setTab('login'); setError(null); setLoginMode('password') }}
           className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
             tab === 'login' ? 'bg-white text-slate-900 shadow-sm' : 'text-blue-200 hover:text-white'
           }`}
@@ -141,7 +185,7 @@ export default function InlineLogin() {
       )}
 
       {/* Přihlášení */}
-      {tab === 'login' && (
+      {tab === 'login' && loginMode === 'password' && (
         <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-3">
           <div>
             <label className={labelClass}>E-mail</label>
@@ -157,14 +201,49 @@ export default function InlineLogin() {
             type="submit"
             disabled={loading}
             className="w-full py-3.5 font-semibold rounded-xl text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1"
-            style={{ background: 'linear-gradient(135deg, #009EE2, #1a9fdd)', color: '#162459' }}
+            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)', color: '#fff' }}
           >
             {loading ? 'Přihlašuji...' : 'Přihlásit se →'}
           </button>
-          <p className="text-center mt-2">
+          <div className="flex items-center justify-between mt-2">
             <a href="/forgot-password" className="text-blue-300 text-xs hover:text-white transition-colors underline">
               Zapomenuté heslo?
             </a>
+            <button
+              type="button"
+              onClick={() => setLoginMode('magiclink')}
+              className="text-blue-300 text-xs hover:text-white transition-colors underline"
+            >
+              Přihlásit se přes magic link
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Magic link přihlášení */}
+      {tab === 'login' && loginMode === 'magiclink' && (
+        <form onSubmit={magicLinkForm.handleSubmit(onMagicLink)} className="space-y-3">
+          <div>
+            <label className={labelClass}>E-mail</label>
+            <input {...magicLinkForm.register('email')} type="email" placeholder="vas@email.cz" className={inputClass} />
+            {magicLinkForm.formState.errors.email && <p className={errorClass}>{magicLinkForm.formState.errors.email.message}</p>}
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 font-semibold rounded-xl text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1"
+            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)', color: '#fff' }}
+          >
+            {loading ? 'Odesílám...' : 'Odeslat přihlašovací odkaz →'}
+          </button>
+          <p className="text-center mt-2">
+            <button
+              type="button"
+              onClick={() => setLoginMode('password')}
+              className="text-blue-300 text-xs hover:text-white transition-colors underline"
+            >
+              Přihlásit se heslem
+            </button>
           </p>
         </form>
       )}
@@ -183,6 +262,11 @@ export default function InlineLogin() {
             {registerForm.formState.errors.email && <p className={errorClass}>{registerForm.formState.errors.email.message}</p>}
           </div>
           <div>
+            <label className={labelClass}>Telefon</label>
+            <input {...registerForm.register('phone')} type="tel" placeholder="+420 123 456 789" className={inputClass} />
+            {registerForm.formState.errors.phone && <p className={errorClass}>{registerForm.formState.errors.phone.message}</p>}
+          </div>
+          <div>
             <label className={labelClass}>Heslo</label>
             <input {...registerForm.register('password')} type="password" placeholder="••••••••" className={inputClass} />
             {registerForm.formState.errors.password && <p className={errorClass}>{registerForm.formState.errors.password.message}</p>}
@@ -196,7 +280,7 @@ export default function InlineLogin() {
             type="submit"
             disabled={loading}
             className="w-full py-3.5 font-semibold rounded-xl text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1"
-            style={{ background: 'linear-gradient(135deg, #009EE2, #1a9fdd)', color: '#162459' }}
+            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)', color: '#fff' }}
           >
             {loading ? 'Registruji...' : 'Vytvořit účet →'}
           </button>
