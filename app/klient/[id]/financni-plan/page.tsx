@@ -101,19 +101,16 @@ export default function FinancniPlanPage() {
   useEffect(() => {
     async function load() {
       // Load variants with their params
-      const { data: variants } = await supabase
-        .from('plan_variants')
+      const { data: variants } = await (supabase.from('plan_variants') as any)
         .select('*')
         .eq('client_id', id)
         .order('sort_order')
 
-      const { data: params } = await supabase
-        .from('plan_params')
+      const { data: params } = await (supabase.from('plan_params') as any)
         .select('*')
         .order('sort_order')
 
-      const { data: recommendations } = await supabase
-        .from('plan_recommendations')
+      const { data: recommendations } = await (supabase.from('plan_recommendations') as any)
         .select('*')
         .eq('client_id', id)
 
@@ -131,7 +128,7 @@ export default function FinancniPlanPage() {
           const mappedVariants: Variant[] = sectionVariants.map((v: { id: string; company: string; logo: string; monthly_payment: string }) => {
             const variantParams = (params || []).filter((p: { variant_id: string }) => p.variant_id === v.id)
             const paramMap: Record<string, ParamDetail> = {}
-            for (const p of variantParams) {
+            for (const p of variantParams as Array<{ param_label: string; value: string; note?: string }>) {
               paramMap[p.param_label] = { value: p.value, note: p.note || '' }
             }
             return { company: v.company, logo: v.logo || v.company[0], monthlyPayment: v.monthly_payment, params: paramMap }

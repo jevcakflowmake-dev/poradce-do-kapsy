@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   for (const [sectionId, questions] of Object.entries(responses as Record<string, Record<string, string>>)) {
     for (const [questionId, value] of Object.entries(questions)) {
       if (!value) continue
-      await supabase.from('analysis_responses').upsert(
+      await (supabase.from('analysis_responses') as any).upsert(
         { client_id: clientId, section: sectionId, question_id: questionId, value, updated_at: new Date().toISOString() },
         { onConflict: 'client_id,section,question_id' }
       )
@@ -34,19 +34,17 @@ export async function GET(request: Request) {
 
   const supabase = createAdminClient()
 
-  const { data: responses } = await supabase
-    .from('analysis_responses')
+  const { data: responses } = await (supabase.from('analysis_responses') as any)
     .select('*')
     .eq('client_id', clientId)
 
-  const { data: files } = await supabase
-    .from('analysis_files')
+  const { data: files } = await (supabase.from('analysis_files') as any)
     .select('*')
     .eq('client_id', clientId)
 
   // Group responses by section
   const grouped: Record<string, Record<string, string>> = {}
-  for (const r of responses || []) {
+  for (const r of (responses || []) as Array<{ section: string; question_id: string; value: string }>) {
     if (!grouped[r.section]) grouped[r.section] = {}
     grouped[r.section][r.question_id] = r.value
   }
