@@ -1,9 +1,9 @@
 export default function AdvisorLoading() {
   return (
     <div className="min-h-screen bg-slate-50">
-      <nav className="bg-white border-b border-slate-200 px-4 py-3">
+      <nav className="border-b border-slate-200 px-4 py-3" style={{ backgroundColor: '#162459' }}>
         <div className="max-w-4xl mx-auto">
-          <div className="h-5 w-40 bg-slate-200 rounded animate-pulse" />
+          <div className="h-5 w-40 rounded animate-pulse" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
         </div>
       </nav>
       <div className="max-w-4xl mx-auto p-4">
