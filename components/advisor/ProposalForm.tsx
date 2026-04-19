@@ -138,6 +138,21 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
       setMonthlyPrice('')
       setEnabledSections({})
       setSectionAmounts({})
+
+      // Notify client via n8n webhook
+      try {
+        fetch('https://n8n.jevcakn8n.com/webhook/novy-navrh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_id: clientId,
+            type: data.type,
+            title: data.title,
+            created_at: new Date().toISOString(),
+          }),
+        })
+      } catch {}
+
       setTimeout(() => {
         setSuccess(false)
         window.location.reload()

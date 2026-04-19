@@ -23,6 +23,57 @@ const typeConfig = {
   invest: { label: 'Investice', icon: TrendingUp, gradient: 'from-emerald-600 to-teal-700', bgLight: 'bg-emerald-50', textColor: 'text-emerald-700' },
 }
 
+const SECTION_LABELS: Record<string, string> = {
+  daily_compensation: 'Denní odškodné',
+  hospitalization: 'Hospitalizace',
+  disability: 'Invalidita',
+  permanent_consequences: 'Trvalé následky',
+  serious_illness: 'Závažná onemocnění',
+  work_incapacity: 'Pracovní neschopnost',
+  death: 'Smrt',
+  death_accident: 'Smrt úrazem',
+  long_term_care: 'Dlouhodobá péče',
+}
+
+function InsuranceDetail({ content }: { content: string | null }) {
+  if (!content) return null
+
+  try {
+    const parsed = JSON.parse(content)
+    if (!parsed.sections) {
+      return <p className="text-sm text-slate-500 mt-2">{content}</p>
+    }
+
+    return (
+      <div className="mt-3 pt-3 border-t border-slate-100">
+        <div className="flex items-center gap-2 mb-2">
+          {parsed.logo && <span className="text-lg">{parsed.logo}</span>}
+          {parsed.company && <span className="text-sm font-medium" style={{ color: '#162459' }}>{parsed.company}</span>}
+          {parsed.monthly_price && (
+            <span className="ml-auto text-sm font-bold" style={{ color: '#009EE2' }}>
+              {parsed.monthly_price} Kč/měsíc
+            </span>
+          )}
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {(parsed.sections as Array<{ id: string; amount: number }>).map((s) => (
+            <div key={s.id} className="flex items-center gap-2 text-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#009EE2] shrink-0" />
+              <span className="text-slate-600">{SECTION_LABELS[s.id] || s.id}</span>
+              <span className="font-medium text-slate-900 ml-auto">{s.amount?.toLocaleString('cs-CZ')} Kč</span>
+            </div>
+          ))}
+        </div>
+        {parsed.description && (
+          <p className="text-sm text-slate-500 mt-2">{parsed.description}</p>
+        )}
+      </div>
+    )
+  } catch {
+    return <p className="text-sm text-slate-500 mt-2">{content}</p>
+  }
+}
+
 const mockPayments = [
   { product: 'Životní pojištění Premium', amount: '1 250 Kč', frequency: 'měsíčně', nextDate: '15. 5. 2026', account: 'CZ65 0800 0000 0019 2000 0010', vs: '1234567890' },
   { product: 'Doplňkové penzijní spoření', amount: '1 500 Kč', frequency: 'měsíčně', nextDate: '1. 5. 2026', account: 'CZ77 0300 0000 0000 1234 5678', vs: '9876543210' },
@@ -85,24 +136,26 @@ export default function ProduktyPage() {
               <div className="space-y-2">
                 {items.map(product => (
                   <div key={product.id} className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-medium text-slate-900">{product.title}</h3>
-                        {product.content && <p className="text-sm text-slate-500 mt-1 line-clamp-2">{product.content}</p>}
-                        <span className="text-xs text-slate-400 mt-1 block">{new Date(product.created_at).toLocaleDateString('cs-CZ')}</span>
+                    <div>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-medium text-slate-900">{product.title}</h3>
+                          <span className="text-xs text-slate-400 mt-1 block">{new Date(product.created_at).toLocaleDateString('cs-CZ')}</span>
+                        </div>
+                        <div className="flex gap-2 flex-shrink-0">
+                          {product.file_url && (
+                            <a href={product.file_url} target="_blank" rel="noreferrer" className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200">
+                              <FileText className="w-4 h-4 text-slate-600" />
+                            </a>
+                          )}
+                          {product.link_url && (
+                            <a href={product.link_url} target="_blank" rel="noreferrer" className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200">
+                              <ExternalLink className="w-4 h-4 text-slate-600" />
+                            </a>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex gap-2 flex-shrink-0">
-                        {product.file_url && (
-                          <a href={product.file_url} target="_blank" rel="noreferrer" className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200">
-                            <FileText className="w-4 h-4 text-slate-600" />
-                          </a>
-                        )}
-                        {product.link_url && (
-                          <a href={product.link_url} target="_blank" rel="noreferrer" className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200">
-                            <ExternalLink className="w-4 h-4 text-slate-600" />
-                          </a>
-                        )}
-                      </div>
+                      <InsuranceDetail content={product.content} />
                     </div>
                   </div>
                 ))}
