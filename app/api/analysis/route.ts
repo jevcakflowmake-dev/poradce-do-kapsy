@@ -28,6 +28,21 @@ export async function POST(request: Request) {
       }
     }
 
+    // Sync key fields from analysis to profile
+    const personal = responses.personal as Record<string, string> | undefined
+    const incomeSection = responses.income as Record<string, string> | undefined
+    if (personal || incomeSection) {
+      const updates: { full_name?: string; phone?: string; age?: number; income?: string; updated_at?: string } = {}
+      if (personal?.full_name) updates.full_name = personal.full_name
+      if (personal?.phone) updates.phone = personal.phone
+      if (personal?.age) updates.age = parseInt(personal.age) || undefined
+      if (incomeSection?.monthly_income) updates.income = incomeSection.monthly_income
+      if (Object.keys(updates).length > 0) {
+        updates.updated_at = new Date().toISOString()
+        await supabase.from('profiles').update(updates).eq('id', clientId)
+      }
+    }
+
     return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json(
