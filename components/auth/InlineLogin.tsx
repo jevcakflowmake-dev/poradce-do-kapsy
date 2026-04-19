@@ -47,9 +47,14 @@ export default function InlineLogin() {
     setLoading(true)
     setError(null)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword(data)
-    if (error) setError('Nesprávný e-mail nebo heslo')
-    setLoading(false)
+    const { data: authData, error } = await supabase.auth.signInWithPassword(data)
+    if (error) {
+      setError('Nesprávný e-mail nebo heslo')
+      setLoading(false)
+      return
+    }
+    const role = authData.user?.user_metadata?.role
+    window.location.href = role === 'advisor' ? '/advisor' : '/dashboard'
   }
 
   async function onMagicLink(data: MagicLinkForm) {
