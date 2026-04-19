@@ -157,7 +157,7 @@ export default function InlineLogin() {
             type="submit"
             disabled={loading}
             className="w-full py-3.5 font-semibold rounded-xl text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1"
-            style={{ background: 'linear-gradient(135deg, #d4a843, #f0c96a)', color: '#0f2d52' }}
+            style={{ background: 'linear-gradient(135deg, #009EE2, #1a9fdd)', color: '#162459' }}
           >
             {loading ? 'Přihlašuji...' : 'Přihlásit se →'}
           </button>
@@ -196,7 +196,7 @@ export default function InlineLogin() {
             type="submit"
             disabled={loading}
             className="w-full py-3.5 font-semibold rounded-xl text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1"
-            style={{ background: 'linear-gradient(135deg, #d4a843, #f0c96a)', color: '#0f2d52' }}
+            style={{ background: 'linear-gradient(135deg, #009EE2, #1a9fdd)', color: '#162459' }}
           >
             {loading ? 'Registruji...' : 'Vytvořit účet →'}
           </button>

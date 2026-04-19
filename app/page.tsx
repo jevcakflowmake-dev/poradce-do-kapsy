@@ -110,7 +110,7 @@ export default async function HomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0f2d52 0%, #1a4170 100%)' }}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #162459 0%, #243471 100%)' }}>
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
@@ -137,9 +137,9 @@ export default async function HomePage() {
           </div>
           <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tight mb-6" style={{ color: '#0f172a' }}>
             Finanční poradenství{' '}
-            <span style={{ color: '#0f2d52' }}>bez kompromisů</span>
+            <span style={{ color: '#162459' }}>bez kompromisů</span>
             <br />
-            <span className="text-4xl md:text-5xl" style={{ color: '#1a4170' }}>přímo z vašeho telefonu</span>
+            <span className="text-4xl md:text-5xl" style={{ color: '#243471' }}>přímo z vašeho telefonu</span>
           </h1>
           <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed mb-10">
             Vyplňte dotazník, dostanete osobní návrh pojištění, penzijního spoření nebo investic — bez schůzek, bez závazků, zcela zdarma.
@@ -148,7 +148,7 @@ export default async function HomePage() {
             <Link
               href="/signup"
               className="w-full sm:w-auto px-8 py-4 font-semibold rounded-2xl text-white text-base transition-all hover:shadow-lg hover:-translate-y-0.5"
-              style={{ background: 'linear-gradient(135deg, #0f2d52 0%, #1a4170 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #162459 0%, #243471 100%)' }}
             >
               Začít dotazník zdarma →
             </Link>
@@ -181,7 +181,7 @@ export default async function HomePage() {
                   <div className="h-5 w-32 bg-slate-800 rounded-md mb-1.5"></div>
                   <div className="h-3 w-24 bg-slate-300 rounded"></div>
                 </div>
-                <div className="w-14 h-14 rounded-full" style={{ background: 'linear-gradient(135deg, #d4a843, #f0c96a)' }}></div>
+                <div className="w-14 h-14 rounded-full" style={{ background: 'linear-gradient(135deg, #009EE2, #1a9fdd)' }}></div>
               </div>
               <div className="grid grid-cols-3 gap-3 mb-4">
                 {['Pojištění', 'Důchod', 'Investice'].map(t => (
@@ -218,7 +218,7 @@ export default async function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {BENEFITS.map(b => (
               <div key={b.title} className="p-6 rounded-2xl border border-slate-100 hover:border-blue-100 hover:shadow-md transition-all bg-white">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-white" style={{ background: 'linear-gradient(135deg, #0f2d52, #1a4170)' }}>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-white" style={{ background: 'linear-gradient(135deg, #162459, #243471)' }}>
                   {b.icon}
                 </div>
                 <h3 className="font-semibold text-slate-900 text-lg mb-2">{b.title}</h3>
@@ -230,7 +230,7 @@ export default async function HomePage() {
       </section>
 
       {/* Produkty */}
-      <section className="px-4 py-20" style={{ background: 'linear-gradient(160deg, #0f2d52, #1a4170)' }}>
+      <section className="px-4 py-20" style={{ background: 'linear-gradient(160deg, #162459, #243471)' }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">S čím vám pomůžeme</h2>
@@ -259,7 +259,7 @@ export default async function HomePage() {
             {STEPS.map(step => (
               <div key={step.num} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
                 <div className="flex items-start gap-4">
-                  <div className="text-2xl font-black leading-none shrink-0 mt-0.5" style={{ color: '#d4a843' }}>
+                  <div className="text-2xl font-black leading-none shrink-0 mt-0.5" style={{ color: '#009EE2' }}>
                     {step.num}
                   </div>
                   <div>
@@ -284,15 +284,15 @@ export default async function HomePage() {
         <div className="max-w-4xl mx-auto">
           <div className="grid sm:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl font-black mb-2" style={{ color: '#0f2d52' }}>48h</div>
+              <div className="text-4xl font-black mb-2" style={{ color: '#162459' }}>48h</div>
               <div className="text-slate-500 text-sm">Průměrná doba přípravy návrhu</div>
             </div>
             <div>
-              <div className="text-4xl font-black mb-2" style={{ color: '#0f2d52' }}>100%</div>
+              <div className="text-4xl font-black mb-2" style={{ color: '#162459' }}>100%</div>
               <div className="text-slate-500 text-sm">Bezplatné poradenství</div>
             </div>
             <div>
-              <div className="text-4xl font-black mb-2" style={{ color: '#0f2d52' }}>OVB</div>
+              <div className="text-4xl font-black mb-2" style={{ color: '#162459' }}>OVB</div>
               <div className="text-slate-500 text-sm">Certifikovaný poradce Allfinanz</div>
             </div>
           </div>
@@ -300,7 +300,7 @@ export default async function HomePage() {
       </section>
 
       {/* ===== PŘIHLÁŠENÍ / CTA ===== */}
-      <section id="prihlaseni" className="px-4 py-20" style={{ background: 'linear-gradient(135deg, #0a2040 0%, #0f2d52 100%)' }}>
+      <section id="prihlaseni" className="px-4 py-20" style={{ background: 'linear-gradient(135deg, #0e1a3d 0%, #162459 100%)' }}>
         <div className="max-w-3xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             {/* Levá strana — text */}
@@ -314,7 +314,7 @@ export default async function HomePage() {
               <Link
                 href="/signup"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #d4a843, #f0c96a)', color: '#0f2d52' }}
+                style={{ background: 'linear-gradient(135deg, #009EE2, #1a9fdd)', color: '#162459' }}
               >
                 Začít dotazník zdarma →
               </Link>
@@ -334,7 +334,7 @@ export default async function HomePage() {
       <footer className="px-4 py-8 border-t border-slate-100">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#0f2d52' }}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#162459' }}>
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>

@@ -1,23 +1,26 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;700&family=IBM+Plex+Sans+Condensed:wght@400;700&display=swap');
 
 :root {
   --background: #ffffff;
-  --foreground: #0f172a;
+  --foreground: #162459;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-navy: #0f2d52;
-  --color-navy-light: #1a4170;
-  --color-gold: #d4a843;
-  --color-gold-light: #f0c96a;
+  --color-navy: #162459;
+  --color-navy-light: #243471;
+  --color-accent: #009EE2;
+  --color-accent-light: #1a9fdd;
+  --color-muted: #818EAF;
+  --color-surface: #E8E9EE;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

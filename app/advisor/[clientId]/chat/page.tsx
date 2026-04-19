@@ -31,7 +31,7 @@ export default async function AdvisorChatPage({ params }: { params: Promise<{ cl
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #d4a843, #c8963a)', color: '#0f2d52' }}>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)', color: '#162459' }}>
             {(profile.full_name || 'K')[0].toUpperCase()}
           </div>
           <div>

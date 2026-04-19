@@ -154,7 +154,7 @@ export default function ChatWindow({
               )}
               <div className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                 {!isMe && (
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white mr-2 shrink-0 mt-1" style={{ background: 'linear-gradient(135deg, #0f2d52, #1a4170)' }}>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white mr-2 shrink-0 mt-1" style={{ background: 'linear-gradient(135deg, #162459, #243471)' }}>
                     P
                   </div>
                 )}
@@ -164,7 +164,7 @@ export default function ChatWindow({
                       ? 'rounded-br-sm text-white'
                       : 'rounded-bl-sm bg-white border border-slate-100 text-slate-800 shadow-sm'
                   }`}
-                  style={isMe ? { background: 'linear-gradient(135deg, #0f2d52, #1a4170)' } : {}}
+                  style={isMe ? { background: 'linear-gradient(135deg, #162459, #243471)' } : {}}
                 >
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                   {isMe && !msg.is_read && (
@@ -190,14 +190,14 @@ export default function ChatWindow({
             onKeyDown={onKeyDown}
             placeholder={myRole === 'client' ? 'Napište poradci...' : 'Odpovědět klientovi...'}
             className="chat-input flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:border-transparent"
-            style={{ '--tw-ring-color': '#0f2d52' } as React.CSSProperties}
+            style={{ '--tw-ring-color': '#162459' } as React.CSSProperties}
             rows={1}
           />
           <button
             onClick={sendMessage}
             disabled={!input.trim() || sending}
             className="w-10 h-10 rounded-xl flex items-center justify-center text-white transition-all disabled:opacity-40 hover:opacity-90 shrink-0"
-            style={{ background: 'linear-gradient(135deg, #0f2d52, #1a4170)' }}
+            style={{ background: 'linear-gradient(135deg, #162459, #243471)' }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

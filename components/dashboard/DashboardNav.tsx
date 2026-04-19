@@ -52,7 +52,7 @@ export default function DashboardNav({ unreadMessages = 0 }: { unreadMessages?: 
                     ? 'text-white'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`}
-                style={active ? { background: 'linear-gradient(135deg, #0f2d52, #1a4170)' } : {}}
+                style={active ? { background: 'linear-gradient(135deg, #162459, #243471)' } : {}}
               >
                 {item.icon}
                 <span className="flex-1">{item.label}</span>
