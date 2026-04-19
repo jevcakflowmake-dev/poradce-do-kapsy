@@ -14,6 +14,18 @@ export default async function AdvisorPage() {
     .select('*')
     .order('created_at', { ascending: false })
 
+  // Fetch unread messages count per client
+  const { data: unreadMessages } = await supabase
+    .from('messages')
+    .select('client_id')
+    .eq('sender_role', 'client')
+    .eq('is_read', false)
+
+  const unreadCounts: Record<string, number> = {}
+  for (const m of unreadMessages || []) {
+    unreadCounts[m.client_id] = (unreadCounts[m.client_id] || 0) + 1
+  }
+
   const clientsWithScore = (clients ?? []).map(c => ({
     ...c,
     score: calcHealthScore(c),
@@ -58,6 +70,7 @@ export default async function AdvisorPage() {
                   <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden md:table-cell">Oblasti</th>
                   <th className="text-center text-xs font-medium text-slate-500 px-4 py-3">Skóre</th>
                   <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden lg:table-cell">Registrace</th>
+                  <th className="text-center text-xs font-medium text-slate-500 px-4 py-3">Chat</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -65,7 +78,14 @@ export default async function AdvisorPage() {
                 {clientsWithScore.map(client => (
                   <tr key={client.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900 text-sm">{client.full_name || '(bez jména)'}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-900 text-sm">{client.full_name || '(bez jména)'}</span>
+                        {unreadCounts[client.id] > 0 && (
+                          <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                            {unreadCounts[client.id]}
+                          </span>
+                        )}
+                      </div>
                       <div className="text-xs text-slate-400">{riskLabel(client.risk_profile)}</div>
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">
@@ -90,6 +110,19 @@ export default async function AdvisorPage() {
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-400 hidden lg:table-cell">
                       {formatDate(client.created_at)}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <Link
+                        href={`/advisor/${client.id}/chat`}
+                        className="inline-flex items-center gap-1.5 text-sm text-[#009EE2] hover:text-[#162459] font-medium whitespace-nowrap"
+                      >
+                        💬
+                        {unreadCounts[client.id] > 0 && (
+                          <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                            {unreadCounts[client.id]}
+                          </span>
+                        )}
+                      </Link>
                     </td>
                     <td className="px-4 py-3">
                       <Link

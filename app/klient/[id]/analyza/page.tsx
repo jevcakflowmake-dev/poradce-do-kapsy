@@ -111,6 +111,7 @@ export default function AnalyzaPage() {
   const [files, setFiles] = useState<UploadedFile[]>([])
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const fileRef = useRef<HTMLInputElement>(null)
   const [activeUploadSection, setActiveUploadSection] = useState('')
 
@@ -136,12 +137,16 @@ export default function AnalyzaPage() {
   // Load existing responses on mount
   useEffect(() => {
     async function loadExisting() {
-      const res = await fetch(`/api/analysis?clientId=${id}`)
-      if (res.ok) {
-        const { responses } = await res.json()
-        if (responses && Object.keys(responses).length > 0) {
-          setData(responses)
+      try {
+        const res = await fetch(`/api/analysis?clientId=${id}`)
+        if (res.ok) {
+          const { responses } = await res.json()
+          if (responses && Object.keys(responses).length > 0) {
+            setData(responses)
+          }
         }
+      } catch {
+        // Silently fail on initial load — user can still fill the form
       }
     }
     loadExisting()
@@ -152,23 +157,42 @@ export default function AnalyzaPage() {
   useEffect(() => {
     if (Object.keys(data).length === 0) return
     if (saveTimeout.current) clearTimeout(saveTimeout.current)
-    saveTimeout.current = setTimeout(() => {
-      fetch('/api/analysis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId: id, responses: data }),
-      })
+    setSaveStatus('saving')
+    saveTimeout.current = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId: id, responses: data }),
+        })
+        if (!res.ok) {
+          setSaveStatus('error')
+        } else {
+          setSaveStatus('saved')
+        }
+      } catch {
+        setSaveStatus('error')
+      }
     }, 2000)
   }, [data, id])
 
   async function handleSubmit() {
     setLoading(true)
-    await fetch('/api/analysis', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientId: id, responses: data }),
-    })
-    setSubmitted(true)
+    try {
+      const res = await fetch('/api/analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: id, responses: data }),
+      })
+      if (!res.ok) {
+        setSaveStatus('error')
+        setLoading(false)
+        return
+      }
+      setSubmitted(true)
+    } catch {
+      setSaveStatus('error')
+    }
     setLoading(false)
   }
 
@@ -195,9 +219,33 @@ export default function AnalyzaPage() {
     <div className="w-full container px-4 mx-auto max-w-3xl py-8">
       <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" multiple className="hidden" onChange={handleFileChange} />
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <Link href={`/klient/${id}`} className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 transition-colors mb-4">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Zpět
-        </Link>
+        <div className="flex items-center justify-between mb-4">
+          <Link href={`/klient/${id}`} className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-1" /> Zpět
+          </Link>
+          {saveStatus !== 'idle' && (
+            <div className="flex items-center gap-1.5 text-xs">
+              {saveStatus === 'saving' && (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+                  <span className="text-slate-400">Ukládám...</span>
+                </>
+              )}
+              {saveStatus === 'saved' && (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="text-green-600">Uloženo</span>
+                </>
+              )}
+              {saveStatus === 'error' && (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span className="text-red-600">Chyba při ukládání</span>
+                </>
+              )}
+            </div>
+          )}
+        </div>
         <h1 className="text-3xl font-bold text-slate-900 mb-2">Finanční analýza</h1>
         <p className="text-slate-500">Odpovězte na otázky v každé sekci. Čím více vyplníte, tím přesnější plán dostanete.</p>
       </motion.div>
