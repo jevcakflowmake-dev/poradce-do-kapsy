@@ -63,8 +63,8 @@ export default function SignupForm() {
         return
       }
 
-      // Redirect to dashboard
-      router.push('/dashboard')
+      // Hard redirect to dashboard (router.push doesn't refresh middleware session)
+      window.location.href = '/dashboard'
     } catch {
       setError('Chyba připojení. Zkuste to prosím znovu.')
       setLoading(false)
