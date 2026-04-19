@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 const schema = z.object({
   full_name: z.string().min(2, 'Zadejte jméno a příjmení'),
@@ -16,7 +18,7 @@ type FormData = z.infer<typeof schema>
 export default function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const router = useRouter()
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -26,42 +28,47 @@ export default function SignupForm() {
     setLoading(true)
     setError(null)
 
-    const res = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    })
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
 
-    const result = await res.json()
+      const result = await res.json()
 
-    if (!res.ok) {
-      setError(result.error || 'Něco se pokazilo')
+      if (!res.ok) {
+        setError(result.error || 'Něco se pokazilo')
+        setLoading(false)
+        return
+      }
+
+      if (result.exists) {
+        // User already exists — redirect to login
+        setError('Účet s tímto e-mailem již existuje. Přihlaste se.')
+        setLoading(false)
+        return
+      }
+
+      // Auto-login with the temporary password
+      const supabase = createClient()
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email: data.email.trim().toLowerCase(),
+        password: result.password,
+      })
+
+      if (loginError) {
+        setError('Registrace proběhla, ale automatické přihlášení selhalo. Zkuste se přihlásit ručně.')
+        setLoading(false)
+        return
+      }
+
+      // Redirect to dashboard
+      router.push('/dashboard')
+    } catch {
+      setError('Chyba připojení. Zkuste to prosím znovu.')
       setLoading(false)
-      return
     }
-
-    setSuccess(true)
-    setLoading(false)
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-4" style={{ background: 'rgba(0, 158, 226, 0.1)' }}>
-              <svg className="w-7 h-7" style={{ color: '#009EE2' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h2 className="text-xl font-bold" style={{ color: '#162459' }}>Zkontrolujte e-mail</h2>
-            <p className="text-sm mt-2" style={{ color: '#818EAF' }}>
-              Na váš e-mail jsme odeslali přihlašovací odkaz. Klikněte na něj pro přístup do portálu.
-            </p>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (

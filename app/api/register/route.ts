@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
+import crypto from 'crypto'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_DIGITS_REGEX = /\d/g
@@ -35,20 +36,19 @@ export async function POST(request: Request) {
     const existingUser = users?.find(u => u.email === email)
 
     if (existingUser) {
-      // User exists - send magic link to login
-      await supabase.auth.admin.generateLink({
-        type: 'magiclink',
-        email,
-      })
       return NextResponse.json({
+        id: existingUser.id,
         exists: true,
-        message: 'Na váš e-mail jsme odeslali přihlašovací odkaz.'
       })
     }
 
-    // Create new user (no password, will use magic link)
+    // Generate a random password (user won't need it - login via magic link or advisor sets it)
+    const tempPassword = crypto.randomBytes(24).toString('base64url')
+
+    // Create new user with temporary password
     const { data, error } = await supabase.auth.admin.createUser({
       email,
+      password: tempPassword,
       email_confirm: true,
       user_metadata: { full_name, phone, role: 'client' },
     })
@@ -62,15 +62,9 @@ export async function POST(request: Request) {
       await supabase.from('profiles').update({ full_name, phone }).eq('id', data.user.id)
     }
 
-    // Send magic link for first login
-    await supabase.auth.admin.generateLink({
-      type: 'magiclink',
-      email,
-    })
-
     // Notify advisor via n8n webhook (fire and forget)
     try {
-      await fetch('https://n8n.jevcakn8n.com/webhook/novy-klient', {
+      fetch('https://n8n.jevcakn8n.com/webhook/novy-klient', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ full_name, email, phone, created_at: new Date().toISOString() }),
@@ -81,7 +75,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       id: data.user.id,
-      message: 'Registrace proběhla úspěšně. Na váš e-mail jsme odeslali přihlašovací odkaz.'
+      email,
+      password: tempPassword,
     })
   } catch {
     return NextResponse.json(
