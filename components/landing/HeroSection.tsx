@@ -130,7 +130,7 @@ export default function HeroSection() {
             animate="visible"
             className="text-sm text-white/30"
           >
-            Dotazník zabere ~3 minuty · Bez závazků · Zdarma
+            Dotazník zabere ~10 minut · Bez závazků · Zdarma
           </motion.p>
         </div>
 

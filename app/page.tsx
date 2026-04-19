@@ -41,7 +41,7 @@ const STEPS = [
   {
     num: '01',
     title: 'Vyplňte dotazník',
-    desc: 'Krátký 4-krokový dotazník o vaší situaci. Zabere méně než 3 minuty.',
+    desc: 'Komplexní dotazník o vaší finanční situaci. Zabere přibližně 10 minut.',
     detail: 'Věk, příjem, rodinná situace a finanční cíle',
   },
   {
