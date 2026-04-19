@@ -20,7 +20,7 @@ export default async function ClientChatPage() {
       </Link>
 
       <div className="flex flex-col h-[calc(100vh-200px)] bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-900 to-slate-800 flex items-center gap-3">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3" style={{ background: 'linear-gradient(135deg, #162459, #243471)' }}>
           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">
             P
           </div>
@@ -28,7 +28,7 @@ export default async function ClientChatPage() {
             <div className="font-semibold text-white text-sm">Váš finanční poradce</div>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>
-              <span className="text-xs text-slate-400">Odpovídá do 24 hodin</span>
+              <span className="text-xs text-white/50">Odpovídá do 24 hodin</span>
             </div>
           </div>
         </div>
