@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, ArrowRight, Check, Upload, Shield, Home, Clock, Baby,
@@ -176,11 +176,68 @@ export default function AnalyzaPage() {
     return Math.round((answered / section.questions.length) * 100)
   }
 
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [userId, setUserId] = useState<string | null>(null)
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const supabase = useMemo(() => createClient(), [])
+
+  // Get user ID on mount
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUserId(user.id)
+    })
+  }, [supabase])
+
+  // Load existing responses
+  useEffect(() => {
+    if (!userId) return
+    fetch(`/api/analysis?clientId=${userId}`)
+      .then(res => res.json())
+      .then(result => {
+        if (result.responses && Object.keys(result.responses).length > 0) {
+          setData(result.responses)
+        }
+      })
+      .catch(() => {})
+  }, [userId])
+
+  // Auto-save on data change (debounced 2s)
+  const initialLoad = useRef(true)
+  useEffect(() => {
+    if (!userId || Object.keys(data).length === 0) return
+    if (initialLoad.current) { initialLoad.current = false; return }
+
+    if (saveTimeout.current) clearTimeout(saveTimeout.current)
+    setSaveStatus('saving')
+    saveTimeout.current = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId: userId, responses: data }),
+        })
+        setSaveStatus(res.ok ? 'saved' : 'error')
+      } catch {
+        setSaveStatus('error')
+      }
+    }, 2000)
+  }, [data, userId])
+
   async function handleSubmit() {
     setLoading(true)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
+      // Save analysis responses
+      try {
+        await fetch('/api/analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId: user.id, responses: data }),
+        })
+      } catch {}
+
+      // Update profile
       await supabase.from('profiles').update({
         onboarding_completed: true,
         goals: Object.keys(data),
@@ -235,7 +292,20 @@ export default function AnalyzaPage() {
         <Link href="/dashboard" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 transition-colors mb-4">
           <ArrowLeft className="w-4 h-4 mr-1" /> Zpět
         </Link>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Finanční analýza</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">Finanční analýza</h1>
+          {saveStatus !== 'idle' && (
+            <div className="flex items-center gap-2 text-xs">
+              <span className={`w-2 h-2 rounded-full ${
+                saveStatus === 'saving' ? 'bg-yellow-400 animate-pulse' :
+                saveStatus === 'saved' ? 'bg-green-400' : 'bg-red-400'
+              }`} />
+              <span className="text-slate-400">
+                {saveStatus === 'saving' ? 'Ukládám...' : saveStatus === 'saved' ? 'Uloženo' : 'Chyba'}
+              </span>
+            </div>
+          )}
+        </div>
         <p className="text-slate-500">Odpovězte na otázky v každé sekci. Čím více vyplníte, tím přesnější plán dostanete.</p>
       </motion.div>
 
