@@ -28,7 +28,7 @@ const sections = [
     id: 'income',
     title: 'Zajištění příjmů',
     icon: Shield,
-    color: 'from-blue-600 to-indigo-700',
+    color: 'from-[#162459] to-[#243471]',
     questions: [
       { id: 'employment', label: 'Jaký je váš pracovní poměr?', type: 'select', options: ['Zaměstnanec', 'OSVČ', 'Kombinace', 'Student', 'Důchodce'] },
       { id: 'monthly_income', label: 'Čistý měsíční příjem (Kč)', type: 'number', placeholder: '35 000' },
@@ -47,7 +47,7 @@ const sections = [
     id: 'housing',
     title: 'Bydlení',
     icon: Home,
-    color: 'from-emerald-600 to-teal-700',
+    color: 'from-[#009EE2] to-[#0088c6]',
     questions: [
       { id: 'has_mortgage', label: 'Máte hypotéku?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'plan_mortgage', label: 'Pokud ne, plánujete ji řešit?', type: 'select', options: ['Ano', 'Ne', 'Možná v budoucnu'] },
@@ -61,7 +61,7 @@ const sections = [
     id: 'retirement',
     title: 'Příprava na důchod',
     icon: Clock,
-    color: 'from-amber-500 to-orange-600',
+    color: 'from-[#162459] to-[#243471]',
     questions: [
       { id: 'current_savings', label: 'Kolik si aktuálně odkládáte na důchod? (Kč/měsíc)', type: 'number', placeholder: '500' },
       { id: 'pension_gap', label: 'Když byste od zítra pobírali důchod 9 000 Kč, kolik Kč byste ještě potřebovali k tomu?', type: 'number', placeholder: '15 000' },
@@ -72,7 +72,7 @@ const sections = [
     id: 'children',
     title: 'Děti',
     icon: Baby,
-    color: 'from-pink-500 to-rose-600',
+    color: 'from-[#009EE2] to-[#0088c6]',
     questions: [
       { id: 'children_count', label: 'Kolik máte dětí?', type: 'number', placeholder: '0' },
       { id: 'children_ages', label: 'Jaký je jejich věk? (oddělte čárkou)', type: 'text', placeholder: '5, 8, 12' },
@@ -86,7 +86,7 @@ const sections = [
     id: 'investing',
     title: 'Investice',
     icon: TrendingUp,
-    color: 'from-violet-600 to-purple-700',
+    color: 'from-[#162459] to-[#243471]',
     questions: [
       { id: 'investing_experience', label: 'Zkušenosti s investováním', type: 'select', options: ['Žádné', 'Začátečník', 'Mírně pokročilý', 'Pokročilý'] },
       { id: 'risk_tolerance', label: 'Tolerance k riziku', type: 'select', options: ['Konzervativní', 'Vyvážený', 'Dynamický', 'Agresivní'] },
@@ -99,7 +99,7 @@ const sections = [
     id: 'property',
     title: 'Pojištění majetku',
     icon: Building2,
-    color: 'from-cyan-600 to-sky-700',
+    color: 'from-[#009EE2] to-[#0088c6]',
     questions: [
       { id: 'has_car', label: 'Vlastníte auto?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'car_insurance', label: 'Jak jej máte pojištěné?', type: 'select', options: ['Povinné ručení', 'Povinné ručení + havarijní', 'Nemám pojištění', 'Nevlastním auto'] },
@@ -117,7 +117,7 @@ const sections = [
     id: 'personal',
     title: 'Osobní údaje',
     icon: UserCircle,
-    color: 'from-slate-600 to-slate-800',
+    color: 'from-[#162459] to-[#0e1a3d]',
     questions: [
       { id: 'full_name', label: 'Jméno a příjmení', type: 'text', placeholder: 'Jan Novák' },
       { id: 'email', label: 'E-mail', type: 'text', placeholder: 'jan@email.cz' },
@@ -249,24 +249,29 @@ export default function AnalyzaPage() {
 
   if (submitted) {
     return (
-      <div className="w-full container px-4 mx-auto max-w-3xl py-16">
+      <div className="max-w-3xl mx-auto px-6 md:px-10 py-16 md:py-24 text-center">
         <motion.div
-          className="text-center"
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <Check className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-3">Analýza odeslána</h1>
-          <p className="text-slate-500 mb-8 max-w-md mx-auto">
-            Váš poradce připraví finanční plán na základě vašich odpovědí. Očekávejte výsledky do 48 hodin.
+          <div className="section-numeral text-[4rem] md:text-[6rem] mb-3">✓</div>
+          <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Hotovo · poradce je o tom ví</p>
+          <h1
+            className="font-display text-[#162459] mb-5"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
+          >
+            Analýza <span style={{ fontStyle: 'italic', color: '#009EE2' }}>odeslána</span>.
+          </h1>
+          <p className="text-[#818EAF] mb-10 max-w-md mx-auto leading-relaxed">
+            Váš poradce připraví finanční plán na základě vašich odpovědí. Výsledky obvykle do 48 hodin.
           </p>
-          <Link href="/dashboard">
-            <Button className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-8 py-3 rounded-xl hover:opacity-90">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Zpět na přehled
-            </Button>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+          >
+            <ArrowLeft className="w-4 h-4" /> Zpět na přehled
           </Link>
         </motion.div>
       </div>
@@ -274,7 +279,7 @@ export default function AnalyzaPage() {
   }
 
   return (
-    <div className="w-full container px-4 mx-auto max-w-3xl py-8">
+    <div className="max-w-4xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
       <input
         ref={fileRef}
         type="file"
@@ -285,28 +290,46 @@ export default function AnalyzaPage() {
       />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="mb-10"
       >
-        <Link href="/dashboard" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 transition-colors mb-4">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Zpět
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1 text-sm text-[#818EAF] hover:text-[#162459] transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Finanční analýza</h1>
+        <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">02</div>
+        <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Analýza · o vaší situaci</p>
+        <div className="flex items-start justify-between gap-4">
+          <h1
+            className="font-display text-[#162459]"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
+          >
+            Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>analýza</span>
+          </h1>
           {saveStatus !== 'idle' && (
-            <div className="flex items-center gap-2 text-xs">
-              <span className={`w-2 h-2 rounded-full ${
-                saveStatus === 'saving' ? 'bg-yellow-400 animate-pulse' :
-                saveStatus === 'saved' ? 'bg-green-400' : 'bg-red-400'
-              }`} />
-              <span className="text-slate-400">
-                {saveStatus === 'saving' ? 'Ukládám...' : saveStatus === 'saved' ? 'Uloženo' : 'Chyba'}
+            <div className="flex items-center gap-2 text-xs mt-2 shrink-0">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  saveStatus === 'saving'
+                    ? 'bg-[#f59e0b] animate-pulse'
+                    : saveStatus === 'saved'
+                      ? 'bg-[#16a34a]'
+                      : 'bg-[#ea580c]'
+                }`}
+              />
+              <span className="text-[#818EAF]">
+                {saveStatus === 'saving' ? 'Ukládám…' : saveStatus === 'saved' ? 'Uloženo' : 'Chyba'}
               </span>
             </div>
           )}
         </div>
-        <p className="text-slate-500">Odpovězte na otázky v každé sekci. Čím více vyplníte, tím přesnější plán dostanete.</p>
+        <p className="text-[#818EAF] mt-3 max-w-xl leading-relaxed">
+          Odpovězte na otázky v jednotlivých sekcích. Čím víc vyplníte, tím přesnější plán dostanete. Průběh se ukládá sám.
+        </p>
       </motion.div>
 
       <div className="space-y-4">
@@ -321,36 +344,46 @@ export default function AnalyzaPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: sIdx * 0.05 }}
-              className="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-shadow hover:shadow-md"
+              className="bg-white rounded-3xl border border-[#E8E9EE] overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.12)]"
             >
               <button
                 onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center gap-4 p-5 text-left"
+                className="w-full flex items-center gap-4 p-5 md:p-6 text-left"
               >
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${section.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                  <section.icon className="w-5 h-5 text-white" />
+                <div
+                  className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${section.color} flex items-center justify-center flex-shrink-0 shadow-sm`}
+                >
+                  <section.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-slate-900">{section.title}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <h3
+                    className="font-display text-[#162459]"
+                    style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}
+                  >
+                    {section.title}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <div className="w-28 h-1 bg-[#E8E9EE] rounded-full overflow-hidden">
                       <div
-                        className={`h-full bg-gradient-to-r ${section.color} rounded-full transition-all duration-500`}
-                        style={{ width: `${progress}%` }}
+                        className="h-full rounded-full transition-all duration-700"
+                        style={{
+                          width: `${progress}%`,
+                          background: 'linear-gradient(90deg, #009EE2, #0088c6)',
+                        }}
                       />
                     </div>
-                    <span className="text-xs text-slate-400">{progress}%</span>
+                    <span className="text-xs text-[#818EAF] tabular-nums">{progress}%</span>
                   </div>
                 </div>
                 {progress === 100 && (
-                  <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-emerald-600" />
+                  <div className="w-7 h-7 bg-[#16a34a]/10 border border-[#16a34a]/30 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Check className="w-4 h-4 text-[#15803d]" />
                   </div>
                 )}
                 {isExpanded ? (
-                  <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                  <ChevronUp className="w-5 h-5 text-[#818EAF] flex-shrink-0" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                  <ChevronDown className="w-5 h-5 text-[#818EAF] flex-shrink-0" />
                 )}
               </button>
 
@@ -363,18 +396,20 @@ export default function AnalyzaPage() {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <Separator />
-                    <div className="p-5 space-y-5">
+                    <div className="h-px bg-[#E8E9EE]" />
+                    <div className="p-5 md:p-7 space-y-5">
                       {section.questions.map(q => (
                         <div key={q.id}>
-                          <Label className="text-sm font-medium text-slate-700 mb-1.5 block">{q.label}</Label>
+                          <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+                            {q.label}
+                          </label>
                           {q.type === 'select' ? (
                             <select
                               value={data[section.id]?.[q.id] || ''}
                               onChange={e => updateField(section.id, q.id, e.target.value)}
-                              className="w-full h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full h-11 rounded-xl border border-[#E8E9EE] bg-white px-4 text-[15px] text-[#162459] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
                             >
-                              <option value="">Vyberte...</option>
+                              <option value="">Vyberte…</option>
                               {q.options?.map(opt => (
                                 <option key={opt} value={opt}>{opt}</option>
                               ))}
@@ -385,7 +420,14 @@ export default function AnalyzaPage() {
                                 const current = (data[section.id]?.[q.id] || '').split(',').filter(Boolean)
                                 const checked = current.includes(opt)
                                 return (
-                                  <label key={opt} className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border cursor-pointer transition-all text-sm ${checked ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`}>
+                                  <label
+                                    key={opt}
+                                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all text-sm ${
+                                      checked
+                                        ? 'border-[#009EE2] bg-[#009EE2]/8 text-[#0088c6] shadow-[inset_0_0_0_1px_#009EE2]'
+                                        : 'border-[#E8E9EE] bg-white text-[#162459] hover:border-[#009EE2]/50'
+                                    }`}
+                                  >
                                     <input
                                       type="checkbox"
                                       checked={checked}
@@ -393,7 +435,7 @@ export default function AnalyzaPage() {
                                         const next = checked ? current.filter(c => c !== opt) : [...current, opt]
                                         updateField(section.id, q.id, next.join(','))
                                       }}
-                                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                      className="accent-[#009EE2]"
                                     />
                                     {opt}
                                   </label>
@@ -411,29 +453,32 @@ export default function AnalyzaPage() {
                         </div>
                       ))}
 
-                      <Separator />
+                      <div className="h-px bg-[#E8E9EE]" />
 
                       <div>
-                        <Label className="text-sm font-medium text-slate-700 mb-2 block">
+                        <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
                           Přílohy (PDF, foto smluv)
-                        </Label>
+                        </label>
                         <button
                           onClick={() => { setActiveUploadSection(section.id); fileRef.current?.click() }}
-                          className="w-full border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:border-slate-400 hover:bg-slate-50 transition-all group"
+                          className="w-full border border-dashed border-[#E8E9EE] rounded-2xl p-5 text-center hover:border-[#009EE2] hover:bg-[#009EE2]/5 transition-all group"
                         >
-                          <Upload className="w-5 h-5 text-slate-400 mx-auto mb-1 group-hover:text-slate-600" />
-                          <span className="text-sm text-slate-500 group-hover:text-slate-700">
+                          <Upload className="w-5 h-5 text-[#818EAF] mx-auto mb-1.5 group-hover:text-[#0088c6]" />
+                          <span className="text-sm text-[#818EAF] group-hover:text-[#162459]">
                             Klikněte pro nahrání PDF nebo fotky
                           </span>
                         </button>
                         {sectionFiles.length > 0 && (
-                          <div className="mt-2 space-y-1">
+                          <div className="mt-2.5 space-y-1.5">
                             {sectionFiles.map(f => (
-                              <div key={f.name} className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 text-sm">
-                                <FileText className="w-4 h-4 text-slate-400" />
-                                <span className="flex-1 text-slate-700 truncate">{f.name}</span>
-                                <span className="text-xs text-slate-400">{(f.size / 1024).toFixed(0)} KB</span>
-                                <button onClick={() => removeFile(f.name)} className="text-slate-400 hover:text-red-500">
+                              <div
+                                key={f.name}
+                                className="flex items-center gap-2 bg-[#f8f9fc] rounded-xl px-3 py-2.5 text-sm border border-[#E8E9EE]"
+                              >
+                                <FileText className="w-4 h-4 text-[#818EAF]" />
+                                <span className="flex-1 text-[#162459] truncate">{f.name}</span>
+                                <span className="text-xs text-[#818EAF]">{(f.size / 1024).toFixed(0)} KB</span>
+                                <button onClick={() => removeFile(f.name)} className="text-[#818EAF] hover:text-[#c2410c]">
                                   <X className="w-4 h-4" />
                                 </button>
                               </div>
@@ -451,19 +496,20 @@ export default function AnalyzaPage() {
       </div>
 
       <motion.div
-        className="mt-8 flex justify-end"
+        className="mt-10 flex justify-end"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
       >
-        <Button
+        <button
           onClick={handleSubmit}
           disabled={loading}
-          className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-8 py-3 rounded-xl hover:opacity-90 shadow-lg disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+          style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
         >
-          {loading ? 'Odesílám...' : 'Odeslat analýzu'}
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
+          {loading ? 'Odesílám…' : 'Odeslat analýzu'}
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </motion.div>
     </div>
   )

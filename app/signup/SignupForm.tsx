@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Loader2, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import AuthShell from '@/components/auth/AuthShell'
 
 const schema = z.object({
   full_name: z.string().min(2, 'Zadejte jméno a příjmení'),
@@ -18,7 +20,6 @@ type FormData = z.infer<typeof schema>
 export default function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -44,13 +45,11 @@ export default function SignupForm() {
       }
 
       if (result.exists) {
-        // User already exists — redirect to login
-        setError('Účet s tímto e-mailem již existuje. Přihlaste se.')
+        setError('Účet s tímto e-mailem už existuje. Přihlaste se.')
         setLoading(false)
         return
       }
 
-      // Auto-login with the temporary password
       const supabase = createClient()
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email: data.email.trim().toLowerCase(),
@@ -63,7 +62,6 @@ export default function SignupForm() {
         return
       }
 
-      // Hard redirect to dashboard (router.push doesn't refresh middleware session)
       window.location.href = '/dashboard'
     } catch {
       setError('Chyba připojení. Zkuste to prosím znovu.')
@@ -72,71 +70,80 @@ export default function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 bg-gradient-to-br from-[#162459] to-[#243471]">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold" style={{ color: '#162459' }}>Začít zdarma</h1>
-            <p className="mt-1 text-sm" style={{ color: '#818EAF' }}>Vyplňte údaje a dostanete přístup k portálu</p>
+    <AuthShell
+      numeral="02"
+      eyebrow="Registrace · 60 sekund"
+      title={<>Začněme <span style={{ fontStyle: 'italic', color: '#009EE2' }}>bez</span> závazků.</>}
+      subtitle="Vyplňte jméno, e-mail a telefon. Přihlášení proběhne automaticky a rovnou uvidíte svůj prostor."
+    >
+      <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+        {error && (
+          <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-xl text-sm text-[#c2410c]">
+            {error}
           </div>
+        )}
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {error}
-            </div>
-          )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Field
+            label="Jméno a příjmení"
+            error={errors.full_name?.message}
+            inputProps={{ ...register('full_name'), type: 'text', placeholder: 'Jan Novák', autoComplete: 'name' }}
+          />
+          <Field
+            label="E-mail"
+            error={errors.email?.message}
+            inputProps={{ ...register('email'), type: 'email', placeholder: 'vas@email.cz', autoComplete: 'email' }}
+          />
+          <Field
+            label="Telefon"
+            error={errors.phone?.message}
+            inputProps={{ ...register('phone'), type: 'tel', placeholder: '+420 123 456 789', autoComplete: 'tel' }}
+          />
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: '#162459' }}>Jméno a příjmení</label>
-              <input
-                {...register('full_name')}
-                type="text"
-                placeholder="Jan Novák"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
-              />
-              {errors.full_name && <p className="mt-1 text-xs text-red-600">{errors.full_name.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: '#162459' }}>E-mail</label>
-              <input
-                {...register('email')}
-                type="email"
-                placeholder="vas@email.cz"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
-              />
-              {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: '#162459' }}>Telefon</label>
-              <input
-                {...register('phone')}
-                type="tel"
-                placeholder="+420 123 456 789"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
-              />
-              {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>}
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 font-medium rounded-xl text-white transition-colors disabled:opacity-50 hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
-            >
-              {loading ? 'Odesílám...' : 'Registrovat se →'}
-            </button>
-          </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Vytvořit účet zdarma <ArrowRight className="w-4 h-4" /></>)}
+          </button>
+        </form>
 
-          <p className="text-center text-xs mt-4" style={{ color: '#818EAF' }}>
-            Registrací souhlasíte se zpracováním osobních údajů
-          </p>
-        </div>
+        <p className="text-center text-xs text-[#818EAF] mt-5">
+          Registrací souhlasíte se zpracováním osobních údajů.
+        </p>
       </div>
+
+      <p className="text-center text-sm text-[#818EAF] mt-6">
+        Už máte účet?{' '}
+        <Link href="/login" className="text-[#0088c6] hover:text-[#162459] font-semibold transition-colors">
+          Přihlásit se
+        </Link>
+      </p>
+    </AuthShell>
+  )
+}
+
+function Field({
+  label,
+  error,
+  inputProps,
+}: {
+  label: string
+  error?: string
+  inputProps: React.InputHTMLAttributes<HTMLInputElement>
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+        {label}
+      </label>
+      <input
+        {...inputProps}
+        className="w-full h-11 px-4 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+      />
+      {error && <p className="mt-1.5 text-xs text-[#c2410c]">{error}</p>}
     </div>
   )
 }

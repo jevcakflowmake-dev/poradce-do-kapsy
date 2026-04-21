@@ -5,7 +5,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
+import { CheckCircle2, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import AuthShell from '@/components/auth/AuthShell'
 
 const schema = z.object({
   email: z.string().email('Zadejte platný e-mail'),
@@ -35,70 +37,78 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" style={{ background: '#162459' }}>
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-              </svg>
+    <AuthShell
+      numeral="—"
+      eyebrow="Reset hesla · klidně"
+      title={sent
+        ? <>Odkaz <span style={{ fontStyle: 'italic', color: '#009EE2' }}>odeslán</span>.</>
+        : <>Nové <span style={{ fontStyle: 'italic', color: '#009EE2' }}>heslo</span> za minutu.</>
+      }
+      subtitle={sent
+        ? 'Pokud e-mail existuje, najdete v něm odkaz pro reset hesla. Platí 60 minut.'
+        : 'Zadejte e-mail, se kterým jste se registrovali. Pošleme odkaz, přes který si nastavíte nové heslo.'
+      }
+    >
+      <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+        {sent ? (
+          <div className="text-center py-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 bg-[#16a34a]/10 border border-[#16a34a]/25">
+              <CheckCircle2 className="w-7 h-7 text-[#15803d]" strokeWidth={1.8} />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">Zapomenuté heslo</h1>
-            <p className="text-slate-500 mt-1 text-sm">Zašleme vám odkaz pro reset hesla</p>
+            <h2
+              className="font-display text-[#162459] mb-2"
+              style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}
+            >
+              Zkontrolujte schránku
+            </h2>
+            <p className="text-sm text-[#818EAF] mb-6">
+              Odkaz na reset hesla platí 60 minut. Pokud ho nevidíte, zkontrolujte spam.
+            </p>
+            <Link
+              href="/login"
+              className="text-sm font-semibold text-[#0088c6] hover:text-[#162459] transition-colors inline-flex items-center gap-1 hover:gap-2"
+            >
+              ← Zpět na přihlášení
+            </Link>
           </div>
-
-          {sent ? (
-            <div className="text-center py-4">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+        ) : (
+          <>
+            {error && (
+              <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-xl text-sm text-[#c2410c]">
+                {error}
               </div>
-              <h2 className="font-semibold text-slate-900">Zkontrolujte e-mail</h2>
-              <p className="text-sm text-slate-500 mt-2">
-                Poslali jsme vám odkaz pro reset hesla. Platí 60 minut.
-              </p>
-              <Link href="/" className="inline-block mt-6 text-sm font-medium" style={{ color: '#162459' }}>
-                ← Zpět na hlavní stránku
+            )}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+                  E-mail
+                </label>
+                <input
+                  {...register('email')}
+                  type="email"
+                  placeholder="vas@email.cz"
+                  autoComplete="email"
+                  className="w-full h-11 px-4 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+                />
+                {errors.email && <p className="mt-1.5 text-xs text-[#c2410c]">{errors.email.message}</p>}
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+                style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+              >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Poslat odkaz pro reset'}
+              </button>
+            </form>
+            <p className="text-center text-sm text-[#818EAF] mt-6">
+              <Link href="/login" className="hover:text-[#162459] transition-colors">
+                ← Zpět na přihlášení
               </Link>
-            </div>
-          ) : (
-            <>
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-                  {error}
-                </div>
-              )}
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">E-mail</label>
-                  <input
-                    {...register('email')}
-                    type="email"
-                    placeholder="vas@email.cz"
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
-                </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 font-medium rounded-xl text-white transition-colors disabled:opacity-50"
-                  style={{ background: '#162459' }}
-                >
-                  {loading ? 'Odesílám...' : 'Poslat odkaz pro reset'}
-                </button>
-              </form>
-              <p className="text-center text-sm text-slate-500 mt-6">
-                <Link href="/" className="hover:underline" style={{ color: '#162459' }}>
-                  ← Zpět na přihlášení
-                </Link>
-              </p>
-            </>
-          )}
-        </div>
+            </p>
+          </>
+        )}
       </div>
-    </div>
+    </AuthShell>
   )
 }

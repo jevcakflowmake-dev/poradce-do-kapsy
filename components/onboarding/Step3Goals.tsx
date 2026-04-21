@@ -1,5 +1,6 @@
 'use client'
 
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import type { OnboardingData } from './OnboardingWizard'
 
 const OPTIONS = [
@@ -24,36 +25,48 @@ export default function Step3Goals({
   function toggle(value: string) {
     const current = data.goals
     const updated = current.includes(value)
-      ? current.filter(g => g !== value)
+      ? current.filter((g) => g !== value)
       : [...current, value]
     onChange({ goals: updated })
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
-      <h2 className="text-xl font-bold text-slate-900 mb-1">Co vás zajímá?</h2>
-      <p className="text-slate-500 text-sm mb-6">Vyberte jednu nebo více oblastí</p>
+    <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+      <h2
+        className="font-display text-[#162459]"
+        style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
+      >
+        Co vás <span style={{ fontStyle: 'italic', color: '#009EE2' }}>zajímá</span>?
+      </h2>
+      <p className="text-[#818EAF] text-sm mt-2 mb-7">Vyberte jednu nebo více oblastí — později je můžeme doplnit.</p>
 
       <div className="space-y-2 mb-6">
-        {OPTIONS.map(opt => {
+        {OPTIONS.map((opt) => {
           const checked = data.goals.includes(opt.value)
           return (
             <label
               key={opt.value}
-              className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                checked ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300'
+              className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all border ${
+                checked
+                  ? 'border-[#009EE2] bg-[#009EE2]/8 shadow-[inset_0_0_0_1px_#009EE2]'
+                  : 'border-[#E8E9EE] hover:border-[#009EE2]/50 hover:bg-[#f8f9fc]'
               }`}
             >
               <input
                 type="checkbox"
                 checked={checked}
                 onChange={() => toggle(opt.value)}
-                className="accent-blue-600 w-4 h-4"
+                className="accent-[#009EE2] w-4 h-4"
               />
               <span className="text-2xl">{opt.icon}</span>
               <div>
-                <div className="font-medium text-slate-900 text-sm">{opt.label}</div>
-                <div className="text-xs text-slate-500">{opt.desc}</div>
+                <div
+                  className="font-display text-[#162459]"
+                  style={{ fontSize: '1rem', letterSpacing: '-0.01em' }}
+                >
+                  {opt.label}
+                </div>
+                <div className="text-xs text-[#818EAF]">{opt.desc}</div>
               </div>
             </label>
           )
@@ -63,16 +76,17 @@ export default function Step3Goals({
       <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="flex-1 py-2.5 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors"
+          className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 border border-[#E8E9EE] text-[#818EAF] hover:text-[#162459] text-sm font-medium rounded-xl hover:bg-[#f8f9fc] transition-colors"
         >
-          Zpět
+          <ArrowLeft className="w-4 h-4" /> Zpět
         </button>
         <button
           onClick={onNext}
           disabled={data.goals.length === 0}
-          className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-40"
+          className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-white text-sm transition-all disabled:opacity-40 hover:shadow-lg hover:shadow-[#009EE2]/25"
+          style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
         >
-          Pokračovat
+          Pokračovat <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </div>

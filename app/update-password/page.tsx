@@ -5,7 +5,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
+import { Loader2, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import AuthShell from '@/components/auth/AuthShell'
 
 const schema = z.object({
   password: z.string().min(6, 'Heslo musí mít alespoň 6 znaků'),
@@ -40,57 +42,63 @@ export default function UpdatePasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" style={{ background: '#162459' }}>
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-slate-900">Nové heslo</h1>
-            <p className="text-slate-500 mt-1 text-sm">Zadejte své nové heslo</p>
+    <AuthShell
+      numeral="↻"
+      eyebrow="Nové heslo · poslední krok"
+      title={<>Nastavte si <span style={{ fontStyle: 'italic', color: '#009EE2' }}>nové</span> heslo.</>}
+      subtitle="Zadejte heslo aspoň o 6 znacích. Po uložení vás přesměrujeme do vašeho prostoru."
+    >
+      <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+        {error && (
+          <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-xl text-sm text-[#c2410c]">
+            {error}
           </div>
+        )}
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Nové heslo</label>
-              <input
-                {...register('password')}
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Potvrzení hesla</label>
-              <input
-                {...register('confirm_password')}
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {errors.confirm_password && <p className="mt-1 text-xs text-red-600">{errors.confirm_password.message}</p>}
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 font-medium rounded-xl text-white transition-colors disabled:opacity-50"
-              style={{ background: '#162459' }}
-            >
-              {loading ? 'Ukládám...' : 'Uložit nové heslo'}
-            </button>
-          </form>
-        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Field
+            label="Nové heslo"
+            error={errors.password?.message}
+            inputProps={{ ...register('password'), type: 'password', placeholder: '••••••••', autoComplete: 'new-password' }}
+          />
+          <Field
+            label="Potvrzení hesla"
+            error={errors.confirm_password?.message}
+            inputProps={{ ...register('confirm_password'), type: 'password', placeholder: '••••••••', autoComplete: 'new-password' }}
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Uložit nové heslo <ArrowRight className="w-4 h-4" /></>)}
+          </button>
+        </form>
       </div>
+    </AuthShell>
+  )
+}
+
+function Field({
+  label,
+  error,
+  inputProps,
+}: {
+  label: string
+  error?: string
+  inputProps: React.InputHTMLAttributes<HTMLInputElement>
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+        {label}
+      </label>
+      <input
+        {...inputProps}
+        className="w-full h-11 px-4 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+      />
+      {error && <p className="mt-1.5 text-xs text-[#c2410c]">{error}</p>}
     </div>
   )
 }

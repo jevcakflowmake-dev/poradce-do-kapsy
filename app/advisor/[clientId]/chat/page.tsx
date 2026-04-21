@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import type { Profile } from '@/lib/types/database'
 import ChatWindow from '@/components/chat/ChatWindow'
@@ -22,33 +23,38 @@ export default async function AdvisorChatPage({ params }: { params: Promise<{ cl
   const profile = profileData as Profile
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fc] flex flex-col">
       {/* Navbar */}
-      <nav className="bg-white border-b border-slate-100 px-4 py-3 sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto flex items-center gap-3">
-          <Link href={`/advisor/${clientId}`} className="text-slate-400 hover:text-slate-600 transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+      <nav className="bg-white border-b border-[#E8E9EE] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto flex items-center gap-3">
+          <Link
+            href={`/advisor/${clientId}`}
+            className="inline-flex items-center gap-1 text-[#818EAF] hover:text-[#162459] transition-colors text-sm font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Zpět na detail</span>
           </Link>
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)', color: '#162459' }}>
+          <div className="h-6 w-px bg-[#E8E9EE] mx-1 hidden sm:block" />
+          <div
+            className="w-9 h-9 rounded-2xl flex items-center justify-center text-sm font-bold text-white"
+            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+          >
             {(profile.full_name || 'K')[0].toUpperCase()}
           </div>
-          <div>
-            <div className="font-semibold text-slate-900 text-sm">{profile.full_name || 'Klient'}</div>
-            <div className="text-xs text-slate-400">Chat s klientem</div>
+          <div className="min-w-0">
+            <div className="font-semibold text-[#162459] text-sm truncate">{profile.full_name || 'Klient'}</div>
+            <div className="text-xs text-[#818EAF]">Chat s klientem</div>
           </div>
         </div>
       </nav>
 
       {/* Chat */}
-      <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 flex flex-col" style={{ height: 'calc(100vh - 65px)' }}>
-        <div className="flex-1 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
-          <ChatWindow
-            clientId={clientId}
-            myRole="advisor"
-            advisorName={profile.full_name ?? 'Klient'}
-          />
+      <div
+        className="flex-1 max-w-5xl mx-auto w-full px-6 md:px-10 lg:px-16 xl:px-20 py-6 flex flex-col"
+        style={{ height: 'calc(100vh - 73px)' }}
+      >
+        <div className="flex-1 bg-white rounded-3xl border border-[#E8E9EE] overflow-hidden flex flex-col shadow-[0_10px_30px_-10px_rgba(22,36,89,0.08)]">
+          <ChatWindow clientId={clientId} myRole="advisor" advisorName={profile.full_name ?? 'Klient'} />
         </div>
       </div>
     </div>

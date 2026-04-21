@@ -8,12 +8,20 @@ import { Separator } from '@/components/ui/separator'
 import { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-interface Product { id: string; type: 'insurance' | 'pension' | 'invest'; title: string; content: string | null; file_url: string | null; link_url: string | null; created_at: string }
+interface Product {
+  id: string
+  type: 'insurance' | 'pension' | 'invest'
+  title: string
+  content: string | null
+  file_url: string | null
+  link_url: string | null
+  created_at: string
+}
 
 const typeConfig = {
-  insurance: { label: 'Pojištění', icon: Shield, gradient: 'from-blue-600 to-indigo-700', bgLight: 'bg-blue-50', textColor: 'text-blue-700' },
-  pension: { label: 'Penzijní produkty', icon: Clock, gradient: 'from-amber-500 to-orange-600', bgLight: 'bg-amber-50', textColor: 'text-amber-700' },
-  invest: { label: 'Investice', icon: TrendingUp, gradient: 'from-emerald-600 to-teal-700', bgLight: 'bg-emerald-50', textColor: 'text-emerald-700' },
+  insurance: { label: 'Pojištění', icon: Shield, gradient: 'from-[#162459] to-[#243471]' },
+  pension: { label: 'Penzijní produkty', icon: Clock, gradient: 'from-[#009EE2] to-[#0088c6]' },
+  invest: { label: 'Investice', icon: TrendingUp, gradient: 'from-[#162459] to-[#009EE2]' },
 }
 
 const mockPayments = [
@@ -34,43 +42,105 @@ export default function ProduktyPage() {
     load()
   }, [supabase, id])
 
-  const grouped = { insurance: products.filter(p => p.type === 'insurance'), pension: products.filter(p => p.type === 'pension'), invest: products.filter(p => p.type === 'invest') }
+  const grouped = {
+    insurance: products.filter(p => p.type === 'insurance'),
+    pension: products.filter(p => p.type === 'pension'),
+    invest: products.filter(p => p.type === 'invest'),
+  }
 
   return (
-    <div className="w-full container px-4 mx-auto max-w-4xl py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <Link href={`/klient/${id}`} className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 transition-colors mb-4">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Zpět
+    <div className="max-w-5xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="mb-10"
+      >
+        <Link
+          href={`/klient/${id}`}
+          className="inline-flex items-center gap-1 text-sm text-[#818EAF] hover:text-[#162459] transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Moje produkty</h1>
-        <p className="text-slate-500">Přehled vašich finančních produktů a platebních informací.</p>
+        <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">03</div>
+        <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Portfolio · co už máte</p>
+        <h1
+          className="font-display text-[#162459]"
+          style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
+        >
+          Moje <span style={{ fontStyle: 'italic', color: '#009EE2' }}>produkty</span>
+        </h1>
+        <p className="text-[#818EAF] mt-3 max-w-xl leading-relaxed">
+          Přehled vašich finančních produktů a platebních informací.
+        </p>
       </motion.div>
 
       {(Object.keys(typeConfig) as Array<keyof typeof typeConfig>).map((type, idx) => {
         const config = typeConfig[type]
         const items = grouped[type]
         return (
-          <motion.div key={type} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="mb-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${config.gradient} flex items-center justify-center`}><config.icon className="w-4 h-4 text-white" /></div>
-              <h2 className="text-lg font-semibold text-slate-900">{config.label}</h2>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${config.bgLight} ${config.textColor} font-medium`}>{items.length}</span>
+          <motion.div
+            key={type}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${config.gradient} flex items-center justify-center shadow-sm`}>
+                <config.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
+              </div>
+              <h2 className="font-display text-[#162459]" style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}>
+                {config.label}
+              </h2>
+              <span className="text-xs px-2.5 py-1 rounded-full bg-[#f8f9fc] text-[#818EAF] border border-[#E8E9EE] font-medium">
+                {items.length}
+              </span>
             </div>
             {items.length === 0 ? (
-              <div className="bg-white rounded-xl border border-slate-200 p-6 text-center"><p className="text-sm text-slate-400">Zatím žádné produkty</p></div>
+              <div className="bg-white rounded-3xl border border-[#E8E9EE] p-8 text-center">
+                <p className="text-sm text-[#818EAF]">Zatím žádné produkty</p>
+              </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {items.map(product => (
-                  <div key={product.id} className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-medium text-slate-900">{product.title}</h3>
-                        {product.content && <p className="text-sm text-slate-500 mt-1 line-clamp-2">{product.content}</p>}
-                        <span className="text-xs text-slate-400 mt-1 block">{new Date(product.created_at).toLocaleDateString('cs-CZ')}</span>
+                  <div
+                    key={product.id}
+                    className="bg-white rounded-3xl border border-[#E8E9EE] p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] hover:border-[#009EE2]/30 transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="font-display text-[#162459]" style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
+                          {product.title}
+                        </h3>
+                        {product.content && (
+                          <p className="text-sm text-[#818EAF] mt-1 line-clamp-2">{product.content}</p>
+                        )}
+                        <span className="text-xs text-[#818EAF] mt-1 block">
+                          {new Date(product.created_at).toLocaleDateString('cs-CZ')}
+                        </span>
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
-                        {product.file_url && <a href={product.file_url} target="_blank" rel="noreferrer" className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200"><FileText className="w-4 h-4 text-slate-600" /></a>}
-                        {product.link_url && <a href={product.link_url} target="_blank" rel="noreferrer" className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200"><ExternalLink className="w-4 h-4 text-slate-600" /></a>}
+                        {product.file_url && (
+                          <a
+                            href={product.file_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-9 h-9 bg-[#f8f9fc] border border-[#E8E9EE] rounded-xl flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors"
+                          >
+                            <FileText className="w-4 h-4" />
+                          </a>
+                        )}
+                        {product.link_url && (
+                          <a
+                            href={product.link_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-9 h-9 bg-[#f8f9fc] border border-[#E8E9EE] rounded-xl flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -81,26 +151,59 @@ export default function ProduktyPage() {
         )
       })}
 
-      <Separator className="my-8" />
+      <Separator className="my-10 bg-[#E8E9EE]" />
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center"><CreditCard className="w-4 h-4 text-white" /></div>
-          <h2 className="text-lg font-semibold text-slate-900">Platební informace</h2>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+      >
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 rounded-2xl bg-[#162459] flex items-center justify-center">
+            <CreditCard className="w-5 h-5 text-white" strokeWidth={1.8} />
+          </div>
+          <h2 className="font-display text-[#162459]" style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}>
+            Platební <span style={{ fontStyle: 'italic', color: '#009EE2' }}>informace</span>
+          </h2>
         </div>
         <div className="space-y-3">
           {mockPayments.map((payment, idx) => (
-            <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + idx * 0.1 }} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-slate-900">{payment.product}</h3>
-                <span className="text-lg font-bold text-slate-900">{payment.amount}</span>
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 + idx * 0.08 }}
+              className="bg-white rounded-3xl border border-[#E8E9EE] p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.08)] transition-all"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display text-[#162459]" style={{ fontSize: '1rem', letterSpacing: '-0.01em' }}>
+                  {payment.product}
+                </h3>
+                <span className="font-display text-[#0088c6] tabular-nums" style={{ fontSize: '1.15rem' }}>
+                  {payment.amount}
+                </span>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                <div><span className="text-slate-400 block text-xs">Frekvence</span><span className="text-slate-700 font-medium">{payment.frequency}</span></div>
-                <div><span className="text-slate-400 block text-xs">Další platba</span><div className="flex items-center gap-1"><Calendar className="w-3 h-3 text-slate-400" /><span className="text-slate-700 font-medium">{payment.nextDate}</span></div></div>
-                <div className="col-span-2"><span className="text-slate-400 block text-xs">Číslo účtu</span><span className="text-slate-700 font-mono text-xs">{payment.account}</span></div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#818EAF] block mb-0.5">Frekvence</span>
+                  <span className="text-[#162459] font-medium">{payment.frequency}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#818EAF] block mb-0.5">Další platba</span>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-[#818EAF]" />
+                    <span className="text-[#162459] font-medium">{payment.nextDate}</span>
+                  </div>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#818EAF] block mb-0.5">Číslo účtu</span>
+                  <span className="text-[#162459] font-mono text-xs">{payment.account}</span>
+                </div>
               </div>
-              <div className="mt-2"><span className="text-slate-400 text-xs">VS: </span><span className="text-slate-600 font-mono text-xs">{payment.vs}</span></div>
+              <div className="mt-3 pt-3 border-t border-[#E8E9EE]">
+                <span className="text-[11px] tracking-[0.15em] uppercase text-[#818EAF]">VS · </span>
+                <span className="text-[#162459] font-mono text-xs">{payment.vs}</span>
+              </div>
             </motion.div>
           ))}
         </div>

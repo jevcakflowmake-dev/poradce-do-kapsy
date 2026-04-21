@@ -25,12 +25,12 @@ interface PlanSection {
 }
 
 const sectionConfig: Record<string, { title: string; icon: typeof Shield; gradient: string }> = {
-  income: { title: 'Zajištění příjmů', icon: Shield, gradient: 'from-blue-600 to-indigo-700' },
-  housing: { title: 'Bydlení', icon: HomeIcon, gradient: 'from-emerald-600 to-teal-700' },
-  retirement: { title: 'Příprava na důchod', icon: Clock, gradient: 'from-amber-500 to-orange-600' },
-  children: { title: 'Děti', icon: Baby, gradient: 'from-pink-500 to-rose-600' },
-  investing: { title: 'Investice', icon: TrendingUp, gradient: 'from-violet-600 to-purple-700' },
-  property: { title: 'Pojištění majetku', icon: Building2, gradient: 'from-cyan-600 to-sky-700' },
+  income: { title: 'Zajištění příjmů', icon: Shield, gradient: 'from-[#162459] to-[#243471]' },
+  housing: { title: 'Bydlení', icon: HomeIcon, gradient: 'from-[#009EE2] to-[#0088c6]' },
+  retirement: { title: 'Příprava na důchod', icon: Clock, gradient: 'from-[#162459] to-[#009EE2]' },
+  children: { title: 'Děti', icon: Baby, gradient: 'from-[#009EE2] to-[#0088c6]' },
+  investing: { title: 'Investice', icon: TrendingUp, gradient: 'from-[#162459] to-[#243471]' },
+  property: { title: 'Pojištění majetku', icon: Building2, gradient: 'from-[#009EE2] to-[#0088c6]' },
 }
 
 const companyColors: Record<string, string> = {
@@ -44,9 +44,9 @@ const companyColors: Record<string, string> = {
 }
 
 const statusConfig = {
-  ok: { label: 'V pořádku', icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  recommendation: { label: 'Doporučení', icon: Target, color: 'text-blue-600', bg: 'bg-blue-50' },
-  action: { label: 'Vyžaduje akci', icon: AlertCircle, color: 'text-amber-600', bg: 'bg-amber-50' },
+  ok: { label: 'V pořádku', icon: CheckCircle2, color: 'text-[#15803d]', bg: 'bg-[#16a34a]/10' },
+  recommendation: { label: 'Doporučení', icon: Target, color: 'text-[#0088c6]', bg: 'bg-[#009EE2]/10' },
+  action: { label: 'Vyžaduje akci', icon: AlertCircle, color: 'text-[#b45309]', bg: 'bg-[#f59e0b]/12' },
 }
 
 function VariantCard({ variant, index }: { variant: Variant; index: number }) {
@@ -148,45 +148,86 @@ export default function FinancniPlanPage() {
   const hasPlan = planSections.length > 0
 
   return (
-    <div className="w-full container px-4 mx-auto max-w-4xl py-8">
-      <div className="mb-8">
-        <Link href={`/klient/${id}`} className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 transition-colors mb-4">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Zpět
+    <div className="max-w-5xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+      <div className="mb-10">
+        <Link
+          href={`/klient/${id}`}
+          className="inline-flex items-center gap-1 text-sm text-[#818EAF] hover:text-[#162459] transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Finanční plán</h1>
-        <p className="text-slate-500">Váš osobní finanční plán připravený certifikovaným poradcem.</p>
+        <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">04</div>
+        <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Plán · na míru vám</p>
+        <h1
+          className="font-display text-[#162459]"
+          style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
+        >
+          Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
+        </h1>
+        <p className="text-[#818EAF] mt-3 max-w-xl leading-relaxed">
+          Váš osobní plán od certifikovaného poradce. Porovnejte varianty a vyberte tu, která vám sedí.
+        </p>
       </div>
 
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse">
-              <div className="h-6 bg-slate-100 rounded w-1/3 mb-3" />
-              <div className="h-4 bg-slate-100 rounded w-2/3" />
+            <div key={i} className="bg-white rounded-3xl border border-[#E8E9EE] p-6 animate-pulse">
+              <div className="h-6 bg-[#f8f9fc] rounded w-1/3 mb-3" />
+              <div className="h-4 bg-[#f8f9fc] rounded w-2/3" />
             </div>
           ))}
         </div>
       ) : !hasPlan ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-          <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-slate-900 mb-2">Plán zatím není k dispozici</h2>
-          <p className="text-slate-500 mb-6 max-w-md mx-auto">Nejdříve vyplňte finanční analýzu. Poradce připraví osobní plán do 48 hodin.</p>
-          <Link href={`/klient/${id}/analyza`}>
-            <Button className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-6 rounded-xl">Vyplnit analýzu</Button>
+        <div className="bg-white rounded-3xl border border-[#E8E9EE] p-12 md:p-16 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#009EE2]/10 border border-[#009EE2]/25 mb-5">
+            <FileText className="w-8 h-8 text-[#0088c6]" strokeWidth={1.5} />
+          </div>
+          <h2 className="font-display text-[#162459] mb-2" style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}>
+            Plán zatím <span style={{ fontStyle: 'italic', color: '#009EE2' }}>není</span>
+          </h2>
+          <p className="text-[#818EAF] mb-7 max-w-md mx-auto leading-relaxed">
+            Nejdříve vyplňte finanční analýzu. Poradce připraví osobní plán do 48 hodin.
+          </p>
+          <Link
+            href={`/klient/${id}/analyza`}
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+          >
+            Vyplnit analýzu
           </Link>
         </div>
       ) : (
         <>
-          <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 md:p-8 mb-8 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent" />
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div
+            className="relative rounded-3xl p-6 md:p-8 mb-10 overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #0e1a3d 0%, #162459 55%, #243471 100%)' }}
+          >
+            <div className="noise-overlay" aria-hidden />
+            <div
+              aria-hidden
+              className="absolute inset-0 pointer-events-none"
+              style={{ background: 'radial-gradient(500px circle at 90% 90%, rgba(0,158,226,0.25), transparent 55%)' }}
+            />
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
               <div>
-                <h2 className="text-xl font-bold text-white">Komplexní finanční plán</h2>
-                <p className="text-slate-400 text-sm mt-1">{planSections.length} oblastí - Porovnejte varianty a vyberte tu nejlepší</p>
+                <p className="text-xs tracking-[0.3em] uppercase text-[#009EE2]/70 mb-2">Plán · porovnání variant</p>
+                <h2
+                  className="font-display text-white"
+                  style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
+                >
+                  Komplexní <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
+                </h2>
+                <p className="text-white/55 text-sm mt-2">
+                  {planSections.length} oblastí · Porovnejte varianty a vyberte tu nejlepší
+                </p>
               </div>
-              <Button className="bg-white text-slate-900 hover:bg-slate-100 rounded-xl px-6 gap-2 shadow-lg">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-[#162459] bg-white hover:bg-white/90 transition-all"
+              >
                 <Download className="w-4 h-4" /> Stáhnout PDF
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -194,21 +235,26 @@ export default function FinancniPlanPage() {
             {planSections.map((section) => {
               const status = statusConfig[section.status]
               return (
-                <div key={section.id} className="bg-white rounded-2xl border border-slate-200 p-5">
+                <div
+                  key={section.id}
+                  className="bg-white rounded-3xl border border-[#E8E9EE] p-5 md:p-6"
+                >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-sm`}>
-                      <section.icon className="w-5 h-5 text-white" />
+                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-sm`}>
+                      <section.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
                     </div>
-                    <h3 className="font-semibold text-slate-900 flex-1">{section.title}</h3>
-                    <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${status.bg}`}>
+                    <h3 className="font-display text-[#162459] flex-1" style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
+                      {section.title}
+                    </h3>
+                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${status.bg}`}>
                       <status.icon className={`w-3.5 h-3.5 ${status.color}`} />
                       <span className={`text-xs font-medium ${status.color}`}>{status.label}</span>
                     </div>
                   </div>
-                  <Separator className="mb-4" />
+                  <div className="h-px bg-[#E8E9EE] mb-4" />
                   {section.type === 'variants' && section.variants ? (
                     <div className="space-y-3">
-                      <p className="text-sm text-slate-500 mb-3">
+                      <p className="text-sm text-[#818EAF] mb-3">
                         Porovnejte {section.variants.length} variant{section.variants.length === 1 ? 'u' : 'y'} a rozkliknutím zobrazte detail:
                       </p>
                       {section.variants.map((variant, i) => (
@@ -216,10 +262,10 @@ export default function FinancniPlanPage() {
                       ))}
                     </div>
                   ) : (
-                    <ul className="space-y-2">
+                    <ul className="space-y-2.5">
                       {section.items?.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                          <div className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 flex-shrink-0" />
+                        <li key={i} className="flex items-start gap-2.5 text-[14px] text-[#162459]/85 leading-relaxed">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#009EE2] mt-2 flex-shrink-0" />
                           {item}
                         </li>
                       ))}

@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { ArrowRight } from 'lucide-react'
 import type { OnboardingData } from './OnboardingWizard'
 
 const schema = z.object({
@@ -33,11 +34,7 @@ export default function Step1BasicInfo({
 }) {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      full_name: data.full_name,
-      age: data.age,
-      income: data.income,
-    },
+    defaultValues: { full_name: data.full_name, age: data.age, income: data.income },
   })
 
   function onSubmit(values: FormData) {
@@ -46,59 +43,86 @@ export default function Step1BasicInfo({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
-      <h2 className="text-xl font-bold text-slate-900 mb-1">Základní informace</h2>
-      <p className="text-slate-500 text-sm mb-6">Pomůžou nám připravit návrh přesně pro vás</p>
+    <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+      <h2
+        className="font-display text-[#162459]"
+        style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
+      >
+        Základní <span style={{ fontStyle: 'italic', color: '#009EE2' }}>informace</span>
+      </h2>
+      <p className="text-[#818EAF] text-sm mt-2 mb-7">Pomůžou nám připravit návrh přesně pro vás.</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Jméno a příjmení</label>
+        <Field label="Jméno a příjmení" error={errors.full_name?.message}>
           <input
             {...register('full_name')}
-            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Jan Novák"
+            autoComplete="name"
+            className={inputClass}
           />
-          {errors.full_name && <p className="mt-1 text-xs text-red-600">{errors.full_name.message}</p>}
-        </div>
+        </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Věk</label>
+        <Field label="Věk" error={errors.age?.message}>
           <input
             {...register('age')}
             type="number"
             min={18}
             max={80}
-            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="35"
+            className={inputClass}
           />
-          {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age.message}</p>}
-        </div>
+        </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Čistý měsíční příjem</label>
+        <Field label="Čistý měsíční příjem" error={errors.income?.message}>
           <div className="grid grid-cols-1 gap-2">
-            {INCOME_OPTIONS.map(opt => (
-              <label key={opt.value} className="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-blue-300 transition-colors has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+            {INCOME_OPTIONS.map((opt) => (
+              <label
+                key={opt.value}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#E8E9EE] cursor-pointer hover:border-[#009EE2]/50 transition-all has-[:checked]:border-[#009EE2] has-[:checked]:bg-[#009EE2]/8 has-[:checked]:shadow-[inset_0_0_0_1px_#009EE2]"
+              >
                 <input
                   {...register('income')}
                   type="radio"
                   value={opt.value}
-                  className="accent-blue-600"
+                  className="accent-[#009EE2]"
                 />
-                <span className="text-sm text-slate-700">{opt.label}</span>
+                <span className="text-sm text-[#162459]">{opt.label}</span>
               </label>
             ))}
           </div>
-          {errors.income && <p className="mt-1 text-xs text-red-600">{errors.income.message}</p>}
-        </div>
+        </Field>
 
         <button
           type="submit"
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+          className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+          style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
         >
-          Pokračovat
+          Pokračovat <ArrowRight className="w-4 h-4" />
         </button>
       </form>
+    </div>
+  )
+}
+
+const inputClass =
+  'w-full h-11 px-4 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all'
+
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string
+  error?: string
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+        {label}
+      </label>
+      {children}
+      {error && <p className="mt-1.5 text-xs text-[#c2410c]">{error}</p>}
     </div>
   )
 }

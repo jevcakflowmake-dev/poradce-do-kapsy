@@ -74,27 +74,33 @@ export default function OnboardingWizard({ userId, initialName }: { userId: stri
   }
 
   const progress = ((step + 1) / STEPS.length) * 100
+  const numeral = `0${step + 1}`
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fc] flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-4 py-4">
-        <div className="max-w-lg mx-auto">
+      <div className="bg-white border-b border-[#E8E9EE] px-6 md:px-10 py-5 sticky top-0 z-20">
+        <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-slate-700">Krok {step + 1} z {STEPS.length}</span>
-            <span className="text-sm text-slate-500">{STEPS[step]}</span>
+            <span className="text-xs tracking-[0.2em] uppercase text-[#818EAF] font-semibold">
+              Krok {step + 1} / {STEPS.length}
+            </span>
+            <span className="text-sm font-medium text-[#162459]">{STEPS[step]}</span>
           </div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className="h-1 bg-[#E8E9EE] rounded-full overflow-hidden">
             <div
-              className="h-full bg-blue-600 rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
+              className="h-full rounded-full transition-all duration-700"
+              style={{
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, #009EE2, #0088c6)',
+              }}
             />
           </div>
-          <div className="flex justify-between mt-2">
+          <div className="flex justify-between mt-2 text-[11px]">
             {STEPS.map((label, i) => (
               <span
                 key={i}
-                className={`text-xs ${i <= step ? 'text-blue-600 font-medium' : 'text-slate-400'}`}
+                className={`${i <= step ? 'text-[#0088c6] font-semibold' : 'text-[#818EAF]'} transition-colors`}
               >
                 {label}
               </span>
@@ -104,8 +110,15 @@ export default function OnboardingWizard({ userId, initialName }: { userId: stri
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-start justify-center p-4 pt-8">
-        <div className="w-full max-w-lg">
+      <div className="flex-1 flex items-start justify-center px-6 md:px-10 py-10 md:py-14">
+        <div className="w-full max-w-2xl">
+          <div className="mb-8">
+            <div className="section-numeral text-[3rem] md:text-[4rem] mb-2">{numeral}</div>
+            <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">
+              Onboarding · o vás
+            </p>
+          </div>
+
           {step === 0 && (
             <Step1BasicInfo data={data} onChange={updateData} onNext={next} />
           )}
