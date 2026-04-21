@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import Link from 'next/link'
-import gsap from 'gsap'
+import { motion } from 'framer-motion'
 import { ClipboardCheck, Package, FileText, MessageCircle, ArrowUpRight } from 'lucide-react'
 
 type Tile = {
@@ -52,7 +51,6 @@ function tileStyles(variant: Tile['variant']) {
         cardStyle: {
           background: 'linear-gradient(160deg, #162459 0%, #243471 60%, #1a2e6b 100%)',
         },
-        eyebrow: 'text-[#009EE2]',
         title: 'text-white',
         desc: 'text-white/60',
         icon: 'bg-[#009EE2]',
@@ -67,7 +65,6 @@ function tileStyles(variant: Tile['variant']) {
         cardStyle: {
           background: 'linear-gradient(135deg, #009EE2 0%, #0088c6 100%)',
         },
-        eyebrow: 'text-white/70',
         title: 'text-white',
         desc: 'text-white/80',
         icon: 'bg-white/15 backdrop-blur-sm',
@@ -80,7 +77,6 @@ function tileStyles(variant: Tile['variant']) {
       return {
         card: 'text-[#162459] bg-white',
         cardStyle: { borderColor: '#E8E9EE', borderWidth: 1 },
-        eyebrow: 'text-[#818EAF]',
         title: 'text-[#162459]',
         desc: 'text-[#818EAF]',
         icon: 'bg-[#162459]',
@@ -93,11 +89,10 @@ function tileStyles(variant: Tile['variant']) {
       return {
         card: 'text-[#162459]',
         cardStyle: {
-          background: '#f8f9fc',
-          borderColor: 'rgba(0,158,226,0.20)',
+          background: '#f0f7fb',
+          borderColor: 'rgba(0,158,226,0.22)',
           borderWidth: 1,
         },
-        eyebrow: 'text-[#0088c6]',
         title: 'text-[#162459]',
         desc: 'text-[#162459]/70',
         icon: 'bg-[#009EE2]',
@@ -109,38 +104,32 @@ function tileStyles(variant: Tile['variant']) {
   }
 }
 
+const fadeUp = (delay: number) => ({
+  initial: { opacity: 0, y: 28 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+})
+
 export default function ClientHome({ firstName }: { firstName: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-      tl.from('.dash-eyebrow', { y: 20, opacity: 0, duration: 0.5 })
-        .from('.dash-numeral', { y: 30, opacity: 0, duration: 0.6 }, '-=0.35')
-        .from('.dash-title', { y: 32, opacity: 0, duration: 0.7 }, '-=0.45')
-        .from('.dash-sub', { y: 24, opacity: 0, duration: 0.6 }, '-=0.5')
-        .from('.dash-tile', {
-          y: 40,
-          opacity: 0,
-          duration: 0.7,
-          stagger: 0.09,
-        }, '-=0.35')
-    }, el)
-    return () => ctx.revert()
-  }, [])
-
   return (
-    <div ref={ref} className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
       {/* Header */}
       <div className="mb-10 md:mb-14">
-        <p className="dash-eyebrow text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-3">
+        <motion.p
+          {...fadeUp(0)}
+          className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-3"
+        >
           Váš prostor · vítejte zpět
-        </p>
-        <div className="dash-numeral section-numeral text-[3.5rem] md:text-[5rem] mb-2">01</div>
-        <h1
-          className="dash-title font-display text-[#162459]"
+        </motion.p>
+        <motion.div
+          {...fadeUp(0.08)}
+          className="section-numeral text-[3.5rem] md:text-[5rem] mb-2"
+        >
+          01
+        </motion.div>
+        <motion.h1
+          {...fadeUp(0.16)}
+          className="font-display text-[#162459]"
           style={{
             fontSize: 'clamp(2.25rem, 5vw, 4rem)',
             letterSpacing: '-0.03em',
@@ -150,11 +139,14 @@ export default function ClientHome({ firstName }: { firstName: string }) {
           Dobrý den, <span style={{ fontStyle: 'italic', color: '#009EE2' }}>{firstName}</span>.
           <br />
           <span style={{ color: '#818EAF' }}>Co zvládneme dneska?</span>
-        </h1>
-        <p className="dash-sub text-[#818EAF] max-w-xl mt-5 leading-relaxed">
+        </motion.h1>
+        <motion.p
+          {...fadeUp(0.3)}
+          className="text-[#818EAF] max-w-xl mt-5 leading-relaxed"
+        >
           Váš finanční poradce na dosah ruky. Vyplňte analýzu, prohlédněte si produkty nebo napište
           přímo poradci přes chat.
-        </p>
+        </motion.p>
       </div>
 
       {/* Tiles — 4 varianty (navy / cyan / light-navy / light-cyan) */}
@@ -164,44 +156,44 @@ export default function ClientHome({ firstName }: { firstName: string }) {
           const Icon = tile.icon
           const num = String(i + 1).padStart(2, '0')
           return (
-            <Link
-              key={tile.title}
-              href={tile.href}
-              className={`dash-tile group relative overflow-hidden rounded-3xl p-7 md:p-8 min-h-[200px] transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#162459]/10 ${s.card}`}
-              style={{ border: '1px solid transparent', ...(s.cardStyle as React.CSSProperties) }}
-            >
-              {/* Decorative numeral in corner */}
-              <span
-                className={`absolute -top-2 right-3 font-display italic leading-none select-none ${s.numeral}`}
-                style={{ fontSize: 'clamp(6rem, 12vw, 9rem)', letterSpacing: '-0.04em' }}
+            <motion.div key={tile.title} {...fadeUp(0.42 + i * 0.09)}>
+              <Link
+                href={tile.href}
+                className={`group relative overflow-hidden rounded-3xl p-7 md:p-8 min-h-[200px] block transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#162459]/10 ${s.card}`}
+                style={{ border: '1px solid transparent', ...(s.cardStyle as React.CSSProperties) }}
               >
-                {num}
-              </span>
-
-              <div className="relative z-10 flex flex-col h-full">
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-5 ${s.icon}`}>
-                  <Icon className={`w-6 h-6 ${s.iconColor}`} strokeWidth={1.8} />
-                </div>
-
-                <h2
-                  className={`font-display mb-2 ${s.title}`}
-                  style={{
-                    fontSize: 'clamp(1.35rem, 2.2vw, 1.75rem)',
-                    letterSpacing: '-0.01em',
-                    lineHeight: 1.15,
-                  }}
+                <span
+                  className={`absolute -top-2 right-3 font-display italic leading-none select-none pointer-events-none ${s.numeral}`}
+                  style={{ fontSize: 'clamp(6rem, 12vw, 9rem)', letterSpacing: '-0.04em' }}
                 >
-                  {tile.title}
-                </h2>
-                <p className={`text-sm leading-relaxed pr-8 ${s.desc} max-w-[90%]`}>{tile.desc}</p>
+                  {num}
+                </span>
 
-                <div
-                  className={`absolute bottom-0 right-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${s.arrowBg}`}
-                >
-                  <ArrowUpRight className={`w-5 h-5 ${s.arrow} transition-colors`} />
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-5 ${s.icon}`}>
+                    <Icon className={`w-6 h-6 ${s.iconColor}`} strokeWidth={1.8} />
+                  </div>
+
+                  <h2
+                    className={`font-display mb-2 ${s.title}`}
+                    style={{
+                      fontSize: 'clamp(1.35rem, 2.2vw, 1.75rem)',
+                      letterSpacing: '-0.01em',
+                      lineHeight: 1.15,
+                    }}
+                  >
+                    {tile.title}
+                  </h2>
+                  <p className={`text-sm leading-relaxed pr-8 ${s.desc} max-w-[90%]`}>{tile.desc}</p>
+
+                  <div
+                    className={`absolute bottom-0 right-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${s.arrowBg}`}
+                  >
+                    <ArrowUpRight className={`w-5 h-5 ${s.arrow} transition-colors`} />
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </motion.div>
           )
         })}
       </div>
