@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;700&family=IBM+Plex+Sans+Condensed:wght@400;700&display=swap');
 
 :root {
   --background: #ffffff;
@@ -11,16 +10,21 @@
   --color-foreground: var(--foreground);
   --color-navy: #162459;
   --color-navy-light: #243471;
+  --color-navy-deep: #0e1a3d;
   --color-accent: #009EE2;
   --color-accent-light: #1a9fdd;
+  --color-accent-dark: #0088c6;
   --color-muted: #818EAF;
   --color-surface: #E8E9EE;
+  --color-surface-soft: #f8f9fc;
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -35,4 +39,90 @@ body {
   min-height: 44px;
   max-height: 160px;
   resize: none;
+}
+
+/* Display (editorial serif) */
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-feature-settings: 'ss01', 'ss02';
+}
+
+/* Noise texture overlay for dark sections */
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 320px 320px;
+}
+
+/* Radial accent glow behind hero copy */
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 50% at 50% 40%, rgba(0, 158, 226, 0.12), transparent 60%);
+  z-index: 1;
+}
+
+/* Hero headline word reveal — clip initial state, GSAP animates to visible */
+.hero-word {
+  display: inline-block;
+  overflow: hidden;
+  padding-right: 0.12em;
+}
+
+.hero-word > span {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* Lenis smooth scroll — root html marker */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Magnetic button — reset transition for transform so GSAP controls it */
+.magnetic { will-change: transform; }
+
+/* Reveal helpers (initial states for GSAP scroll reveal) */
+.reveal-up { opacity: 0; transform: translate3d(0, 40px, 0); will-change: transform, opacity; }
+
+/* Big decorative section numeral */
+.section-numeral {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--color-accent);
+  opacity: 0.22;
+}
+
+/* Underline sweep for nav links */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 0;
+  background: currentColor;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-link:hover::after { width: 100%; }
+
+/* Soft card hover glow */
+.card-hoverable {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s, border-color 0.45s;
+}
+.card-hoverable:hover {
+  transform: translateY(-4px);
 }
