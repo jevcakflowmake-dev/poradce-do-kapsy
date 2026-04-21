@@ -20,6 +20,7 @@ export type Database = {
           risk_profile: 'conservative' | 'moderate' | 'balanced' | 'aggressive' | null
           goals: string[] | null
           onboarding_completed: boolean
+          status: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
           created_at: string
           updated_at: string
         }
@@ -33,6 +34,7 @@ export type Database = {
           risk_profile?: 'conservative' | 'moderate' | 'balanced' | 'aggressive' | null
           goals?: string[] | null
           onboarding_completed?: boolean
+          status?: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
           created_at?: string
           updated_at?: string
         }
@@ -46,6 +48,7 @@ export type Database = {
           risk_profile?: 'conservative' | 'moderate' | 'balanced' | 'aggressive' | null
           goals?: string[] | null
           onboarding_completed?: boolean
+          status?: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
           created_at?: string
           updated_at?: string
         }
@@ -141,3 +144,4 @@ export type Message = Database['public']['Tables']['messages']['Row']
 export type FamilyStatus = NonNullable<Profile['family_status']>
 export type RiskProfile = NonNullable<Profile['risk_profile']>
 export type ProposalType = Proposal['type']
+export type ClientStatus = Profile['status']

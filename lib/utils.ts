@@ -89,3 +89,57 @@ export function formatDate(dateStr: string): string {
     year: 'numeric',
   }).format(new Date(dateStr))
 }
+
+// Pipeline status klienta
+export const CLIENT_STATUS_VALUES = ['novy', 'financni_plan', 'podepsano', 'servis', 'zmena'] as const
+export type ClientStatusValue = (typeof CLIENT_STATUS_VALUES)[number]
+
+export const CLIENT_STATUS_META: Record<
+  ClientStatusValue,
+  { label: string; dot: string; bg: string; border: string; text: string }
+> = {
+  novy: {
+    label: 'Nový',
+    dot: '#818EAF',
+    bg: 'rgba(129,142,175,0.10)',
+    border: 'rgba(129,142,175,0.35)',
+    text: '#162459',
+  },
+  financni_plan: {
+    label: 'Finanční plán',
+    dot: '#009EE2',
+    bg: 'rgba(0,158,226,0.10)',
+    border: 'rgba(0,158,226,0.45)',
+    text: '#0088c6',
+  },
+  podepsano: {
+    label: 'Podepsáno',
+    dot: '#16a34a',
+    bg: 'rgba(22,163,74,0.10)',
+    border: 'rgba(22,163,74,0.40)',
+    text: '#15803d',
+  },
+  servis: {
+    label: 'Servis',
+    dot: '#f59e0b',
+    bg: 'rgba(245,158,11,0.12)',
+    border: 'rgba(245,158,11,0.45)',
+    text: '#b45309',
+  },
+  zmena: {
+    label: 'Změna',
+    dot: '#ea580c',
+    bg: 'rgba(234,88,12,0.12)',
+    border: 'rgba(234,88,12,0.45)',
+    text: '#c2410c',
+  },
+}
+
+export function statusLabel(s: string | null | undefined): string {
+  if (!s) return '—'
+  return CLIENT_STATUS_META[s as ClientStatusValue]?.label ?? s
+}
+
+export function isClientStatus(s: unknown): s is ClientStatusValue {
+  return typeof s === 'string' && (CLIENT_STATUS_VALUES as readonly string[]).includes(s)
+}

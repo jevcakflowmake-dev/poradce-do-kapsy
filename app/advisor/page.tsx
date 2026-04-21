@@ -1,20 +1,40 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { Shield, MessageCircle, ArrowUpRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { calcHealthScore, familyLabel, riskLabel, goalLabel, formatDate } from '@/lib/utils'
+import {
+  calcHealthScore,
+  familyLabel,
+  riskLabel,
+  goalLabel,
+  formatDate,
+  CLIENT_STATUS_VALUES,
+  isClientStatus,
+} from '@/lib/utils'
+import type { Profile } from '@/lib/types/database'
+import StatusBadge from '@/components/advisor/StatusBadge'
+import StatusFilter from '@/components/advisor/StatusFilter'
+import AdvisorListReveal from '@/components/advisor/AdvisorListReveal'
 
-export default async function AdvisorPage() {
+type PageProps = {
+  searchParams: Promise<{ status?: string; q?: string }>
+}
+
+export default async function AdvisorPage({ searchParams }: PageProps) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user || user.user_metadata?.role !== 'advisor') redirect('/dashboard')
 
-  const { data: clients } = await supabase
+  const sp = await searchParams
+  const statusFilter = isClientStatus(sp.status) ? sp.status : null
+
+  const { data: clientsData } = await supabase
     .from('profiles')
     .select('*')
     .order('created_at', { ascending: false })
 
-  // Fetch unread messages count per client
+  const clients: Profile[] = (clientsData as Profile[] | null) ?? []
+
   const { data: unreadMessages } = await supabase
     .from('messages')
     .select('client_id')
@@ -22,123 +42,200 @@ export default async function AdvisorPage() {
     .eq('is_read', false)
 
   const unreadCounts: Record<string, number> = {}
-  for (const m of unreadMessages || []) {
+  for (const m of (unreadMessages as Array<{ client_id: string }> | null) ?? []) {
     unreadCounts[m.client_id] = (unreadCounts[m.client_id] || 0) + 1
   }
 
-  const clientsWithScore = (clients ?? []).map(c => ({
+  const statusCounts: Record<string, number> = Object.fromEntries(
+    CLIENT_STATUS_VALUES.map((s) => [s, 0]),
+  )
+  for (const c of clients) statusCounts[c.status] = (statusCounts[c.status] || 0) + 1
+
+  const filtered = statusFilter ? clients.filter((c) => c.status === statusFilter) : clients
+
+  const clientsWithScore = filtered.map((c) => ({
     ...c,
     score: calcHealthScore(c),
   }))
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f8f9fc]">
       {/* Navbar */}
-      <nav className="bg-white border-b border-slate-200 px-4 py-3">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-900">Poradce do kapsy</span>
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Poradce</span>
+      <nav className="bg-white border-b border-[#E8E9EE] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#162459] flex items-center justify-center">
+              <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
+            </div>
+            <span className="font-bold text-[#162459] text-lg tracking-tight">Poradce do kapsy</span>
+            <span className="ml-2 text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-[#009EE2]/10 text-[#0088c6] border border-[#009EE2]/30 font-semibold">
+              Panel poradce
+            </span>
           </div>
           <form action="/api/auth/signout" method="POST">
-            <button className="text-sm text-slate-500 hover:text-slate-700">Odhlásit</button>
+            <button className="nav-link text-sm text-[#818EAF] hover:text-[#162459] font-medium">Odhlásit</button>
           </form>
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto p-4">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Klienti</h1>
-            <p className="text-slate-500 text-sm mt-0.5">{clientsWithScore.length} registrovaných klientů</p>
+      <AdvisorListReveal>
+        <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
+          {/* Header */}
+          <div className="advisor-hero mb-10 md:mb-14">
+            <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-2">01</div>
+            <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Klienti · pipeline</p>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+              <h1
+                className="font-display text-[#162459]"
+                style={{
+                  fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.05,
+                }}
+              >
+                {clients.length} <span style={{ fontStyle: 'italic', color: '#009EE2' }}>klientů</span>
+                <span className="text-[#818EAF] font-normal" style={{ fontSize: '0.5em' }}>
+                  {' '}ve vaší síti
+                </span>
+              </h1>
+              <div className="text-sm text-[#818EAF]">
+                Filtr:{' '}
+                <span className="text-[#162459] font-medium">
+                  {statusFilter ? `${statusFilter.replace('_', ' ')} · ${filtered.length}` : `vše · ${filtered.length}`}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {clientsWithScore.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <div className="text-4xl mb-3">👥</div>
-            <p className="text-slate-600 font-medium">Zatím žádní klienti</p>
-            <p className="text-slate-400 text-sm mt-1">Klienti se zobrazí po registraci</p>
+          {/* Filter bar */}
+          <div className="advisor-hero mb-8 p-5 md:p-6 rounded-3xl bg-white border border-[#E8E9EE] shadow-[0_1px_0_rgba(22,36,89,0.03)]">
+            <StatusFilter counts={statusCounts} total={clients.length} />
           </div>
-        ) : (
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="text-left text-xs font-medium text-slate-500 px-4 py-3">Klient</th>
-                  <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden sm:table-cell">Situace</th>
-                  <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden md:table-cell">Oblasti</th>
-                  <th className="text-center text-xs font-medium text-slate-500 px-4 py-3">Skóre</th>
-                  <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden lg:table-cell">Registrace</th>
-                  <th className="text-center text-xs font-medium text-slate-500 px-4 py-3">Chat</th>
-                  <th className="px-4 py-3"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {clientsWithScore.map(client => (
-                  <tr key={client.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-slate-900 text-sm">{client.full_name || '(bez jména)'}</span>
-                        {unreadCounts[client.id] > 0 && (
-                          <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-                            {unreadCounts[client.id]}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-400">{riskLabel(client.risk_profile)}</div>
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <span className="text-sm text-slate-600">{familyLabel(client.family_status)}</span>
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <div className="flex flex-wrap gap-1">
-                        {(client.goals ?? []).slice(0, 3).map(g => (
-                          <span key={g} className="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
-                            {goalLabel(g)}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`inline-block text-sm font-bold w-8 h-8 rounded-full flex items-center justify-center ${
-                        client.score >= 70 ? 'bg-green-100 text-green-700' :
-                        client.score >= 40 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-600'
-                      }`}>
-                        {client.score}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-slate-400 hidden lg:table-cell">
-                      {formatDate(client.created_at)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Link
-                        href={`/advisor/${client.id}/chat`}
-                        className="inline-flex items-center gap-1.5 text-sm text-[#009EE2] hover:text-[#162459] font-medium whitespace-nowrap"
-                      >
-                        💬
-                        {unreadCounts[client.id] > 0 && (
-                          <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-                            {unreadCounts[client.id]}
-                          </span>
-                        )}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Link
-                        href={`/advisor/${client.id}`}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium whitespace-nowrap"
-                      >
-                        Detail →
-                      </Link>
-                    </td>
+
+          {/* List */}
+          {clientsWithScore.length === 0 ? (
+            <div className="advisor-hero bg-white rounded-3xl border border-[#E8E9EE] p-12 md:p-16 text-center">
+              <div className="section-numeral text-[3.5rem] mb-3" style={{ opacity: 0.15 }}>
+                00
+              </div>
+              <p className="font-display text-[#162459] text-xl mb-1" style={{ letterSpacing: '-0.01em' }}>
+                {statusFilter ? 'Žádný klient v tomto stavu.' : 'Zatím žádní klienti.'}
+              </p>
+              <p className="text-[#818EAF] text-sm">
+                {statusFilter ? 'Zkuste jiný filtr.' : 'Klienti se zobrazí po registraci.'}
+              </p>
+            </div>
+          ) : (
+            <div className="client-table advisor-hero bg-white rounded-3xl border border-[#E8E9EE] overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[#E8E9EE] bg-[#f8f9fc]">
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-6 py-4">
+                      Klient
+                    </th>
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4 hidden md:table-cell">
+                      Stav
+                    </th>
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4 hidden sm:table-cell">
+                      Situace
+                    </th>
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
+                      Oblasti
+                    </th>
+                    <th className="text-center text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4">
+                      Skóre
+                    </th>
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
+                      Registrace
+                    </th>
+                    <th className="px-4 py-4 text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase text-center">
+                      Chat
+                    </th>
+                    <th className="px-6 py-4" />
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                </thead>
+                <tbody className="divide-y divide-[#E8E9EE]">
+                  {clientsWithScore.map((client) => (
+                    <tr
+                      key={client.id}
+                      className="client-row group hover:bg-[#f8f9fc] transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-[#162459] text-sm md:text-[15px]">
+                            {client.full_name || '(bez jména)'}
+                          </span>
+                          {unreadCounts[client.id] > 0 && (
+                            <span className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
+                              {unreadCounts[client.id]}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-[#818EAF] mt-0.5">{riskLabel(client.risk_profile)}</div>
+                      </td>
+                      <td className="px-4 py-4 hidden md:table-cell">
+                        <StatusBadge value={client.status} />
+                      </td>
+                      <td className="px-4 py-4 hidden sm:table-cell">
+                        <span className="text-sm text-[#162459]/80">{familyLabel(client.family_status)}</span>
+                      </td>
+                      <td className="px-4 py-4 hidden lg:table-cell">
+                        <div className="flex flex-wrap gap-1">
+                          {(client.goals ?? []).slice(0, 3).map((g) => (
+                            <span
+                              key={g}
+                              className="text-xs bg-[#f8f9fc] text-[#162459]/70 border border-[#E8E9EE] px-2 py-0.5 rounded-full"
+                            >
+                              {goalLabel(g)}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <span
+                          className={`inline-flex items-center justify-center text-sm font-bold w-9 h-9 rounded-full ${
+                            client.score >= 70
+                              ? 'bg-[#16a34a]/10 text-[#15803d] border border-[#16a34a]/30'
+                              : client.score >= 40
+                                ? 'bg-[#f59e0b]/12 text-[#b45309] border border-[#f59e0b]/35'
+                                : 'bg-[#ea580c]/10 text-[#c2410c] border border-[#ea580c]/30'
+                          }`}
+                        >
+                          {client.score}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-sm text-[#818EAF] hidden lg:table-cell">
+                        {formatDate(client.created_at)}
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <Link
+                          href={`/advisor/${client.id}/chat`}
+                          className="inline-flex items-center gap-1.5 text-[#0088c6] hover:text-[#162459] transition-colors"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          {unreadCounts[client.id] > 0 && (
+                            <span className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
+                              {unreadCounts[client.id]}
+                            </span>
+                          )}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Link
+                          href={`/advisor/${client.id}`}
+                          className="inline-flex items-center gap-1 text-sm text-[#162459] font-semibold hover:gap-2 transition-all whitespace-nowrap"
+                        >
+                          Detail <ArrowUpRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </AdvisorListReveal>
     </div>
   )
 }

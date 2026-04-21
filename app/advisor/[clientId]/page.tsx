@@ -1,9 +1,11 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ArrowLeft, FileText, MessageCircle, Shield } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, goalLabel, proposalTypeLabel, formatDate } from '@/lib/utils'
 import type { Profile, Proposal } from '@/lib/types/database'
 import ProposalForm from '@/components/advisor/ProposalForm'
+import StatusControl from '@/components/advisor/StatusControl'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = await params
@@ -123,76 +125,115 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   const score = calcHealthScore(profile)
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f8f9fc]">
       {/* Navbar */}
-      <nav className="bg-white border-b border-slate-200 px-4 py-3">
-        <div className="max-w-5xl mx-auto flex items-center gap-3">
-          <Link href="/advisor" className="text-slate-400 hover:text-slate-600">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+      <nav className="bg-white border-b border-[#E8E9EE] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto flex items-center gap-3">
+          <Link
+            href="/advisor"
+            className="inline-flex items-center gap-2 text-[#818EAF] hover:text-[#162459] transition-colors text-sm font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Zpět na klienty</span>
           </Link>
-          <span className="font-semibold text-slate-900 flex-1">{profile.full_name || 'Detail klienta'}</span>
+          <div className="h-6 w-px bg-[#E8E9EE] mx-1 hidden sm:block" />
+          <div className="w-8 h-8 rounded-lg bg-[#162459] flex items-center justify-center hidden sm:flex">
+            <Shield className="w-4 h-4 text-white" strokeWidth={1.8} />
+          </div>
+          <span className="font-semibold text-[#162459] flex-1 truncate">
+            {profile.full_name || 'Detail klienta'}
+          </span>
           <Link
             href={`/advisor/${clientId}/plan`}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-white"
-            style={{ backgroundColor: '#009EE2' }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-[#009EE2]/20"
+            style={{ background: 'linear-gradient(135deg, #009EE2 0%, #0088c6 100%)' }}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Financni plan
+            <FileText className="w-4 h-4" />
+            <span className="hidden md:inline">Finanční plán</span>
           </Link>
           <Link
             href={`/advisor/${clientId}/chat`}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-white"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold text-white"
             style={{ background: 'linear-gradient(135deg, #162459, #243471)' }}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            Chat
+            <MessageCircle className="w-4 h-4" />
+            <span className="hidden md:inline">Chat</span>
           </Link>
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto p-4 space-y-5">
-        <div className="grid md:grid-cols-2 gap-5">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14 space-y-10">
+        {/* Hero header s jménem + status control */}
+        <header>
+          <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-2">01</div>
+          <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Klient · profil a aktivita</p>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <h1
+              className="font-display text-[#162459]"
+              style={{
+                fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.05,
+              }}
+            >
+              {profile.full_name || 'Bez jména'}
+            </h1>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-[#818EAF] uppercase tracking-[0.2em]">Stav:</span>
+              <StatusControl clientId={clientId} initial={profile.status ?? 'novy'} />
+            </div>
+          </div>
+        </header>
+
+        <section className="grid md:grid-cols-2 gap-5">
           {/* Profil */}
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-slate-900">Profil klienta</h2>
-              <span className={`text-sm font-bold px-3 py-1 rounded-full ${
-                score >= 70 ? 'bg-green-100 text-green-700' :
-                score >= 40 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-600'
-              }`}>
+          <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-7">
+            <div className="flex items-center justify-between mb-5">
+              <h2
+                className="font-display text-[#162459]"
+                style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}
+              >
+                Profil klienta
+              </h2>
+              <span
+                className={`text-sm font-bold px-3 py-1 rounded-full border ${
+                  score >= 70
+                    ? 'bg-[#16a34a]/10 text-[#15803d] border-[#16a34a]/30'
+                    : score >= 40
+                      ? 'bg-[#f59e0b]/12 text-[#b45309] border-[#f59e0b]/35'
+                      : 'bg-[#ea580c]/10 text-[#c2410c] border-[#ea580c]/30'
+                }`}
+              >
                 Skóre: {score}
               </span>
             </div>
-            <dl className="space-y-2 text-sm">
+            <dl className="space-y-2.5 text-sm">
               <div className="flex justify-between">
-                <dt className="text-slate-500">Věk</dt>
-                <dd className="font-medium text-slate-900">{profile.age ?? '—'} let</dd>
+                <dt className="text-[#818EAF]">Věk</dt>
+                <dd className="font-medium text-[#162459]">{profile.age ?? '—'} let</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Příjem</dt>
-                <dd className="font-medium text-slate-900">{incomeLabel(profile.income)}</dd>
+                <dt className="text-[#818EAF]">Příjem</dt>
+                <dd className="font-medium text-[#162459]">{incomeLabel(profile.income)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Rodinná situace</dt>
-                <dd className="font-medium text-slate-900">{familyLabel(profile.family_status)}</dd>
+                <dt className="text-[#818EAF]">Rodinná situace</dt>
+                <dd className="font-medium text-[#162459]">{familyLabel(profile.family_status)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Rizikový profil</dt>
-                <dd className="font-medium text-slate-900">{riskLabel(profile.risk_profile)}</dd>
+                <dt className="text-[#818EAF]">Rizikový profil</dt>
+                <dd className="font-medium text-[#162459]">{riskLabel(profile.risk_profile)}</dd>
               </div>
             </dl>
             {(profile.goals ?? []).length > 0 && (
-              <div className="mt-4 pt-4 border-t border-slate-100">
-                <p className="text-xs text-slate-500 mb-2">Oblasti zájmu</p>
+              <div className="mt-5 pt-5 border-t border-[#E8E9EE]">
+                <p className="text-xs text-[#818EAF] mb-2 tracking-[0.15em] uppercase">Oblasti zájmu</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {(profile.goals ?? []).map(g => (
-                    <span key={g} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
+                  {(profile.goals ?? []).map((g) => (
+                    <span
+                      key={g}
+                      className="text-xs bg-[#009EE2]/8 text-[#0088c6] border border-[#009EE2]/25 px-2.5 py-1 rounded-full"
+                    >
                       {goalLabel(g)}
                     </span>
                   ))}
@@ -203,39 +244,52 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
 
           {/* Formulář pro nový návrh */}
           <ProposalForm clientId={clientId} />
-        </div>
+        </section>
 
         {/* Odpovědi z analýzy */}
-        <div>
-          <h2 className="font-semibold text-slate-900 mb-3">
-            Odpovědi z analýzy
+        <section>
+          <div className="flex items-end justify-between mb-5">
+            <div>
+              <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-1">02 · analýza</p>
+              <h2
+                className="font-display text-[#162459]"
+                style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
+              >
+                Odpovědi z{' '}
+                <span style={{ fontStyle: 'italic', color: '#009EE2' }}>dotazníku</span>
+              </h2>
+            </div>
             {hasAnalysis && (
-              <span className="ml-2 text-sm font-normal text-slate-500">
-                ({Object.keys(analysisResponses).length} sekcí vyplněno)
+              <span className="text-sm text-[#818EAF]">
+                {Object.keys(analysisResponses).length} sekcí vyplněno
               </span>
             )}
-          </h2>
+          </div>
 
           {!hasAnalysis ? (
-            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-sm">
+            <div className="bg-white rounded-3xl border border-[#E8E9EE] p-10 text-center text-[#818EAF] text-sm">
               Klient zatím nevyplnil analýzu
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-4">
               {Object.entries(analysisResponses).map(([sectionId, answers]) => (
-                <div key={sectionId} className="bg-white rounded-xl border border-slate-200 p-5">
-                  <h3 className="font-semibold text-sm mb-3" style={{ color: '#162459' }}>
+                <div
+                  key={sectionId}
+                  className="bg-white rounded-3xl border border-[#E8E9EE] p-6"
+                >
+                  <h3
+                    className="font-display text-[#162459] mb-4"
+                    style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                  >
                     {SECTION_LABELS[sectionId] || sectionId}
                   </h3>
-                  <dl className="space-y-2 text-sm">
+                  <dl className="space-y-2.5 text-sm">
                     {Object.entries(answers).map(([qId, value]) => (
                       <div key={qId} className="flex justify-between gap-4">
-                        <dt className="text-slate-500 shrink-0">
+                        <dt className="text-[#818EAF] shrink-0">
                           {QUESTION_LABELS[sectionId]?.[qId] || qId}
                         </dt>
-                        <dd className="font-medium text-slate-900 text-right">
-                          {value}
-                        </dd>
+                        <dd className="font-medium text-[#162459] text-right">{value}</dd>
                       </div>
                     ))}
                   </dl>
@@ -243,56 +297,73 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               ))}
             </div>
           )}
-        </div>
+        </section>
 
         {/* Seznam odeslaných návrhů */}
-        <div>
-          <h2 className="font-semibold text-slate-900 mb-3">
-            Odeslané návrhy
+        <section>
+          <div className="flex items-end justify-between mb-5">
+            <div>
+              <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-1">03 · aktivita</p>
+              <h2
+                className="font-display text-[#162459]"
+                style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
+              >
+                Odeslané{' '}
+                <span style={{ fontStyle: 'italic', color: '#009EE2' }}>návrhy</span>
+              </h2>
+            </div>
             {proposals && proposals.length > 0 && (
-              <span className="ml-2 text-sm font-normal text-slate-500">({proposals.length})</span>
+              <span className="text-sm text-[#818EAF]">{proposals.length} záznamů</span>
             )}
-          </h2>
+          </div>
 
-          {(!proposals || proposals.length === 0) ? (
-            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-sm">
+          {!proposals || proposals.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-[#E8E9EE] p-10 text-center text-[#818EAF] text-sm">
               Zatím žádné návrhy
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-3xl border border-[#E8E9EE] overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="text-left text-xs font-medium text-slate-500 px-4 py-3">Název</th>
-                    <th className="text-left text-xs font-medium text-slate-500 px-4 py-3">Typ</th>
-                    <th className="text-left text-xs font-medium text-slate-500 px-4 py-3">Přečteno</th>
-                    <th className="text-left text-xs font-medium text-slate-500 px-4 py-3">Datum</th>
+                  <tr className="border-b border-[#E8E9EE] bg-[#f8f9fc]">
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-5 py-4">
+                      Název
+                    </th>
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4">
+                      Typ
+                    </th>
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4">
+                      Stav
+                    </th>
+                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-5 py-4">
+                      Datum
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {proposals.map(p => (
-                    <tr key={p.id}>
-                      <td className="px-4 py-3 text-sm text-slate-900">{p.title}</td>
-                      <td className="px-4 py-3">
-                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                <tbody className="divide-y divide-[#E8E9EE]">
+                  {proposals.map((p) => (
+                    <tr key={p.id} className="hover:bg-[#f8f9fc] transition-colors">
+                      <td className="px-5 py-3.5 text-sm text-[#162459]">{p.title}</td>
+                      <td className="px-4 py-3.5">
+                        <span className="text-xs bg-[#f8f9fc] text-[#162459]/70 border border-[#E8E9EE] px-2.5 py-1 rounded-full">
                           {proposalTypeLabel(p.type)}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
                         {p.is_read ? (
-                          <span className="text-xs text-green-600">Přečteno</span>
+                          <span className="text-xs text-[#15803d] font-medium">Přečteno</span>
                         ) : (
-                          <span className="text-xs text-slate-400">Nepřečteno</span>
+                          <span className="text-xs text-[#818EAF]">Nepřečteno</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-400">{formatDate(p.created_at)}</td>
+                      <td className="px-5 py-3.5 text-sm text-[#818EAF]">{formatDate(p.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
-        </div>
+        </section>
       </div>
     </div>
   )
