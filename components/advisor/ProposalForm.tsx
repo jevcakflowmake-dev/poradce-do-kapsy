@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { ArrowUpRight, CheckCircle2, AlertCircle, Upload, Link2, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { ProposalType } from '@/lib/types/database'
 
@@ -56,7 +57,6 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Insurance-specific state
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null)
   const [monthlyPrice, setMonthlyPrice] = useState<string>('')
   const [enabledSections, setEnabledSections] = useState<Record<string, boolean>>({})
@@ -84,7 +84,6 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
 
     let file_url: string | null = null
 
-    // Upload PDF pokud existuje
     if (file) {
       const path = `${clientId}/${Date.now()}_${file.name}`
       const { error: uploadError } = await supabase.storage
@@ -101,7 +100,6 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
       file_url = urlData.publicUrl
     }
 
-    // Build content for insurance type
     let contentToSave = data.content || null
     if (data.type === 'insurance') {
       const company = INSURANCE_LOGOS.find(c => c.id === selectedCompany)
@@ -139,7 +137,6 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
       setEnabledSections({})
       setSectionAmounts({})
 
-      // Notify client via n8n webhook
       try {
         fetch('https://n8n.jevcakn8n.com/webhook/novy-navrh', {
           method: 'POST',
@@ -163,171 +160,226 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h2 className="font-semibold text-[#162459] mb-4">Odeslat návrh</h2>
+    <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-7">
+      <div className="mb-5">
+        <p className="text-xs tracking-[0.25em] uppercase text-[#818EAF] mb-1.5">
+          Návrh · pro klienta
+        </p>
+        <h2
+          className="font-display text-[#162459]"
+          style={{ fontSize: 'clamp(1.25rem, 2vw, 1.5rem)', letterSpacing: '-0.01em' }}
+        >
+          Odeslat <span style={{ fontStyle: 'italic', color: '#009EE2' }}>návrh</span>
+        </h2>
+      </div>
 
       {success && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+        <div className="mb-4 p-3.5 rounded-xl bg-[#16a34a]/8 border border-[#16a34a]/25 flex items-center gap-2.5 text-sm text-[#15803d]">
+          <CheckCircle2 className="w-4 h-4 shrink-0" strokeWidth={2} />
           Návrh byl úspěšně odeslán
         </div>
       )}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="mb-4 p-3.5 rounded-xl bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] flex items-start gap-2.5 text-sm text-[#c2410c]">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" strokeWidth={2} />
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Type selector */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Typ návrhu</label>
-          <div className="flex gap-2">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <Field label="Typ návrhu">
+          <div className="grid grid-cols-3 gap-2">
             {PROPOSAL_TYPES.map(t => (
-              <label key={t.value} className="flex-1">
+              <label key={t.value} className="cursor-pointer">
                 <input {...register('type')} type="radio" value={t.value} className="sr-only peer" />
-                <span className="block text-center py-2 text-xs font-medium border border-slate-200 rounded-lg cursor-pointer transition-all peer-checked:border-[#009EE2] peer-checked:bg-[#009EE2]/10 peer-checked:text-[#162459]">
+                <span className="block text-center py-2.5 text-[13px] font-medium border border-[#E8E9EE] rounded-xl transition-all hover:border-[#009EE2]/50 text-[#818EAF] peer-checked:border-[#009EE2] peer-checked:bg-[#009EE2]/8 peer-checked:text-[#162459] peer-checked:shadow-[inset_0_0_0_1px_#009EE2]">
                   {t.label}
                 </span>
               </label>
             ))}
           </div>
-        </div>
+        </Field>
 
-        {/* Title */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Název návrhu</label>
+        <Field label="Název návrhu" error={errors.title?.message}>
           <input
             {...register('title')}
-            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
-            placeholder={selectedType === 'insurance' ? 'Návrh životního pojištění' : selectedType === 'pension' ? 'Návrh penzijního plánu' : 'Investiční návrh'}
+            className={inputClass}
+            placeholder={
+              selectedType === 'insurance'
+                ? 'Návrh životního pojištění'
+                : selectedType === 'pension'
+                ? 'Návrh penzijního plánu'
+                : 'Investiční návrh'
+            }
           />
-          {errors.title && <p className="mt-1 text-xs text-red-600">{errors.title.message}</p>}
-        </div>
+        </Field>
 
-        {/* Insurance-specific fields */}
         {selectedType === 'insurance' && (
           <>
-            {/* Company selector */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Pojišťovna</label>
+            <Field label="Pojišťovna">
               <div className="grid grid-cols-4 gap-2">
                 {INSURANCE_LOGOS.map(company => (
                   <button
                     key={company.id}
                     type="button"
                     onClick={() => setSelectedCompany(company.id)}
-                    className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all text-center ${
+                    className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center ${
                       selectedCompany === company.id
-                        ? 'border-[#009EE2] bg-[#009EE2]/10 shadow-sm'
-                        : 'border-slate-200 hover:border-[#818EAF] bg-white'
+                        ? 'border-[#009EE2] bg-[#009EE2]/8 shadow-[inset_0_0_0_1px_#009EE2]'
+                        : 'border-[#E8E9EE] bg-white hover:border-[#818EAF]/40'
                     }`}
                   >
                     <span className="text-xl">{company.emoji}</span>
-                    <span className="text-xs font-medium text-[#162459]">{company.name}</span>
+                    <span className="text-[11px] font-medium text-[#162459]">{company.name}</span>
                   </button>
                 ))}
               </div>
-            </div>
+            </Field>
 
-            {/* Monthly price */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Měsíční cena pojištění</label>
+            <Field label="Měsíční cena pojištění">
               <div className="relative">
                 <input
                   type="number"
                   value={monthlyPrice}
                   onChange={e => setMonthlyPrice(e.target.value)}
-                  className="w-full px-3 py-2 pr-20 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+                  className={`${inputClass} pr-24`}
                   placeholder="1 500"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#818EAF] font-medium">Kč/měsíc</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#818EAF]">
+                  Kč / měs
+                </span>
               </div>
-            </div>
+            </Field>
 
-            {/* Insurance sections */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Sekce pojištění</label>
+            <Field label="Sekce pojištění">
               <div className="space-y-2">
-                {INSURANCE_SECTIONS.map(section => (
-                  <div
-                    key={section.id}
-                    className={`rounded-xl border transition-all ${
-                      enabledSections[section.id]
-                        ? 'border-[#009EE2] bg-[#009EE2]/5'
-                        : 'border-slate-200 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 p-3">
-                      <input
-                        type="checkbox"
-                        checked={!!enabledSections[section.id]}
-                        onChange={() => toggleInsuranceSection(section.id)}
-                        className="rounded border-slate-300 text-[#009EE2] focus:ring-[#009EE2] w-4 h-4"
-                      />
-                      <span className="text-sm font-medium text-[#162459] flex-1">{section.label}</span>
-                      {enabledSections[section.id] && (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            value={sectionAmounts[section.id] || ''}
-                            onChange={e => updateSectionAmount(section.id, e.target.value)}
-                            className="w-28 px-2 py-1.5 border border-slate-200 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
-                            placeholder="0"
-                          />
-                          <span className="text-xs text-[#818EAF] font-medium whitespace-nowrap w-16">{section.unit}</span>
-                        </div>
-                      )}
+                {INSURANCE_SECTIONS.map(section => {
+                  const enabled = !!enabledSections[section.id]
+                  return (
+                    <div
+                      key={section.id}
+                      className={`rounded-xl border transition-all ${
+                        enabled
+                          ? 'border-[#009EE2] bg-[#009EE2]/5 shadow-[inset_0_0_0_1px_#009EE2]'
+                          : 'border-[#E8E9EE] bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={enabled}
+                          onChange={() => toggleInsuranceSection(section.id)}
+                          className="w-4 h-4 rounded border-[#E8E9EE] text-[#009EE2] focus:ring-[#009EE2] accent-[#009EE2]"
+                        />
+                        <span className="text-sm font-medium text-[#162459] flex-1">
+                          {section.label}
+                        </span>
+                        {enabled && (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={sectionAmounts[section.id] || ''}
+                              onChange={e => updateSectionAmount(section.id, e.target.value)}
+                              className="w-28 px-3 py-1.5 border border-[#E8E9EE] rounded-lg text-sm text-right text-[#162459] bg-white focus:outline-none focus:border-[#009EE2] focus:ring-2 focus:ring-[#009EE2]/15 transition-all"
+                              placeholder="0"
+                            />
+                            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#818EAF] whitespace-nowrap w-16">
+                              {section.unit}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
-            </div>
+            </Field>
           </>
         )}
 
-        {/* Text description */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Textový popis (volitelné)</label>
+        <Field label="Textový popis (volitelné)">
           <textarea
             {...register('content')}
             rows={3}
-            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2] resize-none"
-            placeholder="Popis návrhu pro klienta..."
+            className={`${inputClass} !h-auto py-3 resize-none leading-relaxed`}
+            placeholder="Popis návrhu pro klienta…"
           />
-        </div>
+        </Field>
 
-        {/* PDF upload */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">PDF dokument (volitelné)</label>
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={e => setFile(e.target.files?.[0] ?? null)}
-            className="w-full text-sm text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#009EE2]/10 file:text-[#162459] hover:file:bg-[#009EE2]/20"
-          />
-          {file && <p className="mt-1 text-xs text-slate-500">{file.name}</p>}
-        </div>
+        <Field label="PDF dokument (volitelné)">
+          <label className="relative flex items-center gap-3 px-4 py-3.5 rounded-xl border border-dashed border-[#E8E9EE] hover:border-[#009EE2]/50 bg-[#f8f9fc] cursor-pointer transition-all group">
+            <div className="w-10 h-10 rounded-xl bg-[#009EE2]/10 flex items-center justify-center shrink-0">
+              <Upload className="w-4 h-4 text-[#0088c6]" strokeWidth={1.8} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm text-[#162459] font-medium truncate">
+                {file ? file.name : 'Vybrat PDF soubor'}
+              </div>
+              <div className="text-xs text-[#818EAF] mt-0.5">
+                {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : 'Max. 10 MB'}
+              </div>
+            </div>
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={e => setFile(e.target.files?.[0] ?? null)}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
+          </label>
+        </Field>
 
-        {/* Link */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Odkaz (volitelné)</label>
-          <input
-            {...register('link_url')}
-            type="url"
-            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
-            placeholder="https://..."
-          />
-          {errors.link_url && <p className="mt-1 text-xs text-red-600">{errors.link_url.message}</p>}
-        </div>
+        <Field label="Odkaz (volitelné)" error={errors.link_url?.message}>
+          <div className="relative">
+            <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#818EAF]" strokeWidth={1.8} />
+            <input
+              {...register('link_url')}
+              type="url"
+              className={`${inputClass} pl-11`}
+              placeholder="https://…"
+            />
+          </div>
+        </Field>
 
         <button
           type="submit"
           disabled={sending}
-          className="w-full py-2.5 bg-[#162459] hover:bg-[#162459]/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+          className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+          style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
         >
-          {sending ? 'Odesílám...' : 'Odeslat návrh'}
+          {sending ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" /> Odesílám…
+            </>
+          ) : (
+            <>
+              Odeslat návrh <ArrowUpRight className="w-4 h-4" />
+            </>
+          )}
         </button>
       </form>
+    </div>
+  )
+}
+
+const inputClass =
+  'w-full h-11 px-4 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all'
+
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string
+  error?: string
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <label className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#818EAF] mb-2">
+        {label}
+      </label>
+      {children}
+      {error && <p className="mt-1.5 text-xs text-[#c2410c]">{error}</p>}
     </div>
   )
 }

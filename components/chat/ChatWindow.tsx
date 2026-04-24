@@ -115,7 +115,7 @@ export default function ChatWindow({
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-900 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[3px] border-[#162459]/15 border-t-[#009EE2] rounded-full animate-spin" />
       </div>
     )
   }
