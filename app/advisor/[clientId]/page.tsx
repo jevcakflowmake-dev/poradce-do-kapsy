@@ -1,6 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, FileText, MessageCircle, Shield } from 'lucide-react'
+import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, goalLabel, proposalTypeLabel, formatDate } from '@/lib/utils'
 import type { Profile, Proposal } from '@/lib/types/database'
@@ -44,6 +44,28 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   }
 
   const hasAnalysis = Object.keys(analysisResponses).length > 0
+
+  // Reakce klienta na finanční plán
+  const [{ data: interestRaw }, { data: selRaw }] = await Promise.all([
+    (supabase.from('plan_section_interest') as any)
+      .select('section, status, note, updated_at')
+      .eq('client_id', clientId),
+    (supabase.from('plan_variant_selection') as any)
+      .select('variant_id, selected_at, plan_variants(company, section, monthly_payment)')
+      .eq('client_id', clientId),
+  ])
+
+  type InterestRow = { section: string; status: 'interested' | 'question' | 'not_now'; note: string; updated_at: string }
+  type SelectionRow = {
+    variant_id: string
+    selected_at: string
+    plan_variants: { company: string; section: string; monthly_payment: string } | null
+  }
+
+  const interestRows = (interestRaw as InterestRow[] | null) ?? []
+  const selectionRows = (selRaw as SelectionRow[] | null) ?? []
+  const interestMap = new Map(interestRows.map((r) => [r.section, r]))
+  const hasAnyReaction = interestRows.length > 0 || selectionRows.length > 0
 
   const SECTION_LABELS: Record<string, string> = {
     income: 'Zajištění příjmů',
@@ -299,11 +321,150 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           )}
         </section>
 
+        {/* Reakce klienta na finanční plán */}
+        <section>
+          <div className="flex items-end justify-between mb-5">
+            <div>
+              <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-1">03 · reakce na plán</p>
+              <h2
+                className="font-display text-[#162459]"
+                style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
+              >
+                Jak klient{' '}
+                <span style={{ fontStyle: 'italic', color: '#009EE2' }}>reagoval</span>
+              </h2>
+            </div>
+            {hasAnyReaction && (
+              <Link
+                href={`/advisor/${clientId}/plan`}
+                className="text-sm text-[#0088c6] hover:text-[#162459] inline-flex items-center gap-1"
+              >
+                Upravit plán <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
+              </Link>
+            )}
+          </div>
+
+          {!hasAnyReaction ? (
+            <div className="bg-white rounded-3xl border border-[#E8E9EE] p-10 text-center text-[#818EAF] text-sm">
+              Klient zatím na plán nereagoval
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Sekce */}
+              <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-7">
+                <h3
+                  className="font-display text-[#162459] mb-5"
+                  style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                >
+                  Oblasti
+                </h3>
+                <ul className="space-y-2.5 text-sm">
+                  {Object.entries(SECTION_LABELS)
+                    .filter(([id]) => id !== 'personal')
+                    .map(([id, label]) => {
+                      const row = interestMap.get(id)
+                      const cfg = row
+                        ? row.status === 'interested'
+                          ? { icon: CheckCircle2, color: '#15803d', bg: 'rgba(22,163,74,0.10)', border: 'rgba(22,163,74,0.30)', label: 'Mám zájem' }
+                          : row.status === 'question'
+                            ? { icon: HelpCircle, color: '#0088c6', bg: 'rgba(0,158,226,0.10)', border: 'rgba(0,158,226,0.30)', label: 'Otázka' }
+                            : { icon: Clock, color: '#818EAF', bg: 'rgba(129,142,175,0.10)', border: 'rgba(129,142,175,0.25)', label: 'Zatím ne' }
+                        : null
+                      return (
+                        <li
+                          key={id}
+                          className="flex items-center justify-between gap-3 py-1.5"
+                        >
+                          <span className="text-[#162459]/85">{label}</span>
+                          {cfg ? (
+                            <span
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium shrink-0"
+                              style={{ background: cfg.bg, borderColor: cfg.border, color: cfg.color }}
+                            >
+                              <cfg.icon className="w-3 h-3" />
+                              {cfg.label}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-[#818EAF]/70">—</span>
+                          )}
+                        </li>
+                      )
+                    })}
+                </ul>
+                {interestRows.some((r) => r.note) && (
+                  <div className="mt-5 pt-5 border-t border-[#E8E9EE] space-y-2.5">
+                    <p className="text-xs uppercase tracking-[0.15em] text-[#818EAF]">
+                      Poznámky ke dotazům
+                    </p>
+                    {interestRows
+                      .filter((r) => r.note)
+                      .map((r) => (
+                        <div
+                          key={r.section}
+                          className="text-xs text-[#162459]/75 bg-[#f8f9fc] rounded-xl p-3 border border-[#E8E9EE]"
+                        >
+                          <span className="font-semibold text-[#162459]">
+                            {SECTION_LABELS[r.section] || r.section}:
+                          </span>{' '}
+                          {r.note}
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Vybrané varianty */}
+              <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-7">
+                <h3
+                  className="font-display text-[#162459] mb-5 flex items-center gap-2"
+                  style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                >
+                  <Heart className="w-4 h-4 text-[#009EE2]" strokeWidth={2} />
+                  Preferované varianty
+                </h3>
+                {selectionRows.length === 0 ? (
+                  <p className="text-sm text-[#818EAF]">
+                    Klient zatím nevybral konkrétní variantu. Jakmile tak učiní, uvidíte
+                    ji zde i jako prioritní akci.
+                  </p>
+                ) : (
+                  <ul className="space-y-3">
+                    {selectionRows.map((row) => (
+                      <li
+                        key={row.variant_id}
+                        className="flex items-center justify-between gap-3 p-3 rounded-xl border border-[#009EE2]/25 bg-[#009EE2]/5"
+                      >
+                        <div className="min-w-0">
+                          <div className="font-semibold text-[#162459] text-sm truncate">
+                            {row.plan_variants?.company || 'Varianta'}
+                          </div>
+                          <div className="text-[11px] text-[#818EAF] uppercase tracking-[0.15em] mt-0.5">
+                            {SECTION_LABELS[row.plan_variants?.section ?? ''] || ''} ·{' '}
+                            {formatDate(row.selected_at)}
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="font-display text-[#162459] text-lg">
+                            {row.plan_variants?.monthly_payment}
+                          </span>
+                          <div className="text-[11px] text-[#818EAF] uppercase tracking-[0.1em]">
+                            / měsíc
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
         {/* Seznam odeslaných návrhů */}
         <section>
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-1">03 · aktivita</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-1">04 · aktivita</p>
               <h2
                 className="font-display text-[#162459]"
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Shield, MessageCircle, ArrowUpRight } from 'lucide-react'
+import { Shield, MessageCircle, ArrowUpRight, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import {
   calcHealthScore,
@@ -44,6 +44,23 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
   const unreadCounts: Record<string, number> = {}
   for (const m of (unreadMessages as Array<{ client_id: string }> | null) ?? []) {
     unreadCounts[m.client_id] = (unreadCounts[m.client_id] || 0) + 1
+  }
+
+  // Plan reactions — počet sekcí se statusem 'interested' nebo 'question' + vybrané varianty.
+  // Zobrazeno jako cyan badge; advisor se rozhodne jak zareagovat.
+  const { data: planInterests } = await (supabase.from('plan_section_interest') as any)
+    .select('client_id, status')
+    .in('status', ['interested', 'question'])
+
+  const { data: planVariantSel } = await (supabase.from('plan_variant_selection') as any)
+    .select('client_id')
+
+  const reactionCounts: Record<string, number> = {}
+  for (const r of (planInterests as Array<{ client_id: string }> | null) ?? []) {
+    reactionCounts[r.client_id] = (reactionCounts[r.client_id] || 0) + 1
+  }
+  for (const v of (planVariantSel as Array<{ client_id: string }> | null) ?? []) {
+    reactionCounts[v.client_id] = (reactionCounts[v.client_id] || 0) + 1
   }
 
   const statusCounts: Record<string, number> = Object.fromEntries(
@@ -161,13 +178,25 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                       className="client-row group hover:bg-[#f8f9fc] transition-colors"
                     >
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-medium text-[#162459] text-sm md:text-[15px]">
                             {client.full_name || '(bez jména)'}
                           </span>
                           {unreadCounts[client.id] > 0 && (
-                            <span className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
+                            <span
+                              title={`${unreadCounts[client.id]} nepřečtených zpráv`}
+                              className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center"
+                            >
                               {unreadCounts[client.id]}
+                            </span>
+                          )}
+                          {reactionCounts[client.id] > 0 && (
+                            <span
+                              title={`${reactionCounts[client.id]} reakcí na plán`}
+                              className="inline-flex items-center gap-1 bg-[#009EE2]/12 text-[#0088c6] text-[10px] font-bold rounded-full border border-[#009EE2]/30 h-5 px-1.5"
+                            >
+                              <Sparkles className="w-2.5 h-2.5" />
+                              {reactionCounts[client.id]}
                             </span>
                           )}
                         </div>
