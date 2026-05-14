@@ -77,23 +77,29 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
   )
   if (visibleRisks.length === 0) return null
 
-  // Layout
+  // Layout — když je málo místa, dáme bodům absolutní minimum a SVG se bude scrollovat
+  const MIN_GAP_PX = 96
   const padX = 50
-  const padY = 60
-  const innerWidth = Math.max(width - padX * 2, 200)
-  const innerHeight = 220
-  const totalHeight = innerHeight + padY * 2
+  const padTop = 110           // víc místa nahoru — rotované labely se vejdou
+  const padBottom = 80
+  const computedWidth = Math.max(
+    width,
+    padX * 2 + Math.max(0, (visibleRisks.length - 1)) * MIN_GAP_PX,
+  )
+  const innerWidth = Math.max(computedWidth - padX * 2, 200)
+  const innerHeight = 200
+  const totalHeight = innerHeight + padTop + padBottom
 
   const xFor = (idx: number) =>
     visibleRisks.length === 1 ? padX + innerWidth / 2 : padX + (idx / (visibleRisks.length - 1)) * innerWidth
 
   const yFor = (amount: number) => {
-    if (maxAmount === 0) return padY + innerHeight - 20
+    if (maxAmount === 0) return padTop + innerHeight - 20
     // log-ish scale aby denní dávky byly viditelné vedle lump (řád 100k–2M)
     const log = Math.log10(Math.max(amount, 1))
     const logMax = Math.log10(Math.max(maxAmount, 10))
     const t = log / logMax
-    return padY + innerHeight - t * (innerHeight - 30)
+    return padTop + innerHeight - t * (innerHeight - 30)
   }
 
   // Path mezi body
@@ -117,7 +123,13 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
       </div>
 
       <div ref={containerRef} className="relative" style={{ minHeight: totalHeight }}>
-        <svg width="100%" height={totalHeight} viewBox={`0 0 ${width} ${totalHeight}`} className="overflow-visible">
+        <div className="overflow-x-auto -mx-2 px-2">
+        <svg
+          width={computedWidth}
+          height={totalHeight}
+          viewBox={`0 0 ${computedWidth} ${totalHeight}`}
+          style={{ minWidth: computedWidth }}
+        >
           {/* Plynulá křivka skrz body */}
           <path
             d={smoothPath(points.map((p) => [p.x, p.y]))}
@@ -164,33 +176,34 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                 />
                 <circle r={r} fill={risk.color} stroke="#fff" strokeWidth={2} />
 
-                {/* label nad bodem */}
-                <text
-                  textAnchor="middle"
-                  y={-22}
-                  fontSize={11}
-                  fontWeight={600}
-                  fill="#162459"
-                  style={{ pointerEvents: 'none' }}
-                >
-                  {risk.short}
-                </text>
+                {/* label nad bodem — rotovaný aby se nepřekrýval s vedlejším */}
+                <g transform="translate(0,-18)" style={{ pointerEvents: 'none' }}>
+                  <text
+                    textAnchor="start"
+                    fontSize={11}
+                    fontWeight={600}
+                    fill="#162459"
+                    transform="rotate(-32) translate(6 0)"
+                  >
+                    {risk.short}
+                  </text>
+                </g>
 
-                {/* částka pod bodem */}
+                {/* částka pod bodem (kompaktní) */}
                 <text
                   textAnchor="middle"
-                  y={26}
-                  fontSize={11}
+                  y={28}
+                  fontSize={12}
                   fill={risk.color}
-                  fontWeight={600}
+                  fontWeight={700}
                   style={{ pointerEvents: 'none' }}
                 >
                   {compactCzk(max)}
                 </text>
                 <text
                   textAnchor="middle"
-                  y={40}
-                  fontSize={9}
+                  y={44}
+                  fontSize={10}
                   fill="#818EAF"
                   style={{ pointerEvents: 'none' }}
                 >
@@ -213,34 +226,33 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                   </foreignObject>
                 )}
 
-                {idx === 0 && (
-                  <text
-                    textAnchor="start"
-                    x={-padX + 8}
-                    y={innerHeight + padY - y + 12}
-                    fontSize={10}
-                    fill="#15803d"
-                    fontWeight={600}
-                  >
-                    Méně závažné
-                  </text>
-                )}
-                {idx === points.length - 1 && (
-                  <text
-                    textAnchor="end"
-                    x={width - x - padX + (padX - 8)}
-                    y={innerHeight + padY - y + 12}
-                    fontSize={10}
-                    fill="#b91c1c"
-                    fontWeight={600}
-                  >
-                    Nejzávažnější
-                  </text>
-                )}
               </g>
             )
           })}
+
+          {/* Spodní markery — méně závažné / nejzávažnější */}
+          <text
+            x={padX}
+            y={totalHeight - 18}
+            textAnchor="start"
+            fontSize={10}
+            fill="#15803d"
+            fontWeight={600}
+          >
+            ← Méně závažné
+          </text>
+          <text
+            x={computedWidth - padX}
+            y={totalHeight - 18}
+            textAnchor="end"
+            fontSize={10}
+            fill="#b91c1c"
+            fontWeight={600}
+          >
+            Nejzávažnější →
+          </text>
         </svg>
+        </div>
       </div>
 
       {/* Expanded detail */}
