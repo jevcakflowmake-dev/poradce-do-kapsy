@@ -1,6 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
-import crypto from 'crypto'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_DIGITS_REGEX = /\d/g
@@ -11,8 +10,9 @@ export async function POST(request: Request) {
     const full_name = typeof body.full_name === 'string' ? body.full_name.trim() : ''
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
     const phone = typeof body.phone === 'string' ? body.phone.trim() : ''
+    const password = typeof body.password === 'string' ? body.password : ''
 
-    if (!full_name || !email || !phone) {
+    if (!full_name || !email || !phone || !password) {
       return NextResponse.json({ error: 'Vyplňte všechna pole' }, { status: 400 })
     }
 
@@ -29,6 +29,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Telefonní číslo musí obsahovat alespoň 9 číslic' }, { status: 400 })
     }
 
+    if (password.length < 8 || password.length > 72) {
+      return NextResponse.json({ error: 'Heslo musí mít 8 až 72 znaků' }, { status: 400 })
+    }
+
     const supabase = createAdminClient()
 
     // Check existing user
@@ -42,13 +46,10 @@ export async function POST(request: Request) {
       })
     }
 
-    // Generate a random password (user won't need it - login via magic link or advisor sets it)
-    const tempPassword = crypto.randomBytes(24).toString('base64url')
-
-    // Create new user with temporary password
+    // Create new user with the password chosen by the user
     const { data, error } = await supabase.auth.admin.createUser({
       email,
-      password: tempPassword,
+      password,
       email_confirm: true,
       user_metadata: { full_name, phone, role: 'client' },
     })
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
       await supabase.from('profiles').update({ full_name, phone }).eq('id', data.user.id)
     }
 
-    // Notify advisor via n8n webhook (fire and forget)
+    // Notify advisor via n8n webhook (fire and forget, bez hesla)
     try {
       fetch('https://n8n.jevcakn8n.com/webhook/novy-klient', {
         method: 'POST',
@@ -73,10 +74,10 @@ export async function POST(request: Request) {
       // fire and forget
     }
 
+    // Heslo NEvracíme — klient ho zadal, použije ho v signInWithPassword sám.
     return NextResponse.json({
       id: data.user.id,
       email,
-      password: tempPassword,
     })
   } catch {
     return NextResponse.json(

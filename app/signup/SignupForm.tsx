@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
-import { Loader2, ArrowRight } from 'lucide-react'
+import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AuthShell from '@/components/auth/AuthShell'
 
@@ -13,6 +13,10 @@ const schema = z.object({
   full_name: z.string().min(2, 'Zadejte jméno a příjmení'),
   email: z.string().email('Zadejte platný e-mail'),
   phone: z.string().min(9, 'Zadejte platné telefonní číslo'),
+  password: z
+    .string()
+    .min(8, 'Heslo musí mít alespoň 8 znaků')
+    .max(72, 'Maximálně 72 znaků'),
 })
 
 type FormData = z.infer<typeof schema>
@@ -20,6 +24,7 @@ type FormData = z.infer<typeof schema>
 export default function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -53,7 +58,7 @@ export default function SignupForm() {
       const supabase = createClient()
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email: data.email.trim().toLowerCase(),
-        password: result.password,
+        password: data.password,
       })
 
       if (loginError) {
@@ -74,7 +79,7 @@ export default function SignupForm() {
       numeral="02"
       eyebrow="Registrace · 60 sekund"
       title={<>Začněme <span style={{ fontStyle: 'italic', color: '#009EE2' }}>bez</span> závazků.</>}
-      subtitle="Vyplňte jméno, e-mail a telefon. Přihlášení proběhne automaticky a rovnou uvidíte svůj prostor."
+      subtitle="Vyplňte jméno, e-mail, telefon a zvolte si heslo. Přihlášení proběhne automaticky a rovnou uvidíte svůj prostor."
     >
       <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
         {error && (
@@ -99,6 +104,31 @@ export default function SignupForm() {
             error={errors.phone?.message}
             inputProps={{ ...register('phone'), type: 'tel', placeholder: '+420 123 456 789', autoComplete: 'tel' }}
           />
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+              Heslo
+            </label>
+            <div className="relative">
+              <input
+                {...register('password')}
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Alespoň 8 znaků"
+                autoComplete="new-password"
+                className="w-full h-11 px-4 pr-11 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Skrýt heslo' : 'Zobrazit heslo'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#818EAF] hover:text-[#162459] transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {errors.password && <p className="mt-1.5 text-xs text-[#c2410c]">{errors.password.message}</p>}
+          </div>
 
           <button
             type="submit"
