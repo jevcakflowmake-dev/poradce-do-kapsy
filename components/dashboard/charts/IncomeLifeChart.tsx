@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import {
   ResponsiveContainer,
   BarChart,
@@ -8,9 +8,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   ReferenceLine,
-  Cell,
 } from 'recharts'
 import { Shield, CheckCircle2 } from 'lucide-react'
 import { RISK_DEFS, RISK_GROUPS, type RiskKey, type RiskDef } from '@/lib/income-risks'
@@ -20,6 +18,7 @@ type IncomeDetails = {
   payout_50?: number | null
   waiting_period_days?: number | null
   max_payout_years?: number | null
+  accident_pn_combine?: boolean
 } & Partial<Record<RiskKey, number | null>>
 
 export interface IncomeVariant {
@@ -49,9 +48,6 @@ export default function IncomeLifeChart({
   selectedVariantId,
   onSelect,
 }: Props) {
-  // hover state pro grouped bar zvýraznění
-  const [hovered, setHovered] = useState<string | null>(null)
-
   if (!monthlyIncomeNet || variants.length === 0) {
     return (
       <div className="rounded-3xl border border-dashed border-[#E8E9EE] p-8 text-center">
@@ -64,22 +60,26 @@ export default function IncomeLifeChart({
     )
   }
 
-  // Data pro graf — 2 scénáře (60 %, 50 %), pro každý "Bez pojistky" + jednotlivé varianty
+  // Stacked data: per scénář + per varianta dva stacky:
+  //   `zustatek_<i>` = zbytek příjmu (60 % / 50 % z monthly net)
+  //   `payout_<i>`   = co pojistka dorovná (vrch stacku)
+  // Plus jeden referenční sloupec "Bez pojistky" jen se zůstatkem.
   const chartData = useMemo(() => {
     const incomes = [
-      { label: 'Pokles na 60 %', factor: 0.6, key: '60' },
-      { label: 'Pokles na 50 %', factor: 0.5, key: '50' },
+      { label: 'Pokles na 60 %', factor: 0.6, key: '60' as const },
+      { label: 'Pokles na 50 %', factor: 0.5, key: '50' as const },
     ]
 
     return incomes.map(({ label, factor, key }) => {
-      const baseIncome = monthlyIncomeNet * factor
+      const remainder = Math.round(monthlyIncomeNet * factor)
       const row: Record<string, string | number> = {
         scenario: label,
-        'Bez pojistky': Math.round(baseIncome),
+        zustatek_bez: remainder,
       }
-      variants.forEach((v) => {
+      variants.forEach((v, idx) => {
         const payout = key === '60' ? v.details?.payout_60 ?? 0 : v.details?.payout_50 ?? 0
-        row[v.company] = Math.round(baseIncome + (payout ?? 0))
+        row[`zustatek_${idx}`] = remainder
+        row[`payout_${idx}`] = Math.max(0, Math.round(payout ?? 0))
       })
       return row
     })
@@ -98,14 +98,14 @@ export default function IncomeLifeChart({
         <div>
           <h3 className="text-[#162459] font-display text-base font-semibold">Co se stane, když ti klesne příjem?</h3>
           <p className="text-xs text-[#818EAF] mt-0.5">
-            Tvůj současný příjem: <strong className="text-[#162459]">{fmtCzk(monthlyIncomeNet)}</strong> / měs
+            Tvůj současný příjem: <strong className="text-[#162459]">{fmtCzk(monthlyIncomeNet)}</strong> / měs · Vespod sloupce vidíš svůj zůstatek, navrch ti pojistka dorovnává.
           </p>
         </div>
       </div>
 
       {/* Chart */}
       <div className="rounded-3xl border border-[#E8E9EE] bg-white p-4 md:p-6">
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={340}>
           <BarChart
             data={chartData}
             margin={{ top: 30, right: 20, bottom: 10, left: 20 }}
@@ -125,7 +125,7 @@ export default function IncomeLifeChart({
               tickLine={false}
               axisLine={{ stroke: '#E8E9EE' }}
             />
-            <Tooltip content={<IncomeTooltip />} cursor={{ fill: '#f8f9fc' }} />
+            <Tooltip content={<IncomeStackTooltip variants={variants} />} cursor={{ fill: '#f8f9fc' }} />
             <ReferenceLine
               y={monthlyIncomeNet}
               stroke="#15803d"
@@ -139,37 +139,51 @@ export default function IncomeLifeChart({
                 fontWeight: 600,
               }}
             />
-            <Legend
-              verticalAlign="bottom"
-              height={36}
-              iconType="square"
-              formatter={(value) => <span className="text-xs text-[#162459]">{value}</span>}
-              onMouseEnter={(e) => setHovered(e.value as string)}
-              onMouseLeave={() => setHovered(null)}
-            />
-            <Bar dataKey="Bez pojistky" fill="#E8E9EE" radius={[4, 4, 0, 0]}>
-              {chartData.map((_, idx) => (
-                <Cell
-                  key={idx}
-                  fill={hovered === 'Bez pojistky' ? '#cbd5e1' : '#E8E9EE'}
-                />
-              ))}
-            </Bar>
+
+            {/* Reference sloupec — bez pojistky */}
+            <Bar dataKey="zustatek_bez" stackId="bez" fill="#E8E9EE" radius={[4, 4, 0, 0]} name="Bez pojistky — zůstatek" />
+
+            {/* Sloupce per varianta — stack: zůstatek (světlejší) + payout (brand barva) */}
             {variants.map((v, idx) => {
               const color = VARIANT_COLORS[idx] ?? '#162459'
               const isSelected = selectedVariantId === v.id
-              return (
+              const dim = selectedVariantId && !isSelected ? 0.35 : 1
+              return [
                 <Bar
-                  key={v.id}
-                  dataKey={v.company}
+                  key={`base-${v.id}`}
+                  dataKey={`zustatek_${idx}`}
+                  stackId={`v${idx}`}
+                  fill="#dbe2ec"
+                  fillOpacity={dim}
+                  name={`${v.company} — tvůj zůstatek`}
+                />,
+                <Bar
+                  key={`payout-${v.id}`}
+                  dataKey={`payout_${idx}`}
+                  stackId={`v${idx}`}
                   fill={color}
+                  fillOpacity={dim}
                   radius={[4, 4, 0, 0]}
-                  fillOpacity={selectedVariantId && !isSelected ? 0.35 : 1}
-                />
-              )
+                  name={`${v.company} — pojistka dorovná`}
+                />,
+              ]
             })}
+
           </BarChart>
         </ResponsiveContainer>
+
+        {/* Custom legenda — méně položek než auto-legenda Recharts */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-xs">
+          <LegendDot color="#dbe2ec" label="Tvůj zůstatek" />
+          <LegendDot color="#E8E9EE" label="Bez pojistky" muted />
+          {variants.map((v, idx) => (
+            <LegendDot
+              key={v.id}
+              color={VARIANT_COLORS[idx] ?? '#162459'}
+              label={`${v.company} dorovná`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Variant cards */}
@@ -324,6 +338,15 @@ function CoveragePanel({
   )
 }
 
+function LegendDot({ color, label, muted }: { color: string; label: string; muted?: boolean }) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 ${muted ? 'opacity-70' : ''}`}>
+      <span className="w-3 h-3 rounded-sm" style={{ background: color, border: muted ? '1px solid #cbd5e1' : 'none' }} />
+      <span className="text-[#162459]">{label}</span>
+    </span>
+  )
+}
+
 function RiskCard({
   def,
   value,
@@ -375,20 +398,66 @@ function Row({ label, value, muted }: { label: string; value: string; muted?: bo
 }
 
 type IncomeTooltipPayloadItem = { name: string; value: number; color: string; dataKey: string }
-function IncomeTooltip({ active, payload, label }: { active?: boolean; payload?: IncomeTooltipPayloadItem[]; label?: string }) {
+function IncomeStackTooltip({
+  active,
+  payload,
+  label,
+  variants,
+}: {
+  active?: boolean
+  payload?: IncomeTooltipPayloadItem[]
+  label?: string
+  variants: IncomeVariant[]
+}) {
   if (!active || !payload?.length) return null
+
+  // Spáruj dataKey → human label.
+  // zustatek_bez → Bez pojistky
+  // zustatek_<i> → varianty[i].company — tvůj zůstatek
+  // payout_<i>   → varianty[i].company — pojistka pošle
+  // Per varianta sečteme zůstatek + payout do celkové sumy.
+  const groups = new Map<string, { label: string; remainder: number; payout: number; color: string }>()
+  for (const p of payload) {
+    if (p.dataKey === 'zustatek_bez') {
+      groups.set('bez', { label: 'Bez pojistky', remainder: p.value, payout: 0, color: '#94a3b8' })
+      continue
+    }
+    const m = /^(zustatek|payout)_(\d+)$/.exec(p.dataKey)
+    if (!m) continue
+    const idx = Number(m[2])
+    const v = variants[idx]
+    if (!v) continue
+    const id = `v${idx}`
+    const existing = groups.get(id) ?? { label: v.company, remainder: 0, payout: 0, color: p.color }
+    if (m[1] === 'zustatek') existing.remainder = p.value
+    else { existing.payout = p.value; existing.color = p.color }
+    groups.set(id, existing)
+  }
+
   return (
-    <div className="bg-white border border-[#E8E9EE] rounded-xl px-3 py-2.5 shadow-sm min-w-[180px]">
-      <p className="text-xs font-semibold text-[#162459] mb-1.5">{label}</p>
-      {payload.map((p, idx) => (
-        <div key={idx} className="flex items-center justify-between gap-3 text-xs">
-          <span className="inline-flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-sm" style={{ background: p.color }} />
-            <span className="text-[#162459]/80">{p.name}</span>
-          </span>
-          <span className="font-semibold text-[#162459]">{fmtCzk(p.value)}</span>
-        </div>
-      ))}
+    <div className="bg-white border border-[#E8E9EE] rounded-xl px-3 py-2.5 shadow-sm min-w-[200px]">
+      <p className="text-xs font-semibold text-[#162459] mb-2">{label}</p>
+      <div className="space-y-2">
+        {Array.from(groups.values()).map((g, idx) => {
+          const total = g.remainder + g.payout
+          return (
+            <div key={idx} className="text-xs">
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm" style={{ background: g.color }} />
+                  <span className="font-semibold text-[#162459]">{g.label}</span>
+                </span>
+                <span className="font-semibold text-[#162459]">{fmtCzk(total)}</span>
+              </div>
+              {g.payout > 0 && (
+                <div className="pl-3.5 mt-0.5 text-[10px] text-[#818EAF]">
+                  zůstatek {fmtCzk(g.remainder)} + pojistka {fmtCzk(g.payout)}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

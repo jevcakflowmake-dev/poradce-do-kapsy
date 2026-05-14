@@ -13,6 +13,7 @@ interface VariantInput {
   monthly_payment: string
   waiting_period_days: number | null
   max_payout_years: number | null
+  accident_pn_combine: boolean
   coverage: Coverage
 }
 
@@ -26,6 +27,7 @@ interface ExistingVariant {
     payout_50?: number | null
     waiting_period_days?: number | null
     max_payout_years?: number | null
+    accident_pn_combine?: boolean
   } & Coverage) | null
 }
 
@@ -44,6 +46,7 @@ const EMPTY: VariantInput = {
   monthly_payment: '',
   waiting_period_days: null,
   max_payout_years: null,
+  accident_pn_combine: false,
   coverage: {},
 }
 
@@ -69,6 +72,7 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
           monthly_payment: v.monthly_payment,
           waiting_period_days: v.details?.waiting_period_days ?? null,
           max_payout_years: v.details?.max_payout_years ?? null,
+          accident_pn_combine: Boolean(v.details?.accident_pn_combine),
           coverage: extractCoverage(v.details),
         }))
       : [{ ...EMPTY }],
@@ -241,19 +245,39 @@ function VariantCard({
         <TextField label="Měsíční pojistné" value={variant.monthly_payment} onChange={(v) => onChange('monthly_payment', v)} placeholder="850 Kč" />
       </div>
 
-      {/* Auto-computed payout — read only preview */}
+      {/* Modelace výpočtu — checkbox + read-only preview */}
       {(() => {
         const karence = variant.waiting_period_days ?? DEFAULT_WAITING_PERIOD_DAYS
-        const payout60 = Math.round((variant.coverage.daily_accident ?? 0) * DAYS_IN_MONTH)
-        const payout50 = Math.round((variant.coverage.daily_sick_leave ?? 0) * Math.max(0, DAYS_IN_MONTH - karence))
+        const da = variant.coverage.daily_accident ?? 0
+        const ds = variant.coverage.daily_sick_leave ?? 0
+        const pnAfterKar = ds * Math.max(0, DAYS_IN_MONTH - karence)
+        const payout60 = Math.round(da * DAYS_IN_MONTH + (variant.accident_pn_combine ? pnAfterKar : 0))
+        const payout50 = Math.round(pnAfterKar)
         return (
           <div className="rounded-xl bg-[#009EE2]/5 border border-[#009EE2]/20 px-4 py-3 mb-4 text-xs text-[#162459]/85 leading-relaxed">
-            <div className="font-semibold text-[#0088c6] mb-1">Graf života — vypočítáno automaticky:</div>
+            <div className="font-semibold text-[#0088c6] mb-2">Modelace výpočtu pro graf života</div>
+            <label className="flex items-start gap-2 cursor-pointer mb-3">
+              <input
+                type="checkbox"
+                checked={variant.accident_pn_combine}
+                onChange={(e) => onChange('accident_pn_combine', e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-[#E8E9EE] text-[#009EE2] focus:ring-2 focus:ring-[#009EE2]/30"
+              />
+              <span className="text-[12px] text-[#162459]/90 leading-snug">
+                Při úrazu se sčítá <strong>úrazové denní odškodné + pracovní neschopenka</strong>
+                <span className="text-[#818EAF]">{' '}(klient dostává obojí naráz)</span>
+              </span>
+            </label>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <span className="text-[#818EAF]">Pokles 60 % (úraz):</span>{' '}
                 <strong className="text-[#162459]">{payout60.toLocaleString('cs-CZ')} Kč/měs</strong>
-                <div className="text-[10px] text-[#818EAF]/80 mt-0.5">úrazové × 30 dní</div>
+                <div className="text-[10px] text-[#818EAF]/80 mt-0.5">
+                  úrazové × {DAYS_IN_MONTH}
+                  {variant.accident_pn_combine && (
+                    <> + PN × ({DAYS_IN_MONTH} − {karence})</>
+                  )}
+                </div>
               </div>
               <div>
                 <span className="text-[#818EAF]">Pokles 50 % (nemoc):</span>{' '}

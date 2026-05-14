@@ -9,6 +9,7 @@ interface IncomeVariantInput {
   monthly_payment: string    // např. "850 Kč"
   waiting_period_days?: number | null  // karence (default 14)
   max_payout_years?: number | null
+  accident_pn_combine?: boolean        // sčítat denní odškodné za úraz s PN při úrazu?
   coverage?: Partial<Record<RiskKey, number | null>>
 }
 
@@ -64,13 +65,15 @@ export async function POST(request: Request) {
     }
 
     // Výpočet měsíční výplaty serverside, ať klient pracuje s konzistentní hodnotou:
-    //   60 % (úraz)  = daily_accident × 30
+    //   60 % (úraz)  = daily_accident × 30   (případně + PN × (30 − karence) pokud accident_pn_combine)
     //   50 % (nemoc) = daily_sick_leave × (30 − karence)   (default karence 14)
     const karence = toNum(v.waiting_period_days) ?? DEFAULT_WAITING_PERIOD_DAYS
     const dailyAccident = toNum(v.coverage?.daily_accident) ?? 0
     const dailySickLeave = toNum(v.coverage?.daily_sick_leave) ?? 0
-    const payout60 = Math.round(dailyAccident * DAYS_IN_MONTH)
-    const payout50 = Math.round(dailySickLeave * Math.max(0, DAYS_IN_MONTH - karence))
+    const accidentPnCombine = Boolean(v.accident_pn_combine)
+    const pnAfterKarence = dailySickLeave * Math.max(0, DAYS_IN_MONTH - karence)
+    const payout60 = Math.round(dailyAccident * DAYS_IN_MONTH + (accidentPnCombine ? pnAfterKarence : 0))
+    const payout50 = Math.round(pnAfterKarence)
 
     return {
       client_id: body.client_id,
@@ -84,6 +87,7 @@ export async function POST(request: Request) {
         payout_50: payout50,
         waiting_period_days: karence,
         max_payout_years: toNum(v.max_payout_years),
+        accident_pn_combine: accidentPnCombine,
         ...coverage,
       },
     }
