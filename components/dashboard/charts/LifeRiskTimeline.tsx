@@ -42,11 +42,12 @@ function fmtCzk(n: number, unit: 'monthly' | 'lump'): string {
 const ORDERED_RISKS = RISK_DEFS
 
 export default function LifeRiskTimeline({ variants, selectedVariantId }: Props) {
-  const [hoveredPoint, setHoveredPoint] = useState<{ riskKey: RiskKey; variantIdx: number } | null>(null)
   const [hoveredKey, setHoveredKey] = useState<RiskKey | null>(null)
-  const [expanded, setExpanded] = useState<RiskKey | null>(null)
+  const [pinnedKey, setPinnedKey] = useState<RiskKey | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [width, setWidth] = useState(900)
+
+  const activeKey = pinnedKey ?? hoveredKey
 
   useLayoutEffect(() => {
     if (!containerRef.current) return
@@ -180,14 +181,14 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             )
           })}
 
-          {/* Per riziko: labely a invisible click area */}
+          {/* Per riziko: labely a invisible hover/click area */}
           {visibleRisks.map((risk, rIdx) => {
             const x = xFor(rIdx)
-            const isExpanded = expanded === risk.key
-            const isHovered = hoveredKey === risk.key
+            const isActive = activeKey === risk.key
+            const isPinned = pinnedKey === risk.key
             return (
               <g key={`label-${risk.key}`}>
-                {/* invisible click/hover area — celá svislá zóna */}
+                {/* invisible hover/click area — celá svislá zóna */}
                 <rect
                   x={x - 40}
                   y={padTop - 30}
@@ -196,21 +197,21 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                   fill="transparent"
                   onMouseEnter={() => setHoveredKey(risk.key)}
                   onMouseLeave={() => setHoveredKey(null)}
-                  onClick={() => setExpanded((prev) => (prev === risk.key ? null : risk.key))}
+                  onClick={() => setPinnedKey((prev) => (prev === risk.key ? null : risk.key))}
                   style={{ cursor: 'pointer' }}
                 />
 
-                {/* svislá zvýrazňující linka při hover/expand */}
-                {(isHovered || isExpanded) && (
+                {/* svislá zvýrazňující linka */}
+                {isActive && (
                   <line
                     x1={x}
                     x2={x}
                     y1={padTop - 10}
                     y2={padTop + innerHeight + 6}
                     stroke={risk.color}
-                    strokeWidth={1}
-                    strokeDasharray="3 3"
-                    opacity={0.4}
+                    strokeWidth={isPinned ? 1.5 : 1}
+                    strokeDasharray={isPinned ? '5 4' : '3 3'}
+                    opacity={isPinned ? 0.7 : 0.4}
                   />
                 )}
 
@@ -219,8 +220,8 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                   <text
                     textAnchor="start"
                     fontSize={11}
-                    fontWeight={isExpanded ? 700 : 600}
-                    fill={isExpanded || isHovered ? risk.color : '#162459'}
+                    fontWeight={isActive ? 700 : 600}
+                    fill={isActive ? risk.color : '#162459'}
                     transform="rotate(-32) translate(6 0)"
                   >
                     {risk.short}
@@ -230,53 +231,31 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             )
           })}
 
-          {/* Per varianta: její body */}
-          {variantSeries.map(({ variantIdx, color, pts, variant }) => {
+          {/* Per varianta: její body — bez per-bod tooltipů, info v sjednoceném panelu */}
+          {variantSeries.map(({ variantIdx, color, pts }) => {
             const dim = selectedIdx >= 0 && selectedIdx !== variantIdx
             const variantOpacity = dim ? 0.35 : 1
             return (
-              <g key={`points-${variantIdx}`} opacity={variantOpacity} style={{ transition: 'opacity 0.3s ease' }}>
+              <g
+                key={`points-${variantIdx}`}
+                opacity={variantOpacity}
+                style={{ transition: 'opacity 0.3s ease', pointerEvents: 'none' }}
+              >
                 {pts.map(({ x, y, risk, amount }) => {
-                  const isPointHover =
-                    hoveredPoint?.riskKey === risk.key && hoveredPoint.variantIdx === variantIdx
+                  const isActiveZone = activeKey === risk.key
                   const isSelectedVariant = selectedIdx === variantIdx
-                  const r = isPointHover ? 8 : isSelectedVariant ? 6 : 5
+                  const r = isActiveZone ? 7 : isSelectedVariant ? 6 : 5
                   return (
-                    <g
+                    <circle
                       key={`pt-${variantIdx}-${risk.key}`}
-                      transform={`translate(${x},${y})`}
-                      onMouseEnter={() => setHoveredPoint({ riskKey: risk.key, variantIdx })}
-                      onMouseLeave={() => setHoveredPoint(null)}
-                      style={{ cursor: 'pointer', transition: 'transform 0.45s ease' }}
-                    >
-                      {isPointHover && (
-                        <circle r={14} fill={color} opacity={0.2} />
-                      )}
-                      <circle r={r} fill={color} stroke="#fff" strokeWidth={1.5} />
-
-                      {/* Tooltip jen pro hover bod */}
-                      {isPointHover && (
-                        <foreignObject
-                          x={-115}
-                          y={-78}
-                          width={230}
-                          height={66}
-                          style={{ pointerEvents: 'none' }}
-                        >
-                          <div className="bg-white border border-[#E8E9EE] rounded-xl shadow-md px-3 py-2 text-[11px] leading-snug">
-                            <div className="font-semibold text-[#162459] mb-0.5">
-                              {variant.company}
-                            </div>
-                            <div className="text-[#818EAF] mb-0.5">{risk.short}</div>
-                            <div className="font-semibold" style={{ color }}>
-                              {amount > 0
-                                ? compactCzk(amount) + (risk.unit === 'daily' ? ' / měs' : ' jednorázově')
-                                : 'Bez krytí'}
-                            </div>
-                          </div>
-                        </foreignObject>
-                      )}
-                    </g>
+                      cx={x}
+                      cy={y}
+                      r={r}
+                      fill={amount > 0 ? color : '#cbd5e1'}
+                      stroke="#fff"
+                      strokeWidth={1.5}
+                      style={{ transition: 'cx 0.45s ease, cy 0.45s ease, r 0.2s ease' }}
+                    />
                   )
                 })}
               </g>
@@ -306,64 +285,99 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           </text>
         </svg>
         </div>
-      </div>
 
-      {/* Expanded detail */}
-      {expanded && (() => {
-        const r = ORDERED_RISKS.find((x) => x.key === expanded)
-        if (!r) return null
-        const Icon = r.icon
-        return (
-          <div className="mt-3 rounded-2xl border-2 p-4 md:p-5 transition-all" style={{ borderColor: `${r.color}40`, background: `${r.color}08` }}>
-            <div className="flex items-start gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0" style={{ background: r.color }}>
-                <Icon className="w-5 h-5" strokeWidth={1.8} />
+        {/* ─── Sjednocený info-panel vpravo dole ───────────────────── */}
+        {(() => {
+          const activeRisk = activeKey ? ORDERED_RISKS.find((r) => r.key === activeKey) : null
+          if (!activeRisk) {
+            return (
+              <div className="absolute bottom-4 right-4 max-w-xs rounded-2xl bg-white/95 backdrop-blur-sm border border-dashed border-[#E8E9EE] px-4 py-3 text-xs text-[#818EAF] leading-relaxed pointer-events-none hidden lg:block">
+                Najeď myší na bod na ose. Pro zafixování klikni.
               </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-[#162459] font-semibold">{r.label}</h4>
-                <p className="text-xs text-[#818EAF] mt-0.5 leading-relaxed">{r.description}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setExpanded(null)}
-                className="text-[#818EAF] hover:text-[#162459] text-xs font-medium"
-              >
-                Zavřít
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              {variants.map((v, idx) => {
-                const a = calcAmount(v, r)
-                const color = VARIANT_COLORS[idx] ?? '#162459'
-                const isSelected = selectedVariantId === v.id
-                return (
-                  <div
-                    key={v.id}
-                    className="rounded-xl p-3 border bg-white flex items-center gap-3"
-                    style={{
-                      borderColor: isSelected ? '#16a34a' : '#E8E9EE',
-                      background: isSelected ? '#16a34a0a' : '#fff',
-                    }}
+            )
+          }
+          const Icon = activeRisk.icon
+          const isPinned = pinnedKey === activeRisk.key
+          // Spočti částky per varianta a najdi max pro highlight
+          const rows = variants.map((v, idx) => ({
+            variant: v,
+            color: VARIANT_COLORS[idx] ?? '#162459',
+            amount: calcAmount(v, activeRisk),
+            isSelected: selectedVariantId === v.id,
+          }))
+          const maxAmt = Math.max(...rows.map((r) => r.amount), 0)
+          return (
+            <div
+              className="absolute bottom-4 right-4 w-[300px] sm:w-[340px] rounded-2xl bg-white border-2 shadow-xl overflow-hidden"
+              style={{ borderColor: `${activeRisk.color}55` }}
+            >
+              <div className="flex items-start gap-3 p-4" style={{ background: `${activeRisk.color}0d` }}>
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
+                  style={{ background: activeRisk.color }}
+                >
+                  <Icon className="w-5 h-5" strokeWidth={1.8} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-[#162459] font-semibold text-sm">{activeRisk.label}</h4>
+                  <p className="text-[11px] text-[#818EAF] mt-1 leading-snug">
+                    {activeRisk.description}
+                  </p>
+                </div>
+                {isPinned && (
+                  <button
+                    type="button"
+                    onClick={() => setPinnedKey(null)}
+                    aria-label="Zavřít"
+                    className="text-[#818EAF] hover:text-[#162459] text-xs leading-none"
                   >
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold shrink-0" style={{ background: color }}>
-                      {v.logo || v.company[0]}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs text-[#818EAF]">{v.company}</div>
-                      <div className="text-sm font-semibold text-[#162459]">
-                        {fmtCzk(a, r.unit === 'lump' ? 'lump' : 'monthly')}
+                    ✕
+                  </button>
+                )}
+              </div>
+              <div className="p-3 space-y-1.5">
+                {rows.map((r) => {
+                  const pct = maxAmt > 0 ? (r.amount / maxAmt) * 100 : 0
+                  return (
+                    <div
+                      key={r.variant.id}
+                      className="rounded-lg px-2.5 py-2"
+                      style={{
+                        background: r.isSelected ? '#16a34a0c' : 'transparent',
+                        border: r.isSelected ? '1px solid #16a34a55' : '1px solid transparent',
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-2 text-xs mb-1">
+                        <span className="inline-flex items-center gap-1.5 truncate">
+                          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: r.color }} />
+                          <span className="font-medium text-[#162459] truncate">{r.variant.company}</span>
+                          {r.isSelected && (
+                            <span className="text-[9px] uppercase tracking-wide text-[#15803d] font-semibold shrink-0">vybráno</span>
+                          )}
+                        </span>
+                        <span className="font-semibold text-[#162459] tabular-nums shrink-0">
+                          {r.amount > 0
+                            ? compactCzk(r.amount) + (activeRisk.unit === 'daily' ? '/měs' : '')
+                            : '—'}
+                        </span>
+                      </div>
+                      <div className="h-1 rounded-full bg-[#f1f3f8] overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{ width: `${pct}%`, background: r.color }}
+                        />
                       </div>
                     </div>
-                    {isSelected && (
-                      <span className="text-[10px] uppercase tracking-[0.1em] text-[#15803d] font-semibold">Vybráno</span>
-                    )}
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
+              <div className="px-4 py-2 text-[10px] text-[#818EAF] text-center border-t border-[#E8E9EE]">
+                {isPinned ? 'Klikni jinam pro odpíchnutí' : 'Klikni pro zafixování'}
+              </div>
             </div>
-          </div>
-        )
-      })()}
+          )
+        })()}
+      </div>
     </div>
   )
 }
