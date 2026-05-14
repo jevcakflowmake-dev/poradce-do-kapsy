@@ -42,6 +42,7 @@ function fmtCzk(n: number, unit: 'monthly' | 'lump'): string {
 const ORDERED_RISKS = RISK_DEFS
 
 export default function LifeRiskTimeline({ variants, selectedVariantId }: Props) {
+  const [hoveredPoint, setHoveredPoint] = useState<{ riskKey: RiskKey; variantIdx: number } | null>(null)
   const [hoveredKey, setHoveredKey] = useState<RiskKey | null>(null)
   const [expanded, setExpanded] = useState<RiskKey | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -70,19 +71,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
     return m
   }, [variants])
 
-  // Která varianta zrovna data v grafu zobrazuje (vybraná, nebo první jako fallback)
-  const displayedVariant = useMemo(() => {
-    if (selectedVariantId) {
-      const found = variants.find((v) => v.id === selectedVariantId)
-      if (found) return found
-    }
-    return variants[0] ?? null
-  }, [variants, selectedVariantId])
-
-  const displayedIndex = displayedVariant ? variants.indexOf(displayedVariant) : 0
-  const displayedColor = VARIANT_COLORS[displayedIndex] ?? '#162459'
-
-  if (variants.length === 0 || !displayedVariant) return null
+  if (variants.length === 0) return null
 
   // Filtruj rizika která mají alespoň jednu nenulovou hodnotu napříč variantami
   const visibleRisks = ORDERED_RISKS.filter((r) =>
@@ -115,27 +104,44 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
     return padTop + innerHeight - t * (innerHeight - 30)
   }
 
-  // Body podle hodnot zobrazené varianty (přepne se se selectedVariantId)
-  const points = visibleRisks.map((r, idx) => {
-    const amount = calcAmount(displayedVariant, r)
-    return { x: xFor(idx), y: yFor(amount), risk: r, amount }
+  // Pro každou variantu její vlastní křivka skrz body
+  const variantSeries = variants.map((v, vIdx) => {
+    const color = VARIANT_COLORS[vIdx] ?? '#162459'
+    const pts = visibleRisks.map((r, rIdx) => {
+      const amount = calcAmount(v, r)
+      return { x: xFor(rIdx), y: yFor(amount), risk: r, amount }
+    })
+    return { variant: v, variantIdx: vIdx, color, pts }
   })
 
   // Vybraná varianta pro detail (může být null pokud klient ještě nevybral)
   const selected = selectedVariantId ? variants.find((v) => v.id === selectedVariantId) ?? null : null
+  const selectedIdx = selected ? variants.indexOf(selected) : -1
 
   return (
     <div className="rounded-3xl border border-[#E8E9EE] bg-white p-4 md:p-6">
-      <div className="flex flex-wrap items-baseline justify-between mb-4 gap-2">
+      <div className="flex flex-wrap items-baseline justify-between mb-4 gap-3">
         <div>
           <h3 className="text-[#162459] font-display text-base font-semibold">Co se ti může v životě stát</h3>
           <p className="text-xs text-[#818EAF] mt-0.5">
             {selected ? (
-              <>Data ve grafu odpovídají variantě <strong className="text-[#162459]">{selected.company}</strong>. Přepneš jiné kliknutím na variantní kartu výše.</>
+              <>Zvýrazněná je <strong className="text-[#162459]">{selected.company}</strong>. Ostatní jsou ztlumené pro porovnání.</>
             ) : (
-              <>Náhled pro variantu <strong className="text-[#162459]">{displayedVariant.company}</strong>. Vyber jinou variantu výše a graf se přepne.</>
+              <>Všechny varianty paralelně — vyber jednu výše a zvýrazní se.</>
             )}
           </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3 text-xs">
+          {variants.map((v, idx) => {
+            const color = VARIANT_COLORS[idx] ?? '#162459'
+            const dim = selectedIdx >= 0 && selectedIdx !== idx
+            return (
+              <span key={v.id} className={`inline-flex items-center gap-1.5 ${dim ? 'opacity-50' : ''}`}>
+                <span className="w-3 h-3 rounded-full" style={{ background: color }} />
+                <span className="text-[#162459]">{v.company}</span>
+              </span>
+            )
+          })}
         </div>
       </div>
 
@@ -147,98 +153,132 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           viewBox={`0 0 ${computedWidth} ${totalHeight}`}
           style={{ minWidth: computedWidth }}
         >
-          {/* Plynulá křivka skrz body */}
-          <path
-            d={smoothPath(points.map((p) => [p.x, p.y]))}
-            fill="none"
+          {/* Šedý referenční podklad pod křivkami */}
+          <line
+            x1={padX}
+            x2={computedWidth - padX}
+            y1={padTop + innerHeight}
+            y2={padTop + innerHeight}
             stroke="#E8E9EE"
-            strokeWidth={2}
-            strokeLinecap="round"
-            style={{ transition: 'd 0.45s ease' }}
-          />
-          <path
-            d={smoothPath(points.map((p) => [p.x, p.y]))}
-            fill="none"
-            stroke={displayedColor}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeDasharray="4 6"
-            opacity={0.6}
-            style={{ transition: 'd 0.45s ease, stroke 0.3s ease' }}
+            strokeWidth={1}
           />
 
-          {/* Body */}
-          {points.map(({ x, y, risk, amount }, idx) => {
-            const isHover = hoveredKey === risk.key
-            const isExpanded = expanded === risk.key
-            const r = isHover || isExpanded ? 11 : 8
+          {/* Per varianta: vlastní křivka */}
+          {variantSeries.map(({ variantIdx, color, pts }) => {
+            const dim = selectedIdx >= 0 && selectedIdx !== variantIdx
             return (
-              <g
-                key={risk.key}
-                transform={`translate(${x},${y})`}
-                onMouseEnter={() => setHoveredKey(risk.key)}
-                onMouseLeave={() => setHoveredKey(null)}
-                onClick={() => setExpanded((prev) => (prev === risk.key ? null : risk.key))}
-                style={{ cursor: 'pointer', transition: 'transform 0.45s ease' }}
-              >
-                {/* halo */}
-                <circle
-                  r={isExpanded ? 18 : isHover ? 16 : 0}
-                  fill={risk.color}
-                  opacity={0.18}
-                />
-                <circle r={r} fill={risk.color} stroke="#fff" strokeWidth={2} />
+              <path
+                key={`path-${variantIdx}`}
+                d={smoothPath(pts.map((p) => [p.x, p.y]))}
+                fill="none"
+                stroke={color}
+                strokeWidth={selectedIdx === variantIdx ? 3 : 2}
+                strokeLinecap="round"
+                opacity={dim ? 0.3 : 0.85}
+                style={{ transition: 'opacity 0.3s ease, stroke-width 0.3s ease' }}
+              />
+            )
+          })}
 
-                {/* label nad bodem — rotovaný aby se nepřekrýval s vedlejším */}
-                <g transform="translate(0,-18)" style={{ pointerEvents: 'none' }}>
+          {/* Per riziko: labely a invisible click area */}
+          {visibleRisks.map((risk, rIdx) => {
+            const x = xFor(rIdx)
+            const isExpanded = expanded === risk.key
+            const isHovered = hoveredKey === risk.key
+            return (
+              <g key={`label-${risk.key}`}>
+                {/* invisible click/hover area — celá svislá zóna */}
+                <rect
+                  x={x - 40}
+                  y={padTop - 30}
+                  width={80}
+                  height={innerHeight + 40}
+                  fill="transparent"
+                  onMouseEnter={() => setHoveredKey(risk.key)}
+                  onMouseLeave={() => setHoveredKey(null)}
+                  onClick={() => setExpanded((prev) => (prev === risk.key ? null : risk.key))}
+                  style={{ cursor: 'pointer' }}
+                />
+
+                {/* svislá zvýrazňující linka při hover/expand */}
+                {(isHovered || isExpanded) && (
+                  <line
+                    x1={x}
+                    x2={x}
+                    y1={padTop - 10}
+                    y2={padTop + innerHeight + 6}
+                    stroke={risk.color}
+                    strokeWidth={1}
+                    strokeDasharray="3 3"
+                    opacity={0.4}
+                  />
+                )}
+
+                {/* label nad osou — rotovaný */}
+                <g transform={`translate(${x},${padTop - 10})`} style={{ pointerEvents: 'none' }}>
                   <text
                     textAnchor="start"
                     fontSize={11}
-                    fontWeight={600}
-                    fill="#162459"
+                    fontWeight={isExpanded ? 700 : 600}
+                    fill={isExpanded || isHovered ? risk.color : '#162459'}
                     transform="rotate(-32) translate(6 0)"
                   >
                     {risk.short}
                   </text>
                 </g>
+              </g>
+            )
+          })}
 
-                {/* částka pod bodem (kompaktní) */}
-                <text
-                  textAnchor="middle"
-                  y={28}
-                  fontSize={12}
-                  fill={risk.color}
-                  fontWeight={700}
-                  style={{ pointerEvents: 'none' }}
-                >
-                  {compactCzk(amount)}
-                </text>
-                <text
-                  textAnchor="middle"
-                  y={44}
-                  fontSize={10}
-                  fill="#818EAF"
-                  style={{ pointerEvents: 'none' }}
-                >
-                  {risk.unit === 'daily' ? '/měs' : 'jednorázově'}
-                </text>
+          {/* Per varianta: její body */}
+          {variantSeries.map(({ variantIdx, color, pts, variant }) => {
+            const dim = selectedIdx >= 0 && selectedIdx !== variantIdx
+            const variantOpacity = dim ? 0.35 : 1
+            return (
+              <g key={`points-${variantIdx}`} opacity={variantOpacity} style={{ transition: 'opacity 0.3s ease' }}>
+                {pts.map(({ x, y, risk, amount }) => {
+                  const isPointHover =
+                    hoveredPoint?.riskKey === risk.key && hoveredPoint.variantIdx === variantIdx
+                  const isSelectedVariant = selectedIdx === variantIdx
+                  const r = isPointHover ? 8 : isSelectedVariant ? 6 : 5
+                  return (
+                    <g
+                      key={`pt-${variantIdx}-${risk.key}`}
+                      transform={`translate(${x},${y})`}
+                      onMouseEnter={() => setHoveredPoint({ riskKey: risk.key, variantIdx })}
+                      onMouseLeave={() => setHoveredPoint(null)}
+                      style={{ cursor: 'pointer', transition: 'transform 0.45s ease' }}
+                    >
+                      {isPointHover && (
+                        <circle r={14} fill={color} opacity={0.2} />
+                      )}
+                      <circle r={r} fill={color} stroke="#fff" strokeWidth={1.5} />
 
-                {/* Tooltip on hover */}
-                {isHover && !isExpanded && (
-                  <foreignObject
-                    x={-110}
-                    y={-90}
-                    width={220}
-                    height={64}
-                    style={{ pointerEvents: 'none' }}
-                  >
-                    <div className="bg-white border border-[#E8E9EE] rounded-xl shadow-md px-3 py-2 text-[11px] leading-snug text-[#162459]">
-                      <div className="font-semibold mb-0.5">{risk.label}</div>
-                      <div className="text-[#818EAF]">{risk.description}</div>
-                    </div>
-                  </foreignObject>
-                )}
-
+                      {/* Tooltip jen pro hover bod */}
+                      {isPointHover && (
+                        <foreignObject
+                          x={-115}
+                          y={-78}
+                          width={230}
+                          height={66}
+                          style={{ pointerEvents: 'none' }}
+                        >
+                          <div className="bg-white border border-[#E8E9EE] rounded-xl shadow-md px-3 py-2 text-[11px] leading-snug">
+                            <div className="font-semibold text-[#162459] mb-0.5">
+                              {variant.company}
+                            </div>
+                            <div className="text-[#818EAF] mb-0.5">{risk.short}</div>
+                            <div className="font-semibold" style={{ color }}>
+                              {amount > 0
+                                ? compactCzk(amount) + (risk.unit === 'daily' ? ' / měs' : ' jednorázově')
+                                : 'Bez krytí'}
+                            </div>
+                          </div>
+                        </foreignObject>
+                      )}
+                    </g>
+                  )
+                })}
               </g>
             )
           })}
