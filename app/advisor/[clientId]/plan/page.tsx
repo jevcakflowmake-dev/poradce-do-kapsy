@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { ArrowLeft, MessageCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import PlanEditor from '@/components/advisor/PlanEditor'
+import ClientFinancialsEditor, { type ClientFinancials } from '@/components/advisor/ClientFinancialsEditor'
+import IncomeProtectionEditor from '@/components/advisor/IncomeProtectionEditor'
 
 export default async function AdvisorPlanPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = await params
@@ -41,6 +43,12 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
   const { data: recommendations } = await (supabase.from('plan_recommendations') as any)
     .select('*')
     .eq('client_id', clientId)
+
+  // Load client financials (vstupní data)
+  const { data: clientFinancials } = await (supabase.from('client_financials') as any)
+    .select('*')
+    .eq('client_id', clientId)
+    .maybeSingle()
 
   // Load analysis responses
   const { data: analysisData } = await (supabase.from('analysis_responses') as any)
@@ -99,6 +107,17 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
             Spravujte varianty, parametry a doporučení pro každý finanční okruh klienta.
           </p>
         </header>
+
+        <ClientFinancialsEditor
+          clientId={clientId}
+          initial={(clientFinancials as ClientFinancials | null) ?? null}
+        />
+
+        <IncomeProtectionEditor
+          clientId={clientId}
+          initial={(variants || []).filter((v: { section: string }) => v.section === 'income') as any[]}
+          monthlyIncomeNet={(clientFinancials as { monthly_income_net: number | null } | null)?.monthly_income_net ?? null}
+        />
 
         <PlanEditor
           clientId={clientId}

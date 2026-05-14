@@ -13,6 +13,7 @@ import SectionInterestToolbar, { type InterestStatus } from '@/components/dashbo
 import AskModal from '@/components/dashboard/AskModal'
 import SelectVariantButton from '@/components/dashboard/SelectVariantButton'
 import FinancialPlanOverview from '@/components/dashboard/charts/FinancialPlanOverview'
+import IncomeLifeChart, { type IncomeVariant } from '@/components/dashboard/charts/IncomeLifeChart'
 
 interface ParamDetail { value: string; note: string }
 interface Variant {
@@ -70,6 +71,9 @@ export default function FinancniPlanPage() {
   const supabase = useMemo(() => createClient(), [])
   const [clientId, setClientId] = useState<string | null>(null)
   const [planSections, setPlanSections] = useState<PlanSection[]>([])
+  const [incomeVariants, setIncomeVariants] = useState<IncomeVariant[]>([])
+  const [monthlyIncomeNet, setMonthlyIncomeNet] = useState<number | null>(null)
+  const [selectedIncomeVariantId, setSelectedIncomeVariantId] = useState<string | null>(null)
   const [interests, setInterests] = useState<Record<string, InterestStatus>>({})
   const [selectedVariants, setSelectedVariants] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
@@ -90,13 +94,32 @@ export default function FinancniPlanPage() {
     setClientId(user.id)
 
     // Paralelně
-    const [variantsRes, paramsRes, recsRes, interestRes, selectionRes] = await Promise.all([
+    const [variantsRes, paramsRes, recsRes, interestRes, selectionRes, financialsRes] = await Promise.all([
       (supabase.from('plan_variants') as any).select('*').eq('client_id', user.id).order('sort_order'),
       (supabase.from('plan_params') as any).select('*').order('sort_order'),
       (supabase.from('plan_recommendations') as any).select('*').eq('client_id', user.id),
       (supabase.from('plan_section_interest') as any).select('section, status').eq('client_id', user.id),
       (supabase.from('plan_variant_selection') as any).select('variant_id').eq('client_id', user.id),
+      (supabase.from('client_financials') as any).select('monthly_income_net').eq('client_id', user.id).maybeSingle(),
     ])
+
+    setMonthlyIncomeNet((financialsRes.data as { monthly_income_net: number | null } | null)?.monthly_income_net ?? null)
+
+    // Income varianty s details (samostatně pro IncomeLifeChart)
+    const rawIncomeVariants = (variantsRes.data || []).filter((v: { section: string }) => v.section === 'income') as Array<{
+      id: string
+      company: string
+      logo: string
+      monthly_payment: string
+      details: IncomeVariant['details']
+    }>
+    setIncomeVariants(rawIncomeVariants.map(v => ({
+      id: v.id,
+      company: v.company,
+      logo: v.logo || v.company[0],
+      monthly_payment: v.monthly_payment,
+      details: v.details ?? null,
+    })))
 
     // Agregace do PlanSection[]
     const variants = variantsRes.data || []
@@ -139,6 +162,11 @@ export default function FinancniPlanPage() {
       selSet.add(row.variant_id)
     }
     setSelectedVariants(selSet)
+
+    // Income — předvybraná varianta (single select)
+    const incomeIds = new Set(rawIncomeVariants.map(v => v.id))
+    const selectedIncome = [...selSet].find(id => incomeIds.has(id)) ?? null
+    setSelectedIncomeVariantId(selectedIncome)
 
     setLoading(false)
   }, [supabase])
@@ -349,7 +377,45 @@ export default function FinancniPlanPage() {
 
                   <div className="h-px bg-[#E8E9EE] mb-4" />
 
-                  {section.type === 'variants' && section.variants ? (
+                  {section.id === 'income' ? (
+                    <IncomeLifeChart
+                      monthlyIncomeNet={monthlyIncomeNet}
+                      variants={incomeVariants}
+                      selectedVariantId={selectedIncomeVariantId}
+                      onSelect={async (variantId) => {
+                        if (!clientId) return
+                        // Single-select pro income — nahradíme jakoukoli předchozí volbu
+                        const previousIncomeIds = incomeVariants.map(v => v.id)
+                        await (supabase.from('plan_variant_selection') as any)
+                          .delete()
+                          .eq('client_id', clientId)
+                          .in('variant_id', previousIncomeIds)
+                        if (selectedIncomeVariantId !== variantId) {
+                          await (supabase.from('plan_variant_selection') as any).insert({
+                            client_id: clientId,
+                            variant_id: variantId,
+                          })
+                          setSelectedIncomeVariantId(variantId)
+                          setSelectedVariants(prev => {
+                            const next = new Set(prev)
+                            previousIncomeIds.forEach(id => next.delete(id))
+                            next.add(variantId)
+                            return next
+                          })
+                          const chosen = incomeVariants.find(v => v.id === variantId)
+                          if (chosen) showToast(`${chosen.company} označena jako preferovaná. Poradce vás zkontaktuje.`)
+                        } else {
+                          // Odznačení
+                          setSelectedIncomeVariantId(null)
+                          setSelectedVariants(prev => {
+                            const next = new Set(prev)
+                            previousIncomeIds.forEach(id => next.delete(id))
+                            return next
+                          })
+                        }
+                      }}
+                    />
+                  ) : section.type === 'variants' && section.variants ? (
                     <div className="space-y-3">
                       <p className="text-sm text-[#818EAF] mb-1">
                         {section.variants.length} varian{section.variants.length === 1 ? 'ta' : 'ty'} k porovnání — rozklikněte detail nebo označte tu, o kterou máte zájem.
