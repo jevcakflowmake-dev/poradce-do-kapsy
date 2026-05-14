@@ -80,17 +80,17 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
   )
   if (visibleRisks.length === 0) return null
 
-  // Layout — kompaktnější, ať se vejde bez scrollu na běžných obrazovkách
+  // Layout — vyšší kreslicí plocha, ať info panel vpravo dole nepřekrývá body.
   const MIN_GAP_PX = 72
   const padX = 40
-  const padTop = 70            // místo pro rotované labely
-  const padBottom = 36
+  const padTop = 80            // místo pro rotované labely
+  const padBottom = 200        // místo pro info panel (~190px) pod osou
   const computedWidth = Math.max(
     width,
     padX * 2 + Math.max(0, (visibleRisks.length - 1)) * MIN_GAP_PX,
   )
   const innerWidth = Math.max(computedWidth - padX * 2, 200)
-  const innerHeight = 120
+  const innerHeight = 200
   const totalHeight = innerHeight + padTop + padBottom
 
   const xFor = (idx: number) =>
@@ -291,7 +291,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           const activeRisk = activeKey ? ORDERED_RISKS.find((r) => r.key === activeKey) : null
           if (!activeRisk) {
             return (
-              <div className="absolute bottom-4 right-4 max-w-xs rounded-2xl bg-white/95 backdrop-blur-sm border border-dashed border-[#E8E9EE] px-4 py-3 text-xs text-[#818EAF] leading-relaxed pointer-events-none hidden lg:block">
+              <div className="absolute bottom-4 right-4 max-w-xs rounded-xl bg-white/95 backdrop-blur-sm border border-dashed border-[#E8E9EE] px-4 py-3 text-xs text-[#818EAF] leading-relaxed pointer-events-none hidden lg:block">
                 Najeď myší na bod na ose. Pro zafixování klikni.
               </div>
             )
@@ -309,7 +309,11 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           return (
             <div
               className="absolute bottom-3 right-3 w-[260px] sm:w-[290px] rounded-xl bg-white border-2 shadow-xl overflow-hidden"
-              style={{ borderColor: `${activeRisk.color}55` }}
+              style={{
+                borderColor: `${activeRisk.color}55`,
+                // pinned = klient může klikat (zavřít, vybrat); hovered = nesmí blokovat hover na grafu pod ním
+                pointerEvents: isPinned ? 'auto' : 'none',
+              }}
             >
               <div className="flex items-start gap-3 p-4" style={{ background: `${activeRisk.color}0d` }}>
                 <div
