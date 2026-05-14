@@ -10,10 +10,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
   Tooltip,
   Legend,
 } from 'recharts'
@@ -118,29 +114,6 @@ export default function FinancialPlanOverview({ sections }: Props) {
     return counts
   }, [sections])
 
-  // Variant compare — per section, kolik variant a jaké ceny
-  const variantsBarData = useMemo(() => {
-    return sections
-      .filter((s) => s.type === 'variants' && s.variants && s.variants.length > 0)
-      .map((s) => {
-        const prices = (s.variants ?? []).map((v) => parsePayment(v.monthlyPayment)).filter((p) => p > 0)
-        if (prices.length === 0) return null
-        const min = Math.min(...prices)
-        const max = Math.max(...prices)
-        const avg = prices.reduce((a, b) => a + b, 0) / prices.length
-        return {
-          section: s.title,
-          sectionId: s.id,
-          min,
-          max,
-          avg: Math.round(avg),
-          count: prices.length,
-          fill: SECTION_COLOR[s.id] ?? '#162459',
-        }
-      })
-      .filter((d): d is NonNullable<typeof d> => d !== null)
-  }, [sections])
-
   if (sections.length === 0) return null
 
   return (
@@ -220,43 +193,6 @@ export default function FinancialPlanOverview({ sections }: Props) {
         </ChartCard>
       </div>
 
-      {/* ── Srovnání cen variant per sekce ──────────────── */}
-      {variantsBarData.length > 0 && (
-        <ChartCard
-          title="Srovnání variant po sekcích"
-          subtitle="Rozpětí měsíční ceny napříč nabídnutými variantami"
-        >
-          <ResponsiveContainer width="100%" height={Math.max(220, variantsBarData.length * 50)}>
-            <BarChart
-              data={variantsBarData}
-              layout="vertical"
-              margin={{ top: 10, right: 30, bottom: 10, left: 30 }}
-            >
-              <XAxis
-                type="number"
-                tickFormatter={(v) => v + ' Kč'}
-                stroke="#818EAF"
-                fontSize={11}
-              />
-              <YAxis
-                type="category"
-                dataKey="section"
-                stroke="#162459"
-                fontSize={12}
-                width={140}
-              />
-              <Tooltip content={<VariantBarTooltip />} />
-              <Bar dataKey="min" stackId="range" name="Od" fill="#cfeaf8" />
-              <Bar dataKey="avg" stackId="range" name="Průměr" fill="#009EE2" />
-              <Legend
-                verticalAlign="top"
-                iconType="square"
-                wrapperStyle={{ fontSize: 12 }}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-      )}
     </div>
   )
 }
@@ -375,27 +311,3 @@ function DonutTooltip({
   )
 }
 
-type BarPayloadItem = {
-  payload: { section: string; min: number; max: number; avg: number; count: number }
-}
-function VariantBarTooltip({
-  active,
-  payload,
-}: {
-  active?: boolean
-  payload?: BarPayloadItem[]
-}) {
-  if (!active || !payload?.length) return null
-  const d = payload[0].payload
-  return (
-    <div className="bg-white border border-[#E8E9EE] rounded-xl px-3 py-2 shadow-sm">
-      <p className="text-xs font-semibold text-[#162459]">{d.section}</p>
-      <p className="text-xs text-[#818EAF] mt-1">
-        {d.count}× variant · {fmtCzk(d.min)} – {fmtCzk(d.max)}
-      </p>
-      <p className="text-xs text-[#162459] mt-0.5">
-        Průměr {fmtCzk(d.avg)}
-      </p>
-    </div>
-  )
-}
