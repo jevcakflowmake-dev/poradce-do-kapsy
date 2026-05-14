@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client'
 import SectionInterestToolbar, { type InterestStatus } from '@/components/dashboard/SectionInterestToolbar'
 import AskModal from '@/components/dashboard/AskModal'
 import SelectVariantButton from '@/components/dashboard/SelectVariantButton'
+import FinancialPlanOverview from '@/components/dashboard/charts/FinancialPlanOverview'
 
 interface ParamDetail { value: string; note: string }
 interface Variant {
@@ -311,6 +312,9 @@ export default function FinancniPlanPage() {
               </div>
             </div>
           </motion.div>
+
+          {/* Vizuální přehled — radar pokrytí + donut nákladů + srovnání variant */}
+          {hasPlan && <FinancialPlanOverview sections={planSections} />}
 
           {/* Plan sections */}
           <div className="space-y-4">
