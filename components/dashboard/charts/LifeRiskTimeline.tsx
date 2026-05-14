@@ -80,17 +80,17 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
   )
   if (visibleRisks.length === 0) return null
 
-  // Layout — když je málo místa, dáme bodům absolutní minimum a SVG se bude scrollovat
-  const MIN_GAP_PX = 96
-  const padX = 50
-  const padTop = 110           // víc místa nahoru — rotované labely se vejdou
-  const padBottom = 80
+  // Layout — kompaktnější, ať se vejde bez scrollu na běžných obrazovkách
+  const MIN_GAP_PX = 72
+  const padX = 40
+  const padTop = 70            // místo pro rotované labely
+  const padBottom = 36
   const computedWidth = Math.max(
     width,
     padX * 2 + Math.max(0, (visibleRisks.length - 1)) * MIN_GAP_PX,
   )
   const innerWidth = Math.max(computedWidth - padX * 2, 200)
-  const innerHeight = 200
+  const innerHeight = 120
   const totalHeight = innerHeight + padTop + padBottom
 
   const xFor = (idx: number) =>
@@ -216,13 +216,13 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                 )}
 
                 {/* label nad osou — rotovaný */}
-                <g transform={`translate(${x},${padTop - 10})`} style={{ pointerEvents: 'none' }}>
+                <g transform={`translate(${x},${padTop - 6})`} style={{ pointerEvents: 'none' }}>
                   <text
                     textAnchor="start"
-                    fontSize={11}
+                    fontSize={10}
                     fontWeight={isActive ? 700 : 600}
                     fill={isActive ? risk.color : '#162459'}
-                    transform="rotate(-32) translate(6 0)"
+                    transform="rotate(-32) translate(5 0)"
                   >
                     {risk.short}
                   </text>
@@ -244,7 +244,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                 {pts.map(({ x, y, risk, amount }) => {
                   const isActiveZone = activeKey === risk.key
                   const isSelectedVariant = selectedIdx === variantIdx
-                  const r = isActiveZone ? 7 : isSelectedVariant ? 6 : 5
+                  const r = isActiveZone ? 6 : isSelectedVariant ? 5 : 4
                   return (
                     <circle
                       key={`pt-${variantIdx}-${risk.key}`}
@@ -308,7 +308,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           const maxAmt = Math.max(...rows.map((r) => r.amount), 0)
           return (
             <div
-              className="absolute bottom-4 right-4 w-[300px] sm:w-[340px] rounded-2xl bg-white border-2 shadow-xl overflow-hidden"
+              className="absolute bottom-3 right-3 w-[260px] sm:w-[290px] rounded-xl bg-white border-2 shadow-xl overflow-hidden"
               style={{ borderColor: `${activeRisk.color}55` }}
             >
               <div className="flex items-start gap-3 p-4" style={{ background: `${activeRisk.color}0d` }}>
