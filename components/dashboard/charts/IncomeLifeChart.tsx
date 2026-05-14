@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 import { Shield, CheckCircle2 } from 'lucide-react'
 import { RISK_DEFS, RISK_GROUPS, type RiskKey, type RiskDef } from '@/lib/income-risks'
+import LifeRiskTimeline from './LifeRiskTimeline'
 
 type IncomeDetails = {
   payout_60?: number | null
@@ -265,6 +266,9 @@ export default function IncomeLifeChart({
           </div>
         </div>
       )}
+
+      {/* Časová osa "Co se ti může v životě stát" */}
+      <LifeRiskTimeline variants={variants} selectedVariantId={selectedVariantId} />
 
       {/* Pojistné krytí — co která komponenta dělá */}
       <CoveragePanel
