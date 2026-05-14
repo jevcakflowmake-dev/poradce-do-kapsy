@@ -7,12 +7,13 @@ interface IncomeVariantInput {
   company: string
   logo: string
   monthly_payment: string    // např. "850 Kč"
-  payout_60: number | null   // měsíční výplata při poklesu na 60% (Kč)
-  payout_50: number | null
-  waiting_period_days?: number | null
+  waiting_period_days?: number | null  // karence (default 14)
   max_payout_years?: number | null
   coverage?: Partial<Record<RiskKey, number | null>>
 }
+
+const DEFAULT_WAITING_PERIOD_DAYS = 14
+const DAYS_IN_MONTH = 30
 
 interface Payload {
   client_id: string
@@ -61,6 +62,16 @@ export async function POST(request: Request) {
         coverage[def.key] = toNum(v.coverage[def.key])
       }
     }
+
+    // Výpočet měsíční výplaty serverside, ať klient pracuje s konzistentní hodnotou:
+    //   60 % (úraz)  = daily_accident × 30
+    //   50 % (nemoc) = daily_sick_leave × (30 − karence)   (default karence 14)
+    const karence = toNum(v.waiting_period_days) ?? DEFAULT_WAITING_PERIOD_DAYS
+    const dailyAccident = toNum(v.coverage?.daily_accident) ?? 0
+    const dailySickLeave = toNum(v.coverage?.daily_sick_leave) ?? 0
+    const payout60 = Math.round(dailyAccident * DAYS_IN_MONTH)
+    const payout50 = Math.round(dailySickLeave * Math.max(0, DAYS_IN_MONTH - karence))
+
     return {
       client_id: body.client_id,
       section: 'income',
@@ -69,9 +80,9 @@ export async function POST(request: Request) {
       monthly_payment: v.monthly_payment.trim(),
       sort_order: idx,
       details: {
-        payout_60: toNum(v.payout_60),
-        payout_50: toNum(v.payout_50),
-        waiting_period_days: toNum(v.waiting_period_days),
+        payout_60: payout60,
+        payout_50: payout50,
+        waiting_period_days: karence,
         max_payout_years: toNum(v.max_payout_years),
         ...coverage,
       },

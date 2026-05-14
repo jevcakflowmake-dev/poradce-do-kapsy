@@ -11,8 +11,6 @@ interface VariantInput {
   company: string
   logo: string
   monthly_payment: string
-  payout_60: number | null
-  payout_50: number | null
   waiting_period_days: number | null
   max_payout_years: number | null
   coverage: Coverage
@@ -24,12 +22,15 @@ interface ExistingVariant {
   logo: string
   monthly_payment: string
   details: ({
-    payout_60?: number | null
+    payout_60?: number | null  // serverside vypočítaný — read only
     payout_50?: number | null
     waiting_period_days?: number | null
     max_payout_years?: number | null
   } & Coverage) | null
 }
+
+const DEFAULT_WAITING_PERIOD_DAYS = 14
+const DAYS_IN_MONTH = 30
 
 interface Props {
   clientId: string
@@ -41,8 +42,6 @@ const EMPTY: VariantInput = {
   company: '',
   logo: '',
   monthly_payment: '',
-  payout_60: null,
-  payout_50: null,
   waiting_period_days: null,
   max_payout_years: null,
   coverage: {},
@@ -68,8 +67,6 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
           company: v.company,
           logo: v.logo,
           monthly_payment: v.monthly_payment,
-          payout_60: v.details?.payout_60 ?? null,
-          payout_50: v.details?.payout_50 ?? null,
           waiting_period_days: v.details?.waiting_period_days ?? null,
           max_payout_years: v.details?.max_payout_years ?? null,
           coverage: extractCoverage(v.details),
@@ -244,11 +241,29 @@ function VariantCard({
         <TextField label="Měsíční pojistné" value={variant.monthly_payment} onChange={(v) => onChange('monthly_payment', v)} placeholder="850 Kč" />
       </div>
 
-      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">Souhrnná výplata pro graf života</h4>
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <NumField label="Pokles na 60 % (úraz)" value={variant.payout_60} onChange={(v) => onChange('payout_60', v)} suffix="Kč/měs" />
-        <NumField label="Pokles na 50 % (nemoc)" value={variant.payout_50} onChange={(v) => onChange('payout_50', v)} suffix="Kč/měs" />
-      </div>
+      {/* Auto-computed payout — read only preview */}
+      {(() => {
+        const karence = variant.waiting_period_days ?? DEFAULT_WAITING_PERIOD_DAYS
+        const payout60 = Math.round((variant.coverage.daily_accident ?? 0) * DAYS_IN_MONTH)
+        const payout50 = Math.round((variant.coverage.daily_sick_leave ?? 0) * Math.max(0, DAYS_IN_MONTH - karence))
+        return (
+          <div className="rounded-xl bg-[#009EE2]/5 border border-[#009EE2]/20 px-4 py-3 mb-4 text-xs text-[#162459]/85 leading-relaxed">
+            <div className="font-semibold text-[#0088c6] mb-1">Graf života — vypočítáno automaticky:</div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="text-[#818EAF]">Pokles 60 % (úraz):</span>{' '}
+                <strong className="text-[#162459]">{payout60.toLocaleString('cs-CZ')} Kč/měs</strong>
+                <div className="text-[10px] text-[#818EAF]/80 mt-0.5">úrazové × 30 dní</div>
+              </div>
+              <div>
+                <span className="text-[#818EAF]">Pokles 50 % (nemoc):</span>{' '}
+                <strong className="text-[#162459]">{payout50.toLocaleString('cs-CZ')} Kč/měs</strong>
+                <div className="text-[10px] text-[#818EAF]/80 mt-0.5">PN × ({DAYS_IN_MONTH} − {karence}) dnů</div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">Pojistné krytí (10 typů rizik)</h4>
       <div className="space-y-3">
