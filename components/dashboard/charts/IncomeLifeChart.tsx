@@ -12,19 +12,22 @@ import {
   ReferenceLine,
   Cell,
 } from 'recharts'
-import { Shield, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Shield, CheckCircle2 } from 'lucide-react'
+import { RISK_DEFS, RISK_GROUPS, type RiskKey, type RiskDef } from '@/lib/income-risks'
+
+type IncomeDetails = {
+  payout_60?: number | null
+  payout_50?: number | null
+  waiting_period_days?: number | null
+  max_payout_years?: number | null
+} & Partial<Record<RiskKey, number | null>>
 
 export interface IncomeVariant {
   id: string
   company: string
   logo: string
   monthly_payment: string
-  details: {
-    payout_60?: number | null
-    payout_50?: number | null
-    waiting_period_days?: number | null
-    max_payout_years?: number | null
-  } | null
+  details: IncomeDetails | null
 }
 
 interface Props {
@@ -248,6 +251,116 @@ export default function IncomeLifeChart({
           </div>
         </div>
       )}
+
+      {/* Pojistné krytí — co která komponenta dělá */}
+      <CoveragePanel
+        selected={selected ?? null}
+        variants={variants}
+      />
+    </div>
+  )
+}
+
+function CoveragePanel({
+  selected,
+  variants,
+}: {
+  selected: IncomeVariant | null
+  variants: IncomeVariant[]
+}) {
+  // Pokud klient nevybral, použij první variantu pro náhled (s indikací).
+  const display = selected ?? variants[0] ?? null
+  if (!display) return null
+
+  const hasAny = RISK_DEFS.some((r) => {
+    const v = display.details?.[r.key]
+    return typeof v === 'number' && v > 0
+  })
+  if (!hasAny) return null
+
+  return (
+    <div className="rounded-3xl border border-[#E8E9EE] bg-white p-4 md:p-6">
+      <div className="flex items-start justify-between mb-5 gap-3">
+        <div>
+          <h3 className="text-[#162459] font-display text-base font-semibold">Co tě pojistka chrání</h3>
+          <p className="text-xs text-[#818EAF] mt-0.5">
+            {selected
+              ? <>Krytí ve vybrané variantě <strong className="text-[#162459]">{display.company}</strong>.</>
+              : <>Náhled krytí varianty <strong className="text-[#162459]">{display.company}</strong> — vyber konkrétní variantu výše pro definitivní hodnoty.</>}
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-5">
+        {RISK_GROUPS.map((g) => {
+          const items = RISK_DEFS.filter((r) => r.group === g.id)
+          const populated = items.filter((r) => {
+            const v = display.details?.[r.key]
+            return typeof v === 'number' && v > 0
+          })
+          if (populated.length === 0) return null
+
+          return (
+            <div key={g.id}>
+              <div className="flex items-baseline justify-between mb-2.5">
+                <h4 className="text-xs uppercase tracking-[0.15em] text-[#818EAF] font-semibold">{g.label}</h4>
+                <span className="text-[11px] text-[#818EAF]/80">{g.subtitle}</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {populated.map((r) => (
+                  <RiskCard
+                    key={r.key}
+                    def={r}
+                    value={display.details?.[r.key] as number}
+                    highlighted={!!selected}
+                  />
+                ))}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function RiskCard({
+  def,
+  value,
+  highlighted,
+}: {
+  def: RiskDef
+  value: number
+  highlighted: boolean
+}) {
+  const Icon = def.icon
+  const isDaily = def.unit === 'daily'
+  const formatted = isDaily
+    ? `${Math.round(value).toLocaleString('cs-CZ')} Kč/den`
+    : `${Math.round(value).toLocaleString('cs-CZ')} Kč`
+  return (
+    <div
+      className="rounded-2xl border p-3.5 transition-all"
+      style={{
+        background: highlighted ? `${def.color}0d` : '#fcfcfd',
+        borderColor: highlighted ? `${def.color}55` : '#E8E9EE',
+      }}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0"
+          style={{ background: def.color }}
+        >
+          <Icon className="w-4 h-4" strokeWidth={1.8} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-baseline justify-between gap-2 mb-0.5">
+            <span className="text-[13px] font-semibold text-[#162459] leading-tight">{def.short}</span>
+            <span className="text-[13px] font-semibold tabular-nums" style={{ color: def.color }}>{formatted}</span>
+          </div>
+          <p className="text-[11px] text-[#818EAF] leading-snug">{def.description}</p>
+        </div>
+      </div>
     </div>
   )
 }

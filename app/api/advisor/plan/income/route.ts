@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { RISK_DEFS, type RiskKey } from '@/lib/income-risks'
 
 interface IncomeVariantInput {
   id?: string                // pokud edituji existing
@@ -10,6 +11,7 @@ interface IncomeVariantInput {
   payout_50: number | null
   waiting_period_days?: number | null
   max_payout_years?: number | null
+  coverage?: Partial<Record<RiskKey, number | null>>
 }
 
 interface Payload {
@@ -52,20 +54,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ data: [] })
   }
 
-  const rows = body.variants.map((v, idx) => ({
-    client_id: body.client_id,
-    section: 'income',
-    company: v.company.trim(),
-    logo: v.logo.trim() || v.company.trim().charAt(0).toUpperCase(),
-    monthly_payment: v.monthly_payment.trim(),
-    sort_order: idx,
-    details: {
-      payout_60: toNum(v.payout_60),
-      payout_50: toNum(v.payout_50),
-      waiting_period_days: toNum(v.waiting_period_days),
-      max_payout_years: toNum(v.max_payout_years),
-    },
-  }))
+  const rows = body.variants.map((v, idx) => {
+    const coverage: Record<string, number | null> = {}
+    if (v.coverage) {
+      for (const def of RISK_DEFS) {
+        coverage[def.key] = toNum(v.coverage[def.key])
+      }
+    }
+    return {
+      client_id: body.client_id,
+      section: 'income',
+      company: v.company.trim(),
+      logo: v.logo.trim() || v.company.trim().charAt(0).toUpperCase(),
+      monthly_payment: v.monthly_payment.trim(),
+      sort_order: idx,
+      details: {
+        payout_60: toNum(v.payout_60),
+        payout_50: toNum(v.payout_50),
+        waiting_period_days: toNum(v.waiting_period_days),
+        max_payout_years: toNum(v.max_payout_years),
+        ...coverage,
+      },
+    }
+  })
 
   const { data, error } = await (supabase.from('plan_variants') as any)
     .insert(rows)

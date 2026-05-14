@@ -2,6 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { Shield, Save, Plus, Trash2, Loader2, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { RISK_DEFS, RISK_GROUPS, type RiskKey } from '@/lib/income-risks'
+
+type Coverage = Partial<Record<RiskKey, number | null>>
 
 interface VariantInput {
   id?: string
@@ -12,6 +15,7 @@ interface VariantInput {
   payout_50: number | null
   waiting_period_days: number | null
   max_payout_years: number | null
+  coverage: Coverage
 }
 
 interface ExistingVariant {
@@ -19,12 +23,12 @@ interface ExistingVariant {
   company: string
   logo: string
   monthly_payment: string
-  details: {
+  details: ({
     payout_60?: number | null
     payout_50?: number | null
     waiting_period_days?: number | null
     max_payout_years?: number | null
-  } | null
+  } & Coverage) | null
 }
 
 interface Props {
@@ -41,6 +45,18 @@ const EMPTY: VariantInput = {
   payout_50: null,
   waiting_period_days: null,
   max_payout_years: null,
+  coverage: {},
+}
+
+function extractCoverage(details: ExistingVariant['details']): Coverage {
+  if (!details) return {}
+  const cov: Coverage = {}
+  RISK_DEFS.forEach((r) => {
+    const v = (details as Record<string, unknown>)[r.key]
+    if (typeof v === 'number') cov[r.key] = v
+    else if (v === null) cov[r.key] = null
+  })
+  return cov
 }
 
 export default function IncomeProtectionEditor({ clientId, initial, monthlyIncomeNet }: Props) {
@@ -56,6 +72,7 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
           payout_50: v.details?.payout_50 ?? null,
           waiting_period_days: v.details?.waiting_period_days ?? null,
           max_payout_years: v.details?.max_payout_years ?? null,
+          coverage: extractCoverage(v.details),
         }))
       : [{ ...EMPTY }],
   )
@@ -227,13 +244,38 @@ function VariantCard({
         <TextField label="Měsíční pojistné" value={variant.monthly_payment} onChange={(v) => onChange('monthly_payment', v)} placeholder="850 Kč" />
       </div>
 
-      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">Výplata při poklesu příjmu</h4>
-      <div className="grid grid-cols-2 gap-3 mb-3">
+      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">Souhrnná výplata pro graf života</h4>
+      <div className="grid grid-cols-2 gap-3 mb-4">
         <NumField label="Pokles na 60 % (úraz)" value={variant.payout_60} onChange={(v) => onChange('payout_60', v)} suffix="Kč/měs" />
         <NumField label="Pokles na 50 % (nemoc)" value={variant.payout_50} onChange={(v) => onChange('payout_50', v)} suffix="Kč/měs" />
       </div>
 
-      <details className="text-sm">
+      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">Pojistné krytí (10 typů rizik)</h4>
+      <div className="space-y-3">
+        {RISK_GROUPS.map((g) => {
+          const risks = RISK_DEFS.filter((r) => r.group === g.id)
+          return (
+            <div key={g.id} className="rounded-xl bg-white border border-[#E8E9EE] p-3">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-[#818EAF] mb-2">{g.label}</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                {risks.map((r) => (
+                  <NumField
+                    key={r.key}
+                    label={r.label}
+                    value={variant.coverage[r.key] ?? null}
+                    onChange={(v) =>
+                      onChange('coverage', { ...variant.coverage, [r.key]: v })
+                    }
+                    suffix={r.unit === 'daily' ? 'Kč/den' : 'Kč'}
+                  />
+                ))}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <details className="text-sm mt-3">
         <summary className="cursor-pointer text-xs text-[#0088c6] hover:text-[#162459]">Pokročilé parametry</summary>
         <div className="grid grid-cols-2 gap-3 mt-3">
           <NumField label="Karenční doba" value={variant.waiting_period_days} onChange={(v) => onChange('waiting_period_days', v)} suffix="dní" />

@@ -1,6 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart } from 'lucide-react'
+import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, goalLabel, proposalTypeLabel, formatDate } from '@/lib/utils'
 import type { Profile, Proposal } from '@/lib/types/database'
@@ -44,6 +44,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   }
 
   const hasAnalysis = Object.keys(analysisResponses).length > 0
+
+  // Existuje už nějaký plán pro klienta?
+  const { data: planVariantsCount } = await (supabase.from('plan_variants') as any)
+    .select('id', { count: 'exact', head: true })
+    .eq('client_id', clientId)
+  const hasPlan = ((planVariantsCount as { count?: number } | null)?.count ?? 0) > 0
 
   // Reakce klienta na finanční plán
   const [{ data: interestRaw }, { data: selRaw }] = await Promise.all([
@@ -206,6 +212,36 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             </div>
           </div>
         </header>
+
+        {hasAnalysis && (
+          <Link
+            href={`/advisor/${clientId}/plan`}
+            className="group block rounded-3xl p-5 md:p-6 text-white transition-all hover:shadow-[0_20px_50px_-15px_rgba(0,158,226,0.45)] hover:-translate-y-0.5"
+            style={{ background: 'linear-gradient(135deg, #009EE2 0%, #0088c6 60%, #162459 120%)' }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
+                <Sparkles className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.8} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs uppercase tracking-[0.18em] opacity-80">
+                  {hasPlan ? 'Plán existuje' : 'Klient čeká na váš návrh'}
+                </p>
+                <h2 className="font-display text-xl md:text-2xl font-semibold mt-0.5" style={{ letterSpacing: '-0.01em' }}>
+                  {hasPlan
+                    ? <>Upravit <span style={{ fontStyle: 'italic' }}>finanční plán</span></>
+                    : <>Vytvořit <span style={{ fontStyle: 'italic' }}>finanční plán</span> na míru</>}
+                </h2>
+                <p className="text-xs md:text-sm opacity-90 mt-1.5 max-w-2xl">
+                  {hasPlan
+                    ? 'Přepište údaje z analýzy, doplňte varianty pojistek, nastavte krytí pro 10 typů rizik.'
+                    : 'Klient odpověděl na analýzu. Otevřete editor a postavte mu plán — vstupní data, varianty pojistky a graf života.'}
+                </p>
+              </div>
+              <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1 shrink-0 hidden sm:block" />
+            </div>
+          </Link>
+        )}
 
         <section className="grid md:grid-cols-2 gap-5">
           {/* Profil */}
