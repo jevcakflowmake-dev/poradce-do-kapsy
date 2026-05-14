@@ -279,7 +279,7 @@ export default function AnalyzaPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
       <input
         ref={fileRef}
         type="file"

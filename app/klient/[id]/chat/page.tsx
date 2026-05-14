@@ -15,7 +15,7 @@ export default async function KlientChatPage({ params }: { params: Promise<{ id:
   const _profile = data as Profile
 
   return (
-    <div className="max-w-5xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
       <Link
         href={`/klient/${id}`}
         className="inline-flex items-center gap-1 text-sm text-[#818EAF] hover:text-[#162459] transition-colors mb-6"

@@ -178,7 +178,7 @@ export default function FinancniPlanPage() {
   const hasPlan = planSections.length > 0
 
   return (
-    <div className="max-w-5xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
       <div className="mb-10">
         <Link
           href={`/klient/${id}`}
