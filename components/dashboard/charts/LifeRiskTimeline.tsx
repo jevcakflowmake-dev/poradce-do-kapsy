@@ -57,7 +57,8 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
     return () => ro.disconnect()
   }, [])
 
-  // Pro každé riziko: max částka přes všechny varianty — určuje výšku bodu (Y) na timeline
+  // Pro celé množinu variant max — drží konstantní Y-scale, ať klient
+  // při přepnutí varianty vidí změnu pozice (a ne přepočítaný graf).
   const maxAmount = useMemo(() => {
     let m = 0
     for (const v of variants) {
@@ -69,7 +70,19 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
     return m
   }, [variants])
 
-  if (variants.length === 0) return null
+  // Která varianta zrovna data v grafu zobrazuje (vybraná, nebo první jako fallback)
+  const displayedVariant = useMemo(() => {
+    if (selectedVariantId) {
+      const found = variants.find((v) => v.id === selectedVariantId)
+      if (found) return found
+    }
+    return variants[0] ?? null
+  }, [variants, selectedVariantId])
+
+  const displayedIndex = displayedVariant ? variants.indexOf(displayedVariant) : 0
+  const displayedColor = VARIANT_COLORS[displayedIndex] ?? '#162459'
+
+  if (variants.length === 0 || !displayedVariant) return null
 
   // Filtruj rizika která mají alespoň jednu nenulovou hodnotu napříč variantami
   const visibleRisks = ORDERED_RISKS.filter((r) =>
@@ -102,14 +115,14 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
     return padTop + innerHeight - t * (innerHeight - 30)
   }
 
-  // Path mezi body
+  // Body podle hodnot zobrazené varianty (přepne se se selectedVariantId)
   const points = visibleRisks.map((r, idx) => {
-    const maxForRisk = Math.max(...variants.map((v) => calcAmount(v, r)))
-    return { x: xFor(idx), y: yFor(maxForRisk), risk: r, max: maxForRisk }
+    const amount = calcAmount(displayedVariant, r)
+    return { x: xFor(idx), y: yFor(amount), risk: r, amount }
   })
 
-  // Vybraná varianta pro detail
-  const selected = variants.find((v) => v.id === selectedVariantId) ?? null
+  // Vybraná varianta pro detail (může být null pokud klient ještě nevybral)
+  const selected = selectedVariantId ? variants.find((v) => v.id === selectedVariantId) ?? null : null
 
   return (
     <div className="rounded-3xl border border-[#E8E9EE] bg-white p-4 md:p-6">
@@ -117,7 +130,11 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
         <div>
           <h3 className="text-[#162459] font-display text-base font-semibold">Co se ti může v životě stát</h3>
           <p className="text-xs text-[#818EAF] mt-0.5">
-            Od běžného úrazu po nejvážnější dopady. Najeď myší na bod, nebo na něj klikni pro detail{selected ? ` (vybráno: ${selected.company})` : ''}.
+            {selected ? (
+              <>Data ve grafu odpovídají variantě <strong className="text-[#162459]">{selected.company}</strong>. Přepneš jiné kliknutím na variantní kartu výše.</>
+            ) : (
+              <>Náhled pro variantu <strong className="text-[#162459]">{displayedVariant.company}</strong>. Vyber jinou variantu výše a graf se přepne.</>
+            )}
           </p>
         </div>
       </div>
@@ -137,25 +154,21 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             stroke="#E8E9EE"
             strokeWidth={2}
             strokeLinecap="round"
+            style={{ transition: 'd 0.45s ease' }}
           />
           <path
             d={smoothPath(points.map((p) => [p.x, p.y]))}
             fill="none"
-            stroke="url(#timeline-grad)"
+            stroke={displayedColor}
             strokeWidth={2}
             strokeLinecap="round"
             strokeDasharray="4 6"
             opacity={0.6}
+            style={{ transition: 'd 0.45s ease, stroke 0.3s ease' }}
           />
-          <defs>
-            <linearGradient id="timeline-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#009EE2" />
-              <stop offset="100%" stopColor="#162459" />
-            </linearGradient>
-          </defs>
 
           {/* Body */}
-          {points.map(({ x, y, risk, max }, idx) => {
+          {points.map(({ x, y, risk, amount }, idx) => {
             const isHover = hoveredKey === risk.key
             const isExpanded = expanded === risk.key
             const r = isHover || isExpanded ? 11 : 8
@@ -166,7 +179,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                 onMouseEnter={() => setHoveredKey(risk.key)}
                 onMouseLeave={() => setHoveredKey(null)}
                 onClick={() => setExpanded((prev) => (prev === risk.key ? null : risk.key))}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', transition: 'transform 0.45s ease' }}
               >
                 {/* halo */}
                 <circle
@@ -198,7 +211,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                   fontWeight={700}
                   style={{ pointerEvents: 'none' }}
                 >
-                  {compactCzk(max)}
+                  {compactCzk(amount)}
                 </text>
                 <text
                   textAnchor="middle"
