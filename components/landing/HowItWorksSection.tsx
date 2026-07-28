@@ -110,7 +110,6 @@ export default function HowItWorksSection() {
                   fontSize: 'clamp(3rem, 6vw, 5.5rem)',
                   lineHeight: 0.9,
                   fontStyle: 'italic',
-                  fontWeight: 500,
                   letterSpacing: '-0.04em',
                 }}
               >

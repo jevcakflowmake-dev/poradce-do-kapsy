@@ -103,7 +103,7 @@ export default function StatsBand() {
               </span>
               <div
                 className="font-display text-[#162459] flex items-baseline gap-1"
-                style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', lineHeight: 1, letterSpacing: '-0.04em', fontWeight: 500 }}
+                style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', lineHeight: 1, letterSpacing: '-0.04em' }}
               >
                 {s.prefix && <span className="text-[#66708C] text-[0.45em] font-sans font-medium mr-1">{s.prefix}</span>}
                 <span data-count={s.value}>0</span>

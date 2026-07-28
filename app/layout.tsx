@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { IBM_Plex_Sans, Fraunces } from 'next/font/google'
+import { IBM_Plex_Sans, Instrument_Serif } from 'next/font/google'
 import './globals.css'
 import LenisProvider from '@/components/providers/LenisProvider'
 
@@ -10,9 +10,11 @@ const ibmPlex = IBM_Plex_Sans({
   display: 'swap',
 })
 
-const fraunces = Fraunces({
+// Display — Instrument Serif má jen regular (400); váhu neřešíme řezem,
+// ale velikostí a barvou. latin-ext kvůli české diakritice.
+const instrumentSerif = Instrument_Serif({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400'],
   style: ['normal', 'italic'],
   variable: '--font-display',
   display: 'swap',
@@ -29,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="cs" className={`h-full antialiased ${ibmPlex.variable} ${fraunces.variable}`}>
+    <html lang="cs" className={`h-full antialiased ${ibmPlex.variable} ${instrumentSerif.variable}`}>
       <body className="min-h-full">
         <LenisProvider>{children}</LenisProvider>
       </body>

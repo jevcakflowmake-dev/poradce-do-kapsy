@@ -103,7 +103,6 @@ export default function HeroSection() {
                   fontSize: 'clamp(3rem, 9vw, 8rem)',
                   lineHeight: 0.95,
                   letterSpacing: '-0.035em',
-                  fontWeight: 500,
                 }}
               >
                 <span className="block">

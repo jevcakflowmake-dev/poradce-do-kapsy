@@ -85,7 +85,7 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
           <UserCog className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="text-[#162459] font-display text-lg font-semibold">Vstupní data klienta</h2>
+          <h2 className="text-[#162459] font-display text-lg">Vstupní data klienta</h2>
           <p className="text-xs text-[#66708C] mt-0.5">
             {data.age && data.monthly_income_net
               ? `${data.age} let · příjem ${Math.round(data.monthly_income_net).toLocaleString('cs-CZ')} Kč/měs${data.dependents_count ? ` · ${data.dependents_count} ${data.dependents_count === 1 ? 'dítě' : 'děti'}` : ''}`

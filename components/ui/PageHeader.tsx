@@ -10,9 +10,9 @@ type Props = {
 
 /**
  * Sjednocený header pro všechny interní stránky.
- * - numeral (01, 02…) jako Fraunces italic, accent, opacity 0.22
+ * - numeral (01, 02…) jako Instrument Serif italic, obrysový inkoust
  * - eyebrow — tracking uppercase
- * - title — Fraunces, "jedno slovo italic cyan" pattern doporučený
+ * - title — Instrument Serif, "jedno slovo italic azurem" pattern doporučený
  */
 export default function PageHeader({ eyebrow, numeral, title, subtitle, right }: Props) {
   return (

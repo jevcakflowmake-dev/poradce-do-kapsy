@@ -227,7 +227,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                 <p className="text-xs uppercase tracking-[0.18em] opacity-80">
                   {hasPlan ? 'Plán existuje' : 'Klient čeká na váš návrh'}
                 </p>
-                <h2 className="font-display text-xl md:text-2xl font-semibold mt-0.5" style={{ letterSpacing: '-0.01em' }}>
+                <h2 className="font-display text-xl md:text-2xl mt-0.5" style={{ letterSpacing: '-0.01em' }}>
                   {hasPlan
                     ? <>Upravit <span style={{ fontStyle: 'italic' }}>finanční plán</span></>
                     : <>Vytvořit <span style={{ fontStyle: 'italic' }}>finanční plán</span> na míru</>}

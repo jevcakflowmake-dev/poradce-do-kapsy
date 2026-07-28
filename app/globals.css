@@ -65,10 +65,12 @@ body {
   resize: none;
 }
 
-/* Display (editorial serif) */
+/* Display — Instrument Serif má jediný řez (400). Váhu proto nikdy
+   nepředepisujeme: syntetický bold by ztloustl kresbu a zabil kontrast,
+   kvůli kterému jsme ho vybrali. Důraz řešíme velikostí, italikou a barvou. */
 .font-display {
   font-family: var(--font-display), Georgia, serif;
-  font-feature-settings: 'ss01', 'ss02';
+  font-weight: 400 !important;
 }
 
 /* Noise texture — celoplošné zrno, jemnější na papíru než na inkoustu */
@@ -106,7 +108,7 @@ body {
 
 /* Hero headline word reveal — clip initial state, GSAP animates to visible.
    Padding + záporný margin: maska nesmí ořezávat ascendery/descendery
-   při line-height < 1 (Fraunces má vysoké akcenty — Č, ž, í). */
+   při line-height < 1 (Instrument Serif má vysoké akcenty — Č, ž, í). */
 .hero-word {
   display: inline-block;
   overflow: hidden;
@@ -135,7 +137,6 @@ html.lenis, html.lenis body { height: auto; }
 /* Big decorative section numeral — obrysový inkoust, ne azur (akcent šetříme) */
 .section-numeral {
   font-family: var(--font-display), Georgia, serif;
-  font-weight: 500;
   font-style: italic;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -146,7 +147,6 @@ html.lenis, html.lenis body { height: auto; }
 /* Tmavá varianta numerálu pro inkoustové sekce */
 .section-numeral-dark {
   font-family: var(--font-display), Georgia, serif;
-  font-weight: 500;
   font-style: italic;
   letter-spacing: -0.04em;
   line-height: 1;
