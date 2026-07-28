@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { MessageCircle, ArrowUpRight } from 'lucide-react'
+import { Shield, MessageCircle, ArrowUpRight, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import {
   calcHealthScore,
@@ -46,6 +46,23 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     unreadCounts[m.client_id] = (unreadCounts[m.client_id] || 0) + 1
   }
 
+  // Plan reactions — počet sekcí se statusem 'interested' nebo 'question' + vybrané varianty.
+  // Zobrazeno jako cyan badge; advisor se rozhodne jak zareagovat.
+  const { data: planInterests } = await (supabase.from('plan_section_interest') as any)
+    .select('client_id, status')
+    .in('status', ['interested', 'question'])
+
+  const { data: planVariantSel } = await (supabase.from('plan_variant_selection') as any)
+    .select('client_id')
+
+  const reactionCounts: Record<string, number> = {}
+  for (const r of (planInterests as Array<{ client_id: string }> | null) ?? []) {
+    reactionCounts[r.client_id] = (reactionCounts[r.client_id] || 0) + 1
+  }
+  for (const v of (planVariantSel as Array<{ client_id: string }> | null) ?? []) {
+    reactionCounts[v.client_id] = (reactionCounts[v.client_id] || 0) + 1
+  }
+
   const statusCounts: Record<string, number> = Object.fromEntries(
     CLIENT_STATUS_VALUES.map((s) => [s, 0]),
   )
@@ -64,8 +81,8 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
       <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#162459] flex items-end justify-end p-1.5">
-              <span className="block w-1.5 h-1.5 rounded-full bg-[#009EE2]" />
+            <div className="w-9 h-9 rounded-none bg-[#162459] flex items-center justify-center">
+              <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
             <span className="font-bold text-[#162459] text-lg tracking-tight">Poradce do kapsy</span>
             <span className="ml-2 text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-[#009EE2]/10 text-[#0079AD] border border-[#009EE2]/30 font-semibold">
@@ -161,13 +178,25 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                       className="client-row group hover:bg-[#F6F4EE] transition-colors"
                     >
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-medium text-[#162459] text-sm md:text-[15px]">
                             {client.full_name || '(bez jména)'}
                           </span>
                           {unreadCounts[client.id] > 0 && (
-                            <span className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
+                            <span
+                              title={`${unreadCounts[client.id]} nepřečtených zpráv`}
+                              className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center"
+                            >
                               {unreadCounts[client.id]}
+                            </span>
+                          )}
+                          {reactionCounts[client.id] > 0 && (
+                            <span
+                              title={`${reactionCounts[client.id]} reakcí na plán`}
+                              className="inline-flex items-center gap-1 bg-[#009EE2]/12 text-[#0079AD] text-[10px] font-bold rounded-full border border-[#009EE2]/30 h-5 px-1.5"
+                            >
+                              <Sparkles className="w-2.5 h-2.5" />
+                              {reactionCounts[client.id]}
                             </span>
                           )}
                         </div>

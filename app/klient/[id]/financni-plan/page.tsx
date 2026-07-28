@@ -51,36 +51,66 @@ const statusConfig = {
 
 function VariantCard({ variant, index }: { variant: Variant; index: number }) {
   const [open, setOpen] = useState(false)
-  const gradient = companyColors[variant.company] || 'from-[#66708C] to-[#3A4568]'
+  const gradient = companyColors[variant.company] || 'from-[#162459] to-[#243471]'
   return (
-    <div className="border border-[#E4DFD2] rounded-none overflow-hidden hover:shadow-md transition-shadow">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-4 p-4 text-left hover:bg-[#F6F4EE] transition-colors">
-        <div className={`w-11 h-11 rounded-none bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm`}>
+    <div
+      className={`rounded-none overflow-hidden transition-all border ${
+        open
+          ? 'border-[#009EE2] bg-[#009EE2]/5 shadow-[inset_0_0_0_1px_#009EE2]'
+          : 'border-[#E4DFD2] bg-[#FDFCF8] hover:border-[#009EE2]/40 hover:shadow-sm'
+      }`}
+    >
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-4 p-4 text-left transition-colors"
+      >
+        <div
+          className={`w-11 h-11 rounded-none bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm`}
+        >
           {variant.logo}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-[#162459]">{variant.company}</h4>
-          <p className="text-xs text-[#8B93A8]">Varianta {index + 1}</p>
+          <h4 className="font-semibold text-[#162459] text-[15px]">{variant.company}</h4>
+          <p className="text-[11px] tracking-[0.15em] uppercase text-[#66708C] mt-0.5">
+            Varianta {index + 1}
+          </p>
         </div>
         <div className="text-right flex-shrink-0 mr-2">
-          <span className="text-lg font-bold text-[#162459]">{variant.monthlyPayment}</span>
-          <p className="text-xs text-[#8B93A8]">/ měsíc</p>
+          <span className="font-display text-[#162459] text-xl">{variant.monthlyPayment}</span>
+          <p className="text-[11px] tracking-[0.1em] uppercase text-[#66708C]">/ měsíc</p>
         </div>
-        {open ? <ChevronUp className="w-5 h-5 text-[#8B93A8]" /> : <ChevronDown className="w-5 h-5 text-[#8B93A8]" />}
+        {open ? (
+          <ChevronUp className="w-5 h-5 text-[#0079AD]" strokeWidth={1.8} />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-[#66708C]" strokeWidth={1.8} />
+        )}
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
             <div className="px-4 pb-4">
-              <Separator className="mb-3" />
-              <div className="space-y-3">
+              <Separator className="mb-3 bg-[#E4DFD2]" />
+              <div className="space-y-2">
                 {Object.entries(variant.params).map(([key, detail]) => (
-                  <div key={key} className="bg-[#F6F4EE]/70 rounded-none px-4 py-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-[#3A4568]">{key}</span>
-                      <span className="text-sm font-bold text-[#162459] bg-[#FDFCF8] px-3 py-0.5 rounded-none shadow-sm">{detail.value}</span>
+                  <div
+                    key={key}
+                    className="bg-white/70 backdrop-blur-sm rounded-none px-4 py-3 border border-[#E4DFD2]"
+                  >
+                    <div className="flex items-center justify-between mb-1 gap-3">
+                      <span className="text-[13px] font-medium text-[#162459]/80">{key}</span>
+                      <span className="text-sm font-semibold text-[#162459] bg-[#F6F4EE] border border-[#E4DFD2] px-3 py-0.5 rounded-none">
+                        {detail.value}
+                      </span>
                     </div>
-                    {detail.note && <p className="text-xs text-[#8B93A8] leading-relaxed">{detail.note}</p>}
+                    {detail.note && (
+                      <p className="text-xs text-[#66708C] leading-relaxed mt-1">{detail.note}</p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -148,7 +178,7 @@ export default function FinancniPlanPage() {
   const hasPlan = planSections.length > 0
 
   return (
-    <div className="max-w-5xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
       <div className="mb-10">
         <Link
           href={`/klient/${id}`}

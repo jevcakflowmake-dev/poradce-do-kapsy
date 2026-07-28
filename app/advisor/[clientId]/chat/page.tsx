@@ -26,7 +26,7 @@ export default async function AdvisorChatPage({ params }: { params: Promise<{ cl
     <div className="min-h-screen bg-[#F6F4EE] flex flex-col">
       {/* Navbar */}
       <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto flex items-center gap-3">
+        <div className="max-w-7xl mx-auto flex items-center gap-3">
           <Link
             href={`/advisor/${clientId}`}
             className="inline-flex items-center gap-1 text-[#66708C] hover:text-[#162459] transition-colors text-sm font-medium"
@@ -50,7 +50,7 @@ export default async function AdvisorChatPage({ params }: { params: Promise<{ cl
 
       {/* Chat */}
       <div
-        className="flex-1 max-w-5xl mx-auto w-full px-6 md:px-10 lg:px-16 xl:px-20 py-6 flex flex-col"
+        className="flex-1 max-w-7xl mx-auto w-full px-6 md:px-10 lg:px-16 xl:px-20 py-6 flex flex-col"
         style={{ height: 'calc(100vh - 73px)' }}
       >
         <div className="flex-1 bg-[#FDFCF8] rounded-none border border-[#E4DFD2] overflow-hidden flex flex-col shadow-[0_10px_30px_-10px_rgba(22,36,89,0.08)]">

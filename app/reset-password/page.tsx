@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { Loader2, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AuthShell from '@/components/auth/AuthShell'
 
@@ -24,48 +25,104 @@ const schema = z
 
 type FormData = z.infer<typeof schema>
 
-export default function UpdatePasswordPage() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [checkingSession, setCheckingSession] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
+type Phase = 'verifying' | 'invalid' | 'ready' | 'saving' | 'done'
+
+export default function ResetPasswordPage() {
   const router = useRouter()
+  const [phase, setPhase] = useState<Phase>('verifying')
+  const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
-  // Bez aktivní session (z reset-password emailu by ji měl ustavit /auth/callback)
-  // nemá smysl form zobrazovat — pošleme uživatele zpět na žádost o reset.
+  // Po příchodu z reset emailu Supabase vrátí buď ?code=… (PKCE) nebo
+  // #access_token=…&type=recovery (implicit). Oboje zde rozluštíme a
+  // ustavíme session, aby následný updateUser fungoval.
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.replace('/forgot-password?error=expired')
-        return
+    const url = new URL(window.location.href)
+    const code = url.searchParams.get('code')
+
+    async function init() {
+      try {
+        // 1) Když dorazil PKCE code, exchange ho
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code)
+          if (error) throw error
+          setPhase('ready')
+          return
+        }
+
+        // 2) Implicit flow — token v hash fragmentu, supabase-js ho v
+        // detectSessionInUrl posbírá sám. Vyčkáme na auth state.
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+          setPhase('ready')
+          return
+        }
+
+        // 3) Nic — link je expirovaný / neplatný
+        setPhase('invalid')
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Neplatný odkaz'
+        setError(msg)
+        setPhase('invalid')
       }
-      setCheckingSession(false)
-    })
-  }, [router])
+    }
+    init()
+  }, [])
 
   async function onSubmit(data: FormData) {
-    setLoading(true)
+    setPhase('saving')
     setError(null)
     const supabase = createClient()
     const { error } = await supabase.auth.updateUser({ password: data.password })
     if (error) {
       setError(error.message)
-      setLoading(false)
-    } else {
-      router.push('/dashboard')
+      setPhase('ready')
+      return
     }
+    setPhase('done')
+    setTimeout(() => router.push('/dashboard'), 500)
   }
 
-  if (checkingSession) {
+  if (phase === 'verifying') {
     return (
-      <AuthShell numeral="↻" eyebrow="Načítám…" title={<>Moment.</>} subtitle="Ověřuji odkaz z e-mailu.">
+      <AuthShell
+        numeral="↻"
+        eyebrow="Ověřuji odkaz"
+        title={<>Moment.</>}
+        subtitle="Ověřuji odkaz z e-mailu — chvíli to potrvá."
+      >
         <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-10 flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-[#009EE2]" />
+        </div>
+      </AuthShell>
+    )
+  }
+
+  if (phase === 'invalid') {
+    return (
+      <AuthShell
+        numeral="✗"
+        eyebrow="Odkaz neplatí"
+        title={<>Odkaz je <span style={{ fontStyle: 'italic', color: '#009EE2' }}>neplatný</span>.</>}
+        subtitle="Reset odkazy platí 60 minut a každý lze použít jen jednou. Pošlu vám nový."
+      >
+        <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-8 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-none mb-5 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.25)]">
+            <AlertCircle className="w-7 h-7 text-[#c2410c]" strokeWidth={1.8} />
+          </div>
+          {error && <p className="text-sm text-[#c2410c] mb-4">{error}</p>}
+          <Link
+            href="/forgot-password"
+            className="inline-flex items-center gap-2 px-5 h-11 rounded-none font-semibold text-white text-sm transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: '#162459' }}
+          >
+            Vyžádat nový odkaz <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </AuthShell>
     )
@@ -79,7 +136,7 @@ export default function UpdatePasswordPage() {
       subtitle="Zadejte heslo aspoň 8 znaků. Po uložení vás přesměrujeme do vašeho prostoru."
     >
       <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">
-        {error && (
+        {error && phase === 'ready' && (
           <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
             {error}
           </div>
@@ -102,11 +159,13 @@ export default function UpdatePasswordPage() {
           />
           <button
             type="submit"
-            disabled={loading}
+            disabled={phase === 'saving' || phase === 'done'}
             className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
             style={{ background: '#162459' }}
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Uložit nové heslo <ArrowRight className="w-4 h-4" /></>)}
+            {phase === 'saving' ? <Loader2 className="w-5 h-5 animate-spin" /> :
+             phase === 'done' ? 'Hotovo, přesměrovávám…' :
+             (<>Uložit nové heslo <ArrowRight className="w-4 h-4" /></>)}
           </button>
         </form>
       </div>
