@@ -1,22 +1,43 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Poradce do kapsy — „inkoust a papír“
+   Paleta: papír #F6F4EE (dominantní) · inkoust #162459 (podpůrná)
+   · hluboký inkoust #0B111F (tmavé sekce) · azur #009EE2 (akcent)
+   Pozadí nikdy čistě bílé ani černé.
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
+  --background: #F6F4EE;
   --foreground: #162459;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Inkoust */
   --color-navy: #162459;
   --color-navy-light: #243471;
   --color-navy-deep: #0e1a3d;
+  --color-ink: #0B111F;
+
+  /* Papír */
+  --color-paper: #F6F4EE;
+  --color-paper-raised: #FDFCF8;
+  --color-paper-deep: #EFEBE0;
+
+  /* Akcent — střídmě: linky, podtržení, jedno slovo */
   --color-accent: #009EE2;
   --color-accent-light: #1a9fdd;
-  --color-accent-dark: #0088c6;
-  --color-muted: #818EAF;
-  --color-surface: #E8E9EE;
-  --color-surface-soft: #f8f9fc;
+  --color-accent-dark: #0079AD;
+
+  /* Neutrály — teplé hairlines na papíru, chladné na inkoustu */
+  --color-muted: #66708C;
+  --color-hairline: #E4DFD2;
+  --color-surface: #EFEBE0;
+  --color-surface-soft: #FBF9F4;
+
   --font-sans: var(--font-body);
   --font-serif: var(--font-display);
 }
@@ -28,10 +49,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar */
+/* Scrollbar — inkoustový proužek na papíru */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #EFEBE0; }
+::-webkit-scrollbar-thumb { background: #C9C2B2; border-radius: 3px; }
+
+/* Výběr textu — inkoust na azuru působí levně, radši inkoust + papír */
+::selection { background: #162459; color: #F6F4EE; }
 
 /* Chat textarea */
 .chat-input {
@@ -47,7 +71,7 @@ body {
   font-feature-settings: 'ss01', 'ss02';
 }
 
-/* Noise texture overlay for dark sections */
+/* Noise texture — celoplošné zrno, jemnější na papíru než na inkoustu */
 .noise-overlay {
   position: absolute;
   inset: 0;
@@ -59,20 +83,36 @@ body {
   background-size: 320px 320px;
 }
 
-/* Radial accent glow behind hero copy */
+/* Varianta zrna pro světlé (papírové) sekce — multiply, nižší opacita */
+.noise-paper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.03;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 320px 320px;
+}
+
+/* Radial glow — na papíru azurový dech za hero copy */
 .hero-glow {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 80% 50% at 50% 40%, rgba(0, 158, 226, 0.12), transparent 60%);
+  background: radial-gradient(ellipse 70% 55% at 30% 35%, rgba(0, 158, 226, 0.07), transparent 60%);
   z-index: 1;
 }
 
-/* Hero headline word reveal — clip initial state, GSAP animates to visible */
+/* Hero headline word reveal — clip initial state, GSAP animates to visible.
+   Padding + záporný margin: maska nesmí ořezávat ascendery/descendery
+   při line-height < 1 (Fraunces má vysoké akcenty — Č, ž, í). */
 .hero-word {
   display: inline-block;
   overflow: hidden;
-  padding-right: 0.12em;
+  padding: 0.16em 0.12em 0.18em 0;
+  margin: -0.16em 0 -0.18em 0;
+  vertical-align: bottom;
 }
 
 .hero-word > span {
@@ -92,15 +132,37 @@ html.lenis, html.lenis body { height: auto; }
 /* Reveal helpers (initial states for GSAP scroll reveal) */
 .reveal-up { opacity: 0; transform: translate3d(0, 40px, 0); will-change: transform, opacity; }
 
-/* Big decorative section numeral */
+/* Big decorative section numeral — obrysový inkoust, ne azur (akcent šetříme) */
 .section-numeral {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 500;
   font-style: italic;
   letter-spacing: -0.04em;
   line-height: 1;
-  color: var(--color-accent);
-  opacity: 0.22;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(22, 36, 89, 0.28);
+}
+
+/* Tmavá varianta numerálu pro inkoustové sekce */
+.section-numeral-dark {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(246, 244, 238, 0.22);
+}
+
+/* Obrysový numerál v řádku procesu — hover ho vyplní azurem */
+.numeral-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(22, 36, 89, 0.35);
+  transition: color 0.5s, -webkit-text-stroke-color 0.5s;
+}
+.group:hover .numeral-outline {
+  color: #009EE2;
+  -webkit-text-stroke-color: rgba(0, 158, 226, 0.4);
 }
 
 /* Underline sweep for nav links */
@@ -119,10 +181,53 @@ html.lenis, html.lenis body { height: auto; }
 }
 .nav-link:hover::after { width: 100%; }
 
-/* Soft card hover glow */
+/* Soft card hover — zdvih bez stínové exploze, stín řeší border + underline */
 .card-hoverable {
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s, border-color 0.45s;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s, border-color 0.45s, background-color 0.45s;
 }
 .card-hoverable:hover {
   transform: translateY(-4px);
+}
+
+/* Art-directed hairline — krátká inkoustová linka místo defaultního <hr> */
+.rule-ink {
+  height: 1px;
+  width: 3.5rem;
+  background: #162459;
+  opacity: 0.35;
+}
+.rule-accent {
+  height: 1px;
+  width: 3.5rem;
+  background: #009EE2;
+}
+
+/* Vlastní kurzor — tečka + prstenec, jen desktop s jemnou myší */
+@media (pointer: fine) {
+  .cursor-dot,
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    border-radius: 9999px;
+    will-change: transform;
+  }
+  .cursor-dot {
+    width: 6px;
+    height: 6px;
+    background: #009EE2;
+  }
+  .cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(22, 36, 89, 0.35);
+    transition: width 0.25s, height 0.25s, border-color 0.25s;
+  }
+  .cursor-ring.is-active {
+    width: 52px;
+    height: 52px;
+    border-color: rgba(0, 158, 226, 0.7);
+  }
 }

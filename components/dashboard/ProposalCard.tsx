@@ -33,24 +33,24 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
 
   return (
     <div
-      className={`rounded-xl border transition-all cursor-pointer ${
-        read ? 'border-slate-100 bg-white' : 'border-blue-200 bg-blue-50/50'
+      className={`rounded-none border transition-all cursor-pointer ${
+        read ? 'border-[#EFEBE0] bg-[#FDFCF8]' : 'border-[#009EE2]/30 bg-[#009EE2]/5'
       }`}
       onClick={handleClick}
     >
       <div className="p-4 flex items-start gap-3">
-        {!read && <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0" />}
+        {!read && <span className="w-2 h-2 rounded-full bg-[#009EE2] mt-2 shrink-0" />}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ background: colors.bg, color: colors.text }}>
               {proposalTypeLabel(proposal.type)}
             </span>
-            <span className="text-xs text-slate-400">{formatDate(proposal.created_at)}</span>
+            <span className="text-xs text-[#8B93A8]">{formatDate(proposal.created_at)}</span>
           </div>
-          <div className="font-semibold text-slate-800 mt-1.5 text-sm">{proposal.title}</div>
+          <div className="font-semibold text-[#162459] mt-1.5 text-sm">{proposal.title}</div>
         </div>
         <svg
-          className={`w-4 h-4 text-slate-300 shrink-0 mt-1 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-[#D8D2C2] shrink-0 mt-1 transition-transform ${expanded ? 'rotate-180' : ''}`}
           fill="none" stroke="currentColor" viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -58,14 +58,14 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
       </div>
 
       {expanded && (
-        <div className="px-4 pb-4 border-t border-slate-100 pt-3 space-y-3" onClick={e => e.stopPropagation()}>
+        <div className="px-4 pb-4 border-t border-[#EFEBE0] pt-3 space-y-3" onClick={e => e.stopPropagation()}>
           {proposal.content && (
-            <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{proposal.content}</p>
+            <p className="text-sm text-[#3A4568] whitespace-pre-wrap leading-relaxed">{proposal.content}</p>
           )}
           {proposal.file_url && (
             <div>
-              <p className="text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">Příloha PDF</p>
-              <iframe src={proposal.file_url} className="w-full h-64 rounded-xl border border-slate-100" title={proposal.title} />
+              <p className="text-xs font-medium text-[#8B93A8] mb-2 uppercase tracking-wide">Příloha PDF</p>
+              <iframe src={proposal.file_url} className="w-full h-64 rounded-none border border-[#EFEBE0]" title={proposal.title} />
               <a href={proposal.file_url} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium" style={{ color: '#162459' }}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

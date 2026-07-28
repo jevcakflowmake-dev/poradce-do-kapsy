@@ -77,22 +77,22 @@ export default function OnboardingWizard({ userId, initialName }: { userId: stri
   const numeral = `0${step + 1}`
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] flex flex-col">
+    <div className="min-h-screen bg-[#F6F4EE] flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-[#E8E9EE] px-6 md:px-10 py-5 sticky top-0 z-20">
+      <div className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 py-5 sticky top-0 z-20">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs tracking-[0.2em] uppercase text-[#818EAF] font-semibold">
+            <span className="text-xs tracking-[0.2em] uppercase text-[#66708C] font-semibold">
               Krok {step + 1} / {STEPS.length}
             </span>
             <span className="text-sm font-medium text-[#162459]">{STEPS[step]}</span>
           </div>
-          <div className="h-1 bg-[#E8E9EE] rounded-full overflow-hidden">
+          <div className="h-1 bg-[#E4DFD2] rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{
                 width: `${progress}%`,
-                background: 'linear-gradient(90deg, #009EE2, #0088c6)',
+                background: '#009EE2',
               }}
             />
           </div>
@@ -100,7 +100,7 @@ export default function OnboardingWizard({ userId, initialName }: { userId: stri
             {STEPS.map((label, i) => (
               <span
                 key={i}
-                className={`${i <= step ? 'text-[#0088c6] font-semibold' : 'text-[#818EAF]'} transition-colors`}
+                className={`${i <= step ? 'text-[#0079AD] font-semibold' : 'text-[#66708C]'} transition-colors`}
               >
                 {label}
               </span>
@@ -114,7 +114,7 @@ export default function OnboardingWizard({ userId, initialName }: { userId: stri
         <div className="w-full max-w-2xl">
           <div className="mb-8">
             <div className="section-numeral text-[3rem] md:text-[4rem] mb-2">{numeral}</div>
-            <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">
+            <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">
               Onboarding · o vás
             </p>
           </div>

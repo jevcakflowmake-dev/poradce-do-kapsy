@@ -49,10 +49,10 @@ export default function ForgotPasswordPage() {
         : 'Zadejte e-mail, se kterým jste se registrovali. Pošleme odkaz, přes který si nastavíte nové heslo.'
       }
     >
-      <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+      <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">
         {sent ? (
           <div className="text-center py-4">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 bg-[#16a34a]/10 border border-[#16a34a]/25">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-none mb-5 bg-[#16a34a]/10 border border-[#16a34a]/25">
               <CheckCircle2 className="w-7 h-7 text-[#15803d]" strokeWidth={1.8} />
             </div>
             <h2
@@ -61,12 +61,12 @@ export default function ForgotPasswordPage() {
             >
               Zkontrolujte schránku
             </h2>
-            <p className="text-sm text-[#818EAF] mb-6">
+            <p className="text-sm text-[#66708C] mb-6">
               Odkaz na reset hesla platí 60 minut. Pokud ho nevidíte, zkontrolujte spam.
             </p>
             <Link
               href="/login"
-              className="text-sm font-semibold text-[#0088c6] hover:text-[#162459] transition-colors inline-flex items-center gap-1 hover:gap-2"
+              className="text-sm font-semibold text-[#0079AD] hover:text-[#162459] transition-colors inline-flex items-center gap-1 hover:gap-2"
             >
               ← Zpět na přihlášení
             </Link>
@@ -74,13 +74,13 @@ export default function ForgotPasswordPage() {
         ) : (
           <>
             {error && (
-              <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-xl text-sm text-[#c2410c]">
+              <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
                 {error}
               </div>
             )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
                   E-mail
                 </label>
                 <input
@@ -88,20 +88,20 @@ export default function ForgotPasswordPage() {
                   type="email"
                   placeholder="vas@email.cz"
                   autoComplete="email"
-                  className="w-full h-11 px-4 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+                  className="w-full h-11 px-4 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] placeholder:text-[#66708C] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
                 />
                 {errors.email && <p className="mt-1.5 text-xs text-[#c2410c]">{errors.email.message}</p>}
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-                style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+                className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+                style={{ background: '#162459' }}
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Poslat odkaz pro reset'}
               </button>
             </form>
-            <p className="text-center text-sm text-[#818EAF] mt-6">
+            <p className="text-center text-sm text-[#66708C] mt-6">
               <Link href="/login" className="hover:text-[#162459] transition-colors">
                 ← Zpět na přihlášení
               </Link>

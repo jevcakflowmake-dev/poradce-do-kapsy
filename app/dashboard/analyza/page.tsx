@@ -47,7 +47,7 @@ const sections = [
     id: 'housing',
     title: 'Bydlení',
     icon: Home,
-    color: 'from-[#009EE2] to-[#0088c6]',
+    color: 'from-[#009EE2] to-[#0079AD]',
     questions: [
       { id: 'has_mortgage', label: 'Máte hypotéku?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'plan_mortgage', label: 'Pokud ne, plánujete ji řešit?', type: 'select', options: ['Ano', 'Ne', 'Možná v budoucnu'] },
@@ -72,7 +72,7 @@ const sections = [
     id: 'children',
     title: 'Děti',
     icon: Baby,
-    color: 'from-[#009EE2] to-[#0088c6]',
+    color: 'from-[#009EE2] to-[#0079AD]',
     questions: [
       { id: 'children_count', label: 'Kolik máte dětí?', type: 'number', placeholder: '0' },
       { id: 'children_ages', label: 'Jaký je jejich věk? (oddělte čárkou)', type: 'text', placeholder: '5, 8, 12' },
@@ -99,7 +99,7 @@ const sections = [
     id: 'property',
     title: 'Pojištění majetku',
     icon: Building2,
-    color: 'from-[#009EE2] to-[#0088c6]',
+    color: 'from-[#009EE2] to-[#0079AD]',
     questions: [
       { id: 'has_car', label: 'Vlastníte auto?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'car_insurance', label: 'Jak jej máte pojištěné?', type: 'select', options: ['Povinné ručení', 'Povinné ručení + havarijní', 'Nemám pojištění', 'Nevlastním auto'] },
@@ -256,20 +256,20 @@ export default function AnalyzaPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="section-numeral text-[4rem] md:text-[6rem] mb-3">✓</div>
-          <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Hotovo · poradce je o tom ví</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Hotovo · poradce je o tom ví</p>
           <h1
             className="font-display text-[#162459] mb-5"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
             Analýza <span style={{ fontStyle: 'italic', color: '#009EE2' }}>odeslána</span>.
           </h1>
-          <p className="text-[#818EAF] mb-10 max-w-md mx-auto leading-relaxed">
+          <p className="text-[#66708C] mb-10 max-w-md mx-auto leading-relaxed">
             Váš poradce připraví finanční plán na základě vašich odpovědí. Výsledky obvykle do 48 hodin.
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: '#162459' }}
           >
             <ArrowLeft className="w-4 h-4" /> Zpět na přehled
           </Link>
@@ -297,12 +297,12 @@ export default function AnalyzaPage() {
       >
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-[#818EAF] hover:text-[#162459] transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-sm text-[#66708C] hover:text-[#162459] transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
         <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">02</div>
-        <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Analýza · o vaší situaci</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Analýza · o vaší situaci</p>
         <div className="flex items-start justify-between gap-4">
           <h1
             className="font-display text-[#162459]"
@@ -321,13 +321,13 @@ export default function AnalyzaPage() {
                       : 'bg-[#ea580c]'
                 }`}
               />
-              <span className="text-[#818EAF]">
+              <span className="text-[#66708C]">
                 {saveStatus === 'saving' ? 'Ukládám…' : saveStatus === 'saved' ? 'Uloženo' : 'Chyba'}
               </span>
             </div>
           )}
         </div>
-        <p className="text-[#818EAF] mt-3 max-w-xl leading-relaxed">
+        <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
           Odpovězte na otázky v jednotlivých sekcích. Čím víc vyplníte, tím přesnější plán dostanete. Průběh se ukládá sám.
         </p>
       </motion.div>
@@ -344,14 +344,14 @@ export default function AnalyzaPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: sIdx * 0.05 }}
-              className="bg-white rounded-3xl border border-[#E8E9EE] overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.12)]"
+              className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.12)]"
             >
               <button
                 onClick={() => toggleSection(section.id)}
                 className="w-full flex items-center gap-4 p-5 md:p-6 text-left"
               >
                 <div
-                  className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${section.color} flex items-center justify-center flex-shrink-0 shadow-sm`}
+                  className={`w-11 h-11 rounded-none bg-gradient-to-br ${section.color} flex items-center justify-center flex-shrink-0 shadow-sm`}
                 >
                   <section.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
                 </div>
@@ -363,16 +363,16 @@ export default function AnalyzaPage() {
                     {section.title}
                   </h3>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <div className="w-28 h-1 bg-[#E8E9EE] rounded-full overflow-hidden">
+                    <div className="w-28 h-1 bg-[#E4DFD2] rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-700"
                         style={{
                           width: `${progress}%`,
-                          background: 'linear-gradient(90deg, #009EE2, #0088c6)',
+                          background: '#009EE2',
                         }}
                       />
                     </div>
-                    <span className="text-xs text-[#818EAF] tabular-nums">{progress}%</span>
+                    <span className="text-xs text-[#66708C] tabular-nums">{progress}%</span>
                   </div>
                 </div>
                 {progress === 100 && (
@@ -381,9 +381,9 @@ export default function AnalyzaPage() {
                   </div>
                 )}
                 {isExpanded ? (
-                  <ChevronUp className="w-5 h-5 text-[#818EAF] flex-shrink-0" />
+                  <ChevronUp className="w-5 h-5 text-[#66708C] flex-shrink-0" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-[#818EAF] flex-shrink-0" />
+                  <ChevronDown className="w-5 h-5 text-[#66708C] flex-shrink-0" />
                 )}
               </button>
 
@@ -396,18 +396,18 @@ export default function AnalyzaPage() {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="h-px bg-[#E8E9EE]" />
+                    <div className="h-px bg-[#E4DFD2]" />
                     <div className="p-5 md:p-7 space-y-5">
                       {section.questions.map(q => (
                         <div key={q.id}>
-                          <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+                          <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
                             {q.label}
                           </label>
                           {q.type === 'select' ? (
                             <select
                               value={data[section.id]?.[q.id] || ''}
                               onChange={e => updateField(section.id, q.id, e.target.value)}
-                              className="w-full h-11 rounded-xl border border-[#E8E9EE] bg-white px-4 text-[15px] text-[#162459] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+                              className="w-full h-11 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] px-4 text-[15px] text-[#162459] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
                             >
                               <option value="">Vyberte…</option>
                               {q.options?.map(opt => (
@@ -422,10 +422,10 @@ export default function AnalyzaPage() {
                                 return (
                                   <label
                                     key={opt}
-                                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all text-sm ${
+                                    className={`flex items-center gap-2 px-3 py-2.5 rounded-none border cursor-pointer transition-all text-sm ${
                                       checked
-                                        ? 'border-[#009EE2] bg-[#009EE2]/8 text-[#0088c6] shadow-[inset_0_0_0_1px_#009EE2]'
-                                        : 'border-[#E8E9EE] bg-white text-[#162459] hover:border-[#009EE2]/50'
+                                        ? 'border-[#009EE2] bg-[#009EE2]/8 text-[#0079AD] shadow-[inset_0_0_0_1px_#009EE2]'
+                                        : 'border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] hover:border-[#009EE2]/50'
                                     }`}
                                   >
                                     <input
@@ -453,18 +453,18 @@ export default function AnalyzaPage() {
                         </div>
                       ))}
 
-                      <div className="h-px bg-[#E8E9EE]" />
+                      <div className="h-px bg-[#E4DFD2]" />
 
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+                        <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
                           Přílohy (PDF, foto smluv)
                         </label>
                         <button
                           onClick={() => { setActiveUploadSection(section.id); fileRef.current?.click() }}
-                          className="w-full border border-dashed border-[#E8E9EE] rounded-2xl p-5 text-center hover:border-[#009EE2] hover:bg-[#009EE2]/5 transition-all group"
+                          className="w-full border border-dashed border-[#E4DFD2] rounded-none p-5 text-center hover:border-[#009EE2] hover:bg-[#009EE2]/5 transition-all group"
                         >
-                          <Upload className="w-5 h-5 text-[#818EAF] mx-auto mb-1.5 group-hover:text-[#0088c6]" />
-                          <span className="text-sm text-[#818EAF] group-hover:text-[#162459]">
+                          <Upload className="w-5 h-5 text-[#66708C] mx-auto mb-1.5 group-hover:text-[#0079AD]" />
+                          <span className="text-sm text-[#66708C] group-hover:text-[#162459]">
                             Klikněte pro nahrání PDF nebo fotky
                           </span>
                         </button>
@@ -473,12 +473,12 @@ export default function AnalyzaPage() {
                             {sectionFiles.map(f => (
                               <div
                                 key={f.name}
-                                className="flex items-center gap-2 bg-[#f8f9fc] rounded-xl px-3 py-2.5 text-sm border border-[#E8E9EE]"
+                                className="flex items-center gap-2 bg-[#F6F4EE] rounded-none px-3 py-2.5 text-sm border border-[#E4DFD2]"
                               >
-                                <FileText className="w-4 h-4 text-[#818EAF]" />
+                                <FileText className="w-4 h-4 text-[#66708C]" />
                                 <span className="flex-1 text-[#162459] truncate">{f.name}</span>
-                                <span className="text-xs text-[#818EAF]">{(f.size / 1024).toFixed(0)} KB</span>
-                                <button onClick={() => removeFile(f.name)} className="text-[#818EAF] hover:text-[#c2410c]">
+                                <span className="text-xs text-[#66708C]">{(f.size / 1024).toFixed(0)} KB</span>
+                                <button onClick={() => removeFile(f.name)} className="text-[#66708C] hover:text-[#c2410c]">
                                   <X className="w-4 h-4" />
                                 </button>
                               </div>
@@ -504,8 +504,8 @@ export default function AnalyzaPage() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-          style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+          style={{ background: '#162459' }}
         >
           {loading ? 'Odesílám…' : 'Odeslat analýzu'}
           <ArrowRight className="w-4 h-4" />

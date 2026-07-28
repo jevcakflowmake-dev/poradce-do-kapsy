@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "poradce-do-kapsy",
+      "name": "pdk-redesign",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeArgs": ["--prefix", "/Users/jevci/Desktop/Claude/poradce-do-kapsy", "run", "dev", "--", "--port", "3457"],
+      "port": 3457
     }
   ]
 }

@@ -82,9 +82,9 @@ export default function LoginForm() {
         title={<>Zkontrolujte <span style={{ fontStyle: 'italic', color: '#009EE2' }}>schránku</span>.</>}
         subtitle="Poslali jsme vám přihlašovací odkaz. Klikněte na něj pro přihlášení — link je platný 60 minut."
       >
-        <div className="bg-white rounded-3xl border border-[#E8E9EE] p-8 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 bg-[#009EE2]/10 border border-[#009EE2]/25">
-            <Mail className="w-7 h-7 text-[#0088c6]" strokeWidth={1.8} />
+        <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-8 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-none mb-5 bg-[#009EE2]/10 border border-[#009EE2]/25">
+            <Mail className="w-7 h-7 text-[#0079AD]" strokeWidth={1.8} />
           </div>
           <h2
             className="font-display text-[#162459] mb-2"
@@ -92,12 +92,12 @@ export default function LoginForm() {
           >
             E-mail je na cestě
           </h2>
-          <p className="text-sm text-[#818EAF] mb-6">
+          <p className="text-sm text-[#66708C] mb-6">
             Pokud zprávu nevidíte do 2 minut, zkuste to znovu nebo zkontrolujte spam.
           </p>
           <button
             onClick={() => { setMagicLinkSent(false); setMagicLink(false) }}
-            className="text-sm font-semibold text-[#0088c6] hover:text-[#162459] transition-colors inline-flex items-center gap-1 hover:gap-2"
+            className="text-sm font-semibold text-[#0079AD] hover:text-[#162459] transition-colors inline-flex items-center gap-1 hover:gap-2"
           >
             ← Zpět na přihlášení
           </button>
@@ -113,11 +113,11 @@ export default function LoginForm() {
       title={<>Vítejte <span style={{ fontStyle: 'italic', color: '#009EE2' }}>zpět</span>.</>}
       subtitle="Přihlaste se k účtu, nebo si nechte poslat odkaz bez hesla. Bez schůzek, bez papírování."
     >
-      <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+      <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">
         <button
           onClick={onGoogle}
           disabled={googleLoading}
-          className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-sm font-semibold border border-[#E8E9EE] bg-white hover:border-[#009EE2]/50 hover:bg-[#f8f9fc] text-[#162459] transition-all disabled:opacity-50 mb-5"
+          className="w-full flex items-center justify-center gap-3 py-3 rounded-none text-sm font-semibold border border-[#E4DFD2] bg-[#FDFCF8] hover:border-[#009EE2]/50 hover:bg-[#F6F4EE] text-[#162459] transition-all disabled:opacity-50 mb-5"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -129,13 +129,13 @@ export default function LoginForm() {
         </button>
 
         <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 h-px bg-[#E8E9EE]" />
-          <span className="text-[#818EAF] text-[11px] tracking-[0.2em] uppercase">nebo</span>
-          <div className="flex-1 h-px bg-[#E8E9EE]" />
+          <div className="flex-1 h-px bg-[#E4DFD2]" />
+          <span className="text-[#66708C] text-[11px] tracking-[0.2em] uppercase">nebo</span>
+          <div className="flex-1 h-px bg-[#E4DFD2]" />
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-xl text-sm text-[#c2410c]">
+          <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
             {error}
           </div>
         )}
@@ -155,19 +155,19 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-              style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+              style={{ background: '#162459' }}
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Přihlásit se <ArrowRight className="w-4 h-4" /></>)}
             </button>
             <div className="flex items-center justify-between mt-1 text-xs">
-              <Link href="/forgot-password" className="text-[#818EAF] hover:text-[#162459] transition-colors">
+              <Link href="/forgot-password" className="text-[#66708C] hover:text-[#162459] transition-colors">
                 Zapomenuté heslo?
               </Link>
               <button
                 type="button"
                 onClick={() => { setMagicLink(true); setError(null) }}
-                className="text-[#0088c6] hover:text-[#162459] transition-colors font-medium"
+                className="text-[#0079AD] hover:text-[#162459] transition-colors font-medium"
               >
                 Přihlásit odkazem v e-mailu →
               </button>
@@ -185,8 +185,8 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25"
-              style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25"
+              style={{ background: '#162459' }}
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Odeslat přihlašovací odkaz'}
             </button>
@@ -194,7 +194,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => { setMagicLink(false); setError(null) }}
-                className="text-[#818EAF] hover:text-[#162459] transition-colors"
+                className="text-[#66708C] hover:text-[#162459] transition-colors"
               >
                 ← Přihlásit se heslem
               </button>
@@ -203,9 +203,9 @@ export default function LoginForm() {
         )}
       </div>
 
-      <p className="text-center text-sm text-[#818EAF] mt-6">
+      <p className="text-center text-sm text-[#66708C] mt-6">
         Ještě nemáte účet?{' '}
-        <Link href="/signup" className="text-[#0088c6] hover:text-[#162459] font-semibold transition-colors">
+        <Link href="/signup" className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors">
           Vytvořit účet zdarma
         </Link>
       </p>
@@ -224,12 +224,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
         {label}
       </label>
       <input
         {...inputProps}
-        className="w-full h-11 px-4 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+        className="w-full h-11 px-4 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] placeholder:text-[#66708C] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
       />
       {error && <p className="mt-1.5 text-xs text-[#c2410c]">{error}</p>}
     </div>

@@ -163,16 +163,16 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
+    <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-5">
       <h2 className="font-semibold text-[#162459] mb-4">Odeslat návrh</h2>
 
       {success && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-none text-sm text-green-700">
           Návrh byl úspěšně odeslán
         </div>
       )}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-none text-sm text-red-700">
           {error}
         </div>
       )}
@@ -180,12 +180,12 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Type selector */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Typ návrhu</label>
+          <label className="block text-sm font-medium text-[#3A4568] mb-1.5">Typ návrhu</label>
           <div className="flex gap-2">
             {PROPOSAL_TYPES.map(t => (
               <label key={t.value} className="flex-1">
                 <input {...register('type')} type="radio" value={t.value} className="sr-only peer" />
-                <span className="block text-center py-2 text-xs font-medium border border-slate-200 rounded-lg cursor-pointer transition-all peer-checked:border-[#009EE2] peer-checked:bg-[#009EE2]/10 peer-checked:text-[#162459]">
+                <span className="block text-center py-2 text-xs font-medium border border-[#E4DFD2] rounded-none cursor-pointer transition-all peer-checked:border-[#009EE2] peer-checked:bg-[#009EE2]/10 peer-checked:text-[#162459]">
                   {t.label}
                 </span>
               </label>
@@ -195,10 +195,10 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
 
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Název návrhu</label>
+          <label className="block text-sm font-medium text-[#3A4568] mb-1.5">Název návrhu</label>
           <input
             {...register('title')}
-            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+            className="w-full px-3 py-2 border border-[#E4DFD2] rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
             placeholder={selectedType === 'insurance' ? 'Návrh životního pojištění' : selectedType === 'pension' ? 'Návrh penzijního plánu' : 'Investiční návrh'}
           />
           {errors.title && <p className="mt-1 text-xs text-red-600">{errors.title.message}</p>}
@@ -209,17 +209,17 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
           <>
             {/* Company selector */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Pojišťovna</label>
+              <label className="block text-sm font-medium text-[#3A4568] mb-2">Pojišťovna</label>
               <div className="grid grid-cols-4 gap-2">
                 {INSURANCE_LOGOS.map(company => (
                   <button
                     key={company.id}
                     type="button"
                     onClick={() => setSelectedCompany(company.id)}
-                    className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all text-center ${
+                    className={`flex flex-col items-center gap-1 p-3 rounded-none border-2 transition-all text-center ${
                       selectedCompany === company.id
                         ? 'border-[#009EE2] bg-[#009EE2]/10 shadow-sm'
-                        : 'border-slate-200 hover:border-[#818EAF] bg-white'
+                        : 'border-[#E4DFD2] hover:border-[#66708C] bg-[#FDFCF8]'
                     }`}
                   >
                     <span className="text-xl">{company.emoji}</span>
@@ -231,30 +231,30 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
 
             {/* Monthly price */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Měsíční cena pojištění</label>
+              <label className="block text-sm font-medium text-[#3A4568] mb-1.5">Měsíční cena pojištění</label>
               <div className="relative">
                 <input
                   type="number"
                   value={monthlyPrice}
                   onChange={e => setMonthlyPrice(e.target.value)}
-                  className="w-full px-3 py-2 pr-20 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+                  className="w-full px-3 py-2 pr-20 border border-[#E4DFD2] rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
                   placeholder="1 500"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#818EAF] font-medium">Kč/měsíc</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#66708C] font-medium">Kč/měsíc</span>
               </div>
             </div>
 
             {/* Insurance sections */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Sekce pojištění</label>
+              <label className="block text-sm font-medium text-[#3A4568] mb-2">Sekce pojištění</label>
               <div className="space-y-2">
                 {INSURANCE_SECTIONS.map(section => (
                   <div
                     key={section.id}
-                    className={`rounded-xl border transition-all ${
+                    className={`rounded-none border transition-all ${
                       enabledSections[section.id]
                         ? 'border-[#009EE2] bg-[#009EE2]/5'
-                        : 'border-slate-200 bg-white'
+                        : 'border-[#E4DFD2] bg-[#FDFCF8]'
                     }`}
                   >
                     <div className="flex items-center gap-3 p-3">
@@ -262,7 +262,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                         type="checkbox"
                         checked={!!enabledSections[section.id]}
                         onChange={() => toggleInsuranceSection(section.id)}
-                        className="rounded border-slate-300 text-[#009EE2] focus:ring-[#009EE2] w-4 h-4"
+                        className="rounded border-[#D8D2C2] text-[#009EE2] focus:ring-[#009EE2] w-4 h-4"
                       />
                       <span className="text-sm font-medium text-[#162459] flex-1">{section.label}</span>
                       {enabledSections[section.id] && (
@@ -271,10 +271,10 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                             type="number"
                             value={sectionAmounts[section.id] || ''}
                             onChange={e => updateSectionAmount(section.id, e.target.value)}
-                            className="w-28 px-2 py-1.5 border border-slate-200 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+                            className="w-28 px-2 py-1.5 border border-[#E4DFD2] rounded-none text-sm text-right focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
                             placeholder="0"
                           />
-                          <span className="text-xs text-[#818EAF] font-medium whitespace-nowrap w-16">{section.unit}</span>
+                          <span className="text-xs text-[#66708C] font-medium whitespace-nowrap w-16">{section.unit}</span>
                         </div>
                       )}
                     </div>
@@ -287,34 +287,34 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
 
         {/* Text description */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Textový popis (volitelné)</label>
+          <label className="block text-sm font-medium text-[#3A4568] mb-1.5">Textový popis (volitelné)</label>
           <textarea
             {...register('content')}
             rows={3}
-            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2] resize-none"
+            className="w-full px-3 py-2 border border-[#E4DFD2] rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2] resize-none"
             placeholder="Popis návrhu pro klienta..."
           />
         </div>
 
         {/* PDF upload */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">PDF dokument (volitelné)</label>
+          <label className="block text-sm font-medium text-[#3A4568] mb-1.5">PDF dokument (volitelné)</label>
           <input
             type="file"
             accept=".pdf"
             onChange={e => setFile(e.target.files?.[0] ?? null)}
-            className="w-full text-sm text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#009EE2]/10 file:text-[#162459] hover:file:bg-[#009EE2]/20"
+            className="w-full text-sm text-[#66708C] file:mr-3 file:py-1.5 file:px-3 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-[#009EE2]/10 file:text-[#162459] hover:file:bg-[#009EE2]/20"
           />
-          {file && <p className="mt-1 text-xs text-slate-500">{file.name}</p>}
+          {file && <p className="mt-1 text-xs text-[#66708C]">{file.name}</p>}
         </div>
 
         {/* Link */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Odkaz (volitelné)</label>
+          <label className="block text-sm font-medium text-[#3A4568] mb-1.5">Odkaz (volitelné)</label>
           <input
             {...register('link_url')}
             type="url"
-            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
+            className="w-full px-3 py-2 border border-[#E4DFD2] rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-[#009EE2]"
             placeholder="https://..."
           />
           {errors.link_url && <p className="mt-1 text-xs text-red-600">{errors.link_url.message}</p>}
@@ -323,7 +323,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
         <button
           type="submit"
           disabled={sending}
-          className="w-full py-2.5 bg-[#162459] hover:bg-[#162459]/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+          className="w-full py-2.5 bg-[#162459] hover:bg-[#162459]/90 text-white text-sm font-medium rounded-none transition-colors disabled:opacity-50"
         >
           {sending ? 'Odesílám...' : 'Odeslat návrh'}
         </button>

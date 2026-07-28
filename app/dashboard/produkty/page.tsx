@@ -27,7 +27,7 @@ const typeConfig = {
   pension: {
     label: 'Penzijní produkty',
     icon: Clock,
-    gradient: 'from-[#009EE2] to-[#0088c6]',
+    gradient: 'from-[#009EE2] to-[#0079AD]',
     numeral: '02',
   },
   invest: {
@@ -56,16 +56,16 @@ function InsuranceDetail({ content }: { content: string | null }) {
   try {
     const parsed = JSON.parse(content)
     if (!parsed.sections) {
-      return <p className="text-sm text-slate-500 mt-2">{content}</p>
+      return <p className="text-sm text-[#66708C] mt-2">{content}</p>
     }
 
     return (
-      <div className="mt-4 pt-4 border-t border-[#E8E9EE]">
+      <div className="mt-4 pt-4 border-t border-[#E4DFD2]">
         <div className="flex items-center gap-2 mb-3">
           {parsed.logo && <span className="text-lg">{parsed.logo}</span>}
           {parsed.company && <span className="text-sm font-semibold text-[#162459]">{parsed.company}</span>}
           {parsed.monthly_price && (
-            <span className="ml-auto text-sm font-bold text-[#0088c6]">
+            <span className="ml-auto text-sm font-bold text-[#0079AD]">
               {parsed.monthly_price} Kč/měsíc
             </span>
           )}
@@ -74,18 +74,18 @@ function InsuranceDetail({ content }: { content: string | null }) {
           {(parsed.sections as Array<{ id: string; amount: number }>).map((s) => (
             <div key={s.id} className="flex items-center gap-2 text-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-[#009EE2] shrink-0" />
-              <span className="text-[#818EAF]">{SECTION_LABELS[s.id] || s.id}</span>
+              <span className="text-[#66708C]">{SECTION_LABELS[s.id] || s.id}</span>
               <span className="font-medium text-[#162459] ml-auto tabular-nums">
                 {s.amount?.toLocaleString('cs-CZ')} Kč
               </span>
             </div>
           ))}
         </div>
-        {parsed.description && <p className="text-sm text-[#818EAF] mt-3">{parsed.description}</p>}
+        {parsed.description && <p className="text-sm text-[#66708C] mt-3">{parsed.description}</p>}
       </div>
     )
   } catch {
-    return <p className="text-sm text-[#818EAF] mt-2">{content}</p>
+    return <p className="text-sm text-[#66708C] mt-2">{content}</p>
   }
 }
 
@@ -129,19 +129,19 @@ export default function ProduktyPage() {
       >
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-[#818EAF] hover:text-[#162459] transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-sm text-[#66708C] hover:text-[#162459] transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
         <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">03</div>
-        <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Portfolio · co už máte</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Portfolio · co už máte</p>
         <h1
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
           Moje <span style={{ fontStyle: 'italic', color: '#009EE2' }}>produkty</span>
         </h1>
-        <p className="text-[#818EAF] mt-3 max-w-xl leading-relaxed">
+        <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
           Přehled vašich finančních produktů a platebních informací.
         </p>
       </motion.div>
@@ -159,7 +159,7 @@ export default function ProduktyPage() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div
-                className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${config.gradient} flex items-center justify-center shadow-sm`}
+                className={`w-10 h-10 rounded-none bg-gradient-to-br ${config.gradient} flex items-center justify-center shadow-sm`}
               >
                 <config.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
               </div>
@@ -169,27 +169,27 @@ export default function ProduktyPage() {
               >
                 {config.label}
               </h2>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-[#f8f9fc] text-[#818EAF] border border-[#E8E9EE] font-medium">
+              <span className="text-xs px-2.5 py-1 rounded-full bg-[#F6F4EE] text-[#66708C] border border-[#E4DFD2] font-medium">
                 {items.length}
               </span>
             </div>
             {items.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-[#E8E9EE] p-8 text-center">
-                <p className="text-sm text-[#818EAF]">Zatím žádné produkty</p>
+              <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-8 text-center">
+                <p className="text-sm text-[#66708C]">Zatím žádné produkty</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {items.map((product) => (
                   <div
                     key={product.id}
-                    className="bg-white rounded-3xl border border-[#E8E9EE] p-5 md:p-6 transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] hover:border-[#009EE2]/30"
+                    className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-5 md:p-6 transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] hover:border-[#009EE2]/30"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <h3 className="font-display text-[#162459]" style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
                           {product.title}
                         </h3>
-                        <span className="text-xs text-[#818EAF] mt-1 block">
+                        <span className="text-xs text-[#66708C] mt-1 block">
                           {new Date(product.created_at).toLocaleDateString('cs-CZ')}
                         </span>
                       </div>
@@ -199,7 +199,7 @@ export default function ProduktyPage() {
                             href={product.file_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="w-9 h-9 bg-[#f8f9fc] border border-[#E8E9EE] rounded-xl flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors group"
+                            className="w-9 h-9 bg-[#F6F4EE] border border-[#E4DFD2] rounded-none flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors group"
                           >
                             <FileText className="w-4 h-4" />
                           </a>
@@ -209,7 +209,7 @@ export default function ProduktyPage() {
                             href={product.link_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="w-9 h-9 bg-[#f8f9fc] border border-[#E8E9EE] rounded-xl flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors"
+                            className="w-9 h-9 bg-[#F6F4EE] border border-[#E4DFD2] rounded-none flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors"
                           >
                             <ExternalLink className="w-4 h-4" />
                           </a>
@@ -225,7 +225,7 @@ export default function ProduktyPage() {
         )
       })}
 
-      <Separator className="my-10 bg-[#E8E9EE]" />
+      <Separator className="my-10 bg-[#E4DFD2]" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -233,7 +233,7 @@ export default function ProduktyPage() {
         transition={{ delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-2xl bg-[#162459] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-none bg-[#162459] flex items-center justify-center">
             <CreditCard className="w-5 h-5 text-white" strokeWidth={1.8} />
           </div>
           <h2
@@ -250,7 +250,7 @@ export default function ProduktyPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45 + idx * 0.08 }}
-              className="bg-white rounded-3xl border border-[#E8E9EE] p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.08)] transition-all"
+              className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.08)] transition-all"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3
@@ -259,35 +259,35 @@ export default function ProduktyPage() {
                 >
                   {payment.product}
                 </h3>
-                <span className="font-display text-[#0088c6] tabular-nums" style={{ fontSize: '1.15rem' }}>
+                <span className="font-display text-[#0079AD] tabular-nums" style={{ fontSize: '1.15rem' }}>
                   {payment.amount}
                 </span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#818EAF] block mb-0.5">
+                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#66708C] block mb-0.5">
                     Frekvence
                   </span>
                   <span className="text-[#162459] font-medium">{payment.frequency}</span>
                 </div>
                 <div>
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#818EAF] block mb-0.5">
+                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#66708C] block mb-0.5">
                     Další platba
                   </span>
                   <div className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#818EAF]" />
+                    <Calendar className="w-3.5 h-3.5 text-[#66708C]" />
                     <span className="text-[#162459] font-medium">{payment.nextDate}</span>
                   </div>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#818EAF] block mb-0.5">
+                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#66708C] block mb-0.5">
                     Číslo účtu
                   </span>
                   <span className="text-[#162459] font-mono text-xs">{payment.account}</span>
                 </div>
               </div>
-              <div className="mt-3 pt-3 border-t border-[#E8E9EE]">
-                <span className="text-[11px] tracking-[0.15em] uppercase text-[#818EAF]">VS · </span>
+              <div className="mt-3 pt-3 border-t border-[#E4DFD2]">
+                <span className="text-[11px] tracking-[0.15em] uppercase text-[#66708C]">VS · </span>
                 <span className="text-[#162459] font-mono text-xs">{payment.vs}</span>
               </div>
             </motion.div>

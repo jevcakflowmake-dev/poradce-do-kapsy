@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Shield } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type Props = {
@@ -13,14 +12,10 @@ type Props = {
 
 export default function AuthShell({ eyebrow, numeral, title, subtitle, children, aside }: Props) {
   return (
-    <div className="min-h-screen bg-[#f8f9fc] flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[#F6F4EE] flex flex-col lg:flex-row">
       {/* Brand panel — desktop only as side */}
       <aside
-        className="relative lg:w-[44%] xl:w-[40%] overflow-hidden lg:min-h-screen"
-        style={{
-          background:
-            'linear-gradient(160deg, #0e1a3d 0%, #162459 45%, #243471 85%)',
-        }}
+        className="relative lg:w-[44%] xl:w-[40%] overflow-hidden lg:min-h-screen bg-[#0B111F]"
       >
         <div
           aria-hidden
@@ -34,10 +29,11 @@ export default function AuthShell({ eyebrow, numeral, title, subtitle, children,
 
         <div className="relative z-10 flex flex-col justify-between h-full p-8 md:p-12 lg:p-14">
           <Link href="/" className="inline-flex items-center gap-2.5 group w-fit">
-            <div className="w-9 h-9 rounded-xl bg-[#009EE2] flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
+            {/* Nový mark — papírový čtverec s azurovou tečkou (inverze landing loga) */}
+            <div className="w-8 h-8 bg-[#F6F4EE] flex items-end justify-end p-1.5">
+              <span className="block w-1.5 h-1.5 rounded-full bg-[#009EE2]" />
             </div>
-            <span className="font-bold text-white text-lg tracking-tight">
+            <span className="font-semibold text-[#F6F4EE] text-lg tracking-tight">
               Poradce do kapsy
             </span>
           </Link>

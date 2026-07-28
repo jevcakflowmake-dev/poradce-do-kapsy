@@ -76,9 +76,9 @@ export default function SignupForm() {
       title={<>Začněme <span style={{ fontStyle: 'italic', color: '#009EE2' }}>bez</span> závazků.</>}
       subtitle="Vyplňte jméno, e-mail a telefon. Přihlášení proběhne automaticky a rovnou uvidíte svůj prostor."
     >
-      <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+      <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">
         {error && (
-          <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-xl text-sm text-[#c2410c]">
+          <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
             {error}
           </div>
         )}
@@ -103,21 +103,21 @@ export default function SignupForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+            className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: '#162459' }}
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Vytvořit účet zdarma <ArrowRight className="w-4 h-4" /></>)}
           </button>
         </form>
 
-        <p className="text-center text-xs text-[#818EAF] mt-5">
+        <p className="text-center text-xs text-[#66708C] mt-5">
           Registrací souhlasíte se zpracováním osobních údajů.
         </p>
       </div>
 
-      <p className="text-center text-sm text-[#818EAF] mt-6">
+      <p className="text-center text-sm text-[#66708C] mt-6">
         Už máte účet?{' '}
-        <Link href="/login" className="text-[#0088c6] hover:text-[#162459] font-semibold transition-colors">
+        <Link href="/login" className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors">
           Přihlásit se
         </Link>
       </p>
@@ -136,12 +136,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#818EAF] mb-2">
+      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
         {label}
       </label>
       <input
         {...inputProps}
-        className="w-full h-11 px-4 rounded-xl border border-[#E8E9EE] bg-white text-[#162459] text-[15px] placeholder:text-[#818EAF] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+        className="w-full h-11 px-4 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] placeholder:text-[#66708C] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
       />
       {error && <p className="mt-1.5 text-xs text-[#c2410c]">{error}</p>}
     </div>

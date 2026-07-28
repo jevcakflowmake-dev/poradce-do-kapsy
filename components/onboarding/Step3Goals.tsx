@@ -31,14 +31,14 @@ export default function Step3Goals({
   }
 
   return (
-    <div className="bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8">
+    <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">
       <h2
         className="font-display text-[#162459]"
         style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
       >
         Co vás <span style={{ fontStyle: 'italic', color: '#009EE2' }}>zajímá</span>?
       </h2>
-      <p className="text-[#818EAF] text-sm mt-2 mb-7">Vyberte jednu nebo více oblastí — později je můžeme doplnit.</p>
+      <p className="text-[#66708C] text-sm mt-2 mb-7">Vyberte jednu nebo více oblastí — později je můžeme doplnit.</p>
 
       <div className="space-y-2 mb-6">
         {OPTIONS.map((opt) => {
@@ -46,10 +46,10 @@ export default function Step3Goals({
           return (
             <label
               key={opt.value}
-              className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all border ${
+              className={`flex items-center gap-4 p-4 rounded-none cursor-pointer transition-all border ${
                 checked
                   ? 'border-[#009EE2] bg-[#009EE2]/8 shadow-[inset_0_0_0_1px_#009EE2]'
-                  : 'border-[#E8E9EE] hover:border-[#009EE2]/50 hover:bg-[#f8f9fc]'
+                  : 'border-[#E4DFD2] hover:border-[#009EE2]/50 hover:bg-[#F6F4EE]'
               }`}
             >
               <input
@@ -66,7 +66,7 @@ export default function Step3Goals({
                 >
                   {opt.label}
                 </div>
-                <div className="text-xs text-[#818EAF]">{opt.desc}</div>
+                <div className="text-xs text-[#66708C]">{opt.desc}</div>
               </div>
             </label>
           )
@@ -76,15 +76,15 @@ export default function Step3Goals({
       <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 border border-[#E8E9EE] text-[#818EAF] hover:text-[#162459] text-sm font-medium rounded-xl hover:bg-[#f8f9fc] transition-colors"
+          className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 border border-[#E4DFD2] text-[#66708C] hover:text-[#162459] text-sm font-medium rounded-none hover:bg-[#F6F4EE] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </button>
         <button
           onClick={onNext}
           disabled={data.goals.length === 0}
-          className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-white text-sm transition-all disabled:opacity-40 hover:shadow-lg hover:shadow-[#009EE2]/25"
-          style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+          className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-none font-semibold text-white text-sm transition-all disabled:opacity-40 hover:shadow-lg hover:shadow-[#009EE2]/25"
+          style={{ background: '#162459' }}
         >
           Pokračovat <ArrowRight className="w-4 h-4" />
         </button>

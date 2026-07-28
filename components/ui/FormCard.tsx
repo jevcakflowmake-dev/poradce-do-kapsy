@@ -10,7 +10,7 @@ type Props = {
 export default function FormCard({ children, title, subtitle, className }: Props) {
   return (
     <div
-      className={`relative bg-white rounded-3xl border border-[#E8E9EE] p-6 md:p-8 shadow-[0_1px_0_rgba(22,36,89,0.03)] ${className ?? ''}`}
+      className={`relative bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8 shadow-[0_1px_0_rgba(22,36,89,0.03)] ${className ?? ''}`}
     >
       {(title || subtitle) && (
         <div className="mb-6">
@@ -22,7 +22,7 @@ export default function FormCard({ children, title, subtitle, className }: Props
               {title}
             </h2>
           )}
-          {subtitle && <p className="text-sm text-[#818EAF] mt-1.5">{subtitle}</p>}
+          {subtitle && <p className="text-sm text-[#66708C] mt-1.5">{subtitle}</p>}
         </div>
       )}
       {children}

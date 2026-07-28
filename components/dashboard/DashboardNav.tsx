@@ -47,12 +47,12 @@ export default function DashboardNav({ unreadMessages = 0 }: { unreadMessages?: 
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-none text-sm font-medium transition-all ${
                   active
                     ? 'text-white'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    : 'text-[#66708C] hover:bg-[#EFEBE0] hover:text-[#162459]'
                 }`}
-                style={active ? { background: 'linear-gradient(135deg, #162459, #243471)' } : {}}
+                style={active ? { background: '#162459' } : {}}
               >
                 {item.icon}
                 <span className="flex-1">{item.label}</span>
@@ -68,15 +68,15 @@ export default function DashboardNav({ unreadMessages = 0 }: { unreadMessages?: 
       </aside>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-2 py-2 flex justify-around">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FDFCF8] border-t border-[#E4DFD2] px-2 py-2 flex justify-around">
         {NAV_ITEMS.map(item => {
           const active = pathname === item.href
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`relative flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all ${
-                active ? 'text-blue-900' : 'text-slate-400'
+              className={`relative flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-none transition-all ${
+                active ? 'text-[#162459]' : 'text-[#8B93A8]'
               }`}
             >
               {item.icon}

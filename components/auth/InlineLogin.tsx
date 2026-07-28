@@ -87,26 +87,26 @@ export default function InlineLogin() {
     }
   }
 
-  const inputClass = 'w-full px-4 py-3 rounded-xl text-sm bg-white/10 border border-white/20 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/15 transition-all'
-  const labelClass = 'block text-xs font-medium text-blue-200 mb-1.5'
+  const inputClass = 'w-full px-4 py-3 rounded-none text-sm bg-white/10 border border-white/20 text-white placeholder-[#F6F4EE]/40 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/15 transition-all'
+  const labelClass = 'block text-xs font-medium text-[#F6F4EE]/70 mb-1.5'
   const errorClass = 'mt-1 text-xs text-red-300'
 
   return (
     <div>
       {/* Tab přepínač */}
-      <div className="flex bg-white/10 rounded-xl p-1 mb-5">
+      <div className="flex bg-white/10 rounded-none p-1 mb-5">
         <button
           onClick={() => { setTab('login'); setError(null) }}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-            tab === 'login' ? 'bg-white text-slate-900 shadow-sm' : 'text-blue-200 hover:text-white'
+          className={`flex-1 py-2 text-sm font-medium rounded-none transition-all ${
+            tab === 'login' ? 'bg-[#FDFCF8] text-[#162459] shadow-sm' : 'text-[#F6F4EE]/70 hover:text-white'
           }`}
         >
           Přihlásit se
         </button>
         <button
           onClick={() => { setTab('register'); setError(null) }}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-            tab === 'register' ? 'bg-white text-slate-900 shadow-sm' : 'text-blue-200 hover:text-white'
+          className={`flex-1 py-2 text-sm font-medium rounded-none transition-all ${
+            tab === 'register' ? 'bg-[#FDFCF8] text-[#162459] shadow-sm' : 'text-[#F6F4EE]/70 hover:text-white'
           }`}
         >
           Registrovat se
@@ -114,7 +114,7 @@ export default function InlineLogin() {
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-xl text-sm text-red-200">
+        <div className="mb-4 p-3 bg-red-500/20 border border-red-400/30 rounded-none text-sm text-red-200">
           {error}
         </div>
       )}
@@ -135,13 +135,13 @@ export default function InlineLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 font-semibold rounded-xl text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1 text-white"
-            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+            className="w-full py-3.5 font-semibold rounded-none text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1 text-white"
+            style={{ background: '#162459' }}
           >
             {loading ? 'Přihlašuji...' : 'Přihlásit se →'}
           </button>
           <p className="text-center mt-2">
-            <a href="/forgot-password" className="text-blue-300 text-xs hover:text-white transition-colors underline">
+            <a href="/forgot-password" className="text-[#F6F4EE]/60 text-xs hover:text-white transition-colors underline">
               Zapomenuté heslo?
             </a>
           </p>
@@ -169,12 +169,12 @@ export default function InlineLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 font-semibold rounded-xl text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1 text-white"
-            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+            className="w-full py-3.5 font-semibold rounded-none text-sm transition-all disabled:opacity-50 hover:opacity-90 mt-1 text-white"
+            style={{ background: '#162459' }}
           >
             {loading ? 'Registruji...' : 'Registrovat se →'}
           </button>
-          <p className="text-blue-300 text-xs opacity-70 text-center">
+          <p className="text-[#F6F4EE]/60 text-xs opacity-70 text-center">
             Registrací souhlasíte se zpracováním osobních údajů
           </p>
         </form>

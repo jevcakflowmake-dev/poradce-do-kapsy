@@ -54,7 +54,7 @@ export default function StatusFilter({ counts, total }: Props) {
               }
             : {
                 background: 'white',
-                borderColor: '#E8E9EE',
+                borderColor: '#E4DFD2',
                 color: '#162459',
               }
         }

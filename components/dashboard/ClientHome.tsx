@@ -49,7 +49,7 @@ function tileStyles(variant: Tile['variant']) {
       return {
         card: 'text-white',
         cardStyle: {
-          background: 'linear-gradient(160deg, #162459 0%, #243471 60%, #1a2e6b 100%)',
+          background: '#0B111F',
         },
         title: 'text-white',
         desc: 'text-white/60',
@@ -63,25 +63,25 @@ function tileStyles(variant: Tile['variant']) {
       return {
         card: 'text-white',
         cardStyle: {
-          background: 'linear-gradient(135deg, #009EE2 0%, #0088c6 100%)',
+          background: '#162459',
         },
         title: 'text-white',
         desc: 'text-white/80',
         icon: 'bg-white/15 backdrop-blur-sm',
         iconColor: 'text-white',
-        arrowBg: 'bg-white/15 group-hover:bg-white group-hover:text-[#0088c6]',
+        arrowBg: 'bg-white/15 group-hover:bg-[#FDFCF8] group-hover:text-[#0079AD]',
         arrow: 'text-white',
         numeral: 'text-white/15',
       }
     case 'light-navy':
       return {
-        card: 'text-[#162459] bg-white',
-        cardStyle: { borderColor: '#E8E9EE', borderWidth: 1 },
+        card: 'text-[#162459] bg-[#FDFCF8]',
+        cardStyle: { borderColor: '#E4DFD2', borderWidth: 1 },
         title: 'text-[#162459]',
-        desc: 'text-[#818EAF]',
+        desc: 'text-[#66708C]',
         icon: 'bg-[#162459]',
         iconColor: 'text-white',
-        arrowBg: 'bg-[#f8f9fc] group-hover:bg-[#162459] group-hover:text-white',
+        arrowBg: 'bg-[#F6F4EE] group-hover:bg-[#162459] group-hover:text-white',
         arrow: 'text-[#162459]',
         numeral: 'text-[#009EE2]/15',
       }
@@ -89,7 +89,7 @@ function tileStyles(variant: Tile['variant']) {
       return {
         card: 'text-[#162459]',
         cardStyle: {
-          background: '#f0f7fb',
+          background: '#EEF4F6',
           borderColor: 'rgba(0,158,226,0.22)',
           borderWidth: 1,
         },
@@ -97,7 +97,7 @@ function tileStyles(variant: Tile['variant']) {
         desc: 'text-[#162459]/70',
         icon: 'bg-[#009EE2]',
         iconColor: 'text-white',
-        arrowBg: 'bg-white group-hover:bg-[#009EE2] group-hover:text-white',
+        arrowBg: 'bg-[#FDFCF8] group-hover:bg-[#009EE2] group-hover:text-white',
         arrow: 'text-[#009EE2]',
         numeral: 'text-[#009EE2]/15',
       }
@@ -117,7 +117,7 @@ export default function ClientHome({ firstName }: { firstName: string }) {
       <div className="mb-10 md:mb-14">
         <motion.p
           {...fadeUp(0)}
-          className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-3"
+          className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3"
         >
           Váš prostor · vítejte zpět
         </motion.p>
@@ -138,11 +138,11 @@ export default function ClientHome({ firstName }: { firstName: string }) {
         >
           Dobrý den, <span style={{ fontStyle: 'italic', color: '#009EE2' }}>{firstName}</span>.
           <br />
-          <span style={{ color: '#818EAF' }}>Co zvládneme dneska?</span>
+          <span style={{ color: '#66708C' }}>Co zvládneme dneska?</span>
         </motion.h1>
         <motion.p
           {...fadeUp(0.3)}
-          className="text-[#818EAF] max-w-xl mt-5 leading-relaxed"
+          className="text-[#66708C] max-w-xl mt-5 leading-relaxed"
         >
           Váš finanční poradce na dosah ruky. Vyplňte analýzu, prohlédněte si produkty nebo napište
           přímo poradci přes chat.
@@ -159,7 +159,7 @@ export default function ClientHome({ firstName }: { firstName: string }) {
             <motion.div key={tile.title} {...fadeUp(0.42 + i * 0.09)}>
               <Link
                 href={tile.href}
-                className={`group relative overflow-hidden rounded-3xl p-7 md:p-8 min-h-[200px] block transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#162459]/10 ${s.card}`}
+                className={`group relative overflow-hidden rounded-none p-7 md:p-8 min-h-[200px] block transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#162459]/10 ${s.card}`}
                 style={{ border: '1px solid transparent', ...(s.cardStyle as React.CSSProperties) }}
               >
                 <span
@@ -170,7 +170,7 @@ export default function ClientHome({ firstName }: { firstName: string }) {
                 </span>
 
                 <div className="relative z-10 flex flex-col h-full">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-5 ${s.icon}`}>
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-none mb-5 ${s.icon}`}>
                     <Icon className={`w-6 h-6 ${s.iconColor}`} strokeWidth={1.8} />
                   </div>
 

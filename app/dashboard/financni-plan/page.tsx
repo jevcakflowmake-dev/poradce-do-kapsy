@@ -20,7 +20,7 @@ const planSections = [
     title: 'Bydlení',
     icon: HomeIcon,
     status: 'ok' as const,
-    gradient: 'from-[#009EE2] to-[#0088c6]',
+    gradient: 'from-[#009EE2] to-[#0079AD]',
     items: [
       'Pojištění nemovitosti a domácnosti je v pořádku',
       'Zvážit refinancování hypotéky — úrok 4,2 % je nad trhem',
@@ -41,7 +41,7 @@ const planSections = [
     title: 'Děti',
     icon: Baby,
     status: 'recommendation' as const,
-    gradient: 'from-[#009EE2] to-[#0088c6]',
+    gradient: 'from-[#009EE2] to-[#0079AD]',
     items: [
       'Založit stavební spoření pro každé dítě',
       'Sjednat úrazové pojištění dětí',
@@ -62,7 +62,7 @@ const planSections = [
     title: 'Pojištění majetku',
     icon: Building2,
     status: 'ok' as const,
-    gradient: 'from-[#009EE2] to-[#0088c6]',
+    gradient: 'from-[#009EE2] to-[#0079AD]',
     items: [
       'Povinné ručení a havarijní pojištění v pořádku',
       'Zvážit pojištění odpovědnosti z běžného života',
@@ -81,7 +81,7 @@ const statusConfig = {
   recommendation: {
     label: 'Doporučení',
     icon: Target,
-    color: '#0088c6',
+    color: '#0079AD',
     bg: 'rgba(0,158,226,0.10)',
     border: 'rgba(0,158,226,0.30)',
   },
@@ -107,19 +107,19 @@ export default function FinancniPlanPage() {
       >
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-[#818EAF] hover:text-[#162459] transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-sm text-[#66708C] hover:text-[#162459] transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
         <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">04</div>
-        <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Plán · na míru vám</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Plán · na míru vám</p>
         <h1
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
           Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
         </h1>
-        <p className="text-[#818EAF] mt-3 max-w-xl leading-relaxed">
+        <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
           Váš osobní plán od certifikovaného poradce. 6 oblastí, 15 doporučení.
         </p>
       </motion.div>
@@ -128,10 +128,10 @@ export default function FinancniPlanPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-3xl border border-[#E8E9EE] p-12 md:p-16 text-center"
+          className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-12 md:p-16 text-center"
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#009EE2]/10 border border-[#009EE2]/25 mb-5">
-            <FileText className="w-8 h-8 text-[#0088c6]" strokeWidth={1.5} />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-none bg-[#009EE2]/10 border border-[#009EE2]/25 mb-5">
+            <FileText className="w-8 h-8 text-[#0079AD]" strokeWidth={1.5} />
           </div>
           <h2
             className="font-display text-[#162459] mb-2"
@@ -139,13 +139,13 @@ export default function FinancniPlanPage() {
           >
             Plán zatím <span style={{ fontStyle: 'italic', color: '#009EE2' }}>není</span>
           </h2>
-          <p className="text-[#818EAF] mb-7 max-w-md mx-auto leading-relaxed">
+          <p className="text-[#66708C] mb-7 max-w-md mx-auto leading-relaxed">
             Nejdříve vyplňte finanční analýzu. Poradce na základě vašich odpovědí připraví osobní plán do 48 hodin.
           </p>
           <Link
             href="/dashboard/analyza"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: '#162459' }}
           >
             Vyplnit analýzu
           </Link>
@@ -157,9 +157,9 @@ export default function FinancniPlanPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-3xl p-6 md:p-8 mb-10 overflow-hidden"
+            className="relative rounded-none p-6 md:p-8 mb-10 overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, #0e1a3d 0%, #162459 55%, #243471 100%)',
+              background: '#0B111F',
             }}
           >
             <div className="noise-overlay" aria-hidden />
@@ -186,7 +186,7 @@ export default function FinancniPlanPage() {
               </div>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-[#162459] bg-white hover:bg-white/90 transition-all shadow-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-none font-semibold text-[#162459] bg-[#FDFCF8] hover:bg-white/90 transition-all shadow-sm"
               >
                 <Download className="w-4 h-4" />
                 Stáhnout PDF
@@ -204,11 +204,11 @@ export default function FinancniPlanPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 + idx * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                  className="bg-white rounded-3xl border border-[#E8E9EE] p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] transition-all"
+                  className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] transition-all"
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div
-                      className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-sm`}
+                      className={`w-11 h-11 rounded-none bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-sm`}
                     >
                       <section.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
                     </div>
@@ -226,7 +226,7 @@ export default function FinancniPlanPage() {
                       {status.label}
                     </div>
                   </div>
-                  <div className="h-px bg-[#E8E9EE] mb-4" />
+                  <div className="h-px bg-[#E4DFD2] mb-4" />
                   <ul className="space-y-2.5">
                     {section.items.map((item, i) => (
                       <li key={i} className="flex items-start gap-2.5 text-[14px] text-[#162459]/85 leading-relaxed">

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Shield, MessageCircle, ArrowUpRight } from 'lucide-react'
+import { MessageCircle, ArrowUpRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import {
   calcHealthScore,
@@ -59,21 +59,21 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
   }))
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc]">
+    <div className="min-h-screen bg-[#F6F4EE]">
       {/* Navbar */}
-      <nav className="bg-white border-b border-[#E8E9EE] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
+      <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#162459] flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
+            <div className="w-8 h-8 bg-[#162459] flex items-end justify-end p-1.5">
+              <span className="block w-1.5 h-1.5 rounded-full bg-[#009EE2]" />
             </div>
             <span className="font-bold text-[#162459] text-lg tracking-tight">Poradce do kapsy</span>
-            <span className="ml-2 text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-[#009EE2]/10 text-[#0088c6] border border-[#009EE2]/30 font-semibold">
+            <span className="ml-2 text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-[#009EE2]/10 text-[#0079AD] border border-[#009EE2]/30 font-semibold">
               Panel poradce
             </span>
           </div>
           <form action="/api/auth/signout" method="POST">
-            <button className="nav-link text-sm text-[#818EAF] hover:text-[#162459] font-medium">Odhlásit</button>
+            <button className="nav-link text-sm text-[#66708C] hover:text-[#162459] font-medium">Odhlásit</button>
           </form>
         </div>
       </nav>
@@ -83,7 +83,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
           {/* Header */}
           <div className="advisor-hero mb-10 md:mb-14">
             <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-2">01</div>
-            <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Klienti · pipeline</p>
+            <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Klienti · pipeline</p>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <h1
                 className="font-display text-[#162459]"
@@ -94,11 +94,11 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                 }}
               >
                 {clients.length} <span style={{ fontStyle: 'italic', color: '#009EE2' }}>klientů</span>
-                <span className="text-[#818EAF] font-normal" style={{ fontSize: '0.5em' }}>
+                <span className="text-[#66708C] font-normal" style={{ fontSize: '0.5em' }}>
                   {' '}ve vaší síti
                 </span>
               </h1>
-              <div className="text-sm text-[#818EAF]">
+              <div className="text-sm text-[#66708C]">
                 Filtr:{' '}
                 <span className="text-[#162459] font-medium">
                   {statusFilter ? `${statusFilter.replace('_', ' ')} · ${filtered.length}` : `vše · ${filtered.length}`}
@@ -108,57 +108,57 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
           </div>
 
           {/* Filter bar */}
-          <div className="advisor-hero mb-8 p-5 md:p-6 rounded-3xl bg-white border border-[#E8E9EE] shadow-[0_1px_0_rgba(22,36,89,0.03)]">
+          <div className="advisor-hero mb-8 p-5 md:p-6 rounded-none bg-[#FDFCF8] border border-[#E4DFD2] shadow-[0_1px_0_rgba(22,36,89,0.03)]">
             <StatusFilter counts={statusCounts} total={clients.length} />
           </div>
 
           {/* List */}
           {clientsWithScore.length === 0 ? (
-            <div className="advisor-hero bg-white rounded-3xl border border-[#E8E9EE] p-12 md:p-16 text-center">
+            <div className="advisor-hero bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-12 md:p-16 text-center">
               <div className="section-numeral text-[3.5rem] mb-3" style={{ opacity: 0.15 }}>
                 00
               </div>
               <p className="font-display text-[#162459] text-xl mb-1" style={{ letterSpacing: '-0.01em' }}>
                 {statusFilter ? 'Žádný klient v tomto stavu.' : 'Zatím žádní klienti.'}
               </p>
-              <p className="text-[#818EAF] text-sm">
+              <p className="text-[#66708C] text-sm">
                 {statusFilter ? 'Zkuste jiný filtr.' : 'Klienti se zobrazí po registraci.'}
               </p>
             </div>
           ) : (
-            <div className="client-table advisor-hero bg-white rounded-3xl border border-[#E8E9EE] overflow-hidden">
+            <div className="client-table advisor-hero bg-[#FDFCF8] rounded-none border border-[#E4DFD2] overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#E8E9EE] bg-[#f8f9fc]">
-                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-6 py-4">
+                  <tr className="border-b border-[#E4DFD2] bg-[#F6F4EE]">
+                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-6 py-4">
                       Klient
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4 hidden md:table-cell">
+                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4 hidden md:table-cell">
                       Stav
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4 hidden sm:table-cell">
+                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4 hidden sm:table-cell">
                       Situace
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
+                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
                       Oblasti
                     </th>
-                    <th className="text-center text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4">
+                    <th className="text-center text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4">
                       Skóre
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
+                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
                       Registrace
                     </th>
-                    <th className="px-4 py-4 text-[11px] font-semibold text-[#818EAF] tracking-[0.15em] uppercase text-center">
+                    <th className="px-4 py-4 text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase text-center">
                       Chat
                     </th>
                     <th className="px-6 py-4" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E8E9EE]">
+                <tbody className="divide-y divide-[#E4DFD2]">
                   {clientsWithScore.map((client) => (
                     <tr
                       key={client.id}
-                      className="client-row group hover:bg-[#f8f9fc] transition-colors"
+                      className="client-row group hover:bg-[#F6F4EE] transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
@@ -171,7 +171,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-[#818EAF] mt-0.5">{riskLabel(client.risk_profile)}</div>
+                        <div className="text-xs text-[#66708C] mt-0.5">{riskLabel(client.risk_profile)}</div>
                       </td>
                       <td className="px-4 py-4 hidden md:table-cell">
                         <StatusBadge value={client.status} />
@@ -184,7 +184,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                           {(client.goals ?? []).slice(0, 3).map((g) => (
                             <span
                               key={g}
-                              className="text-xs bg-[#f8f9fc] text-[#162459]/70 border border-[#E8E9EE] px-2 py-0.5 rounded-full"
+                              className="text-xs bg-[#F6F4EE] text-[#162459]/70 border border-[#E4DFD2] px-2 py-0.5 rounded-full"
                             >
                               {goalLabel(g)}
                             </span>
@@ -204,13 +204,13 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                           {client.score}
                         </span>
                       </td>
-                      <td className="px-4 py-4 text-sm text-[#818EAF] hidden lg:table-cell">
+                      <td className="px-4 py-4 text-sm text-[#66708C] hidden lg:table-cell">
                         {formatDate(client.created_at)}
                       </td>
                       <td className="px-4 py-4 text-center">
                         <Link
                           href={`/advisor/${client.id}/chat`}
-                          className="inline-flex items-center gap-1.5 text-[#0088c6] hover:text-[#162459] transition-colors"
+                          className="inline-flex items-center gap-1.5 text-[#0079AD] hover:text-[#162459] transition-colors"
                         >
                           <MessageCircle className="w-4 h-4" />
                           {unreadCounts[client.id] > 0 && (

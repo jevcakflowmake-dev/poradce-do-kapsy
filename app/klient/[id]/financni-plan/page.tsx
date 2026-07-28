@@ -26,18 +26,18 @@ interface PlanSection {
 
 const sectionConfig: Record<string, { title: string; icon: typeof Shield; gradient: string }> = {
   income: { title: 'Zajištění příjmů', icon: Shield, gradient: 'from-[#162459] to-[#243471]' },
-  housing: { title: 'Bydlení', icon: HomeIcon, gradient: 'from-[#009EE2] to-[#0088c6]' },
+  housing: { title: 'Bydlení', icon: HomeIcon, gradient: 'from-[#009EE2] to-[#0079AD]' },
   retirement: { title: 'Příprava na důchod', icon: Clock, gradient: 'from-[#162459] to-[#009EE2]' },
-  children: { title: 'Děti', icon: Baby, gradient: 'from-[#009EE2] to-[#0088c6]' },
+  children: { title: 'Děti', icon: Baby, gradient: 'from-[#009EE2] to-[#0079AD]' },
   investing: { title: 'Investice', icon: TrendingUp, gradient: 'from-[#162459] to-[#243471]' },
-  property: { title: 'Pojištění majetku', icon: Building2, gradient: 'from-[#009EE2] to-[#0088c6]' },
+  property: { title: 'Pojištění majetku', icon: Building2, gradient: 'from-[#009EE2] to-[#0079AD]' },
 }
 
 const companyColors: Record<string, string> = {
   Kooperativa: 'from-green-600 to-green-700',
   'ČPP': 'from-red-600 to-red-700',
-  MetLife: 'from-blue-700 to-blue-800',
-  Allianz: 'from-blue-600 to-indigo-700',
+  MetLife: 'from-[#162459] to-[#0e1a3d]',
+  Allianz: 'from-[#0079AD] to-[#162459]',
   Generali: 'from-red-700 to-rose-800',
   NN: 'from-orange-500 to-orange-600',
   Uniqa: 'from-purple-600 to-purple-700',
@@ -45,28 +45,28 @@ const companyColors: Record<string, string> = {
 
 const statusConfig = {
   ok: { label: 'V pořádku', icon: CheckCircle2, color: 'text-[#15803d]', bg: 'bg-[#16a34a]/10' },
-  recommendation: { label: 'Doporučení', icon: Target, color: 'text-[#0088c6]', bg: 'bg-[#009EE2]/10' },
+  recommendation: { label: 'Doporučení', icon: Target, color: 'text-[#0079AD]', bg: 'bg-[#009EE2]/10' },
   action: { label: 'Vyžaduje akci', icon: AlertCircle, color: 'text-[#b45309]', bg: 'bg-[#f59e0b]/12' },
 }
 
 function VariantCard({ variant, index }: { variant: Variant; index: number }) {
   const [open, setOpen] = useState(false)
-  const gradient = companyColors[variant.company] || 'from-slate-600 to-slate-700'
+  const gradient = companyColors[variant.company] || 'from-[#66708C] to-[#3A4568]'
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-4 p-4 text-left hover:bg-slate-50 transition-colors">
-        <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm`}>
+    <div className="border border-[#E4DFD2] rounded-none overflow-hidden hover:shadow-md transition-shadow">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-4 p-4 text-left hover:bg-[#F6F4EE] transition-colors">
+        <div className={`w-11 h-11 rounded-none bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm`}>
           {variant.logo}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-900">{variant.company}</h4>
-          <p className="text-xs text-slate-400">Varianta {index + 1}</p>
+          <h4 className="font-semibold text-[#162459]">{variant.company}</h4>
+          <p className="text-xs text-[#8B93A8]">Varianta {index + 1}</p>
         </div>
         <div className="text-right flex-shrink-0 mr-2">
-          <span className="text-lg font-bold text-slate-900">{variant.monthlyPayment}</span>
-          <p className="text-xs text-slate-400">/ měsíc</p>
+          <span className="text-lg font-bold text-[#162459]">{variant.monthlyPayment}</span>
+          <p className="text-xs text-[#8B93A8]">/ měsíc</p>
         </div>
-        {open ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+        {open ? <ChevronUp className="w-5 h-5 text-[#8B93A8]" /> : <ChevronDown className="w-5 h-5 text-[#8B93A8]" />}
       </button>
       <AnimatePresence>
         {open && (
@@ -75,12 +75,12 @@ function VariantCard({ variant, index }: { variant: Variant; index: number }) {
               <Separator className="mb-3" />
               <div className="space-y-3">
                 {Object.entries(variant.params).map(([key, detail]) => (
-                  <div key={key} className="bg-slate-50/70 rounded-lg px-4 py-3">
+                  <div key={key} className="bg-[#F6F4EE]/70 rounded-none px-4 py-3">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-slate-700">{key}</span>
-                      <span className="text-sm font-bold text-slate-900 bg-white px-3 py-0.5 rounded-md shadow-sm">{detail.value}</span>
+                      <span className="text-sm font-medium text-[#3A4568]">{key}</span>
+                      <span className="text-sm font-bold text-[#162459] bg-[#FDFCF8] px-3 py-0.5 rounded-none shadow-sm">{detail.value}</span>
                     </div>
-                    {detail.note && <p className="text-xs text-slate-400 leading-relaxed">{detail.note}</p>}
+                    {detail.note && <p className="text-xs text-[#8B93A8] leading-relaxed">{detail.note}</p>}
                   </div>
                 ))}
               </div>
@@ -152,19 +152,19 @@ export default function FinancniPlanPage() {
       <div className="mb-10">
         <Link
           href={`/klient/${id}`}
-          className="inline-flex items-center gap-1 text-sm text-[#818EAF] hover:text-[#162459] transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-sm text-[#66708C] hover:text-[#162459] transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
         <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">04</div>
-        <p className="text-xs tracking-[0.3em] uppercase text-[#818EAF] mb-2">Plán · na míru vám</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Plán · na míru vám</p>
         <h1
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
           Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
         </h1>
-        <p className="text-[#818EAF] mt-3 max-w-xl leading-relaxed">
+        <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
           Váš osobní plán od certifikovaného poradce. Porovnejte varianty a vyberte tu, která vám sedí.
         </p>
       </div>
@@ -172,27 +172,27 @@ export default function FinancniPlanPage() {
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-3xl border border-[#E8E9EE] p-6 animate-pulse">
-              <div className="h-6 bg-[#f8f9fc] rounded w-1/3 mb-3" />
-              <div className="h-4 bg-[#f8f9fc] rounded w-2/3" />
+            <div key={i} className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 animate-pulse">
+              <div className="h-6 bg-[#F6F4EE] rounded w-1/3 mb-3" />
+              <div className="h-4 bg-[#F6F4EE] rounded w-2/3" />
             </div>
           ))}
         </div>
       ) : !hasPlan ? (
-        <div className="bg-white rounded-3xl border border-[#E8E9EE] p-12 md:p-16 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#009EE2]/10 border border-[#009EE2]/25 mb-5">
-            <FileText className="w-8 h-8 text-[#0088c6]" strokeWidth={1.5} />
+        <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-12 md:p-16 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-none bg-[#009EE2]/10 border border-[#009EE2]/25 mb-5">
+            <FileText className="w-8 h-8 text-[#0079AD]" strokeWidth={1.5} />
           </div>
           <h2 className="font-display text-[#162459] mb-2" style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}>
             Plán zatím <span style={{ fontStyle: 'italic', color: '#009EE2' }}>není</span>
           </h2>
-          <p className="text-[#818EAF] mb-7 max-w-md mx-auto leading-relaxed">
+          <p className="text-[#66708C] mb-7 max-w-md mx-auto leading-relaxed">
             Nejdříve vyplňte finanční analýzu. Poradce připraví osobní plán do 48 hodin.
           </p>
           <Link
             href={`/klient/${id}/analyza`}
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-            style={{ background: 'linear-gradient(135deg, #009EE2, #0088c6)' }}
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
+            style={{ background: '#162459' }}
           >
             Vyplnit analýzu
           </Link>
@@ -200,8 +200,8 @@ export default function FinancniPlanPage() {
       ) : (
         <>
           <div
-            className="relative rounded-3xl p-6 md:p-8 mb-10 overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, #0e1a3d 0%, #162459 55%, #243471 100%)' }}
+            className="relative rounded-none p-6 md:p-8 mb-10 overflow-hidden"
+            style={{ background: '#0B111F' }}
           >
             <div className="noise-overlay" aria-hidden />
             <div
@@ -224,7 +224,7 @@ export default function FinancniPlanPage() {
               </div>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-[#162459] bg-white hover:bg-white/90 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-none font-semibold text-[#162459] bg-[#FDFCF8] hover:bg-white/90 transition-all"
               >
                 <Download className="w-4 h-4" /> Stáhnout PDF
               </button>
@@ -237,10 +237,10 @@ export default function FinancniPlanPage() {
               return (
                 <div
                   key={section.id}
-                  className="bg-white rounded-3xl border border-[#E8E9EE] p-5 md:p-6"
+                  className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-5 md:p-6"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-sm`}>
+                    <div className={`w-11 h-11 rounded-none bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-sm`}>
                       <section.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
                     </div>
                     <h3 className="font-display text-[#162459] flex-1" style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
@@ -251,10 +251,10 @@ export default function FinancniPlanPage() {
                       <span className={`text-xs font-medium ${status.color}`}>{status.label}</span>
                     </div>
                   </div>
-                  <div className="h-px bg-[#E8E9EE] mb-4" />
+                  <div className="h-px bg-[#E4DFD2] mb-4" />
                   {section.type === 'variants' && section.variants ? (
                     <div className="space-y-3">
-                      <p className="text-sm text-[#818EAF] mb-3">
+                      <p className="text-sm text-[#66708C] mb-3">
                         Porovnejte {section.variants.length} variant{section.variants.length === 1 ? 'u' : 'y'} a rozkliknutím zobrazte detail:
                       </p>
                       {section.variants.map((variant, i) => (

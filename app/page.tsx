@@ -2,10 +2,11 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import HeroSection from '@/components/landing/HeroSection'
 import StatsBand from '@/components/landing/StatsBand'
-import HowItWorksHorizontal from '@/components/landing/HowItWorksHorizontal'
+import LifePathSection from '@/components/landing/LifePathSection'
+import HowItWorksSection from '@/components/landing/HowItWorksSection'
 import BenefitsSection from '@/components/landing/BenefitsSection'
-import ServicesSection from '@/components/landing/ServicesSection'
 import CtaSection from '@/components/landing/CtaSection'
+import CursorFollower from '@/components/motion/CursorFollower'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -16,30 +17,30 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F6F4EE]">
+      <CursorFollower />
       <HeroSection />
       <StatsBand />
-      <HowItWorksHorizontal />
+      <LifePathSection />
+      <HowItWorksSection />
       <BenefitsSection />
-      <ServicesSection />
       <CtaSection />
 
-      <footer className="px-6 md:px-10 lg:px-16 xl:px-20 py-10 border-t border-[#E8E9EE] bg-white">
-        <div className="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-12 border-t border-[#E4DFD2] bg-[#F6F4EE] overflow-hidden">
+        <div className="noise-paper" aria-hidden />
+        <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#162459] flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+            <div className="w-7 h-7 bg-[#162459] flex items-end justify-end p-1.5">
+              <span className="block w-1 h-1 rounded-full bg-[#009EE2]" />
             </div>
             <span className="font-semibold text-sm text-[#162459]">Poradce do kapsy</span>
           </div>
-          <div className="flex items-center gap-6 text-sm text-[#818EAF]">
+          <div className="flex items-center gap-6 text-sm text-[#66708C]">
+            <a href="#sluzby" className="nav-link hover:text-[#162459] transition-colors">Co řešíme</a>
             <a href="#jak-to-funguje" className="nav-link hover:text-[#162459] transition-colors">Jak to funguje</a>
-            <a href="#sluzby" className="nav-link hover:text-[#162459] transition-colors">Služby</a>
             <a href="#prihlaseni" className="nav-link hover:text-[#162459] transition-colors">Přihlášení</a>
           </div>
-          <span className="text-sm text-[#818EAF]">© 2025 · Certifikovaný poradce ProfiFP · OVB Allfinanz</span>
+          <span className="text-sm text-[#66708C]">© 2026 · Certifikovaný poradce ProfiFP · OVB Allfinanz</span>
         </div>
       </footer>
     </div>
