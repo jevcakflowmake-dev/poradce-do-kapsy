@@ -16,19 +16,38 @@ v administracích, ke kterým Claude nemá (a nemá mít) přístup.
 
 ## 🔴 Před spuštěním — nutné
 
-### 1. SMTP pro e-maily (reset hesla, magic link)
-Výchozí Supabase SMTP má limit ~2 e-maily/hod a je jen pro vývoj.
-- Založit účet u [Resend](https://resend.com) (zdarma 100 e-mailů/den) nebo Postmark
-- Supabase dashboard → Authentication → SMTP Settings → vyplnit SMTP údaje
-- Odesílatel ideálně z vlastní domény (viz bod 3)
+### 1. SMTP pro e-maily (reset hesla, magic link) — musí udělat Jakub
+Výchozí Supabase SMTP má limit ~2 e-maily/hod a je jen pro vývoj; navíc
+neodesílá na adresy mimo členy týmu. Bez vlastního SMTP klientům reset hesla
+nedojde. Claude tenhle krok udělat nemůže (zakládání účtu u poskytovatele
+a vkládání jeho API klíče do konfigurace).
 
-### 2. Auth URL allowlist
-Supabase dashboard → Authentication → URL Configuration:
-- Site URL: `https://poradce-do-kapsy.vercel.app` (později ostrá doména)
-- Redirect URLs přidat:
-  - `https://poradce-do-kapsy.vercel.app/auth/callback`
-  - `https://poradce-do-kapsy.vercel.app/reset-password`
-Bez toho reset hesla v produkci skončí na homepage.
+Postup (~5 minut):
+1. Registrace na [resend.com](https://resend.com) — free tarif 100 e-mailů/den
+2. Resend → API Keys → vytvořit klíč
+3. Supabase → [Authentication → Emails → SMTP Settings](https://supabase.com/dashboard/project/riyxkbylqdimksbtxihr/auth/templates)
+   → Enable Custom SMTP a vyplnit:
+   - Host: `smtp.resend.com`
+   - Port: `465`
+   - Username: `resend`
+   - Password: *API klíč z kroku 2*
+   - Sender email: `noreply@<tvoje-doména>` (do doby, než bude doména,
+     lze použít `onboarding@resend.dev` — jen pro testy)
+   - Sender name: `Poradce do kapsy`
+4. Pokud používáš vlastní doménu: Resend → Domains → přidat a nastavit
+   SPF/DKIM DNS záznamy, jinak budou e-maily padat do spamu
+5. Test: na `/forgot-password` zadat svůj e-mail a zkontrolovat doručení
+
+### 2. Auth URL allowlist — ✅ UŽ JE V POŘÁDKU
+Ověřeno 6. 8. 2026 sondou na `/auth/v1/verify` (bez posílání e-mailu):
+- Site URL = `https://poradce-do-kapsy.vercel.app` ✓
+- Allowlist obsahuje `/auth/callback`, `/reset-password`, `/update-password` ✓
+- Cizí doména správně spadne na Site URL (allowlist tedy funguje) ✓
+- Pro lokální vývoj je povolen `http://localhost:3000`, ale **ne 3457**
+  (port z `.claude/launch.json`). Buď dev spouštět na 3000, nebo
+  `http://localhost:3457/**` přidat do Redirect URLs.
+
+Až přibude vlastní doména, přidat sem i její varianty.
 
 ### 3. Supabase Pro plán (~$25/měs)
 Free tier projekt usíná po týdnu neaktivity (stalo se 2× jen během vývoje).
