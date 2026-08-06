@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { notifyAdvisor } from '@/lib/notify'
 import SectionInterestToolbar, { type InterestStatus } from '@/components/dashboard/SectionInterestToolbar'
 import AskModal from '@/components/dashboard/AskModal'
 import SelectVariantButton from '@/components/dashboard/SelectVariantButton'
@@ -65,7 +66,6 @@ const interestBorderClass: Record<Exclude<InterestStatus, null>, string> = {
   not_now:    'border-[#E4DFD2] opacity-60',
 }
 
-const WEBHOOK_URL = 'https://n8n.jevcakn8n.com/webhook/klient-zajem'
 
 export default function FinancniPlanPage() {
   const supabase = useMemo(() => createClient(), [])
@@ -196,18 +196,11 @@ export default function FinancniPlanPage() {
       const next: Record<string, InterestStatus> = {}
       for (const s of planSections) next[s.id] = 'interested'
       setInterests(next)
-      try {
-        fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: 'bulk_plan_interest',
-            client_id: clientId,
-            sections: planSections.map(s => s.id),
-            created_at: new Date().toISOString(),
-          }),
-        })
-      } catch {}
+      notifyAdvisor({
+        event: 'bulk_plan_interest',
+        client_id: clientId,
+        sections: planSections.map(s => s.id),
+      })
       showToast('Poradce bude informován o vašem zájmu o celý plán.')
     }
     setBulkLoading(false)

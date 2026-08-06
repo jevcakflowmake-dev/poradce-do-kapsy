@@ -63,15 +63,22 @@ export async function POST(request: Request) {
       await supabase.from('profiles').update({ full_name, phone }).eq('id', data.user.id)
     }
 
-    // Notify advisor via n8n webhook (fire and forget, bez hesla)
+    // Notifikace poradci přes n8n (bez hesla). MUSÍ se awaitovat — v serverless
+    // prostředí (Vercel) by fire-and-forget fetch nemusel před ukončením funkce
+    // vůbec odejít. Selhání webhoóku registraci neblokuje, jen se zaloguje
+    // (viditelné ve Vercel logs), aby výpadek n8n nebyl neviditelný.
     try {
-      fetch('https://n8n.jevcakn8n.com/webhook/novy-klient', {
+      const webhookRes = await fetch('https://n8n.jevcakn8n.com/webhook/novy-klient', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ full_name, email, phone, created_at: new Date().toISOString() }),
+        signal: AbortSignal.timeout(5000),
       })
-    } catch {
-      // fire and forget
+      if (!webhookRes.ok) {
+        console.error(`[register] n8n webhook novy-klient selhal: HTTP ${webhookRes.status} — poradce se o klientovi ${email} nedozví z notifikace`)
+      }
+    } catch (err) {
+      console.error('[register] n8n webhook novy-klient nedostupný:', err instanceof Error ? err.message : err)
     }
 
     // Heslo NEvracíme — klient ho zadal, použije ho v signInWithPassword sám.

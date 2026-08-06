@@ -96,8 +96,9 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
         return
       }
 
-      const { data: urlData } = supabase.storage.from('proposals').getPublicUrl(path)
-      file_url = urlData.publicUrl
+      // Bucket je privátní — ukládáme storage CESTU, odkaz se generuje
+      // přes createSignedUrl až při zobrazení (viz ProposalCard / StoredFileLink)
+      file_url = path
     }
 
     let contentToSave = data.content || null
@@ -137,18 +138,17 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
       setEnabledSections({})
       setSectionAmounts({})
 
-      try {
-        fetch('https://n8n.jevcakn8n.com/webhook/novy-navrh', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            client_id: clientId,
-            type: data.type,
-            title: data.title,
-            created_at: new Date().toISOString(),
-          }),
-        })
-      } catch {}
+      // Notifikace přes n8n — návrh je uložen v DB, selhání webhoóku jen logujeme
+      fetch('https://n8n.jevcakn8n.com/webhook/novy-navrh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_id: clientId,
+          type: data.type,
+          title: data.title,
+          created_at: new Date().toISOString(),
+        }),
+      }).catch(() => console.warn('[n8n] notifikace novy-navrh nedoručena — webhook nedostupný'))
 
       setTimeout(() => {
         setSuccess(false)

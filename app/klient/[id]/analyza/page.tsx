@@ -12,9 +12,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { createClient } from '@/lib/supabase/client'
+import { uploadAnalysisFile } from '@/lib/storage'
+import StoredFileLink from '@/components/files/StoredFileLink'
 
 interface SectionData { [key: string]: string }
-interface UploadedFile { name: string; size: number; section: string }
+interface UploadedFile { name: string; size: number; section: string; file: File }
+interface StoredFile { id: string; section: string; file_name: string; file_url: string; file_size: number }
 
 const sections = [
   {
@@ -109,6 +113,8 @@ export default function AnalyzaPage() {
   const [data, setData] = useState<Record<string, SectionData>>({})
   const [expandedSections, setExpandedSections] = useState<string[]>([sections[0].id])
   const [files, setFiles] = useState<UploadedFile[]>([])
+  const [existingFiles, setExistingFiles] = useState<StoredFile[]>([])
+  const [fileError, setFileError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
@@ -123,7 +129,7 @@ export default function AnalyzaPage() {
   }
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return
-    setFiles(prev => [...prev, ...Array.from(e.target.files!).map(f => ({ name: f.name, size: f.size, section: activeUploadSection }))])
+    setFiles(prev => [...prev, ...Array.from(e.target.files!).map(f => ({ name: f.name, size: f.size, section: activeUploadSection, file: f }))])
     e.target.value = ''
   }
   function removeFile(name: string) { setFiles(prev => prev.filter(f => f.name !== name)) }
@@ -140,9 +146,12 @@ export default function AnalyzaPage() {
       try {
         const res = await fetch(`/api/analysis?clientId=${id}`)
         if (res.ok) {
-          const { responses } = await res.json()
+          const { responses, files: storedFiles } = await res.json()
           if (responses && Object.keys(responses).length > 0) {
             setData(responses)
+          }
+          if (Array.isArray(storedFiles)) {
+            setExistingFiles(storedFiles)
           }
         }
       } catch {
@@ -178,6 +187,31 @@ export default function AnalyzaPage() {
 
   async function handleSubmit() {
     setLoading(true)
+    setFileError(null)
+
+    // Přílohy nahrává poradce do složky klienta (storage policy to povoluje)
+    const supabase = createClient()
+    const failed: UploadedFile[] = []
+    const errors: string[] = []
+    for (const f of files) {
+      const result = await uploadAnalysisFile(supabase, id, f.section, f.file)
+      if (result.ok) {
+        setExistingFiles(prev => [
+          ...prev,
+          { id: result.path, section: f.section, file_name: f.name, file_url: result.path, file_size: f.size },
+        ])
+      } else {
+        failed.push(f)
+        errors.push(result.error)
+      }
+    }
+    setFiles(failed)
+    if (failed.length > 0) {
+      setFileError(`Některé přílohy se nepodařilo nahrát: ${errors.join(' · ')}. Zkuste to znovu.`)
+      setLoading(false)
+      return
+    }
+
     try {
       const res = await fetch('/api/analysis', {
         method: 'POST',
@@ -383,6 +417,24 @@ export default function AnalyzaPage() {
                             ))}
                           </div>
                         )}
+                        {/* Už nahrané přílohy — otevírají se přes signed URL */}
+                        {existingFiles.filter(f => f.section === section.id).length > 0 && (
+                          <div className="mt-2.5 space-y-1.5">
+                            {existingFiles.filter(f => f.section === section.id).map(f => (
+                              <div key={f.id} className="flex items-center gap-2 bg-[#009EE2]/5 rounded-none px-3 py-2.5 text-sm border border-[#009EE2]/25">
+                                <Check className="w-4 h-4 text-[#0079AD] shrink-0" />
+                                <StoredFileLink
+                                  bucket="analysis"
+                                  path={f.file_url}
+                                  className="flex-1 min-w-0 text-left text-[#162459] truncate hover:text-[#0079AD] transition-colors"
+                                >
+                                  {f.file_name}
+                                </StoredFileLink>
+                                <span className="text-xs text-[#66708C] shrink-0">nahráno</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -392,6 +444,12 @@ export default function AnalyzaPage() {
           )
         })}
       </div>
+
+      {fileError && (
+        <div className="mt-6 p-4 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
+          {fileError}
+        </div>
+      )}
 
       <motion.div className="mt-10 flex justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
         <button

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, Send, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { notifyAdvisor } from '@/lib/notify'
 
 type Props = {
   open: boolean
@@ -14,7 +15,6 @@ type Props = {
   onSent: () => void
 }
 
-const WEBHOOK_URL = 'https://n8n.jevcakn8n.com/webhook/klient-zajem'
 
 export default function AskModal({ open, onClose, clientId, section, sectionLabel, onSent }: Props) {
   const [text, setText] = useState('')
@@ -77,20 +77,13 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
     }
 
     // 3. Webhook
-    try {
-      fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'section_question',
-          client_id: clientId,
-          section,
-          section_label: sectionLabel,
-          question: clean,
-          created_at: new Date().toISOString(),
-        }),
-      })
-    } catch {}
+    notifyAdvisor({
+      event: 'section_question',
+      client_id: clientId,
+      section,
+      section_label: sectionLabel,
+      question: clean,
+    })
 
     setSending(false)
     onSent()

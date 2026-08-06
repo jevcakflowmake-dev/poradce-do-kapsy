@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import StoredFileLink from '@/components/files/StoredFileLink'
 import { ArrowLeft, Shield, Clock, TrendingUp, CreditCard, Calendar, FileText, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -122,14 +123,13 @@ export default function ProduktyPage() {
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
                         {product.file_url && (
-                          <a
-                            href={product.file_url}
-                            target="_blank"
-                            rel="noreferrer"
+                          <StoredFileLink
+                            bucket="proposals"
+                            path={product.file_url}
                             className="w-9 h-9 bg-[#F6F4EE] border border-[#E4DFD2] rounded-none flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors"
                           >
                             <FileText className="w-4 h-4" />
-                          </a>
+                          </StoredFileLink>
                         )}
                         {product.link_url && (
                           <a

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Proposal } from '@/lib/types/database'
 import { proposalTypeLabel, formatDate } from '@/lib/utils'
@@ -14,8 +14,24 @@ const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
 export default function ProposalCard({ proposal, onRead }: { proposal: Proposal; onRead?: () => void }) {
   const [read, setRead] = useState(proposal.is_read)
   const [expanded, setExpanded] = useState(false)
+  const [fileUrl, setFileUrl] = useState<string | null>(null)
   const sbRef = useRef<ReturnType<typeof createClient> | null>(null)
   const getSupabase = () => { if (!sbRef.current) sbRef.current = createClient(); return sbRef.current }
+
+  // file_url je storage cesta v privátním bucketu — signed URL řešíme
+  // až při rozbalení karty (starší záznamy s plným http URL pustíme rovnou)
+  useEffect(() => {
+    if (!expanded || !proposal.file_url || fileUrl) return
+    if (proposal.file_url.startsWith('http')) {
+      setFileUrl(proposal.file_url)
+      return
+    }
+    getSupabase()
+      .storage.from('proposals')
+      .createSignedUrl(proposal.file_url, 60 * 60)
+      .then(({ data }) => { if (data?.signedUrl) setFileUrl(data.signedUrl) })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded, proposal.file_url])
 
   async function markRead() {
     if (read) return
@@ -62,11 +78,14 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
           {proposal.content && (
             <p className="text-sm text-[#3A4568] whitespace-pre-wrap leading-relaxed">{proposal.content}</p>
           )}
-          {proposal.file_url && (
+          {proposal.file_url && !fileUrl && (
+            <p className="text-xs text-[#8B93A8]">Načítám přílohu…</p>
+          )}
+          {proposal.file_url && fileUrl && (
             <div>
               <p className="text-xs font-medium text-[#8B93A8] mb-2 uppercase tracking-wide">Příloha PDF</p>
-              <iframe src={proposal.file_url} className="w-full h-64 rounded-none border border-[#EFEBE0]" title={proposal.title} />
-              <a href={proposal.file_url} target="_blank" rel="noopener noreferrer"
+              <iframe src={fileUrl} className="w-full h-64 rounded-none border border-[#EFEBE0]" title={proposal.title} />
+              <a href={fileUrl} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium" style={{ color: '#162459' }}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />

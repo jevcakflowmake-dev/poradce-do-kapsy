@@ -6,6 +6,7 @@ import { calcHealthScore, incomeLabel, familyLabel, riskLabel, goalLabel, propos
 import type { Profile, Proposal } from '@/lib/types/database'
 import ProposalForm from '@/components/advisor/ProposalForm'
 import StatusControl from '@/components/advisor/StatusControl'
+import StoredFileLink from '@/components/files/StoredFileLink'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = await params
@@ -44,6 +45,15 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   }
 
   const hasAnalysis = Object.keys(analysisResponses).length > 0
+
+  // Dokumenty nahrané klientem v analýze (smlouvy, pojistky)
+  const { data: analysisFilesRaw } = await (supabase.from('analysis_files') as any)
+    .select('*')
+    .eq('client_id', clientId)
+    .order('created_at', { ascending: false })
+  const analysisFiles = (analysisFilesRaw || []) as Array<{
+    id: string; section: string; file_name: string; file_url: string; file_size: number
+  }>
 
   // Existuje už nějaký plán pro klienta?
   const { data: planVariantsCount } = await (supabase.from('plan_variants') as any)
@@ -353,6 +363,35 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                   </dl>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Dokumenty od klienta — privátní bucket, odkaz přes signed URL */}
+          {analysisFiles.length > 0 && (
+            <div className="mt-4 bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6">
+              <h3
+                className="font-display text-[#162459] mb-4"
+                style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+              >
+                Dokumenty od klienta
+              </h3>
+              <ul className="space-y-2">
+                {analysisFiles.map(f => (
+                  <li key={f.id} className="flex items-center gap-3 text-sm">
+                    <FileText className="w-4 h-4 text-[#66708C] shrink-0" />
+                    <StoredFileLink
+                      bucket="analysis"
+                      path={f.file_url}
+                      className="text-[#0079AD] hover:text-[#162459] transition-colors font-medium text-left truncate"
+                    >
+                      {f.file_name}
+                    </StoredFileLink>
+                    <span className="text-xs text-[#66708C] shrink-0">
+                      {SECTION_LABELS[f.section] || f.section} · {(f.file_size / 1024).toFixed(0)} KB
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </section>

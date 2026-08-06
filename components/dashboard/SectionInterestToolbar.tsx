@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Check, HelpCircle, Clock, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { notifyAdvisor } from '@/lib/notify'
 
 export type InterestStatus = 'interested' | 'question' | 'not_now' | null
 
@@ -15,7 +16,6 @@ type Props = {
   onAskQuestion: () => void
 }
 
-const WEBHOOK_URL = 'https://n8n.jevcakn8n.com/webhook/klient-zajem'
 
 export default function SectionInterestToolbar({
   clientId,
@@ -52,20 +52,13 @@ export default function SectionInterestToolbar({
 
     // Webhook — jen u "interested", "not_now" jde do daily digest
     if (next === 'interested') {
-      try {
-        fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: 'section_interest',
-            client_id: clientId,
-            section,
-            section_label: sectionLabel,
-            status: next,
-            created_at: new Date().toISOString(),
-          }),
-        })
-      } catch {}
+      notifyAdvisor({
+        event: 'section_interest',
+        client_id: clientId,
+        section,
+        section_label: sectionLabel,
+        status: next,
+      })
     }
 
     setLoading(null)

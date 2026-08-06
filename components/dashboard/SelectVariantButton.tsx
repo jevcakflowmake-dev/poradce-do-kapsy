@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Check, Loader2, Heart } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { notifyAdvisor } from '@/lib/notify'
 
 type Props = {
   clientId: string
@@ -13,7 +14,6 @@ type Props = {
   onToggle: (selected: boolean) => void
 }
 
-const WEBHOOK_URL = 'https://n8n.jevcakn8n.com/webhook/klient-zajem'
 
 export default function SelectVariantButton({
   clientId,
@@ -46,20 +46,13 @@ export default function SelectVariantButton({
       })
       if (!error) {
         onToggle(true)
-        try {
-          fetch(WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              event: 'variant_selected',
-              client_id: clientId,
-              variant_id: variantId,
-              company,
-              section,
-              created_at: new Date().toISOString(),
-            }),
-          })
-        } catch {}
+        notifyAdvisor({
+          event: 'variant_selected',
+          client_id: clientId,
+          variant_id: variantId,
+          company,
+          section,
+        })
       }
     }
     setLoading(false)

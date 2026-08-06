@@ -12,15 +12,26 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { createClient } from '@/lib/supabase/client'
+import { uploadAnalysisFile } from '@/lib/storage'
+import StoredFileLink from '@/components/files/StoredFileLink'
 
 interface SectionData {
   [key: string]: string
+}
+
+interface StoredFile {
+  id: string
+  section: string
+  file_name: string
+  file_url: string
+  file_size: number
 }
 
 interface UploadedFile {
   name: string
   size: number
   section: string
+  file: File
 }
 
 const sections = [
@@ -136,6 +147,8 @@ export default function AnalyzaPage() {
   const [data, setData] = useState<Record<string, SectionData>>({})
   const [expandedSections, setExpandedSections] = useState<string[]>([sections[0].id])
   const [files, setFiles] = useState<UploadedFile[]>([])
+  const [existingFiles, setExistingFiles] = useState<StoredFile[]>([])
+  const [fileError, setFileError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -160,6 +173,7 @@ export default function AnalyzaPage() {
       name: f.name,
       size: f.size,
       section: activeUploadSection,
+      file: f,
     }))
     setFiles(prev => [...prev, ...newFiles])
     e.target.value = ''
@@ -197,6 +211,9 @@ export default function AnalyzaPage() {
         if (result.responses && Object.keys(result.responses).length > 0) {
           setData(result.responses)
         }
+        if (Array.isArray(result.files)) {
+          setExistingFiles(result.files)
+        }
       })
       .catch(() => {})
   }, [userId])
@@ -225,9 +242,32 @@ export default function AnalyzaPage() {
 
   async function handleSubmit() {
     setLoading(true)
+    setFileError(null)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
+      // Nahrát přílohy do storage — bez toho by je poradce nikdy neviděl
+      const failed: UploadedFile[] = []
+      const errors: string[] = []
+      for (const f of files) {
+        const result = await uploadAnalysisFile(supabase, user.id, f.section, f.file)
+        if (result.ok) {
+          setExistingFiles(prev => [
+            ...prev,
+            { id: result.path, section: f.section, file_name: f.name, file_url: result.path, file_size: f.size },
+          ])
+        } else {
+          failed.push(f)
+          errors.push(result.error)
+        }
+      }
+      setFiles(failed)
+      if (failed.length > 0) {
+        setFileError(`Některé přílohy se nepodařilo nahrát: ${errors.join(' · ')}. Odpovědi jsou uložené — zkuste soubory odeslat znovu.`)
+        setLoading(false)
+        return
+      }
+
       // Save analysis responses
       try {
         await fetch('/api/analysis', {
@@ -485,6 +525,27 @@ export default function AnalyzaPage() {
                             ))}
                           </div>
                         )}
+                        {/* Už nahrané přílohy — otevírají se přes signed URL */}
+                        {existingFiles.filter(f => f.section === section.id).length > 0 && (
+                          <div className="mt-2.5 space-y-1.5">
+                            {existingFiles.filter(f => f.section === section.id).map(f => (
+                              <div
+                                key={f.id}
+                                className="flex items-center gap-2 bg-[#009EE2]/5 rounded-none px-3 py-2.5 text-sm border border-[#009EE2]/25"
+                              >
+                                <Check className="w-4 h-4 text-[#0079AD] shrink-0" />
+                                <StoredFileLink
+                                  bucket="analysis"
+                                  path={f.file_url}
+                                  className="flex-1 min-w-0 text-left text-[#162459] truncate hover:text-[#0079AD] transition-colors"
+                                >
+                                  {f.file_name}
+                                </StoredFileLink>
+                                <span className="text-xs text-[#66708C] shrink-0">nahráno</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -494,6 +555,12 @@ export default function AnalyzaPage() {
           )
         })}
       </div>
+
+      {fileError && (
+        <div className="mt-6 p-4 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
+          {fileError}
+        </div>
+      )}
 
       <motion.div
         className="mt-10 flex justify-end"
