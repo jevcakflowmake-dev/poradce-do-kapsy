@@ -438,6 +438,7 @@ export default function AnalyzaPage() {
                   >
                     <div className="h-px bg-[#E4DFD2]" />
                     <div className="p-5 md:p-7 space-y-5">
+                      {section.id === 'personal' && <HealthDataNotice />}
                       {section.questions.map(q => (
                         <div key={q.id}>
                           <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
@@ -578,6 +579,40 @@ export default function AnalyzaPage() {
           <ArrowRight className="w-4 h-4" />
         </button>
       </motion.div>
+    </div>
+  )
+}
+
+/**
+ * Výška, váha, nemoci a úrazy jsou zvláštní kategorie osobních údajů
+ * (čl. 9 GDPR) — na jejich zpracování je potřeba výslovný souhlas, ne pouhá
+ * informace. Sdělujeme ho tedy před vyplněním sekce, ne až v patičce.
+ */
+function HealthDataNotice() {
+  return (
+    <div className="bg-[#F6F4EE] border border-[#E4DFD2] border-l-2 border-l-[#009EE2] p-4 md:p-5">
+      <div className="flex items-start gap-3">
+        <Shield className="w-4 h-4 text-[#009EE2] flex-shrink-0 mt-0.5" strokeWidth={1.8} />
+        <div className="text-[13px] text-[#66708C] leading-relaxed space-y-2">
+          <p>
+            Tahle sekce se ptá i na <strong className="font-semibold text-[#162459]">údaje o zdraví</strong>{' '}
+            (výška, váha, nemoci, úrazy). Pojišťovny je vyžadují pro výpočet ceny
+            a rozsahu krytí — bez nich vám návrh životního pojištění nespočítáme.
+          </p>
+          <p>
+            Vyplněním a odesláním sekce udělujete výslovný souhlas s jejich
+            zpracováním. Je dobrovolný, kdykoliv ho můžete odvolat a sekci
+            můžete i přeskočit. Podrobnosti v{' '}
+            <Link
+              href="/zasady-ochrany-osobnich-udaju"
+              className="underline underline-offset-2 hover:text-[#162459] transition-colors"
+            >
+              zásadách ochrany osobních údajů
+            </Link>
+            .
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

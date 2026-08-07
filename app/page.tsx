@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import HeroSection from '@/components/landing/HeroSection'
@@ -35,10 +36,13 @@ export default async function HomePage() {
             </div>
             <span className="font-semibold text-sm text-[#162459]">Poradce do kapsy</span>
           </div>
-          <div className="flex items-center gap-6 text-sm text-[#66708C]">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[#66708C]">
             <a href="#sluzby" className="nav-link hover:text-[#162459] transition-colors">Co řešíme</a>
             <a href="#jak-to-funguje" className="nav-link hover:text-[#162459] transition-colors">Jak to funguje</a>
             <a href="#prihlaseni" className="nav-link hover:text-[#162459] transition-colors">Přihlášení</a>
+            <Link href="/zasady-ochrany-osobnich-udaju" className="nav-link hover:text-[#162459] transition-colors">
+              Ochrana údajů
+            </Link>
           </div>
           <span className="text-sm text-[#66708C]">© 2026 · Certifikovaný poradce ProfiFP · OVB Allfinanz</span>
         </div>

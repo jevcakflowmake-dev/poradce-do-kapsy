@@ -70,11 +70,20 @@ Do té doby: nic se neztratí (vše je v DB), jen nechodí upozornění.
 - [ ] **Smazat testovací účty** v Supabase (Authentication → Users):
       `test123@test.cz`, příp. staré testy `kuba.jevcak@gmail.com`,
       `jakub.jevcak@ovbmail.cz`
-- [ ] **SEO**: `robots.txt`, `sitemap.ts`, OG image (náhled při sdílení),
-      `metadataBase` — zatím chybí
-- [ ] **Právní minimum**: zásady zpracování osobních údajů (registrace sbírá
-      jméno/telefon/e-mail, analýza i zdravotní údaje!), cookies lišta není
-      potřeba (žádná analytika), ale GDPR informace ano
+- [x] **SEO** — hotovo 7. 8. 2026: `app/robots.ts`, `app/sitemap.ts`,
+      `metadataBase` + OG/Twitter metadata v `app/layout.tsx` a OG obrázek
+      (`app/opengraph-image.tsx`, prerenderuje se při buildu z fontů
+      v `assets/`). Adresa webu je v `lib/site.ts` — po koupi domény stačí
+      nastavit `NEXT_PUBLIC_SITE_URL` ve Vercelu, v kódu se nemění nic.
+- [x] **Právní minimum** — hotovo 7. 8. 2026: `/zasady-ochrany-osobnich-udaju`,
+      odkaz v patičce, v registraci a v analýze. Zdravotní údaje z analýzy jsou
+      řešené jako zvláštní kategorie (čl. 9 GDPR) s výslovným souhlasem před
+      vyplněním sekce. Cookies lišta není potřeba (žádná analytika).
+      🔴 **Musí doplnit Jakub**: v `app/zasady-ochrany-osobnich-udaju/page.tsx`
+      je konstanta `SPRAVCE` se čtyřmi `[DOPLNIT]` — jméno, IČO, adresa sídla
+      a kontaktní e-mail. Bez nich zásady nejsou platné. Text je návrh, ne
+      právní posudek — doporučuji ho nechat proběhnout právníkem, hlavně
+      lhůty archivace a odkazy na zákon o distribuci pojištění.
 - [ ] **Mock data**: `/dashboard/produkty` zobrazuje smyšlené platební údaje
       (mockPayments) — před ostrým provozem skrýt nebo napojit na DB
 

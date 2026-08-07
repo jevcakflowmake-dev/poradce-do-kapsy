@@ -140,8 +140,15 @@ export default function SignupForm() {
           </button>
         </form>
 
-        <p className="text-center text-xs text-[#66708C] mt-5">
-          Registrací souhlasíte se zpracováním osobních údajů.
+        <p className="text-center text-xs text-[#66708C] mt-5 leading-relaxed">
+          Registrací berete na vědomí{' '}
+          <Link
+            href="/zasady-ochrany-osobnich-udaju"
+            className="underline underline-offset-2 hover:text-[#162459] transition-colors"
+          >
+            zásady zpracování osobních údajů
+          </Link>
+          .
         </p>
       </div>
 
