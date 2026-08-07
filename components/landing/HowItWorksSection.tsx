@@ -13,8 +13,8 @@ if (typeof window !== 'undefined') {
 const STEPS = [
   {
     num: '01',
-    title: 'Vyplňte dotazník',
-    desc: 'Komplexní dotazník o vaší finanční situaci. Zabere přibližně 10 minut.',
+    title: 'Vyplňte analýzu',
+    desc: 'Komplexní analýza vaší finanční situace. Zabere přibližně 10 minut.',
     detail: 'Věk, příjem, rodinná situace a finanční cíle',
   },
   {
@@ -138,7 +138,7 @@ export default function HowItWorksSection() {
 
         <div className="mt-10 flex justify-end">
           <Link
-            href="/signup"
+            href="/analyza"
             className="nav-link inline-flex items-center gap-2 text-[#162459] font-medium"
           >
             Začít prvním krokem <ArrowRight className="w-4 h-4 text-[#009EE2]" />

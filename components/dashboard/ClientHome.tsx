@@ -15,7 +15,7 @@ type Tile = {
 const TILES: Tile[] = [
   {
     title: 'Analýza',
-    desc: 'Vyplňte dotazník a my připravíme finanční plán přesně pro vás.',
+    desc: 'Vyplňte analýzu a my připravíme finanční plán přesně pro vás.',
     href: '/dashboard/analyza',
     icon: ClipboardCheck,
     variant: 'navy',

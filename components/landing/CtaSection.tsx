@@ -63,15 +63,15 @@ export default function CtaSection() {
               Návrh přesně pro vás <span style={{ fontStyle: 'italic', color: '#009EE2' }}>do 48 hodin.</span>
             </h2>
             <p className="text-[#F6F4EE]/55 leading-relaxed mb-8 max-w-md">
-              Máte už účet? Přihlaste se vpravo. Nový klient? Vyplňte dotazník — 10 minut
+              Máte už účet? Přihlaste se vpravo. Nový klient? Vyplňte analýzu — 10 minut
               a dostanete osobní finanční plán.
             </p>
             <MagneticButton>
               <Link
-                href="/signup"
+                href="/analyza"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-[#009EE2] font-semibold text-sm text-[#0B111F] hover:bg-[#1a9fdd] transition-colors"
               >
-                Začít dotazník zdarma →
+                Začít analýzu zdarma →
               </Link>
             </MagneticButton>
           </div>

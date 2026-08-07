@@ -124,7 +124,7 @@ export default function Step4Risk({
           className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-40 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
           style={{ background: '#162459' }}
         >
-          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Dokončit dotazník'}
+          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Dokončit nastavení'}
         </button>
       </div>
     </div>

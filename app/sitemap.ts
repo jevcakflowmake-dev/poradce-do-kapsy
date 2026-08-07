@@ -16,10 +16,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      // Hlavní vstupní bod pro nové klienty — analýzu vyplní bez registrace.
+      url: absoluteUrl('/analyza'),
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: absoluteUrl('/signup'),
       lastModified,
       changeFrequency: 'yearly',
-      priority: 0.8,
+      priority: 0.4,
     },
     {
       url: absoluteUrl('/login'),

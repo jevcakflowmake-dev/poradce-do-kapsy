@@ -14,7 +14,7 @@ type Tile = {
 }
 
 const TILES: Tile[] = [
-  { title: 'Analýza', desc: 'Vyplňte dotazník a my připravíme finanční plán přesně pro vás.', path: 'analyza', icon: ClipboardCheck, variant: 'navy' },
+  { title: 'Analýza', desc: 'Vyplňte analýzu a my připravíme finanční plán přesně pro vás.', path: 'analyza', icon: ClipboardCheck, variant: 'navy' },
   { title: 'Finanční plán', desc: 'Váš osobní finanční plán od certifikovaného poradce.', path: 'financni-plan', icon: FileText, variant: 'cyan' },
   { title: 'Moje produkty', desc: 'Přehled vašich smluv, produktů a platebních údajů.', path: 'produkty', icon: Package, variant: 'light-navy' },
   { title: 'Chat', desc: 'Přímá komunikace s vaším finančním poradcem.', path: 'chat', icon: MessageCircle, variant: 'light-cyan' },

@@ -125,6 +125,109 @@ export type Database = {
         }
         Relationships: []
       }
+      analysis_responses: {
+        Row: {
+          id: string
+          client_id: string
+          section: string
+          question_id: string
+          value: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          section: string
+          question_id: string
+          value: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          section?: string
+          question_id?: string
+          value?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      analysis_files: {
+        Row: {
+          id: string
+          client_id: string
+          section: string
+          file_name: string
+          /** Cesta ve storage, ne URL — odkaz se generuje přes createSignedUrl. */
+          file_url: string
+          file_size: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          section: string
+          file_name: string
+          file_url: string
+          file_size?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          section?: string
+          file_name?: string
+          file_url?: string
+          file_size?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      public_submissions: {
+        Row: {
+          id: string
+          email: string
+          full_name: string | null
+          phone: string | null
+          responses: Json
+          files: Json
+          matched_client_id: string | null
+          status: 'pending' | 'applied' | 'discarded'
+          has_password: boolean
+          applied_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          full_name?: string | null
+          phone?: string | null
+          responses?: Json
+          files?: Json
+          matched_client_id?: string | null
+          status?: 'pending' | 'applied' | 'discarded'
+          has_password?: boolean
+          applied_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          full_name?: string | null
+          phone?: string | null
+          responses?: Json
+          files?: Json
+          matched_client_id?: string | null
+          status?: 'pending' | 'applied' | 'discarded'
+          has_password?: boolean
+          applied_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -145,3 +248,5 @@ export type FamilyStatus = NonNullable<Profile['family_status']>
 export type RiskProfile = NonNullable<Profile['risk_profile']>
 export type ProposalType = Proposal['type']
 export type ClientStatus = Profile['status']
+export type PublicSubmission = Database['public']['Tables']['public_submissions']['Row']
+export type SubmissionStatus = PublicSubmission['status']

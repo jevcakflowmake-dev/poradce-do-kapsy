@@ -6,6 +6,8 @@ import { calcHealthScore, incomeLabel, familyLabel, riskLabel, goalLabel, propos
 import type { Profile, Proposal } from '@/lib/types/database'
 import ProposalForm from '@/components/advisor/ProposalForm'
 import StatusControl from '@/components/advisor/StatusControl'
+import PendingSubmission from '@/components/advisor/PendingSubmission'
+import AccessLinkButton from '@/components/advisor/AccessLinkButton'
 import StoredFileLink from '@/components/files/StoredFileLink'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ clientId: string }> }) {
@@ -54,6 +56,35 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   const analysisFiles = (analysisFilesRaw || []) as Array<{
     id: string; section: string; file_name: string; file_url: string; file_size: number
   }>
+
+  // Analýza z veřejného formuláře, o které poradce ještě nerozhodl.
+  // Bereme jen nejnovější — starší čekající odeslání jsou v tabulce dohledatelná.
+  const { data: pendingRaw } = await supabase
+    .from('public_submissions')
+    .select('id, email, responses, files, created_at')
+    .eq('matched_client_id', clientId)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const pendingSubmission = pendingRaw as {
+    id: string
+    email: string
+    responses: Record<string, Record<string, string>>
+    files: unknown[]
+    created_at: string
+  } | null
+
+  // Zvolil si klient někdy heslo? Když ne, přihlásit se zatím nemůže.
+  const { data: appliedRaw } = await supabase
+    .from('public_submissions')
+    .select('has_password')
+    .eq('matched_client_id', clientId)
+    .eq('has_password', true)
+    .limit(1)
+  const cameFromPublicForm = pendingSubmission !== null || (appliedRaw?.length ?? 0) > 0
+  const clientHasPassword = (appliedRaw?.length ?? 0) > 0
 
   // Existuje už nějaký plán pro klienta?
   const { data: planVariantsCount } = await (supabase.from('plan_variants') as any)
@@ -201,6 +232,16 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
       </nav>
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14 space-y-10">
+        {pendingSubmission && (
+          <PendingSubmission
+            submissionId={pendingSubmission.id}
+            createdAt={pendingSubmission.created_at}
+            email={pendingSubmission.email}
+            responses={pendingSubmission.responses ?? {}}
+            fileCount={Array.isArray(pendingSubmission.files) ? pendingSubmission.files.length : 0}
+          />
+        )}
+
         {/* Hero header s jménem + status control */}
         <header>
           <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-2">01</div>
@@ -311,6 +352,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           </div>
 
           {/* Formulář pro nový návrh */}
+          {cameFromPublicForm && (
+            <AccessLinkButton clientId={clientId} hasPassword={clientHasPassword} />
+          )}
+
           <ProposalForm clientId={clientId} />
         </section>
 
@@ -324,7 +369,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
               >
                 Odpovědi z{' '}
-                <span style={{ fontStyle: 'italic', color: '#009EE2' }}>dotazníku</span>
+                <span style={{ fontStyle: 'italic', color: '#009EE2' }}>analýzy</span>
               </h2>
             </div>
             {hasAnalysis && (

@@ -126,17 +126,17 @@ export default function HeroSection() {
               </h1>
 
               <p className="hero-sub text-lg md:text-xl text-[#66708C] max-w-xl leading-relaxed mb-10">
-                Vyplňte dotazník a do 48 hodin dostanete osobní návrh pojištění,
+                Vyplňte analýzu a do 48 hodin dostanete osobní návrh pojištění,
                 penzijního spoření nebo investic — bez schůzek, bez závazků, zdarma.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-8">
                 <MagneticButton className="hero-cta w-full sm:w-auto">
                   <Link
-                    href="/signup"
+                    href="/analyza"
                     className="group flex items-center justify-center gap-2 px-8 py-4 bg-[#162459] font-medium text-[#F6F4EE] text-base hover:bg-[#0e1a3d] transition-colors"
                   >
-                    Začít dotazník zdarma
+                    Začít analýzu zdarma
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </MagneticButton>
@@ -149,7 +149,7 @@ export default function HeroSection() {
               </div>
 
               <p className="hero-fine text-sm text-[#66708C]/70">
-                Dotazník zabere ~10 minut · Bez závazků · Zdarma
+                Analýza zabere ~10 minut · Bez závazků · Zdarma
               </p>
             </div>
 

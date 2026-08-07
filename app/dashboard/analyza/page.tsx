@@ -1,158 +1,32 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  ArrowLeft, ArrowRight, Check, Upload, Shield, Home, Clock, Baby,
-  TrendingUp, Building2, ChevronDown, ChevronUp, FileText, X, UserCircle
-} from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { createClient } from '@/lib/supabase/client'
 import { uploadAnalysisFile } from '@/lib/storage'
-import StoredFileLink from '@/components/files/StoredFileLink'
-
-interface SectionData {
-  [key: string]: string
-}
-
-interface StoredFile {
-  id: string
-  section: string
-  file_name: string
-  file_url: string
-  file_size: number
-}
-
-interface UploadedFile {
-  name: string
-  size: number
-  section: string
-  file: File
-}
-
-const sections = [
-  {
-    id: 'income',
-    title: 'Zajištění příjmů',
-    icon: Shield,
-    color: 'from-[#162459] to-[#243471]',
-    questions: [
-      { id: 'employment', label: 'Jaký je váš pracovní poměr?', type: 'select', options: ['Zaměstnanec', 'OSVČ', 'Kombinace', 'Student', 'Důchodce'] },
-      { id: 'monthly_income', label: 'Čistý měsíční příjem (Kč)', type: 'number', placeholder: '35 000' },
-      { id: 'income_drop', label: 'Když vám klesne příjem na 60 %, kolik Kč chcete dostat, aby peníze nebyl problém?', type: 'number', placeholder: '20 000' },
-      { id: 'permanent_consequences', label: 'V případě trvalých následků chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'invalidity', label: 'V případě invalidity chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'serious_illness', label: 'V případě závažné nemoci chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'long_term_care', label: 'Chcete být zajištěn/a v případě dlouhodobé péče?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'death_coverage', label: 'V případě smrti chcete mít zajištěné splacení závazku?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'death_coverage_amount', label: 'Pokud ano, kolik Kč je potřeba na splacení závazků?', type: 'number', placeholder: '1 000 000' },
-      { id: 'monthly_budget', label: 'Kolik Kč jste ochotný/á platit za tento produkt měsíčně?', type: 'number', placeholder: '1 500' },
-      { id: 'preferred_companies', label: 'Máte nějaké společnosti, které preferujete?', type: 'checkbox', options: ['ČPP', 'Kooperativa', 'Allianz', 'MetLife', 'Generali', 'NN', 'Uniqa', 'Všechny'] },
-    ],
-  },
-  {
-    id: 'housing',
-    title: 'Bydlení',
-    icon: Home,
-    color: 'from-[#009EE2] to-[#0079AD]',
-    questions: [
-      { id: 'has_mortgage', label: 'Máte hypotéku?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'plan_mortgage', label: 'Pokud ne, plánujete ji řešit?', type: 'select', options: ['Ano', 'Ne', 'Možná v budoucnu'] },
-      { id: 'mortgage_amount', label: 'Jakou výši úvěru chcete?', type: 'number', placeholder: '3 000 000' },
-      { id: 'property_type', label: 'Jakou nemovitost chcete koupit?', type: 'select', options: ['Byt', 'Dům', 'Pozemek', 'Jiné'] },
-      { id: 'mortgage_timeline', label: 'Za jak dlouho plánujete koupi?', type: 'select', options: ['Do 6 měsíců', 'Do 1 roku', 'Do 2 let', 'Do 5 let', 'Nevím'] },
-      { id: 'mortgage_location', label: 'Kde chcete nemovitost koupit?', type: 'text', placeholder: 'Praha, Brno, ...' },
-    ],
-  },
-  {
-    id: 'retirement',
-    title: 'Příprava na důchod',
-    icon: Clock,
-    color: 'from-[#162459] to-[#243471]',
-    questions: [
-      { id: 'current_savings', label: 'Kolik si aktuálně odkládáte na důchod? (Kč/měsíc)', type: 'number', placeholder: '500' },
-      { id: 'pension_gap', label: 'Když byste od zítra pobírali důchod 9 000 Kč, kolik Kč byste ještě potřebovali k tomu?', type: 'number', placeholder: '15 000' },
-      { id: 'monthly_pension_budget', label: 'Kolik si můžete měsíčně odkládat na důchod? (Kč)', type: 'number', placeholder: '2 000' },
-    ],
-  },
-  {
-    id: 'children',
-    title: 'Děti',
-    icon: Baby,
-    color: 'from-[#009EE2] to-[#0079AD]',
-    questions: [
-      { id: 'children_count', label: 'Kolik máte dětí?', type: 'number', placeholder: '0' },
-      { id: 'children_ages', label: 'Jaký je jejich věk? (oddělte čárkou)', type: 'text', placeholder: '5, 8, 12' },
-      { id: 'children_insurance', label: 'Přejete si je pojistit v případě úrazu/nemoci?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'children_savings', label: 'Přejete si spořit dítěti?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'children_monthly', label: 'Kolik můžete měsíčně spořit? (Kč)', type: 'number', placeholder: '1 000' },
-      { id: 'children_notes', label: 'Poznámky', type: 'text', placeholder: 'Další informace...' },
-    ],
-  },
-  {
-    id: 'investing',
-    title: 'Investice',
-    icon: TrendingUp,
-    color: 'from-[#162459] to-[#243471]',
-    questions: [
-      { id: 'investing_experience', label: 'Zkušenosti s investováním', type: 'select', options: ['Žádné', 'Začátečník', 'Mírně pokročilý', 'Pokročilý'] },
-      { id: 'risk_tolerance', label: 'Tolerance k riziku', type: 'select', options: ['Konzervativní', 'Vyvážený', 'Dynamický', 'Agresivní'] },
-      { id: 'investment_horizon', label: 'Investiční horizont', type: 'select', options: ['1–3 roky', '3–5 let', '5–10 let', '10+ let'] },
-      { id: 'monthly_invest', label: 'Kolik měsíčně chcete investovat (Kč)', type: 'number', placeholder: '3 000' },
-      { id: 'current_investments', label: 'Stávající investice', type: 'select', options: ['Nemám žádné', 'Podílové fondy', 'ETF / akcie', 'Krypto', 'Kombinace'] },
-    ],
-  },
-  {
-    id: 'property',
-    title: 'Pojištění majetku',
-    icon: Building2,
-    color: 'from-[#009EE2] to-[#0079AD]',
-    questions: [
-      { id: 'has_car', label: 'Vlastníte auto?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'car_insurance', label: 'Jak jej máte pojištěné?', type: 'select', options: ['Povinné ručení', 'Povinné ručení + havarijní', 'Nemám pojištění', 'Nevlastním auto'] },
-      { id: 'car_recalculate', label: 'Chcete přepočítat stávající pojištění?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'has_property', label: 'Vlastníte nemovitost?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'property_type', label: 'Jakou nemovitost?', type: 'select', options: ['Byt', 'Dům', 'Chata/chalupa', 'Více nemovitostí', 'Nevlastním'] },
-      { id: 'property_insured', label: 'Máte ji pojištěnou?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'want_property_insurance', label: 'Přejete si ji pojistit?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'property_value', label: 'Pokud ano, jakou má hodnotu? (Kč)', type: 'number', placeholder: '3 000 000' },
-      { id: 'combined_insurance', label: 'Přejete si pojistit nemovitost i domácnost dohromady?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'property_notes', label: 'Poznámky', type: 'text', placeholder: 'Další informace...' },
-    ],
-  },
-  {
-    id: 'personal',
-    title: 'Osobní údaje',
-    icon: UserCircle,
-    color: 'from-[#162459] to-[#0e1a3d]',
-    questions: [
-      { id: 'full_name', label: 'Jméno a příjmení', type: 'text', placeholder: 'Jan Novák' },
-      { id: 'email', label: 'E-mail', type: 'text', placeholder: 'jan@email.cz' },
-      { id: 'phone', label: 'Telefon', type: 'text', placeholder: '+420 777 123 456' },
-      { id: 'age', label: 'Věk', type: 'number', placeholder: '35' },
-      { id: 'height', label: 'Výška (cm)', type: 'number', placeholder: '178' },
-      { id: 'weight', label: 'Váha (kg)', type: 'number', placeholder: '80' },
-      { id: 'serious_illness', label: 'Vážné nemoci za posledních 5 let?', type: 'text', placeholder: 'Žádné / popište...' },
-      { id: 'injury', label: 'Úraz za posledních 5 let?', type: 'text', placeholder: 'Žádný / popište...' },
-      { id: 'occupation', label: 'Jaké je vaše zaměstnání?', type: 'text', placeholder: 'Účetní, řidič, IT...' },
-    ],
-  },
-]
+import AnalysisAccordion, {
+  type PendingFile,
+  type StoredAnalysisFile,
+} from '@/components/analysis/AnalysisAccordion'
+import { SECTIONS, type SectionData } from '@/lib/analysis-sections'
 
 export default function AnalyzaPage() {
   const [data, setData] = useState<Record<string, SectionData>>({})
-  const [expandedSections, setExpandedSections] = useState<string[]>([sections[0].id])
-  const [files, setFiles] = useState<UploadedFile[]>([])
-  const [existingFiles, setExistingFiles] = useState<StoredFile[]>([])
+  const [expandedSections, setExpandedSections] = useState<string[]>([SECTIONS[0].id])
+  const [files, setFiles] = useState<PendingFile[]>([])
+  const [existingFiles, setExistingFiles] = useState<StoredAnalysisFile[]>([])
   const [fileError, setFileError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [userId, setUserId] = useState<string | null>(null)
+
   const fileRef = useRef<HTMLInputElement>(null)
-  const [activeUploadSection, setActiveUploadSection] = useState('')
+  const activeUploadSection = useRef<string>(SECTIONS[0].id)
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const supabase = useMemo(() => createClient(), [])
 
   function updateField(sectionId: string, questionId: string, value: string) {
     setData(prev => ({
@@ -167,42 +41,31 @@ export default function AnalyzaPage() {
     )
   }
 
+  function pickFiles(sectionId: string) {
+    activeUploadSection.current = sectionId
+    fileRef.current?.click()
+  }
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return
     const newFiles = Array.from(e.target.files).map(f => ({
       name: f.name,
       size: f.size,
-      section: activeUploadSection,
+      section: activeUploadSection.current,
       file: f,
     }))
     setFiles(prev => [...prev, ...newFiles])
     e.target.value = ''
   }
 
-  function removeFile(name: string) {
-    setFiles(prev => prev.filter(f => f.name !== name))
-  }
-
-  function sectionProgress(sectionId: string): number {
-    const section = sections.find(s => s.id === sectionId)
-    if (!section) return 0
-    const answered = Object.keys(data[sectionId] || {}).filter(k => data[sectionId][k]).length
-    return Math.round((answered / section.questions.length) * 100)
-  }
-
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
-  const [userId, setUserId] = useState<string | null>(null)
-  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const supabase = useMemo(() => createClient(), [])
-
-  // Get user ID on mount
+  // Přihlášený uživatel
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) setUserId(user.id)
     })
   }, [supabase])
 
-  // Load existing responses
+  // Načtení dosud uložených odpovědí a příloh
   useEffect(() => {
     if (!userId) return
     fetch(`/api/analysis?clientId=${userId}`)
@@ -218,7 +81,7 @@ export default function AnalyzaPage() {
       .catch(() => {})
   }, [userId])
 
-  // Auto-save on data change (debounced 2s)
+  // Automatické ukládání (debounce 2 s)
   const initialLoad = useRef(true)
   useEffect(() => {
     if (!userId || Object.keys(data).length === 0) return
@@ -243,11 +106,11 @@ export default function AnalyzaPage() {
   async function handleSubmit() {
     setLoading(true)
     setFileError(null)
-    const supabase = createClient()
+
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       // Nahrát přílohy do storage — bez toho by je poradce nikdy neviděl
-      const failed: UploadedFile[] = []
+      const failed: PendingFile[] = []
       const errors: string[] = []
       for (const f of files) {
         const result = await uploadAnalysisFile(supabase, user.id, f.section, f.file)
@@ -268,7 +131,6 @@ export default function AnalyzaPage() {
         return
       }
 
-      // Save analysis responses
       try {
         await fetch('/api/analysis', {
           method: 'POST',
@@ -277,7 +139,6 @@ export default function AnalyzaPage() {
         })
       } catch {}
 
-      // Update profile
       await supabase.from('profiles').update({
         onboarding_completed: true,
         goals: Object.keys(data),
@@ -372,190 +233,16 @@ export default function AnalyzaPage() {
         </p>
       </motion.div>
 
-      <div className="space-y-4">
-        {sections.map((section, sIdx) => {
-          const isExpanded = expandedSections.includes(section.id)
-          const progress = sectionProgress(section.id)
-          const sectionFiles = files.filter(f => f.section === section.id)
-
-          return (
-            <motion.div
-              key={section.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: sIdx * 0.05 }}
-              className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.12)]"
-            >
-              <button
-                onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center gap-4 p-5 md:p-6 text-left"
-              >
-                <div
-                  className={`w-11 h-11 rounded-none bg-gradient-to-br ${section.color} flex items-center justify-center flex-shrink-0 shadow-sm`}
-                >
-                  <section.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3
-                    className="font-display text-[#162459]"
-                    style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}
-                  >
-                    {section.title}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <div className="w-28 h-1 bg-[#E4DFD2] rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-700"
-                        style={{
-                          width: `${progress}%`,
-                          background: '#009EE2',
-                        }}
-                      />
-                    </div>
-                    <span className="text-xs text-[#66708C] tabular-nums">{progress}%</span>
-                  </div>
-                </div>
-                {progress === 100 && (
-                  <div className="w-7 h-7 bg-[#16a34a]/10 border border-[#16a34a]/30 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-[#15803d]" />
-                  </div>
-                )}
-                {isExpanded ? (
-                  <ChevronUp className="w-5 h-5 text-[#66708C] flex-shrink-0" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-[#66708C] flex-shrink-0" />
-                )}
-              </button>
-
-              <AnimatePresence>
-                {isExpanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="h-px bg-[#E4DFD2]" />
-                    <div className="p-5 md:p-7 space-y-5">
-                      {section.id === 'personal' && <HealthDataNotice />}
-                      {section.questions.map(q => (
-                        <div key={q.id}>
-                          <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
-                            {q.label}
-                          </label>
-                          {q.type === 'select' ? (
-                            <select
-                              value={data[section.id]?.[q.id] || ''}
-                              onChange={e => updateField(section.id, q.id, e.target.value)}
-                              className="w-full h-11 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] px-4 text-[15px] text-[#162459] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
-                            >
-                              <option value="">Vyberte…</option>
-                              {q.options?.map(opt => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          ) : q.type === 'checkbox' ? (
-                            <div className="grid grid-cols-2 gap-2 mt-1">
-                              {q.options?.map(opt => {
-                                const current = (data[section.id]?.[q.id] || '').split(',').filter(Boolean)
-                                const checked = current.includes(opt)
-                                return (
-                                  <label
-                                    key={opt}
-                                    className={`flex items-center gap-2 px-3 py-2.5 rounded-none border cursor-pointer transition-all text-sm ${
-                                      checked
-                                        ? 'border-[#009EE2] bg-[#009EE2]/8 text-[#0079AD] shadow-[inset_0_0_0_1px_#009EE2]'
-                                        : 'border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] hover:border-[#009EE2]/50'
-                                    }`}
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={checked}
-                                      onChange={() => {
-                                        const next = checked ? current.filter(c => c !== opt) : [...current, opt]
-                                        updateField(section.id, q.id, next.join(','))
-                                      }}
-                                      className="accent-[#009EE2]"
-                                    />
-                                    {opt}
-                                  </label>
-                                )
-                              })}
-                            </div>
-                          ) : (
-                            <Input
-                              type={q.type}
-                              placeholder={q.placeholder}
-                              value={data[section.id]?.[q.id] || ''}
-                              onChange={e => updateField(section.id, q.id, e.target.value)}
-                            />
-                          )}
-                        </div>
-                      ))}
-
-                      <div className="h-px bg-[#E4DFD2]" />
-
-                      <div>
-                        <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
-                          Přílohy (PDF, foto smluv)
-                        </label>
-                        <button
-                          onClick={() => { setActiveUploadSection(section.id); fileRef.current?.click() }}
-                          className="w-full border border-dashed border-[#E4DFD2] rounded-none p-5 text-center hover:border-[#009EE2] hover:bg-[#009EE2]/5 transition-all group"
-                        >
-                          <Upload className="w-5 h-5 text-[#66708C] mx-auto mb-1.5 group-hover:text-[#0079AD]" />
-                          <span className="text-sm text-[#66708C] group-hover:text-[#162459]">
-                            Klikněte pro nahrání PDF nebo fotky
-                          </span>
-                        </button>
-                        {sectionFiles.length > 0 && (
-                          <div className="mt-2.5 space-y-1.5">
-                            {sectionFiles.map(f => (
-                              <div
-                                key={f.name}
-                                className="flex items-center gap-2 bg-[#F6F4EE] rounded-none px-3 py-2.5 text-sm border border-[#E4DFD2]"
-                              >
-                                <FileText className="w-4 h-4 text-[#66708C]" />
-                                <span className="flex-1 text-[#162459] truncate">{f.name}</span>
-                                <span className="text-xs text-[#66708C]">{(f.size / 1024).toFixed(0)} KB</span>
-                                <button onClick={() => removeFile(f.name)} className="text-[#66708C] hover:text-[#c2410c]">
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {/* Už nahrané přílohy — otevírají se přes signed URL */}
-                        {existingFiles.filter(f => f.section === section.id).length > 0 && (
-                          <div className="mt-2.5 space-y-1.5">
-                            {existingFiles.filter(f => f.section === section.id).map(f => (
-                              <div
-                                key={f.id}
-                                className="flex items-center gap-2 bg-[#009EE2]/5 rounded-none px-3 py-2.5 text-sm border border-[#009EE2]/25"
-                              >
-                                <Check className="w-4 h-4 text-[#0079AD] shrink-0" />
-                                <StoredFileLink
-                                  bucket="analysis"
-                                  path={f.file_url}
-                                  className="flex-1 min-w-0 text-left text-[#162459] truncate hover:text-[#0079AD] transition-colors"
-                                >
-                                  {f.file_name}
-                                </StoredFileLink>
-                                <span className="text-xs text-[#66708C] shrink-0">nahráno</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          )
-        })}
-      </div>
+      <AnalysisAccordion
+        data={data}
+        onChange={updateField}
+        expanded={expandedSections}
+        onToggle={toggleSection}
+        pendingFiles={files}
+        onPickFiles={pickFiles}
+        onRemoveFile={name => setFiles(prev => prev.filter(f => f.name !== name))}
+        storedFiles={existingFiles}
+      />
 
       {fileError && (
         <div className="mt-6 p-4 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
@@ -579,40 +266,6 @@ export default function AnalyzaPage() {
           <ArrowRight className="w-4 h-4" />
         </button>
       </motion.div>
-    </div>
-  )
-}
-
-/**
- * Výška, váha, nemoci a úrazy jsou zvláštní kategorie osobních údajů
- * (čl. 9 GDPR) — na jejich zpracování je potřeba výslovný souhlas, ne pouhá
- * informace. Sdělujeme ho tedy před vyplněním sekce, ne až v patičce.
- */
-function HealthDataNotice() {
-  return (
-    <div className="bg-[#F6F4EE] border border-[#E4DFD2] border-l-2 border-l-[#009EE2] p-4 md:p-5">
-      <div className="flex items-start gap-3">
-        <Shield className="w-4 h-4 text-[#009EE2] flex-shrink-0 mt-0.5" strokeWidth={1.8} />
-        <div className="text-[13px] text-[#66708C] leading-relaxed space-y-2">
-          <p>
-            Tahle sekce se ptá i na <strong className="font-semibold text-[#162459]">údaje o zdraví</strong>{' '}
-            (výška, váha, nemoci, úrazy). Pojišťovny je vyžadují pro výpočet ceny
-            a rozsahu krytí — bez nich vám návrh životního pojištění nespočítáme.
-          </p>
-          <p>
-            Vyplněním a odesláním sekce udělujete výslovný souhlas s jejich
-            zpracováním. Je dobrovolný, kdykoliv ho můžete odvolat a sekci
-            můžete i přeskočit. Podrobnosti v{' '}
-            <Link
-              href="/zasady-ochrany-osobnich-udaju"
-              className="underline underline-offset-2 hover:text-[#162459] transition-colors"
-            >
-              zásadách ochrany osobních údajů
-            </Link>
-            .
-          </p>
-        </div>
-      </div>
     </div>
   )
 }

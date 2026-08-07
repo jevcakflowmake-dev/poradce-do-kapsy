@@ -256,7 +256,7 @@ export default function LifePathSection() {
         <p className="text-[#F6F4EE]/45 text-sm">Kde na té lince právě jste?</p>
         <MagneticButton>
           <Link
-            href="/signup"
+            href="/analyza"
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#009EE2] text-[#0B111F] font-semibold text-base hover:bg-[#1a9fdd] transition-colors"
           >
             Začít svou cestu →

@@ -172,10 +172,11 @@ export default function LoginForm() {
       </div>
 
       <p className="text-center text-sm text-[#66708C] mt-6">
-        Ještě nemáte účet?{' '}
-        <Link href="/signup" className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors">
-          Vytvořit účet zdarma
+        Ještě u nás nejste?{' '}
+        <Link href="/analyza" className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors">
+          Vyplňte analýzu zdarma
         </Link>
+        {' '}— účet zakládat nemusíte.
       </p>
     </AuthShell>
   )

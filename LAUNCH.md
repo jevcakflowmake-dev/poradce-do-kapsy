@@ -1,7 +1,25 @@
 # Checklist před ostrým spuštěním
 
-Stav k 6. 8. 2026. Co je hotové, je odškrtnuté; zbytek jsou ruční kroky
+Stav k 7. 8. 2026. Co je hotové, je odškrtnuté; zbytek jsou ruční kroky
 v administracích, ke kterým Claude nemá (a nemá mít) přístup.
+
+## Jak teď vypadá cesta klienta
+
+    /analyza (bez přihlášení)  →  poradce dostane analýzu  →  finanční plán
+                                                           →  přístup do aplikace
+
+1. Návštěvník vyplní analýzu na `/analyza`. Žádná registrace: rozepsaný
+   formulář drží `localStorage`, odesílá se najednou na `/api/analyza/odeslat`.
+2. Heslo je na konci **nepovinné**. Kdo si ho zvolí, může se přihlásit hned;
+   kdo ne, dostane od poradce odkaz na nastavení hesla, až je plán hotový
+   (tlačítko „Vygenerovat odkaz pro přístup" v detailu klienta).
+3. Každé odeslání se zapíše do `public_submissions` (auditní stopa) a pak:
+   - **nový e-mail** → server rovnou založí klienta a překlopí odpovědi,
+   - **e-mail se stávajícím účtem** → zůstane `pending` a poradce v detailu
+     klienta rozhodne, jestli analýzu přijmout. Automaticky ne: formulář
+     s cizím e-mailem odešle kdokoliv a jsou v něm zdravotní údaje.
+4. `/signup` zůstává funkční pro toho, kdo chce jen účet, ale odkazy na
+   landingu i z přihlášení už vedou na `/analyza`.
 
 ## Hotovo v kódu
 
@@ -13,10 +31,24 @@ v administracích, ke kterým Claude nemá (a nemá mít) přístup.
       do konzole; zájem/dotazy jsou vždy v DB i bez n8n
 - [x] GitHub Actions keepalive proti uspání Supabase (2× denně)
 - [x] Vercel auto-deploy z `main` + service role key v env
+- [x] **Veřejná analýza bez přihlášení** (7. 8. 2026) — `/analyza`, endpoint
+      `/api/analyza/odeslat`, migrace 009 (`public_submissions`), rozhodování
+      poradce nad čekajícími odesláními, generování přístupového odkazu.
+      Definice otázek je nově v `lib/analysis-sections.ts` — sdílí ji veřejný
+      i přihlášený formulář, takže se nemůžou rozejít.
+- [x] **Opravená díra v `/api/analysis`** (7. 8. 2026) — endpoint běží pod
+      service role a neměl žádnou kontrolu přihlášení: kdokoli, kdo uhodl UUID,
+      si přes GET stáhl cizí analýzu včetně zdravotních údajů a přes POST ji
+      přepsal. Nově klient smí jen sám sebe, poradce kohokoliv.
 
 ## 🔴 Před spuštěním — nutné
 
 ### 1. SMTP pro e-maily (reset hesla, magic link) — musí udělat Jakub
+> Od 7. 8. 2026 to **není tvrdý blokátor spuštění**: přístupový odkaz pro
+> klienta se generuje v detailu klienta a poradce ho zkopíruje a pošle sám
+> (WhatsApp, vlastní e-mail). SMTP je pořád potřeba pro samoobslužné
+> „Zapomenuté heslo" na `/forgot-password`.
+
 Výchozí Supabase SMTP má limit ~2 e-maily/hod a je jen pro vývoj; navíc
 neodesílá na adresy mimo členy týmu. Bez vlastního SMTP klientům reset hesla
 nedojde. Claude tenhle krok udělat nemůže (zakládání účtu u poskytovatele
@@ -93,8 +125,18 @@ Backend celé cesty je ověřený automaticky (upload → RLS → signed URL ✓
 zápis do cizí složky zamítnut ✓). Headless prohlížeč ale neumí simulovat
 výběr souboru v UI, takže po nasazení proklikat:
 
-1. Registrace nového (testovacího) klienta → přesměruje na dashboard
-2. Analýza: nahrát PDF přílohu, odeslat → objeví se chip „nahráno“
-3. Jako poradce: detail klienta → sekce „Dokumenty od klienta“ → PDF jde otevřít
-4. Vytvořit návrh s PDF → klient ho v dashboardu otevře (signed URL)
-5. Smazat testovací účet v Supabase
+Nová veřejná cesta je ověřená proti ostré databázi (nový e-mail → založení
+klienta a překlopení odpovědí ✓, stejný e-mail podruhé → `pending` bez
+přepsání ✓, podvržená sekce v requestu zahozena ✓, honeypot ✓, GET cizí
+analýzy bez přihlášení → 401 ✓; testovací data smazána). Headless prohlížeč
+ale neumí simulovat výběr souboru v UI, takže po nasazení proklikat:
+
+1. `/analyza` bez přihlášení: vyplnit sekci „Osobní údaje“, nahrát PDF
+   přílohu, **heslo nechat prázdné**, odeslat
+2. Jako poradce: detail nového klienta → „Dokumenty od klienta“ → PDF jde
+   otevřít; „Vygenerovat odkaz pro přístup“ → odkaz zkopírovat
+3. Odkaz otevřít v anonymním okně → nastavit heslo → přistát v dashboardu
+4. Vyplnit `/analyza` znovu se **stejným e-mailem** → v detailu klienta se
+   objeví oranžový banner „Nová analýza z veřejného formuláře“ → přijmout
+5. Vytvořit návrh s PDF → klient ho v dashboardu otevře (signed URL)
+6. Smazat testovací účet v Supabase (a řádky v `public_submissions`)

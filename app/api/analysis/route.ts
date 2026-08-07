@@ -1,7 +1,31 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Endpoint běží pod service role, takže si sám musí ohlídat, kdo na koho smí —
+ * RLS ho neochrání. Klient jen sám sebe, poradce kohokoliv.
+ *
+ * Anonymní analýzu z /analyza sem neposílejte: má vlastní endpoint
+ * /api/analyza/odeslat, který navíc validuje vstup a zakládá klienta.
+ */
+async function authorize(clientId: string): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { ok: false, status: 401, error: 'Nejste přihlášeni.' }
+  }
+  if (user.user_metadata?.role === 'advisor') {
+    return { ok: true }
+  }
+  if (user.id !== clientId) {
+    return { ok: false, status: 403, error: 'K těmto datům nemáte přístup.' }
+  }
+  return { ok: true }
+}
 
 export async function POST(request: Request) {
   try {
@@ -13,6 +37,11 @@ export async function POST(request: Request) {
 
     if (!UUID_REGEX.test(clientId)) {
       return NextResponse.json({ error: 'Neplatný formát clientId' }, { status: 400 })
+    }
+
+    const auth = await authorize(clientId)
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
     const supabase = createAdminClient()
@@ -63,6 +92,11 @@ export async function GET(request: Request) {
 
     if (!UUID_REGEX.test(clientId)) {
       return NextResponse.json({ error: 'Neplatný formát clientId' }, { status: 400 })
+    }
+
+    const auth = await authorize(clientId)
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
     const supabase = createAdminClient()
