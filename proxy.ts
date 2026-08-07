@@ -34,7 +34,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Chráněné routes — vyžadují přihlášení
-  const protectedRoutes = ['/dashboard', '/onboarding', '/advisor']
+  const protectedRoutes = ['/dashboard', '/advisor']
   const isProtected = protectedRoutes.some(r => pathname.startsWith(r))
 
   if (isProtected && !user) {

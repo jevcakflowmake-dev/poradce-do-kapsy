@@ -242,7 +242,7 @@ export async function POST(request: Request) {
     const clientId = created.user.id
 
     await applyResponses(admin, clientId, responses)
-    await syncProfileFromResponses(admin, clientId, responses)
+    await syncProfileFromResponses(admin, clientId, responses, true)
 
     const failedFiles = await attachFilesToClient(admin, clientId, storedFiles)
     if (failedFiles.length > 0) {

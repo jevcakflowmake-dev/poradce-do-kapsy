@@ -20,6 +20,11 @@ v administracích, ke kterým Claude nemá (a nemá mít) přístup.
      s cizím e-mailem odešle kdokoliv a jsou v něm zdravotní údaje.
 4. `/signup` zůstává funkční pro toho, kdo chce jen účet, ale odkazy na
    landingu i z přihlášení už vedou na `/analyza`.
+5. Úvodní wizard `/onboarding` je zrušený — kdo přijde přes analýzu, má
+   vyplněno všechno, co se wizard ptal. Rodinný stav a rizikový profil se
+   teď odvozují z odpovědí (`syncProfileFromResponses` v `lib/submissions.ts`).
+   Sloupec `profiles.onboarding_completed` zůstává, jen dnes znamená
+   „analýza odeslána“.
 
 ## Hotovo v kódu
 
@@ -121,15 +126,15 @@ Do té doby: nic se neztratí (vše je v DB), jen nechodí upozornění.
 
 ## 🧪 Ruční smoke test po nasazení (5 minut)
 
-Backend celé cesty je ověřený automaticky (upload → RLS → signed URL ✓,
-zápis do cizí složky zamítnut ✓). Headless prohlížeč ale neumí simulovat
-výběr souboru v UI, takže po nasazení proklikat:
+Backend je ověřený automaticky proti ostré databázi: upload → RLS → signed
+URL ✓, zápis do cizí složky zamítnut ✓, nový e-mail → založení klienta
+a překlopení odpovědí ✓, stejný e-mail podruhé → `pending` bez přepsání ✓,
+rodinný stav a rizikový profil odvozené z analýzy ✓, podvržená sekce
+v requestu zahozena ✓, honeypot ✓, GET cizí analýzy bez přihlášení → 401 ✓.
+Testovací data smazána.
 
-Nová veřejná cesta je ověřená proti ostré databázi (nový e-mail → založení
-klienta a překlopení odpovědí ✓, stejný e-mail podruhé → `pending` bez
-přepsání ✓, podvržená sekce v requestu zahozena ✓, honeypot ✓, GET cizí
-analýzy bez přihlášení → 401 ✓; testovací data smazána). Headless prohlížeč
-ale neumí simulovat výběr souboru v UI, takže po nasazení proklikat:
+Headless prohlížeč ale neumí simulovat výběr souboru v UI, takže po nasazení
+proklikat:
 
 1. `/analyza` bez přihlášení: vyplnit sekci „Osobní údaje“, nahrát PDF
    přílohu, **heslo nechat prázdné**, odeslat

@@ -18,7 +18,6 @@ export default function robots(): MetadataRoute.Robots {
         '/dashboard',
         '/advisor',
         '/klient',
-        '/onboarding',
         '/forgot-password',
         '/reset-password',
         '/update-password',

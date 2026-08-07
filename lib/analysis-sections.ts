@@ -132,6 +132,9 @@ export const SECTIONS: Section[] = [
       { id: 'email', label: 'E-mail', type: 'text', placeholder: 'jan@email.cz' },
       { id: 'phone', label: 'Telefon', type: 'text', placeholder: '+420 777 123 456' },
       { id: 'age', label: 'Věk', type: 'number', placeholder: '35' },
+      // Dřív se ptal úvodní wizard na /onboarding; ten je zrušený, ale poradce
+      // rodinný stav vidí v panelu a počítá se do skóre — proto je tady.
+      { id: 'family_status', label: 'Rodinná situace', type: 'select', options: ['Single', 'S partnerem/kou', 'Rodina s dětmi', 'Samoživitel/ka'] },
       { id: 'height', label: 'Výška (cm)', type: 'number', placeholder: '178' },
       { id: 'weight', label: 'Váha (kg)', type: 'number', placeholder: '80' },
       { id: 'serious_illness', label: 'Vážné nemoci za posledních 5 let?', type: 'text', placeholder: 'Žádné / popište...' },

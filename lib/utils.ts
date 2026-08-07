@@ -10,7 +10,8 @@ export function cn(...inputs: ClassValue[]) {
 export function calcHealthScore(profile: Profile): number {
   let score = 0
 
-  // Onboarding dokončen
+  // Analýza odeslaná (sloupec se z historických důvodů jmenuje
+  // onboarding_completed — úvodní wizard byl 7. 8. 2026 zrušen)
   if (profile.onboarding_completed) score += 20
 
   // Věk vyplněn

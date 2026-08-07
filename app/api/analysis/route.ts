@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { syncProfileFromResponses, type Responses } from '@/lib/submissions'
 import { NextResponse } from 'next/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -57,20 +58,10 @@ export async function POST(request: Request) {
       }
     }
 
-    // Sync key fields from analysis to profile
-    const personal = responses.personal as Record<string, string> | undefined
-    const incomeSection = responses.income as Record<string, string> | undefined
-    if (personal || incomeSection) {
-      const updates: { full_name?: string; phone?: string; age?: number; income?: string; updated_at?: string } = {}
-      if (personal?.full_name) updates.full_name = personal.full_name
-      if (personal?.phone) updates.phone = personal.phone
-      if (personal?.age) updates.age = parseInt(personal.age) || undefined
-      if (incomeSection?.monthly_income) updates.income = incomeSection.monthly_income
-      if (Object.keys(updates).length > 0) {
-        updates.updated_at = new Date().toISOString()
-        await supabase.from('profiles').update(updates).eq('id', clientId)
-      }
-    }
+    // Promítnout klíčová pole do profilu. Sdílíme tu samou funkci jako veřejný
+    // formulář — jinak by se přihlášená a anonymní cesta rozešly v tom, co
+    // poradce v panelu uvidí (rodinný stav, rizikový profil).
+    await syncProfileFromResponses(supabase, clientId, responses as Responses)
 
     return NextResponse.json({ success: true })
   } catch {

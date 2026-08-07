@@ -62,26 +62,58 @@ export async function applyResponses(
 }
 
 /**
- * Přenese jméno, telefon, věk a příjem z analýzy do profilu, aby je poradce
- * viděl v seznamu klientů. Nikdy nepřepisuje vyplněné pole prázdnou hodnotou.
+ * Rodinná situace z analýzy → hodnota sloupce `profiles.family_status`.
+ * Popisky musí souhlasit s familyLabel() v lib/utils.ts.
+ */
+const FAMILY_STATUS_MAP: Record<string, string> = {
+  'Single': 'single',
+  'S partnerem/kou': 'partner',
+  'Rodina s dětmi': 'family',
+  'Samoživitel/ka': 'single_parent',
+}
+
+/**
+ * Tolerance k riziku ze sekce Investice → `profiles.risk_profile`.
+ * Popisky musí souhlasit s riskLabel() v lib/utils.ts — pozor, „Dynamický“
+ * se tam mapuje na `balanced` a „Vyvážený“ na `moderate`.
+ */
+const RISK_PROFILE_MAP: Record<string, string> = {
+  'Konzervativní': 'conservative',
+  'Vyvážený': 'moderate',
+  'Dynamický': 'balanced',
+  'Agresivní': 'aggressive',
+}
+
+/**
+ * Přenese do profilu údaje, které poradce vidí v seznamu klientů a které
+ * vstupují do skóre finančního zdraví. Nikdy nepřepisuje vyplněné pole
+ * prázdnou hodnotou.
  *
- * Zároveň označí analýzu za vyplněnou — kdo prošel veřejným formulářem, už
- * nemá být znovu posílán do úvodního wizardu na /onboarding.
+ * Rodinný stav a rizikový profil sem dřív dodával úvodní wizard na
+ * /onboarding. Ten je od 7. 8. 2026 zrušený (kdo přijde přes veřejnou
+ * analýzu, má ji rovnou celou vyplněnou), takže se odvozují odsud.
  */
 export async function syncProfileFromResponses(
   admin: SupabaseClient,
   clientId: string,
   responses: Responses,
+  /**
+   * Označit analýzu za dokončenou. Jen při vědomém odeslání — průběžné
+   * ukládání na /api/analysis se volá po každých pár znacích a rozepsaná
+   * analýza dokončená není.
+   */
+  markCompleted = false,
 ): Promise<void> {
   const personal = responses.personal
   const income = responses.income
+  const investing = responses.investing
 
   const updates: Record<string, unknown> = {
-    onboarding_completed: true,
     // `goals` drží ID vyplněných sekcí — stejně jako verze pro přihlášené.
     goals: Object.keys(responses),
     updated_at: new Date().toISOString(),
   }
+  if (markCompleted) updates.onboarding_completed = true
   if (personal?.full_name) updates.full_name = personal.full_name
   if (personal?.phone) updates.phone = personal.phone
   if (personal?.age) {
@@ -89,6 +121,12 @@ export async function syncProfileFromResponses(
     if (Number.isFinite(age)) updates.age = age
   }
   if (income?.monthly_income) updates.income = income.monthly_income
+
+  const family = personal?.family_status && FAMILY_STATUS_MAP[personal.family_status]
+  if (family) updates.family_status = family
+
+  const risk = investing?.risk_tolerance && RISK_PROFILE_MAP[investing.risk_tolerance]
+  if (risk) updates.risk_profile = risk
 
   await admin.from('profiles').update(updates).eq('id', clientId)
 }
