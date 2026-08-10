@@ -16,10 +16,13 @@ type Stat = {
   note?: string
 }
 
+// Čísla patří síti ProfiFP / OVB, ne Jakubovi osobně. Prezentovat je jako
+// vlastní by bylo zavádějící (a podle zákona o ochraně spotřebitele riskantní);
+// přiznaná atribuce navíc působí důvěryhodněji než nafouknuté číslo.
 const STATS: Stat[] = [
-  { value: 69000, suffix: '+', label: 'spokojených klientů', note: 'napříč celou ČR' },
-  { prefix: 'od ', value: 2003, label: 'na českém trhu', note: 'přes 20 let zkušeností' },
-  { value: 500, suffix: '+', label: 'certifikovaných poradců', note: 'v síti ProfiFP / OVB' },
+  { value: 69000, suffix: '+', label: 'klientů sítě', note: 'ProfiFP a OVB Allfinanz v ČR' },
+  { prefix: 'od ', value: 2003, label: 'na českém trhu', note: 'síť, přes kterou sjednávám smlouvy' },
+  { value: 500, suffix: '+', label: 'poradců v síti', note: 'jedním z nich jsem já' },
 ]
 
 /**
@@ -79,13 +82,15 @@ export default function StatsBand() {
               className="font-display text-[#162459]"
               style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
             >
-              Síť, která už <span style={{ fontStyle: 'italic', color: '#009EE2' }}>22 let</span> poradí těm,
-              <br className="hidden md:block" /> kdo chtějí mít svoje peníze v pořádku.
+              Jednáte se mnou.
+              <br className="hidden md:block" /> Za mnou stojí{' '}
+              <span style={{ fontStyle: 'italic', color: '#009EE2' }}>celá síť.</span>
             </h2>
           </div>
           <p className="text-[#66708C] text-sm md:text-base max-w-sm leading-relaxed">
-            Jsme partnerem ProfiFP a OVB Allfinanz — dvou největších hráčů českého finančního poradenství.
-            To se počítá.
+            Aby bylo jasno: čísla níž patří síti ProfiFP a OVB Allfinanz, ne mně
+            osobně. Znamenají ale, že vám nesjednávám smlouvy z jedné pojišťovny —
+            mám přístup k nabídkám desítek partnerů a můžu je porovnat.
           </p>
         </div>
 

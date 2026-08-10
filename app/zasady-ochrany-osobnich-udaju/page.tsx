@@ -10,12 +10,16 @@ export const metadata: Metadata = {
 }
 
 /**
- * ⚠️ DOPLNIT PŘED SPUŠTĚNÍM — bez těchto údajů nejsou zásady platné.
- * Správcem je fyzická osoba podnikající, takže sem patří jméno, IČO
- * a adresa sídla z živnostenského rejstříku.
+ * ⚠️ Zbývající `[DOPLNIT]` doplnit před spuštěním — bez nich nejsou zásady
+ * platné. Správcem je fyzická osoba podnikající, takže IČO i adresa sídla
+ * patří z živnostenského rejstříku.
+ *
+ * E-mail schválně nevyplňuju za tebe: na veřejné stránce bude viditelný
+ * pro kohokoliv včetně sběračů adres, takže je to tvoje rozhodnutí, jestli
+ * sem dát osobní schránku, nebo si založit něco jako info@<doména>.
  */
 const SPRAVCE = {
-  jmeno: '[DOPLNIT — jméno a příjmení]',
+  jmeno: 'Jakub Jevčák',
   ico: '[DOPLNIT — IČO]',
   adresa: '[DOPLNIT — adresa sídla]',
   email: '[DOPLNIT — kontaktní e-mail]',

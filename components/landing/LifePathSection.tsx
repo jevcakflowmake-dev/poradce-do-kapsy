@@ -254,12 +254,16 @@ export default function LifePathSection() {
       {/* Konec cesty — CTA na ose linky */}
       <div className="life-cta relative z-10 flex flex-col items-center gap-6 pb-24 md:pb-32 pt-4 px-6">
         <p className="text-[#F6F4EE]/45 text-sm">Kde na té lince právě jste?</p>
+        <p className="text-[#F6F4EE]/70 text-center max-w-md leading-relaxed -mt-2">
+          Nemusíte to vědět. Od toho je analýza — vyplníte, co o sobě víte,
+          a zbytek vám dopovím já.
+        </p>
         <MagneticButton>
           <Link
             href="/analyza"
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#009EE2] text-[#0B111F] font-semibold text-base hover:bg-[#1a9fdd] transition-colors"
           >
-            Začít svou cestu →
+            Zjistit, kde mám díry →
           </Link>
         </MagneticButton>
       </div>

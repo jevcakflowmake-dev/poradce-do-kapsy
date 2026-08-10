@@ -13,27 +13,27 @@ if (typeof window !== 'undefined') {
 const STEPS = [
   {
     num: '01',
-    title: 'Vyplňte analýzu',
-    desc: 'Komplexní analýza vaší finanční situace. Zabere přibližně 10 minut.',
-    detail: 'Věk, příjem, rodinná situace a finanční cíle',
+    title: 'Řeknete mi, jak na tom jste',
+    desc: 'Deset minut otázek o příjmu, bydlení, rodině a tom, co vás na penězích trápí. Účet zakládat nemusíte, rozdělané se ukládá.',
+    detail: 'Bez registrace · Povinné jen jméno a e-mail',
   },
   {
     num: '02',
-    title: 'Poradce připraví návrh',
-    desc: 'Do 48 hodin obdržíte osobní finanční návrh šitý na míru.',
-    detail: 'Pojištění, důchod nebo investice podle vašich potřeb',
+    title: 'Projdu to a napíšu plán',
+    desc: 'Podívám se i na smlouvy, které už máte, a u každé oblasti napíšu, jestli je v pořádku, nebo v ní máte díru — a co s tím.',
+    detail: 'Do 48 hodin, obvykle dřív',
   },
   {
     num: '03',
-    title: 'Komunikujte přes chat',
-    desc: 'Máte otázky? Pište poradci přímo přes chat. Bez čekání na termín.',
-    detail: 'Odpověď zpravidla do 24 hodin',
+    title: 'Doptáte se na cokoliv',
+    desc: 'Přímo v aplikaci, písemně, kdy se vám to hodí. Nemusíte nic chápat napoprvé a nemusíte předstírat, že rozumíte.',
+    detail: 'Odpovídám obvykle do 24 hodin',
   },
   {
     num: '04',
-    title: 'Rozhodněte se',
-    desc: 'Vše si v klidu prostudujete a rozhodnete se bez tlaku.',
-    detail: 'Žádné závazky, žádný nátlak',
+    title: 'Rozhodnete se — i pro nic',
+    desc: 'Vyberete si variantu, nebo mi napíšete, že to teď řešit nechcete. Obojí je v pořádku a nic za to neplatíte.',
+    detail: 'Podepisuje se až tehdy, když sami chcete',
   },
 ]
 
@@ -92,8 +92,8 @@ export default function HowItWorksSection() {
             </h2>
           </div>
           <p className="col-span-12 md:col-span-5 text-[#66708C] text-sm md:text-base max-w-sm md:justify-self-end leading-relaxed">
-            Od prvního kliknutí po osobní návrh uběhne maximálně 48 hodin.
-            Celé z gauče, vlastním tempem.
+            Od prvního kliknutí po hotový plán obvykle 48 hodin.
+            Celé z gauče, vlastním tempem a bez jediného telefonátu.
           </p>
         </div>
 
@@ -139,9 +139,10 @@ export default function HowItWorksSection() {
         <div className="mt-10 flex justify-end">
           <Link
             href="/analyza"
-            className="nav-link inline-flex items-center gap-2 text-[#162459] font-medium"
+            className="group inline-flex items-center gap-2 px-7 py-3.5 bg-[#162459] font-semibold text-[#F6F4EE] text-sm hover:bg-[#0e1a3d] transition-colors"
           >
-            Začít prvním krokem <ArrowRight className="w-4 h-4 text-[#009EE2]" />
+            Začít prvním krokem
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </div>

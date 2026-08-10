@@ -12,7 +12,7 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_URL).repla
 export const SITE_NAME = 'Poradce do kapsy'
 
 export const SITE_DESCRIPTION =
-  'Vyplňte analýzu a do 48 hodin dostanete osobní návrh pojištění, penzijního spoření nebo investic — bez schůzek, bez závazků, zdarma.'
+  'Vyplňte analýzu bez registrace a do 48 hodin dostanete finanční plán na míru: kde máte díru v zajištění a kolik ji stojí zalepit u tří konkrétních společností. Zdarma a nezávazně.'
 
 /** Absolutní URL k dané cestě, např. absoluteUrl('/login'). */
 export function absoluteUrl(path: string): string {

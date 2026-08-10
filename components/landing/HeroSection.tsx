@@ -71,19 +71,25 @@ export default function HeroSection() {
                 Poradce do kapsy
               </span>
             </div>
-            <div className="flex items-center gap-7">
-              <a href="#sluzby" className="nav-link hidden sm:inline-block text-sm text-[#66708C] hover:text-[#162459] transition-colors">
-                Co řešíme
-              </a>
-              <a href="#jak-to-funguje" className="nav-link hidden sm:inline-block text-sm text-[#66708C] hover:text-[#162459] transition-colors">
+            <div className="flex items-center gap-5 lg:gap-7">
+              <a href="#jak-to-funguje" className="nav-link hidden lg:inline-block text-sm text-[#66708C] hover:text-[#162459] transition-colors">
                 Jak to funguje
               </a>
-              <a
-                href="#prihlaseni"
-                className="text-sm font-medium px-4 py-2 border border-[#162459]/25 text-[#162459] hover:bg-[#162459] hover:text-[#F6F4EE] transition-colors"
-              >
+              <a href="#co-dostanete" className="nav-link hidden lg:inline-block text-sm text-[#66708C] hover:text-[#162459] transition-colors">
+                Co dostanete
+              </a>
+              <a href="#otazky" className="nav-link hidden lg:inline-block text-sm text-[#66708C] hover:text-[#162459] transition-colors">
+                Otázky
+              </a>
+              <a href="#prihlaseni" className="nav-link hidden sm:inline-block text-sm text-[#66708C] hover:text-[#162459] transition-colors">
                 Přihlásit se
               </a>
+              <Link
+                href="/analyza"
+                className="text-sm font-semibold px-4 py-2 bg-[#162459] text-[#F6F4EE] hover:bg-[#0e1a3d] transition-colors whitespace-nowrap"
+              >
+                Analýza zdarma
+              </Link>
             </div>
           </div>
         </nav>
@@ -94,7 +100,7 @@ export default function HeroSection() {
             <div className="col-span-12 lg:col-span-9">
               <p className="hero-kicker flex items-center gap-3 text-xs tracking-[0.3em] uppercase text-[#66708C] mb-8">
                 <span className="inline-block w-10 h-px bg-[#009EE2]" />
-                Certifikovaný poradce ProfiFP · OVB Allfinanz
+                Jakub Jevčák · certifikovaný poradce ProfiFP a OVB Allfinanz
               </p>
 
               <h1
@@ -126,8 +132,9 @@ export default function HeroSection() {
               </h1>
 
               <p className="hero-sub text-lg md:text-xl text-[#66708C] max-w-xl leading-relaxed mb-10">
-                Vyplňte analýzu a do 48 hodin dostanete osobní návrh pojištění,
-                penzijního spoření nebo investic — bez schůzek, bez závazků, zdarma.
+                Odpovíte na pár otázek o své situaci a do 48 hodin ode mě dostanete
+                hotový plán: kde máte díru v zajištění, co s ní udělat a kolik to
+                bude stát u tří konkrétních společností. Zdarma a nezávazně.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-8">
@@ -136,7 +143,7 @@ export default function HeroSection() {
                     href="/analyza"
                     className="group flex items-center justify-center gap-2 px-8 py-4 bg-[#162459] font-medium text-[#F6F4EE] text-base hover:bg-[#0e1a3d] transition-colors"
                   >
-                    Začít analýzu zdarma
+                    Chci svůj plán zdarma
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </MagneticButton>
@@ -149,7 +156,8 @@ export default function HeroSection() {
               </div>
 
               <p className="hero-fine text-sm text-[#66708C]/70">
-                Analýza zabere ~10 minut · Bez závazků · Zdarma
+                Bez registrace · Nikdo vám nezavolá, dokud si to sami nevyžádáte ·
+                Rozdělané můžete kdykoliv zavřít a vrátit se
               </p>
             </div>
 
@@ -163,7 +171,8 @@ export default function HeroSection() {
               </p>
               <div className="w-px h-24 bg-[#162459]/20" />
               <p className="text-right text-sm text-[#66708C] max-w-[180px] leading-relaxed">
-                Jedna osoba, která ví, jak vaše finance souvisí.
+                Jeden člověk, který vidí všechny vaše smlouvy najednou — ne pět
+                prodejců, každý za svoje.
               </p>
             </div>
           </div>

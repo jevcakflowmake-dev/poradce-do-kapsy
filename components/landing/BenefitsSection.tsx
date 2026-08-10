@@ -20,12 +20,12 @@ if (typeof window !== 'undefined') {
 type Benefit = { icon: LucideIcon; title: string; desc: string }
 
 const BENEFITS: Benefit[] = [
-  { icon: Laptop, title: 'Bez schůzek', desc: 'Celý proces od A do Z online. Žádné cestování, žádné čekání v kanceláři.' },
-  { icon: FileCheck, title: 'Osobní návrh do 48h', desc: 'Certifikovaný poradce připraví návrh přesně pro vaši životní situaci.' },
-  { icon: MessagesSquare, title: 'Přímý chat s poradcem', desc: 'Kdykoli máte dotaz, napište přímo poradci přes chat. Odpověď do 24 hodin.' },
-  { icon: ShieldCheck, title: 'Bezpečné a důvěrné', desc: 'Vaše data jsou chráněna a nikdy neposkytnuta třetím stranám bez vašeho souhlasu.' },
-  { icon: Handshake, title: 'Bez závazků', desc: 'Návrh si v klidu prostudujete. Rozhodnutí je vždy jen na vás.' },
-  { icon: PiggyBank, title: '100% zdarma', desc: 'Poradenství neplatíte. Poradce je odměňován provizí od partnerů.' },
+  { icon: PiggyBank, title: 'Nezaplatíte ani korunu', desc: 'Za analýzu ani plán neplatíte nic. Vydělám až tehdy, když si přes mě něco sjednáte — provizi platí pojišťovna, ne vy.' },
+  { icon: Handshake, title: 'Nic nepodepisujete', desc: 'Plán není smlouva, je to podklad k rozhodnutí. Můžete si ho přečíst, poděkovat a nechat být — a nic se neděje.' },
+  { icon: Laptop, title: 'Bez jediné schůzky', desc: 'Celé to proběhne online. Žádné dojíždění, žádné odpoledne obětované sezení u kávy v kanceláři.' },
+  { icon: FileCheck, title: 'Plán do 48 hodin', desc: 'Ne obecný leták — konkrétní návrh pro vaši situaci, včetně cen u tří jmenovitých společností.' },
+  { icon: MessagesSquare, title: 'Odpověď, když se ptáte vy', desc: 'Píšete mi do chatu, odpovídám obvykle do 24 hodin. Nikdo vám nevolá, dokud si to sami nevyžádáte.' },
+  { icon: ShieldCheck, title: 'Data zůstávají u vás a u mě', desc: 'Uložená v EU, nikomu je neprodávám. Pojišťovně jdou jen tehdy, když si vyberete produkt a řeknete mi, ať ho sjednám.' },
 ]
 
 export default function BenefitsSection() {
@@ -61,15 +61,15 @@ export default function BenefitsSection() {
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="benefits-head grid md:grid-cols-12 gap-8 mb-16 items-end">
           <div className="md:col-span-5">
-            <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-3">04</div>
-            <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Proč my · a ne pobočka banky</p>
+            <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-3">05</div>
+            <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Proč já · a ne pobočka banky</p>
           </div>
           <h2
             className="md:col-span-7 font-display text-[#162459]"
             style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Moderní přístup. <span style={{ fontStyle: 'italic', color: '#009EE2' }}>Bez</span> obleku,
-            <br className="hidden md:block" /> kanceláře a tlaku na podpis.
+Bez obleku, bez kanceláře
+            <br className="hidden md:block" /> a <span style={{ fontStyle: 'italic', color: '#009EE2' }}>bez</span> tlaku na podpis.
           </h2>
         </div>
 

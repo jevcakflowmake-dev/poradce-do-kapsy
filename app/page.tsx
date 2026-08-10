@@ -5,8 +5,11 @@ import HeroSection from '@/components/landing/HeroSection'
 import StatsBand from '@/components/landing/StatsBand'
 import LifePathSection from '@/components/landing/LifePathSection'
 import HowItWorksSection from '@/components/landing/HowItWorksSection'
+import DeliverableSection from '@/components/landing/DeliverableSection'
 import BenefitsSection from '@/components/landing/BenefitsSection'
+import FaqSection from '@/components/landing/FaqSection'
 import CtaSection from '@/components/landing/CtaSection'
+import StickyMobileCta from '@/components/landing/StickyMobileCta'
 import CursorFollower from '@/components/motion/CursorFollower'
 
 export default async function HomePage() {
@@ -24,10 +27,15 @@ export default async function HomePage() {
       <StatsBand />
       <LifePathSection />
       <HowItWorksSection />
+      {/* „Co dostanete“ hned za „jak to funguje“ — nejdřív proces, pak výstup */}
+      <DeliverableSection />
       <BenefitsSection />
+      <FaqSection />
       <CtaSection />
+      <StickyMobileCta />
 
-      <footer className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-12 border-t border-[#E4DFD2] bg-[#F6F4EE] overflow-hidden">
+      {/* pb-24 na mobilu: sticky lišta nesmí překrýt patičku */}
+      <footer className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-12 pb-28 md:pb-12 border-t border-[#E4DFD2] bg-[#F6F4EE] overflow-hidden">
         <div className="noise-paper" aria-hidden />
         <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-2.5">
@@ -39,12 +47,15 @@ export default async function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[#66708C]">
             <a href="#sluzby" className="nav-link hover:text-[#162459] transition-colors">Co řešíme</a>
             <a href="#jak-to-funguje" className="nav-link hover:text-[#162459] transition-colors">Jak to funguje</a>
+            <a href="#otazky" className="nav-link hover:text-[#162459] transition-colors">Časté otázky</a>
             <a href="#prihlaseni" className="nav-link hover:text-[#162459] transition-colors">Přihlášení</a>
             <Link href="/zasady-ochrany-osobnich-udaju" className="nav-link hover:text-[#162459] transition-colors">
               Ochrana údajů
             </Link>
           </div>
-          <span className="text-sm text-[#66708C]">© 2026 · Certifikovaný poradce ProfiFP · OVB Allfinanz</span>
+          <span className="text-sm text-[#66708C]">
+            © 2026 Jakub Jevčák · certifikovaný poradce ProfiFP a OVB Allfinanz
+          </span>
         </div>
       </footer>
     </div>

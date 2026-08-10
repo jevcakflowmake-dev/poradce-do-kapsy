@@ -185,10 +185,26 @@ export default function PublicAnalysisForm() {
           </h1>
 
           <p className="text-[#66708C] max-w-xl leading-relaxed">
-            Odpovězte na to, co se vás týká — nic není povinné kromě jména
-            a e-mailu. Čím víc vyplníte, tím přesnější návrh dostanete zpátky.
-            Účet zakládat nemusíte; přístup k plánu vám pošleme, až bude hotový.
+            Sedm sekcí vypadá jako hodně, ale otevřete jen ty, které se vás
+            týkají — nemáte děti, přeskočte děti. Povinné jsou jenom jméno
+            a e-mail, u zbytku platí, že čím víc vyplníte, tím konkrétnější
+            plán vám přijde zpátky.
           </p>
+
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#66708C]/85">
+            <span className="flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-[#009EE2]" aria-hidden />
+              Rozdělané se ukládá — můžete zavřít a vrátit se
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-[#009EE2]" aria-hidden />
+              Nikdo vám nezavolá, dokud si to sami nevyžádáte
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-[#009EE2]" aria-hidden />
+              Zdarma a nezávazně
+            </span>
+          </div>
 
           <div className="flex items-center gap-3 mt-6">
             <div className="flex-1 max-w-xs h-1 bg-[#E4DFD2] overflow-hidden">
@@ -291,7 +307,7 @@ export default function PublicAnalysisForm() {
               </>
             ) : (
               <>
-                Odeslat analýzu <ArrowRight className="w-4 h-4" />
+                Chci svůj plán <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>

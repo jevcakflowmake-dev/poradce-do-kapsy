@@ -54,24 +54,27 @@ export default function CtaSection() {
       <div className="relative z-10 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="cta-left">
-            <div className="section-numeral-dark text-[3.5rem] md:text-[5rem] mb-3">05</div>
+            <div className="section-numeral-dark text-[3.5rem] md:text-[5rem] mb-3">07</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">Začněte · zdarma, bez schůzky</p>
             <h2
               className="font-display text-[#F6F4EE] mb-5"
               style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
             >
-              Návrh přesně pro vás <span style={{ fontStyle: 'italic', color: '#009EE2' }}>do 48 hodin.</span>
+              Deset minut teď.
+              <br />
+              Plán <span style={{ fontStyle: 'italic', color: '#009EE2' }}>do 48 hodin.</span>
             </h2>
             <p className="text-[#F6F4EE]/55 leading-relaxed mb-8 max-w-md">
-              Máte už účet? Přihlaste se vpravo. Nový klient? Vyplňte analýzu — 10 minut
-              a dostanete osobní finanční plán.
+              Nejhorší, co se může stát, je že se dozvíte, že máte všechno
+              v pořádku. Nejlepší, že najdeme díru, o které jste nevěděli —
+              dokud se do ní nepropadnete. Účet zakládat nemusíte.
             </p>
             <MagneticButton>
               <Link
                 href="/analyza"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-[#009EE2] font-semibold text-sm text-[#0B111F] hover:bg-[#1a9fdd] transition-colors"
               >
-                Začít analýzu zdarma →
+                Chci svůj plán zdarma →
               </Link>
             </MagneticButton>
           </div>
