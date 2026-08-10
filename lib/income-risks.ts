@@ -2,8 +2,8 @@
  * Definice 10 typů pojistného krytí v sekci "Zajištění příjmu".
  * Sdílené mezi advisor editorem a klient zobrazením.
  *
- * Group "daily" — denní dávky (Kč/den)
- * Group "lump"  — jednorázové pojistné částky (Kč)
+ * Group "daily" – denní dávky (Kč/den)
+ * Group "lump"  – jednorázové pojistné částky (Kč)
  */
 
 import {
@@ -43,7 +43,7 @@ export const RISK_DEFS: RiskDef[] = [
   // ── Denní dávky ──────────────────────────────────────────
   {
     key: 'daily_accident',
-    label: 'Denní odškodné — úraz',
+    label: 'Denní odškodné – úraz',
     short: 'Úraz',
     description: 'Vyplácí se za každý den léčení úrazu (zlomenina, popálenina, distorze…).',
     group: 'daily',
@@ -65,7 +65,7 @@ export const RISK_DEFS: RiskDef[] = [
     key: 'daily_hospitalization',
     label: 'Hospitalizace',
     short: 'Nemocnice',
-    description: 'Denní dávka za pobyt v nemocnici — kryje další náklady navíc k PN.',
+    description: 'Denní dávka za pobyt v nemocnici – kryje další náklady navíc k PN.',
     group: 'daily',
     unit: 'daily',
     icon: BedDouble,
@@ -109,7 +109,7 @@ export const RISK_DEFS: RiskDef[] = [
     key: 'disability_1',
     label: 'Invalidita I. stupně',
     short: 'Invalidita I.',
-    description: 'Pokles pracovní schopnosti o 35–49 % — částečná invalidita.',
+    description: 'Pokles pracovní schopnosti o 35–49 % – částečná invalidita.',
     group: 'disability',
     unit: 'lump',
     icon: ShieldAlert,
@@ -119,7 +119,7 @@ export const RISK_DEFS: RiskDef[] = [
     key: 'disability_2',
     label: 'Invalidita II. stupně',
     short: 'Invalidita II.',
-    description: 'Pokles pracovní schopnosti o 50–69 % — středně těžká invalidita.',
+    description: 'Pokles pracovní schopnosti o 50–69 % – středně těžká invalidita.',
     group: 'disability',
     unit: 'lump',
     icon: AlertOctagon,
@@ -129,7 +129,7 @@ export const RISK_DEFS: RiskDef[] = [
     key: 'disability_3',
     label: 'Invalidita III. stupně',
     short: 'Invalidita III.',
-    description: 'Pokles pracovní schopnosti o 70 % a víc — plná invalidita.',
+    description: 'Pokles pracovní schopnosti o 70 % a víc – plná invalidita.',
     group: 'disability',
     unit: 'lump',
     icon: ShieldX,
@@ -141,7 +141,7 @@ export const RISK_DEFS: RiskDef[] = [
     key: 'death',
     label: 'Smrt',
     short: 'Smrt',
-    description: 'Pojistné plnění pro pozůstalé — splatí hypotéku, zajistí rodinu.',
+    description: 'Pojistné plnění pro pozůstalé – splatí hypotéku, zajistí rodinu.',
     group: 'death',
     unit: 'lump',
     icon: Skull,

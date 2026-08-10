@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 
 /**
- * Vlastní kurzor — azurová tečka + inkoustový prstenec s 0.15s zpožděním.
+ * Vlastní kurzor – azurová tečka + inkoustový prstenec s 0.15s zpožděním.
  * Jen pro jemné ukazatele (myš), na dotykových zařízeních se nevykreslí.
  * Nad odkazy a tlačítky se prstenec zvětší (třída .is-active).
  */
@@ -19,7 +19,7 @@ export default function CursorFollower() {
     if (!window.matchMedia('(pointer: fine)').matches) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    // quickTo — plynulé sledování bez zahlcení GSAP tickeru
+    // quickTo – plynulé sledování bez zahlcení GSAP tickeru
     const dotX = gsap.quickTo(dot, 'x', { duration: 0.08, ease: 'power2.out' })
     const dotY = gsap.quickTo(dot, 'y', { duration: 0.08, ease: 'power2.out' })
     const ringX = gsap.quickTo(ring, 'x', { duration: 0.35, ease: 'power2.out' })

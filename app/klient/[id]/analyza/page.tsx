@@ -155,7 +155,7 @@ export default function AnalyzaPage() {
           }
         }
       } catch {
-        // Silently fail on initial load — user can still fill the form
+        // Silently fail on initial load – user can still fill the form
       }
     }
     loadExisting()
@@ -240,7 +240,7 @@ export default function AnalyzaPage() {
             className="font-display text-[#162459] mb-5"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Analýza <span style={{ fontStyle: 'italic', color: '#009EE2' }}>odeslána</span>.
+            Analýza <span style={{ color: '#009EE2' }}>odeslána</span>.
           </h1>
           <p className="text-[#66708C] mb-10 max-w-md mx-auto leading-relaxed">
             Váš poradce připraví finanční plán na základě vašich odpovědí. Výsledky obvykle do 48 hodin.
@@ -279,7 +279,7 @@ export default function AnalyzaPage() {
             className="font-display text-[#162459]"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>analýza</span>
+            Finanční <span style={{ color: '#009EE2' }}>analýza</span>
           </h1>
           {saveStatus !== 'idle' && (
             <div className="flex items-center gap-2 text-xs mt-2 shrink-0">
@@ -417,7 +417,7 @@ export default function AnalyzaPage() {
                             ))}
                           </div>
                         )}
-                        {/* Už nahrané přílohy — otevírají se přes signed URL */}
+                        {/* Už nahrané přílohy – otevírají se přes signed URL */}
                         {existingFiles.filter(f => f.section === section.id).length > 0 && (
                           <div className="mt-2.5 space-y-1.5">
                             {existingFiles.filter(f => f.section === section.id).map(f => (

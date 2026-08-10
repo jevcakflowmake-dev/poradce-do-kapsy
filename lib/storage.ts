@@ -1,9 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-/** Max velikost přílohy — Supabase free tier má limit 50 MB/soubor, držíme se níž. */
+/** Max velikost přílohy – Supabase free tier má limit 50 MB/soubor, držíme se níž. */
 export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 
-/** Diakritika a mezery pryč — bezpečný název souboru do storage cesty. */
+/** Diakritika a mezery pryč – bezpečný název souboru do storage cesty. */
 export function sanitizeFileName(name: string): string {
   return name
     .normalize('NFD')
@@ -18,7 +18,7 @@ export type AnalysisUploadResult =
 
 /**
  * Nahraje přílohu analýzy do privátního bucketu `analysis` a zapíše řádek
- * do `analysis_files`. Do file_url se ukládá STORAGE CESTA (ne URL) —
+ * do `analysis_files`. Do file_url se ukládá STORAGE CESTA (ne URL) –
  * odkaz se vždy generuje přes createSignedUrl.
  */
 export async function uploadAnalysisFile(

@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
           return
         }
 
-        // 2) Implicit flow — token v hash fragmentu, supabase-js ho v
+        // 2) Implicit flow – token v hash fragmentu, supabase-js ho v
         // detectSessionInUrl posbírá sám. Vyčkáme na auth state.
         const { data: { session } } = await supabase.auth.getSession()
         if (session) {
@@ -63,7 +63,7 @@ export default function ResetPasswordPage() {
           return
         }
 
-        // 3) Nic — link je expirovaný / neplatný
+        // 3) Nic – link je expirovaný / neplatný
         setPhase('invalid')
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Neplatný odkaz'
@@ -94,7 +94,7 @@ export default function ResetPasswordPage() {
         numeral="↻"
         eyebrow="Ověřuji odkaz"
         title={<>Moment.</>}
-        subtitle="Ověřuji odkaz z e-mailu — chvíli to potrvá."
+        subtitle="Ověřuji odkaz z e-mailu – chvíli to potrvá."
       >
         <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-10 flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-[#009EE2]" />
@@ -108,7 +108,7 @@ export default function ResetPasswordPage() {
       <AuthShell
         numeral="✗"
         eyebrow="Odkaz neplatí"
-        title={<>Odkaz je <span style={{ fontStyle: 'italic', color: '#009EE2' }}>neplatný</span>.</>}
+        title={<>Odkaz je <span style={{ color: '#009EE2' }}>neplatný</span>.</>}
         subtitle="Reset odkazy platí 60 minut a každý lze použít jen jednou. Pošlu vám nový."
       >
         <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-8 text-center">
@@ -132,7 +132,7 @@ export default function ResetPasswordPage() {
     <AuthShell
       numeral="↻"
       eyebrow="Nové heslo · poslední krok"
-      title={<>Nastavte si <span style={{ fontStyle: 'italic', color: '#009EE2' }}>nové</span> heslo.</>}
+      title={<>Nastavte si <span style={{ color: '#009EE2' }}>nové</span> heslo.</>}
       subtitle="Zadejte heslo aspoň 8 znaků. Po uložení vás přesměrujeme do vašeho prostoru."
     >
       <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">

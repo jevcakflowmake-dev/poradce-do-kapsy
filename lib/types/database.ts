@@ -161,7 +161,7 @@ export type Database = {
           client_id: string
           section: string
           file_name: string
-          /** Cesta ve storage, ne URL — odkaz se generuje přes createSignedUrl. */
+          /** Cesta ve storage, ne URL – odkaz se generuje přes createSignedUrl. */
           file_url: string
           file_size: number
           created_at: string

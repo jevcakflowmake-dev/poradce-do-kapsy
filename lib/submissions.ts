@@ -4,10 +4,10 @@ import type { SupabaseClient } from '@supabase/supabase-js'
  * Práce s odesláními z veřejného formuláře (/analyza).
  *
  * Sdílí to server route, která formulář přijímá, i akce poradce, který
- * čekající odeslání schvaluje — obojí musí odpovědi překlopit ke klientovi
+ * čekající odeslání schvaluje – obojí musí odpovědi překlopit ke klientovi
  * úplně stejně, jinak by se data rozešla.
  *
- * Všechny funkce čekají admin (service role) klienta — běží mimo RLS.
+ * Všechny funkce čekají admin (service role) klienta – běží mimo RLS.
  * Importovat výhradně ze server routes; do klientské komponenty tenhle
  * modul nesmí, jinak by se service-role logika dostala do bundlu.
  */
@@ -26,7 +26,7 @@ export const STORAGE_BUCKET = 'analysis'
 export const PARKED_PREFIX = 'submissions'
 
 /**
- * Zapíše odpovědi k danému klientovi. Existující hodnotu přepisuje —
+ * Zapíše odpovědi k danému klientovi. Existující hodnotu přepisuje –
  * volá se buď u čerstvě založeného klienta (kde není co přepsat), nebo
  * po vědomém schválení poradcem.
  */
@@ -74,7 +74,7 @@ const FAMILY_STATUS_MAP: Record<string, string> = {
 
 /**
  * Tolerance k riziku ze sekce Investice → `profiles.risk_profile`.
- * Popisky musí souhlasit s riskLabel() v lib/utils.ts — pozor, „Dynamický“
+ * Popisky musí souhlasit s riskLabel() v lib/utils.ts – pozor, „Dynamický“
  * se tam mapuje na `balanced` a „Vyvážený“ na `moderate`.
  */
 const RISK_PROFILE_MAP: Record<string, string> = {
@@ -98,7 +98,7 @@ export async function syncProfileFromResponses(
   clientId: string,
   responses: Responses,
   /**
-   * Označit analýzu za dokončenou. Jen při vědomém odeslání — průběžné
+   * Označit analýzu za dokončenou. Jen při vědomém odeslání – průběžné
    * ukládání na /api/analysis se volá po každých pár znacích a rozepsaná
    * analýza dokončená není.
    */
@@ -109,7 +109,7 @@ export async function syncProfileFromResponses(
   const investing = responses.investing
 
   const updates: Record<string, unknown> = {
-    // `goals` drží ID vyplněných sekcí — stejně jako verze pro přihlášené.
+    // `goals` drží ID vyplněných sekcí – stejně jako verze pro přihlášené.
     goals: Object.keys(responses),
     updated_at: new Date().toISOString(),
   }
@@ -133,7 +133,7 @@ export async function syncProfileFromResponses(
 
 /**
  * Přesune zaparkované přílohy ze `submissions/{id}/…` do `{client_id}/…`
- * a zaeviduje je v analysis_files. Bez přesunu by je klient neotevřel —
+ * a zaeviduje je v analysis_files. Bez přesunu by je klient neotevřel –
  * storage policy pouští ke čtení jen složku pojmenovanou jeho auth.uid().
  *
  * Vrací soubory, které se přesunout nepodařilo; volající je má zalogovat.

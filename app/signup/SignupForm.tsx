@@ -78,7 +78,7 @@ export default function SignupForm() {
     <AuthShell
       numeral="02"
       eyebrow="Registrace · 60 sekund"
-      title={<>Začněme <span style={{ fontStyle: 'italic', color: '#009EE2' }}>bez</span> závazků.</>}
+      title={<>Začněme <span style={{ color: '#009EE2' }}>bez</span> závazků.</>}
       subtitle="Vyplňte jméno, e-mail, telefon a zvolte si heslo. Přihlášení proběhne automaticky a rovnou uvidíte svůj prostor."
     >
       <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">

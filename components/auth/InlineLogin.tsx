@@ -8,12 +8,12 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
 
 /**
- * Přihlášení přímo v závěrečné sekci landingu — pro ty, kdo se vracejí.
+ * Přihlášení přímo v závěrečné sekci landingu – pro ty, kdo se vracejí.
  *
  * Registrační záložka tu bývala taky, ale musela pryč ze dvou důvodů:
  * nefungovala (posílala na /api/register formulář bez hesla a pak se snažila
  * přihlásit heslem, které endpoint schválně nevrací), a hlavně odváděla nové
- * návštěvníky od analýzy. Účet bez vyplněné analýzy je pro poradce k ničemu —
+ * návštěvníky od analýzy. Účet bez vyplněné analýzy je pro poradce k ničemu –
  * vstupní branou je proto /analyza a přihlášení řeší až hotový plán.
  */
 const loginSchema = z.object({
@@ -87,7 +87,7 @@ export default function InlineLogin() {
           <Link href="/analyza" className="text-[#009EE2] hover:text-[#1a9fdd] font-semibold transition-colors">
             Vyplňte analýzu
           </Link>
-          {' '}— účet zakládat nemusíte, přihlášení řešíme až u hotového plánu.
+          {' '}– účet zakládat nemusíte, přihlášení řešíme až u hotového plánu.
         </p>
       </div>
     </div>

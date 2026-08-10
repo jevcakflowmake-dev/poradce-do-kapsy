@@ -163,7 +163,7 @@ export default function FinancniPlanPage() {
     }
     setSelectedVariants(selSet)
 
-    // Income — předvybraná varianta (single select)
+    // Income – předvybraná varianta (single select)
     const incomeIds = new Set(rawIncomeVariants.map(v => v.id))
     const selectedIncome = [...selSet].find(id => incomeIds.has(id)) ?? null
     setSelectedIncomeVariantId(selectedIncome)
@@ -230,10 +230,10 @@ export default function FinancniPlanPage() {
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
-          Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
+          Finanční <span style={{ color: '#009EE2' }}>plán</span>
         </h1>
         <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
-          Váš osobní plán od certifikovaného poradce. Prohlédněte si doporučení — u každé oblasti řekněte, zda
+          Váš osobní plán od certifikovaného poradce. Prohlédněte si doporučení – u každé oblasti řekněte, zda
           chcete pokračovat nebo máte otázky.
         </p>
       </motion.div>
@@ -257,7 +257,7 @@ export default function FinancniPlanPage() {
             <FileText className="w-8 h-8 text-[#0079AD]" strokeWidth={1.5} />
           </div>
           <h2 className="font-display text-[#162459] mb-2" style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}>
-            Plán se <span style={{ fontStyle: 'italic', color: '#009EE2' }}>připravuje</span>
+            Plán se <span style={{ color: '#009EE2' }}>připravuje</span>
           </h2>
           <p className="text-[#66708C] mb-7 max-w-md mx-auto leading-relaxed">
             Jakmile vyplníte finanční analýzu, poradce připraví osobní plán obvykle do 48 hodin.
@@ -272,7 +272,7 @@ export default function FinancniPlanPage() {
         </motion.div>
       ) : (
         <>
-          {/* Summary card — mega CTA + PDF */}
+          {/* Summary card – mega CTA + PDF */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -295,7 +295,7 @@ export default function FinancniPlanPage() {
                   className="font-display text-white"
                   style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
                 >
-                  Komplexní <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
+                  Komplexní <span style={{ color: '#009EE2' }}>plán</span>
                 </h2>
                 <p className="text-white/55 text-sm mt-2">
                   Projděte si sekce níže a u každé řekněte, zda chcete pokračovat.
@@ -334,7 +334,7 @@ export default function FinancniPlanPage() {
             </div>
           </motion.div>
 
-          {/* Vizuální přehled — radar pokrytí + donut nákladů + srovnání variant */}
+          {/* Vizuální přehled – radar pokrytí + donut nákladů + srovnání variant */}
           {hasPlan && <FinancialPlanOverview sections={planSections} />}
 
           {/* Plan sections */}
@@ -377,7 +377,7 @@ export default function FinancniPlanPage() {
                       selectedVariantId={selectedIncomeVariantId}
                       onSelect={async (variantId) => {
                         if (!clientId) return
-                        // Single-select pro income — nahradíme jakoukoli předchozí volbu
+                        // Single-select pro income – nahradíme jakoukoli předchozí volbu
                         const previousIncomeIds = incomeVariants.map(v => v.id)
                         await (supabase.from('plan_variant_selection') as any)
                           .delete()
@@ -411,7 +411,7 @@ export default function FinancniPlanPage() {
                   ) : section.type === 'variants' && section.variants ? (
                     <div className="space-y-3">
                       <p className="text-sm text-[#66708C] mb-1">
-                        {section.variants.length} varian{section.variants.length === 1 ? 'ta' : 'ty'} k porovnání — rozklikněte detail nebo označte tu, o kterou máte zájem.
+                        {section.variants.length} varian{section.variants.length === 1 ? 'ta' : 'ty'} k porovnání – rozklikněte detail nebo označte tu, o kterou máte zájem.
                       </p>
                       {section.variants.map((variant, i) => (
                         <VariantCardInteractive
@@ -507,7 +507,7 @@ export default function FinancniPlanPage() {
   )
 }
 
-// Interactive variant card — with "Select this variant" CTA
+// Interactive variant card – with "Select this variant" CTA
 function VariantCardInteractive({
   variant,
   index,
@@ -589,7 +589,7 @@ function VariantCardInteractive({
                 ))}
               </div>
 
-              {/* Select CTA — always visible when detail is open */}
+              {/* Select CTA – always visible when detail is open */}
               <div className="flex items-center justify-end mt-4 pt-3 border-t border-[#E4DFD2]">
                 <SelectVariantButton
                   clientId={clientId}

@@ -36,7 +36,7 @@ export default function UpdatePasswordPage() {
   })
 
   // Bez aktivní session (z reset-password emailu by ji měl ustavit /auth/callback)
-  // nemá smysl form zobrazovat — pošleme uživatele zpět na žádost o reset.
+  // nemá smysl form zobrazovat – pošleme uživatele zpět na žádost o reset.
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
@@ -75,7 +75,7 @@ export default function UpdatePasswordPage() {
     <AuthShell
       numeral="↻"
       eyebrow="Nové heslo · poslední krok"
-      title={<>Nastavte si <span style={{ fontStyle: 'italic', color: '#009EE2' }}>nové</span> heslo.</>}
+      title={<>Nastavte si <span style={{ color: '#009EE2' }}>nové</span> heslo.</>}
       subtitle="Zadejte heslo aspoň 8 znaků. Po uložení vás přesměrujeme do vašeho prostoru."
     >
       <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">

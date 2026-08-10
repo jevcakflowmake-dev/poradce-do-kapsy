@@ -12,6 +12,7 @@ import {
   PiggyBank,
   type LucideIcon,
 } from 'lucide-react'
+import { prefersReducedMotion } from '@/lib/motion'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -20,10 +21,10 @@ if (typeof window !== 'undefined') {
 type Benefit = { icon: LucideIcon; title: string; desc: string }
 
 const BENEFITS: Benefit[] = [
-  { icon: PiggyBank, title: 'Nezaplatíte ani korunu', desc: 'Za analýzu ani plán neplatíte nic. Vydělám až tehdy, když si přes mě něco sjednáte — provizi platí pojišťovna, ne vy.' },
-  { icon: Handshake, title: 'Nic nepodepisujete', desc: 'Plán není smlouva, je to podklad k rozhodnutí. Můžete si ho přečíst, poděkovat a nechat být — a nic se neděje.' },
+  { icon: PiggyBank, title: 'Nezaplatíte ani korunu', desc: 'Za analýzu ani plán neplatíte nic. Vydělám až tehdy, když si přes mě něco sjednáte – provizi platí pojišťovna, ne vy.' },
+  { icon: Handshake, title: 'Nic nepodepisujete', desc: 'Plán není smlouva, je to podklad k rozhodnutí. Můžete si ho přečíst, poděkovat a nechat být – a nic se neděje.' },
   { icon: Laptop, title: 'Bez jediné schůzky', desc: 'Celé to proběhne online. Žádné dojíždění, žádné odpoledne obětované sezení u kávy v kanceláři.' },
-  { icon: FileCheck, title: 'Plán do 48 hodin', desc: 'Ne obecný leták — konkrétní návrh pro vaši situaci, včetně cen u tří jmenovitých společností.' },
+  { icon: FileCheck, title: 'Plán do 48 hodin', desc: 'Ne obecný leták – konkrétní návrh pro vaši situaci, včetně cen u tří jmenovitých společností.' },
   { icon: MessagesSquare, title: 'Odpověď, když se ptáte vy', desc: 'Píšete mi do chatu, odpovídám obvykle do 24 hodin. Nikdo vám nevolá, dokud si to sami nevyžádáte.' },
   { icon: ShieldCheck, title: 'Data zůstávají u vás a u mě', desc: 'Uložená v EU, nikomu je neprodávám. Pojišťovně jdou jen tehdy, když si vyberete produkt a řeknete mi, ať ho sjednám.' },
 ]
@@ -34,6 +35,8 @@ export default function BenefitsSection() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    if (prefersReducedMotion()) return
+
     const ctx = gsap.context(() => {
       gsap.from('.benefit-card', {
         y: 50,
@@ -69,11 +72,11 @@ export default function BenefitsSection() {
             style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
 Bez obleku, bez kanceláře
-            <br className="hidden md:block" /> a <span style={{ fontStyle: 'italic', color: '#009EE2' }}>bez</span> tlaku na podpis.
+            <br className="hidden md:block" /> a <span style={{ color: '#009EE2' }}>bez</span> tlaku na podpis.
           </h2>
         </div>
 
-        {/* Asymetrické bento — 2 řady po 3 kartách, jedna vždy širší */}
+        {/* Asymetrické bento – 2 řady po 3 kartách, jedna vždy širší */}
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           {BENEFITS.map((b, i) => {
             const wide = i === 1 || i === 4

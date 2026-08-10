@@ -1,6 +1,6 @@
 /**
  * Klientská notifikace poradci přes n8n webhook.
- * DB je vždy zdroj pravdy (zájem/dotaz se ukládá do Supabase) — webhook je
+ * DB je vždy zdroj pravdy (zájem/dotaz se ukládá do Supabase) – webhook je
  * jen doručení zprávy. Když n8n neběží, nesmí to rozbít UX, ale nesmí to
  * být ani neviditelné: selhání logujeme do konzole.
  */
@@ -16,6 +16,6 @@ export function notifyAdvisor(payload: Record<string, unknown>): void {
       if (!res.ok) console.warn(`[n8n] notifikace poradci nedoručena: HTTP ${res.status}`)
     })
     .catch(() => {
-      console.warn('[n8n] notifikace poradci nedoručena — webhook nedostupný (zájem je ale uložen v databázi)')
+      console.warn('[n8n] notifikace poradci nedoručena – webhook nedostupný (zájem je ale uložen v databázi)')
     })
 }

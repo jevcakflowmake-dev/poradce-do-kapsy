@@ -11,7 +11,7 @@ interface Props {
 
 /**
  * Vygeneruje odkaz, kterým si klient nastaví heslo a dostane se ke svému
- * plánu. Odkaz se zobrazí ke zkopírování — poradce ho pošle sám, protože
+ * plánu. Odkaz se zobrazí ke zkopírování – poradce ho pošle sám, protože
  * na doručení e-mailu ze Supabase se dokud není vlastní SMTP spolehnout nedá.
  */
 export default function AccessLinkButton({ clientId, hasPassword }: Props) {
@@ -49,7 +49,7 @@ export default function AccessLinkButton({ clientId, hasPassword }: Props) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
     } catch {
-      setError('Zkopírování selhalo — označte odkaz myší a zkopírujte ho ručně.')
+      setError('Zkopírování selhalo – označte odkaz myší a zkopírujte ho ručně.')
     }
   }
 
@@ -66,7 +66,7 @@ export default function AccessLinkButton({ clientId, hasPassword }: Props) {
           </h3>
           <p className="text-sm text-[#66708C] leading-relaxed">
             {hasPassword
-              ? 'Klient si při vyplnění analýzy zvolil heslo, takže se přihlásit může. Odkaz níž mu heslo nechá nastavit znovu — hodí se, když ho zapomněl.'
+              ? 'Klient si při vyplnění analýzy zvolil heslo, takže se přihlásit může. Odkaz níž mu heslo nechá nastavit znovu – hodí se, když ho zapomněl.'
               : 'Klient vyplnil analýzu bez hesla, takže se zatím přihlásit nemůže. Vygenerujte mu odkaz a pošlete ho, až bude finanční plán hotový.'}
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function AccessLinkButton({ clientId, hasPassword }: Props) {
           </div>
           <p className="text-xs text-[#66708C] leading-relaxed">
             Odkaz je jednorázový a časově omezený (výchozí platnost v Supabase je
-            1 hodina). Pošlete ho klientovi rovnou — když vyprší, vygenerujte nový.
+            1 hodina). Pošlete ho klientovi rovnou – když vyprší, vygenerujte nový.
           </p>
         </div>
       ) : (

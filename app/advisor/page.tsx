@@ -46,7 +46,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     unreadCounts[m.client_id] = (unreadCounts[m.client_id] || 0) + 1
   }
 
-  // Plan reactions — počet sekcí se statusem 'interested' nebo 'question' + vybrané varianty.
+  // Plan reactions – počet sekcí se statusem 'interested' nebo 'question' + vybrané varianty.
   // Zobrazeno jako cyan badge; advisor se rozhodne jak zareagovat.
   const { data: planInterests } = await (supabase.from('plan_section_interest') as any)
     .select('client_id, status')
@@ -110,7 +110,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                   lineHeight: 1.05,
                 }}
               >
-                {clients.length} <span style={{ fontStyle: 'italic', color: '#009EE2' }}>klientů</span>
+                {clients.length} <span style={{ color: '#009EE2' }}>klientů</span>
                 <span className="text-[#66708C] font-normal" style={{ fontSize: '0.5em' }}>
                   {' '}ve vaší síti
                 </span>

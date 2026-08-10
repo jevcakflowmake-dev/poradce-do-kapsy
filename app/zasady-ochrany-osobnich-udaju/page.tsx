@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 /**
- * ⚠️ Zbývající `[DOPLNIT]` doplnit před spuštěním — bez nich nejsou zásady
+ * ⚠️ Zbývající `[DOPLNIT]` doplnit před spuštěním – bez nich nejsou zásady
  * platné. Správcem je fyzická osoba podnikající, takže IČO i adresa sídla
  * patří z živnostenského rejstříku.
  *
@@ -20,9 +20,9 @@ export const metadata: Metadata = {
  */
 const SPRAVCE = {
   jmeno: 'Jakub Jevčák',
-  ico: '[DOPLNIT — IČO]',
-  adresa: '[DOPLNIT — adresa sídla]',
-  email: '[DOPLNIT — kontaktní e-mail]',
+  ico: '[DOPLNIT – IČO]',
+  adresa: '[DOPLNIT – adresa sídla]',
+  email: '[DOPLNIT – kontaktní e-mail]',
 } as const
 
 const UCINNOST_OD = '7. srpna 2026'
@@ -51,12 +51,12 @@ export default function ZasadyPage() {
           >
             Zásady zpracování
             <br />
-            osobních <span style={{ fontStyle: 'italic', color: '#009EE2' }}>údajů</span>
+            osobních <span style={{ color: '#009EE2' }}>údajů</span>
           </h1>
 
           <p className="text-lg text-[#66708C] leading-relaxed mb-4">
             Abychom vám mohli připravit finanční plán na míru, potřebujeme o vás
-            vědět docela dost — včetně údajů o zdraví. Tady je přehledně, co
+            vědět docela dost – včetně údajů o zdraví. Tady je přehledně, co
             sbíráme, proč, jak dlouho si to necháváme a co s tím můžete udělat.
           </p>
           <p className="text-sm text-[#66708C]/80 mb-14">Účinné od {UCINNOST_OD}</p>
@@ -64,7 +64,7 @@ export default function ZasadyPage() {
           <Section number="01" title="Kdo je správcem">
             <P>
               Správcem osobních údajů je {SPRAVCE.jmeno}, IČO {SPRAVCE.ico}, se
-              sídlem {SPRAVCE.adresa} — certifikovaný finanční poradce
+              sídlem {SPRAVCE.adresa} – certifikovaný finanční poradce
               spolupracující se sítí ProfiFP / OVB Allfinanz.
             </P>
             <P>
@@ -88,32 +88,32 @@ export default function ZasadyPage() {
             <List
               items={[
                 <>
-                  <B>Při registraci</B> — jméno a příjmení, e-mail, telefon a
+                  <B>Při registraci</B> – jméno a příjmení, e-mail, telefon a
                   heslo (ukládá se pouze jeho nevratný otisk, samotné heslo
                   nevidíme).
                 </>,
                 <>
-                  <B>Ve finanční analýze</B> — věk, rodinný stav, zaměstnání,
+                  <B>Ve finanční analýze</B> – věk, rodinný stav, zaměstnání,
                   výše příjmů, závazky a hypotéka, počet a věk dětí, majetek
                   (nemovitost, auto), stávající pojištění a investice,
                   investiční horizont a tolerance k riziku, představa o důchodu.
                 </>,
                 <>
-                  <B>Údaje o zdraví</B> — výška, váha, vážné nemoci a úrazy za
+                  <B>Údaje o zdraví</B> – výška, váha, vážné nemoci a úrazy za
                   posledních 5 let. Jde o zvláštní kategorii údajů, kterou
                   řešíme zvlášť v bodě 04.
                 </>,
                 <>
-                  <B>Dokumenty, které nahrajete</B> — např. stávající smlouvy
+                  <B>Dokumenty, které nahrajete</B> – např. stávající smlouvy
                   nebo výpisy. Ukládají se do soukromého úložiště přístupného
                   jen vám a vašemu poradci.
                 </>,
                 <>
-                  <B>Komunikace</B> — zprávy v chatu s poradcem, dotazy
+                  <B>Komunikace</B> – zprávy v chatu s poradcem, dotazy
                   a reakce k finančnímu plánu.
                 </>,
                 <>
-                  <B>Technické údaje</B> — údaje nutné pro přihlášení a
+                  <B>Technické údaje</B> – údaje nutné pro přihlášení a
                   zabezpečení účtu (relace, čas přihlášení). Nesledujeme vaše
                   chování na webu a nepoužíváme analytické nástroje.
                 </>,
@@ -121,7 +121,7 @@ export default function ZasadyPage() {
             />
             <P>
               Vyplnění analýzy je dobrovolné. Bez ní vám ale nedokážeme
-              připravit smysluplný návrh — čím méně vyplníte, tím obecnější
+              připravit smysluplný návrh – čím méně vyplníte, tím obecnější
               doporučení dostanete.
             </P>
           </Section>
@@ -130,18 +130,18 @@ export default function ZasadyPage() {
             <List
               items={[
                 <>
-                  <B>Vedení účtu a poskytnutí služby</B> — abyste se mohli
+                  <B>Vedení účtu a poskytnutí služby</B> – abyste se mohli
                   přihlásit, vyplnit analýzu a dostat návrh. Právní základ:
                   plnění smlouvy, resp. opatření před jejím uzavřením (čl. 6
                   odst. 1 písm. b GDPR).
                 </>,
                 <>
-                  <B>Zpracování finanční analýzy a příprava návrhu</B> —
+                  <B>Zpracování finanční analýzy a příprava návrhu</B> –
                   posouzení vašich potřeb a nabídka vhodných produktů. Právní
                   základ: plnění smlouvy (čl. 6 odst. 1 písm. b GDPR).
                 </>,
                 <>
-                  <B>Zprostředkování konkrétní smlouvy</B> — pokud si některý
+                  <B>Zprostředkování konkrétní smlouvy</B> – pokud si některý
                   produkt vyberete, předáme potřebné údaje partnerské
                   společnosti. Právní základ: plnění smlouvy, dále plnění
                   právních povinností zprostředkovatele podle zákona
@@ -149,7 +149,7 @@ export default function ZasadyPage() {
                   úvěru (čl. 6 odst. 1 písm. c GDPR).
                 </>,
                 <>
-                  <B>Zabezpečení a ochrana před zneužitím</B> — právní základ:
+                  <B>Zabezpečení a ochrana před zneužitím</B> – právní základ:
                   oprávněný zájem na bezpečném provozu aplikace (čl. 6 odst. 1
                   písm. f GDPR).
                 </>,
@@ -157,11 +157,11 @@ export default function ZasadyPage() {
             />
             <P>
               Neprovádíme automatizované rozhodování ani profilování s právními
-              účinky. Návrh vždy posuzuje a schvaluje člověk — váš poradce.
+              účinky. Návrh vždy posuzuje a schvaluje člověk – váš poradce.
             </P>
           </Section>
 
-          <Section number="04" title="Údaje o zdraví — jen s vaším souhlasem">
+          <Section number="04" title="Údaje o zdraví – jen s vaším souhlasem">
             <Callout>
               <P>
                 Výška, váha, prodělané nemoci a úrazy patří mezi zvláštní
@@ -171,7 +171,7 @@ export default function ZasadyPage() {
               </P>
               <P>
                 Bez těchto údajů nelze spočítat cenu a rozsah životního nebo
-                úrazového pojištění — pojišťovny je vyžadují. Souhlas je ale
+                úrazového pojištění – pojišťovny je vyžadují. Souhlas je ale
                 dobrovolný: sekci můžete přeskočit a využít zbytek aplikace.
               </P>
               <P>
@@ -196,24 +196,24 @@ export default function ZasadyPage() {
             <List
               items={[
                 <>
-                  <B>Váš poradce</B> — vidí vaši analýzu, dokumenty a chat,
+                  <B>Váš poradce</B> – vidí vaši analýzu, dokumenty a chat,
                   aby vám mohl připravit návrh.
                 </>,
                 <>
                   <B>Poskytovatelé technického zázemí</B> (zpracovatelé, vázaní
-                  smlouvou o zpracování): Supabase — databáze a úložiště
-                  souborů, servery v EU (Stockholm); Vercel — provoz webové
+                  smlouvou o zpracování): Supabase – databáze a úložiště
+                  souborů, servery v EU (Stockholm); Vercel – provoz webové
                   aplikace; poskytovatel e-mailové brány pro odeslání
                   transakčních zpráv (obnovení hesla).
                 </>,
                 <>
-                  <B>Partnerské finanční instituce</B> — pojišťovny, banky
+                  <B>Partnerské finanční instituce</B> – pojišťovny, banky
                   a investiční společnosti, ale výhradně tehdy, když si
                   konkrétní produkt vyberete a zadáte pokyn ke sjednání.
                   V takovém případě vystupují jako samostatní správci.
                 </>,
                 <>
-                  <B>Orgány veřejné moci</B> — pokud nám to ukládá zákon
+                  <B>Orgány veřejné moci</B> – pokud nám to ukládá zákon
                   (např. ČNB, finanční správa).
                 </>,
               ]}
@@ -229,19 +229,19 @@ export default function ZasadyPage() {
             <List
               items={[
                 <>
-                  <B>Aktivní účet</B> — po celou dobu, co ho používáte. Kdykoliv
+                  <B>Aktivní účet</B> – po celou dobu, co ho používáte. Kdykoliv
                   můžete požádat o jeho zrušení.
                 </>,
                 <>
-                  <B>Neaktivní účet bez sjednané smlouvy</B> — 3 roky od
+                  <B>Neaktivní účet bez sjednané smlouvy</B> – 3 roky od
                   poslední aktivity, pak údaje smažeme.
                 </>,
                 <>
-                  <B>Zdravotní údaje</B> — do odvolání souhlasu, nejdéle však po
+                  <B>Zdravotní údaje</B> – do odvolání souhlasu, nejdéle však po
                   dobu platnosti účtu.
                 </>,
                 <>
-                  <B>Sjednané smlouvy</B> — po dobu trvání smlouvy a dále po
+                  <B>Sjednané smlouvy</B> – po dobu trvání smlouvy a dále po
                   dobu, kterou ukládá zákon (u distribuce pojištění a úvěrů
                   zpravidla 5–10 let od zániku smlouvy).
                 </>,
@@ -253,7 +253,7 @@ export default function ZasadyPage() {
             <List
               items={[
                 'Veškerá komunikace s aplikací je šifrovaná (HTTPS).',
-                'Přístup k datům je v databázi vynucen na úrovni řádků — vaše záznamy nevidí jiný klient, technicky to nejde.',
+                'Přístup k datům je v databázi vynucen na úrovni řádků – vaše záznamy nevidí jiný klient, technicky to nejde.',
                 'Nahrané dokumenty leží v soukromém úložišti; otevírají se přes dočasné odkazy s omezenou platností.',
                 'Hesla jsou uložena pouze jako nevratný otisk (hash).',
               ]}
@@ -274,18 +274,18 @@ export default function ZasadyPage() {
             <List
               items={[
                 <>
-                  <B>na přístup</B> — chtít kopii toho, co o vás vedeme;
+                  <B>na přístup</B> – chtít kopii toho, co o vás vedeme;
                 </>,
                 <>
-                  <B>na opravu</B> — nechat opravit nepřesné údaje (většinu
+                  <B>na opravu</B> – nechat opravit nepřesné údaje (většinu
                   si opravíte sami přímo v aplikaci);
                 </>,
                 <>
-                  <B>na výmaz</B> — nechat údaje smazat, pokud nebrání zákonná
+                  <B>na výmaz</B> – nechat údaje smazat, pokud nebrání zákonná
                   povinnost je uchovat;
                 </>,
                 <>
-                  <B>na omezení zpracování</B> a <B>na přenositelnost</B> —
+                  <B>na omezení zpracování</B> a <B>na přenositelnost</B> –
                   dostat údaje ve strojově čitelném formátu;
                 </>,
                 <>

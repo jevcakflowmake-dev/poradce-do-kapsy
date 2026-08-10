@@ -69,7 +69,7 @@ export default function ProduktyPage() {
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
-          Moje <span style={{ fontStyle: 'italic', color: '#009EE2' }}>produkty</span>
+          Moje <span style={{ color: '#009EE2' }}>produkty</span>
         </h1>
         <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
           Přehled vašich finančních produktů a platebních informací.
@@ -163,7 +163,7 @@ export default function ProduktyPage() {
             <CreditCard className="w-5 h-5 text-white" strokeWidth={1.8} />
           </div>
           <h2 className="font-display text-[#162459]" style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}>
-            Platební <span style={{ fontStyle: 'italic', color: '#009EE2' }}>informace</span>
+            Platební <span style={{ color: '#009EE2' }}>informace</span>
           </h2>
         </div>
         <div className="space-y-3">

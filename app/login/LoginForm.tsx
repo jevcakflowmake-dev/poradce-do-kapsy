@@ -67,8 +67,8 @@ export default function LoginForm() {
       <AuthShell
         numeral="↗"
         eyebrow="Odkaz odeslán"
-        title={<>Zkontrolujte <span style={{ fontStyle: 'italic', color: '#009EE2' }}>schránku</span>.</>}
-        subtitle="Poslali jsme vám přihlašovací odkaz. Klikněte na něj pro přihlášení — link je platný 60 minut."
+        title={<>Zkontrolujte <span style={{ color: '#009EE2' }}>schránku</span>.</>}
+        subtitle="Poslali jsme vám přihlašovací odkaz. Klikněte na něj pro přihlášení – link je platný 60 minut."
       >
         <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-8 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-none mb-5 bg-[#009EE2]/10 border border-[#009EE2]/25">
@@ -98,7 +98,7 @@ export default function LoginForm() {
     <AuthShell
       numeral="01"
       eyebrow="Přihlášení · klient nebo poradce"
-      title={<>Vítejte <span style={{ fontStyle: 'italic', color: '#009EE2' }}>zpět</span>.</>}
+      title={<>Vítejte <span style={{ color: '#009EE2' }}>zpět</span>.</>}
       subtitle="Přihlaste se k účtu, nebo si nechte poslat odkaz bez hesla. Bez schůzek, bez papírování."
     >
       <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">
@@ -176,7 +176,7 @@ export default function LoginForm() {
         <Link href="/analyza" className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors">
           Vyplňte analýzu zdarma
         </Link>
-        {' '}— účet zakládat nemusíte.
+        {' '}– účet zakládat nemusíte.
       </p>
     </AuthShell>
   )

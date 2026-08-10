@@ -16,7 +16,7 @@ interface Props {
 
 /**
  * Analýza, kterou z veřejného formuláře poslal někdo s e-mailem tohoto
- * klienta. Nepřepisujeme ji automaticky — odeslat formulář s cizím e-mailem
+ * klienta. Nepřepisujeme ji automaticky – odeslat formulář s cizím e-mailem
  * může kdokoliv a jsou v něm zdravotní údaje. Rozhoduje poradce.
  */
 export default function PendingSubmission({
@@ -72,7 +72,7 @@ export default function PendingSubmission({
             </h3>
             <p className="text-sm text-[#66708C] leading-relaxed">
               {formatDate(createdAt)} přišla analýza na e-mail <strong className="text-[#162459]">{email}</strong>,
-              který už u nás účet má — {answered} vyplněných odpovědí
+              který už u nás účet má – {answered} vyplněných odpovědí
               {fileCount > 0 && `, ${fileCount} ${fileCount === 1 ? 'příloha' : fileCount < 5 ? 'přílohy' : 'příloh'}`}.
               Odpovědi zatím nikam nezapsané: přijetím přepíšou dosavadní analýzu klienta.
             </p>

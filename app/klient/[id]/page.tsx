@@ -97,7 +97,7 @@ export default function KlientPage() {
           style={{ fontSize: 'clamp(2.25rem, 5vw, 4rem)', letterSpacing: '-0.03em', lineHeight: 1.02 }}
         >
           Vítejte v{' '}
-          <span style={{ fontStyle: 'italic', color: '#009EE2' }}>portálu</span>.
+          <span style={{ color: '#009EE2' }}>portálu</span>.
           <br />
           <span style={{ color: '#66708C' }}>Co zvládneme dneska?</span>
         </motion.h1>
@@ -120,7 +120,7 @@ export default function KlientPage() {
                 style={{ border: '1px solid transparent', ...(s.cardStyle as React.CSSProperties) }}
               >
                 <span
-                  className={`absolute -top-2 right-3 font-display italic leading-none select-none pointer-events-none ${s.numeral}`}
+                  className={`absolute -top-2 right-3 font-display leading-none select-none pointer-events-none ${s.numeral}`}
                   style={{ fontSize: 'clamp(6rem, 12vw, 9rem)', letterSpacing: '-0.04em' }}
                 >
                   {num}

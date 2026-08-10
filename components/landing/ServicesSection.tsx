@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { prefersReducedMotion } from '@/lib/motion'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -22,6 +23,8 @@ export default function ServicesSection() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    if (prefersReducedMotion()) return
+
     const ctx = gsap.context(() => {
       gsap.from('.service-head > *', {
         y: 30,
@@ -50,7 +53,7 @@ export default function ServicesSection() {
       className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-24 overflow-hidden"
       style={{ background: 'linear-gradient(160deg, #162459 0%, #243471 60%, #1a2e6b 100%)' }}
     >
-      {/* Radial accent mesh + noise — never flat color */}
+      {/* Radial accent mesh + noise – never flat color */}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -71,16 +74,16 @@ export default function ServicesSection() {
             className="font-display text-white"
             style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Pět oblastí. <span style={{ fontStyle: 'italic', color: '#009EE2' }}>Jeden</span> poradce.
+            Pět oblastí. <span style={{ color: '#009EE2' }}>Jeden</span> poradce.
           </h2>
           <p className="text-white/60 mt-4 leading-relaxed max-w-xl">
-            Komplexní finanční poradenství pod jednou střechou — ne pět různých prodejců, ale jedna osoba, která ví, jak všechno souvisí.
+            Komplexní finanční poradenství pod jednou střechou – ne pět různých prodejců, ale jedna osoba, která ví, jak všechno souvisí.
           </p>
         </div>
 
         <div className="services-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
           {PRODUCTS.map((p, i) => {
-            // 5 items in a 6-col grid — first wide, rest take 2 cols, tidy asymmetry
+            // 5 items in a 6-col grid – first wide, rest take 2 cols, tidy asymmetry
             const col = i === 0 ? 'lg:col-span-3' : i === 1 ? 'lg:col-span-3' : 'lg:col-span-2'
             return (
               <div

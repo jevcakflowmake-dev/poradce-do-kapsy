@@ -2,7 +2,15 @@
 
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
+import { MotionConfig } from 'framer-motion'
 
+/**
+ * Plynulý scroll + globální nastavení animací.
+ *
+ * GSAP se na omezení animací ptá v každé komponentě zvlášť (viz lib/motion.ts),
+ * Framer Motion to umí centrálně: `reducedMotion="user"` vypne transformace
+ * a necháme jen opacitu, takže obsah nikde nezmizí.
+ */
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
   const rafRef = useRef<number | null>(null)
 
@@ -29,5 +37,5 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
     }
   }, [])
 
-  return <>{children}</>
+  return <MotionConfig reducedMotion="user">{children}</MotionConfig>
 }

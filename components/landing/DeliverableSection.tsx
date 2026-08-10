@@ -5,26 +5,26 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import MagneticButton from '@/components/motion/MagneticButton'
+import { prefersReducedMotion } from '@/lib/motion'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
 
 /**
- * „Co přesně dostanete“ — na webu dosud chybělo. Návštěvník slyšel, že
+ * „Co přesně dostanete“ – na webu dosud chybělo. Návštěvník slyšel, že
  * dostane „finanční plán“, ale nevěděl, co to znamená; abstraktní slib
  * se špatně směňuje za deset minut vyplňování. Tahle sekce pojmenovává
  * konkrétní výstup, aby bylo vidět, co za ten čas dostane zpátky.
  *
  * Popisy odpovídají tomu, co aplikace opravdu umí (plan_variants, graf
- * výpadku příjmu, PDF návrhy, chat) — nic tu není naslibované dopředu.
+ * výpadku příjmu, PDF návrhy, chat) – nic tu není naslibované dopředu.
  */
 const ITEMS = [
   {
     num: '01',
     title: 'Mapu vašich děr',
-    desc: 'Šest oblastí — příjem, bydlení, majetek, děti, investice, penze — a u každé barevně, jestli je v pořádku, nebo se v ní schovává problém.',
+    desc: 'Šest oblastí – příjem, bydlení, majetek, děti, investice, penze – a u každé barevně, jestli je v pořádku, nebo se v ní schovává problém.',
   },
   {
     num: '02',
@@ -34,7 +34,7 @@ const ITEMS = [
   {
     num: '03',
     title: 'Graf, co se stane při výpadku příjmu',
-    desc: 'Uvidíte, kolik vám zbude, když onemocníte nebo se zraníte — a o kolik z toho vás pojistka dorovná. Bez toho jsou čísla jen čísla.',
+    desc: 'Uvidíte, kolik vám zbude, když onemocníte nebo se zraníte – a o kolik z toho vás pojistka dorovná. Bez toho jsou čísla jen čísla.',
   },
   {
     num: '04',
@@ -49,6 +49,8 @@ export default function DeliverableSection() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    if (prefersReducedMotion()) return
+
     const ctx = gsap.context(() => {
       gsap.from('.deliverable-head > *', {
         y: 30,
@@ -97,7 +99,7 @@ export default function DeliverableSection() {
               className="font-display text-[#F6F4EE]"
               style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', letterSpacing: '-0.025em', lineHeight: 1.03 }}
             >
-              Co vám <span style={{ fontStyle: 'italic', color: '#009EE2' }}>doopravdy</span> přijde
+              Co vám <span style={{ color: '#009EE2' }}>doopravdy</span> přijde
             </h2>
           </div>
           <p className="col-span-12 md:col-span-4 text-[#F6F4EE]/50 text-sm md:text-base leading-relaxed md:text-right md:pb-2">
@@ -117,7 +119,7 @@ export default function DeliverableSection() {
               <div className="flex items-baseline gap-4 mb-3">
                 <span
                   className="font-display text-[#009EE2]/70"
-                  style={{ fontSize: '1.1rem', fontStyle: 'italic' }}
+                  style={{ fontSize: '1.1rem' }}
                 >
                   {item.num}
                 </span>
@@ -137,15 +139,13 @@ export default function DeliverableSection() {
         </div>
 
         <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-          <MagneticButton>
-            <Link
+          <Link
               href="/analyza"
               className="group inline-flex items-center gap-2 px-8 py-4 bg-[#009EE2] font-semibold text-sm text-[#0B111F] hover:bg-[#1a9fdd] transition-colors"
             >
               Chci to taky
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-          </MagneticButton>
           <p className="text-sm text-[#F6F4EE]/40">
             Zdarma · Bez registrace · Nezávazně
           </p>

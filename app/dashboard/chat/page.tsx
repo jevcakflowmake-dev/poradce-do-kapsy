@@ -27,7 +27,7 @@ export default async function ClientChatPage() {
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
-          Napište <span style={{ fontStyle: 'italic', color: '#009EE2' }}>poradci</span>
+          Napište <span style={{ color: '#009EE2' }}>poradci</span>
         </h1>
       </div>
 

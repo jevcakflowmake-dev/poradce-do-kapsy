@@ -8,12 +8,12 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 /**
  * Vygeneruje klientovi odkaz, kterým si nastaví heslo a dostane se k plánu.
  *
- * Typicky pro člověka, který vyplnil veřejnou analýzu a heslo si nezvolil —
+ * Typicky pro člověka, který vyplnil veřejnou analýzu a heslo si nezvolil –
  * účet má, ale přihlásit se s ním zatím nedá.
  *
  * Odkaz VRACÍME poradci, aby ho mohl poslat sám (e-mailem, WhatsApp).
  * Supabase se ho zároveň pokusí odeslat, ale dokud není nastavené vlastní
- * SMTP, výchozí brána zvládne ~2 e-maily/hod a jen na členy týmu — proto se
+ * SMTP, výchozí brána zvládne ~2 e-maily/hod a jen na členy týmu – proto se
  * na její doručení nespoléháme.
  */
 export async function POST(request: Request) {

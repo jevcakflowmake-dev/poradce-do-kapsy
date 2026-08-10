@@ -15,7 +15,7 @@ import { SECTIONS } from '@/lib/analysis-sections'
 import type { Json } from '@/lib/types/database'
 
 /**
- * Příjem veřejné analýzy z /analyza — jediný endpoint aplikace, který smí
+ * Příjem veřejné analýzy z /analyza – jediný endpoint aplikace, který smí
  * volat kdokoliv bez přihlášení. Tomu odpovídá i míra nedůvěry ke vstupu:
  * povolujeme jen otázky, které v analýze opravdu existují, omezujeme délku
  * hodnot, počet i velikost příloh a držíme jednoduchý rate limit.
@@ -25,12 +25,12 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_VALUE_LENGTH = 2000
 const MAX_FILES = 10
 
-/** Povolené dvojice sekce/otázka — vše ostatní z requestu zahodíme. */
+/** Povolené dvojice sekce/otázka – vše ostatní z requestu zahodíme. */
 const ALLOWED = new Map(SECTIONS.map(s => [s.id, new Set(s.questions.map(q => q.id))]))
 
 /**
  * Rate limit v paměti instance. Na Vercelu běží víc instancí, takže tohle
- * není tvrdá hranice — spíš brzda proti tomu, aby jeden skript zaplavil
+ * není tvrdá hranice – spíš brzda proti tomu, aby jeden skript zaplavil
  * databázi. Skutečnou ochranu má dělat WAF/Vercel firewall.
  */
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
@@ -67,7 +67,7 @@ function sanitizeResponses(raw: unknown): Responses {
 }
 
 async function notifyAdvisor(payload: Record<string, unknown>): Promise<void> {
-  // Awaitujeme — fire-and-forget fetch se v serverless funkci nemusí stihnout
+  // Awaitujeme – fire-and-forget fetch se v serverless funkci nemusí stihnout
   // odeslat. Selhání nesmí shodit odeslání: data už jsou v databázi.
   try {
     const res = await fetch('https://n8n.jevcakn8n.com/webhook/novy-klient', {
@@ -77,7 +77,7 @@ async function notifyAdvisor(payload: Record<string, unknown>): Promise<void> {
       signal: AbortSignal.timeout(5000),
     })
     if (!res.ok) {
-      console.error(`[analyza] n8n webhook selhal: HTTP ${res.status} — odeslání je uložené, jen o něm nepřišla notifikace`)
+      console.error(`[analyza] n8n webhook selhal: HTTP ${res.status} – odeslání je uložené, jen o něm nepřišla notifikace`)
     }
   } catch (err) {
     console.error('[analyza] n8n webhook nedostupný:', err instanceof Error ? err.message : err)
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
 
     const form = await request.formData()
 
-    // Honeypot — pole je v DOM skryté, člověk ho nevyplní, jednoduchý bot ano.
+    // Honeypot – pole je v DOM skryté, člověk ho nevyplní, jednoduchý bot ano.
     if (typeof form.get('website') === 'string' && (form.get('website') as string).length > 0) {
       // Tváříme se úspěšně, ať bot nemá zpětnou vazbu k ladění.
       return NextResponse.json({ status: 'created' })
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
 
     if (!EMAIL_REGEX.test(email)) {
       return NextResponse.json(
-        { error: 'V sekci „Osobní údaje“ vyplňte platný e-mail — bez něj vám nemáme kam poslat návrh.' },
+        { error: 'V sekci „Osobní údaje“ vyplňte platný e-mail – bez něj vám nemáme kam poslat návrh.' },
         { status: 400 },
       )
     }
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
 
     const admin = createAdminClient()
 
-    // 1) Odeslání zapíšeme vždy, ať se stane cokoliv dál — auditní stopa.
+    // 1) Odeslání zapíšeme vždy, ať se stane cokoliv dál – auditní stopa.
     const { data: submission, error: submissionError } = await admin
       .from('public_submissions')
       .insert({
@@ -174,7 +174,7 @@ export async function POST(request: Request) {
 
     const submissionId = (submission as { id: string }).id
 
-    // 2) Přílohy nahrajeme do parkoviště — klienta ještě nemusíme mít.
+    // 2) Přílohy nahrajeme do parkoviště – klienta ještě nemusíme mít.
     const storedFiles: SubmissionFile[] = []
     for (const [i, file] of uploads.entries()) {
       const section = fileSections[i] || 'personal'
@@ -205,7 +205,7 @@ export async function POST(request: Request) {
 
     if (existing) {
       // Nepřepisujeme. Formulář s cizím e-mailem odešle kdokoliv a v analýze
-      // jsou zdravotní údaje — o překlopení rozhodne poradce v detailu klienta.
+      // jsou zdravotní údaje – o překlopení rozhodne poradce v detailu klienta.
       await admin
         .from('public_submissions')
         .update({ matched_client_id: existing.id })
@@ -234,7 +234,7 @@ export async function POST(request: Request) {
 
     if (createError || !created.user) {
       console.error('[analyza] založení klienta selhalo:', createError?.message)
-      // Odpovědi jsou uložené v public_submissions, takže se nic neztratilo —
+      // Odpovědi jsou uložené v public_submissions, takže se nic neztratilo –
       // poradce je uvidí mezi čekajícími odesláními.
       return NextResponse.json({ status: 'existing' })
     }
@@ -247,7 +247,7 @@ export async function POST(request: Request) {
     const failedFiles = await attachFilesToClient(admin, clientId, storedFiles)
     if (failedFiles.length > 0) {
       console.error(
-        `[analyza] ${failedFiles.length} příloh se nepodařilo připojit ke klientovi ${clientId} — zůstávají v ${PARKED_PREFIX}/${submissionId}`,
+        `[analyza] ${failedFiles.length} příloh se nepodařilo připojit ke klientovi ${clientId} – zůstávají v ${PARKED_PREFIX}/${submissionId}`,
       )
     }
 

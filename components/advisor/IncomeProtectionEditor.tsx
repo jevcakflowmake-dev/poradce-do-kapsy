@@ -23,7 +23,7 @@ interface ExistingVariant {
   logo: string
   monthly_payment: string
   details: ({
-    payout_60?: number | null  // serverside vypočítaný — read only
+    payout_60?: number | null  // serverside vypočítaný – read only
     payout_50?: number | null
     waiting_period_days?: number | null
     max_payout_years?: number | null
@@ -132,10 +132,10 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
           <Shield className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="text-[#162459] font-display text-lg">Zajištění příjmu — graf života</h2>
+          <h2 className="text-[#162459] font-display text-lg">Zajištění příjmu – graf života</h2>
           <p className="text-xs text-[#66708C] mt-0.5">
             {variants.filter((v) => v.company.trim()).length === 0
-              ? 'Přidejte až 3 varianty pojistky — klient uvidí graf "kolik mu zůstane při poklesu na 60% a 50%".'
+              ? 'Přidejte až 3 varianty pojistky – klient uvidí graf "kolik mu zůstane při poklesu na 60% a 50%".'
               : `${variants.filter((v) => v.company.trim()).length}/3 variant nahrato`}
           </p>
         </div>
@@ -245,7 +245,7 @@ function VariantCard({
         <TextField label="Měsíční pojistné" value={variant.monthly_payment} onChange={(v) => onChange('monthly_payment', v)} placeholder="850 Kč" />
       </div>
 
-      {/* Modelace výpočtu — checkbox + read-only preview */}
+      {/* Modelace výpočtu – checkbox + read-only preview */}
       {(() => {
         const karence = variant.waiting_period_days ?? DEFAULT_WAITING_PERIOD_DAYS
         const da = variant.coverage.daily_accident ?? 0

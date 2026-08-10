@@ -136,7 +136,7 @@ export default function ClientHome({ firstName }: { firstName: string }) {
             lineHeight: 1.02,
           }}
         >
-          Dobrý den, <span style={{ fontStyle: 'italic', color: '#009EE2' }}>{firstName}</span>.
+          Dobrý den, <span style={{ color: '#009EE2' }}>{firstName}</span>.
           <br />
           <span style={{ color: '#66708C' }}>Co zvládneme dneska?</span>
         </motion.h1>
@@ -149,7 +149,7 @@ export default function ClientHome({ firstName }: { firstName: string }) {
         </motion.p>
       </div>
 
-      {/* Tiles — 4 varianty (navy / cyan / light-navy / light-cyan) */}
+      {/* Tiles – 4 varianty (navy / cyan / light-navy / light-cyan) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {TILES.map((tile, i) => {
           const s = tileStyles(tile.variant)
@@ -163,7 +163,7 @@ export default function ClientHome({ firstName }: { firstName: string }) {
                 style={{ border: '1px solid transparent', ...(s.cardStyle as React.CSSProperties) }}
               >
                 <span
-                  className={`absolute -top-2 right-3 font-display italic leading-none select-none pointer-events-none ${s.numeral}`}
+                  className={`absolute -top-2 right-3 font-display leading-none select-none pointer-events-none ${s.numeral}`}
                   style={{ fontSize: 'clamp(6rem, 12vw, 9rem)', letterSpacing: '-0.04em' }}
                 >
                   {num}

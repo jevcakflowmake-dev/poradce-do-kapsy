@@ -75,7 +75,7 @@ function fmtCzk(n: number): string {
 
 // ── Komponenta ───────────────────────────────────────────
 export default function FinancialPlanOverview({ sections }: Props) {
-  // Radar data — skóre pokrytí podle statusu
+  // Radar data – skóre pokrytí podle statusu
   const radarData = useMemo(
     () =>
       sections.map((s) => ({
@@ -86,7 +86,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
     [sections],
   )
 
-  // Donut — měsíční náklady (suma variant per sekce, bere min variantu jako "indikativní")
+  // Donut – měsíční náklady (suma variant per sekce, bere min variantu jako "indikativní")
   const monthlyData = useMemo(() => {
     const data = sections
       .filter((s) => s.type === 'variants' && s.variants && s.variants.length > 0)
@@ -127,7 +127,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
 
       {/* ── Radar + Donut grid ─────────────────────────── */}
       <div className="grid lg:grid-cols-5 gap-6">
-        {/* Radar — Pokrytí oblastí */}
+        {/* Radar – Pokrytí oblastí */}
         <ChartCard
           className="lg:col-span-3"
           title="Pokrytí finančních oblastí"
@@ -153,7 +153,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
           </ResponsiveContainer>
         </ChartCard>
 
-        {/* Donut — Měsíční náklady */}
+        {/* Donut – Měsíční náklady */}
         <ChartCard
           className="lg:col-span-2"
           title="Indikativní měsíční náklady"

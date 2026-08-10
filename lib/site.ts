@@ -1,5 +1,5 @@
 /**
- * Kanonická adresa webu — jedno místo pro metadata, sitemap i robots.
+ * Kanonická adresa webu – jedno místo pro metadata, sitemap i robots.
  *
  * Po koupi vlastní domény stačí nastavit `NEXT_PUBLIC_SITE_URL` ve Vercelu
  * (Settings → Environment Variables) a znovu nasadit; nic v kódu se nemění.

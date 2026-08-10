@@ -93,7 +93,7 @@ function InsuranceDetail({ content }: { content: string | null }) {
 const mockPayments = [
   { product: 'Životní pojištění Premium', amount: '1 250 Kč', frequency: 'měsíčně', nextDate: '15. 5. 2026', account: 'CZ65 0800 0000 0019 2000 0010', vs: '1234567890' },
   { product: 'Doplňkové penzijní spoření', amount: '1 500 Kč', frequency: 'měsíčně', nextDate: '1. 5. 2026', account: 'CZ77 0300 0000 0000 1234 5678', vs: '9876543210' },
-  { product: 'Investiční fond — Dynamický', amount: '3 000 Kč', frequency: 'měsíčně', nextDate: '10. 5. 2026', account: 'CZ55 0100 0000 0000 0055 1234', vs: '5551234000' },
+  { product: 'Investiční fond – Dynamický', amount: '3 000 Kč', frequency: 'měsíčně', nextDate: '10. 5. 2026', account: 'CZ55 0100 0000 0000 0055 1234', vs: '5551234000' },
 ]
 
 export default function ProduktyPage() {
@@ -140,7 +140,7 @@ export default function ProduktyPage() {
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
-          Moje <span style={{ fontStyle: 'italic', color: '#009EE2' }}>produkty</span>
+          Moje <span style={{ color: '#009EE2' }}>produkty</span>
         </h1>
         <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
           Přehled vašich finančních produktů a platebních informací.
@@ -240,7 +240,7 @@ export default function ProduktyPage() {
             className="font-display text-[#162459]"
             style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}
           >
-            Platební <span style={{ fontStyle: 'italic', color: '#009EE2' }}>informace</span>
+            Platební <span style={{ color: '#009EE2' }}>informace</span>
           </h2>
         </div>
         <div className="space-y-3">

@@ -109,7 +109,7 @@ export default function AnalyzaPage() {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-      // Nahrát přílohy do storage — bez toho by je poradce nikdy neviděl
+      // Nahrát přílohy do storage – bez toho by je poradce nikdy neviděl
       const failed: PendingFile[] = []
       const errors: string[] = []
       for (const f of files) {
@@ -126,7 +126,7 @@ export default function AnalyzaPage() {
       }
       setFiles(failed)
       if (failed.length > 0) {
-        setFileError(`Některé přílohy se nepodařilo nahrát: ${errors.join(' · ')}. Odpovědi jsou uložené — zkuste soubory odeslat znovu.`)
+        setFileError(`Některé přílohy se nepodařilo nahrát: ${errors.join(' · ')}. Odpovědi jsou uložené – zkuste soubory odeslat znovu.`)
         setLoading(false)
         return
       }
@@ -162,7 +162,7 @@ export default function AnalyzaPage() {
             className="font-display text-[#162459] mb-5"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Analýza <span style={{ fontStyle: 'italic', color: '#009EE2' }}>odeslána</span>.
+            Analýza <span style={{ color: '#009EE2' }}>odeslána</span>.
           </h1>
           <p className="text-[#66708C] mb-10 max-w-md mx-auto leading-relaxed">
             Váš poradce připraví finanční plán na základě vašich odpovědí. Výsledky obvykle do 48 hodin.
@@ -209,7 +209,7 @@ export default function AnalyzaPage() {
             className="font-display text-[#162459]"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>analýza</span>
+            Finanční <span style={{ color: '#009EE2' }}>analýza</span>
           </h1>
           {saveStatus !== 'idle' && (
             <div className="flex items-center gap-2 text-xs mt-2 shrink-0">

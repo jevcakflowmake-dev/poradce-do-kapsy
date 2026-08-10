@@ -9,7 +9,7 @@ import { ArrowRight } from 'lucide-react'
  * proscrollovat zpátky nebo až úplně dolů. Lišta ho drží po ruce celou dobu.
  *
  * Objeví se až po opuštění hero sekce, ať nekonkuruje hlavnímu tlačítku,
- * a na desktopu se nezobrazuje vůbec — tam je CTA v dohledu pořád.
+ * a na desktopu se nezobrazuje vůbec – tam je CTA v dohledu pořád.
  */
 export default function StickyMobileCta() {
   const [visible, setVisible] = useState(false)
@@ -29,7 +29,7 @@ export default function StickyMobileCta() {
       className={`md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-[#F6F4EE]/12 bg-[#0B111F]/95 backdrop-blur-md px-4 py-3 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
         visible ? 'translate-y-0' : 'translate-y-full'
       }`}
-      // Skryté liště nesmí zůstat fokusovatelný odkaz — jinak by ho
+      // Skryté liště nesmí zůstat fokusovatelný odkaz – jinak by ho
       // klávesnice a čtečky našly dřív, než se vůbec objeví.
       aria-hidden={!visible}
       inert={!visible}

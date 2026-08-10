@@ -138,7 +138,7 @@ export default function ChatWindow({
             </h3>
             <p className="text-sm text-[#66708C] max-w-xs">
               {myRole === 'client'
-                ? 'Máte otázky? Napište poradci — odpovídá zpravidla do 24 hodin.'
+                ? 'Máte otázky? Napište poradci – odpovídá zpravidla do 24 hodin.'
                 : 'Napište klientovi zprávu nebo odpovězte na jeho dotazy.'}
             </p>
           </div>

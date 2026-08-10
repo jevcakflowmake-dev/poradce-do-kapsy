@@ -58,7 +58,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   }>
 
   // Analýza z veřejného formuláře, o které poradce ještě nerozhodl.
-  // Bereme jen nejnovější — starší čekající odeslání jsou v tabulce dohledatelná.
+  // Bereme jen nejnovější – starší čekající odeslání jsou v tabulce dohledatelná.
   const { data: pendingRaw } = await supabase
     .from('public_submissions')
     .select('id, email, responses, files, created_at')
@@ -280,13 +280,13 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                 </p>
                 <h2 className="font-display text-xl md:text-2xl mt-0.5" style={{ letterSpacing: '-0.01em' }}>
                   {hasPlan
-                    ? <>Upravit <span style={{ fontStyle: 'italic' }}>finanční plán</span></>
-                    : <>Vytvořit <span style={{ fontStyle: 'italic' }}>finanční plán</span> na míru</>}
+                    ? <>Upravit finanční plán</>
+                    : <>Vytvořit finanční plán na míru</>}
                 </h2>
                 <p className="text-xs md:text-sm opacity-90 mt-1.5 max-w-2xl">
                   {hasPlan
                     ? 'Přepište údaje z analýzy, doplňte varianty pojistek, nastavte krytí pro 10 typů rizik.'
-                    : 'Klient odpověděl na analýzu. Otevřete editor a postavte mu plán — vstupní data, varianty pojistky a graf života.'}
+                    : 'Klient odpověděl na analýzu. Otevřete editor a postavte mu plán – vstupní data, varianty pojistky a graf života.'}
                 </p>
               </div>
               <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1 shrink-0 hidden sm:block" />
@@ -319,7 +319,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             <dl className="space-y-2.5 text-sm">
               <div className="flex justify-between">
                 <dt className="text-[#66708C]">Věk</dt>
-                <dd className="font-medium text-[#162459]">{profile.age ?? '—'} let</dd>
+                <dd className="font-medium text-[#162459]">{profile.age ?? '–'} let</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-[#66708C]">Příjem</dt>
@@ -369,7 +369,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
               >
                 Odpovědi z{' '}
-                <span style={{ fontStyle: 'italic', color: '#009EE2' }}>analýzy</span>
+                <span style={{ color: '#009EE2' }}>analýzy</span>
               </h2>
             </div>
             {hasAnalysis && (
@@ -411,7 +411,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             </div>
           )}
 
-          {/* Dokumenty od klienta — privátní bucket, odkaz přes signed URL */}
+          {/* Dokumenty od klienta – privátní bucket, odkaz přes signed URL */}
           {analysisFiles.length > 0 && (
             <div className="mt-4 bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6">
               <h3
@@ -451,7 +451,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
               >
                 Jak klient{' '}
-                <span style={{ fontStyle: 'italic', color: '#009EE2' }}>reagoval</span>
+                <span style={{ color: '#009EE2' }}>reagoval</span>
               </h2>
             </div>
             {hasAnyReaction && (
@@ -505,7 +505,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                               {cfg.label}
                             </span>
                           ) : (
-                            <span className="text-xs text-[#66708C]/70">—</span>
+                            <span className="text-xs text-[#66708C]/70">–</span>
                           )}
                         </li>
                       )
@@ -590,7 +590,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
               >
                 Odeslané{' '}
-                <span style={{ fontStyle: 'italic', color: '#009EE2' }}>návrhy</span>
+                <span style={{ color: '#009EE2' }}>návrhy</span>
               </h2>
             </div>
             {proposals && proposals.length > 0 && (

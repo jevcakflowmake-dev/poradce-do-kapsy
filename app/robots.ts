@@ -3,7 +3,7 @@ import { absoluteUrl } from '@/lib/site'
 
 /**
  * Veřejná je jen marketingová část a přihlášení/registrace.
- * Aplikace za loginem, API a jednorázové auth odkazy do indexu nepatří —
+ * Aplikace za loginem, API a jednorázové auth odkazy do indexu nepatří –
  * roboti se tam sice nedostanou (chrání je RLS a middleware), ale ať se
  * o to ani nepokoušejí a ať se URL neobjevují ve výsledcích vyhledávání.
  */

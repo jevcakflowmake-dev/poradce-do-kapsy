@@ -101,7 +101,7 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
             className="font-display text-[#162459]"
             style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
+            Finanční <span style={{ color: '#009EE2' }}>plán</span>
           </h1>
           <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
             Spravujte varianty, parametry a doporučení pro každý finanční okruh klienta.

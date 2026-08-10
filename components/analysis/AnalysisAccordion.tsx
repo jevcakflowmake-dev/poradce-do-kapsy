@@ -37,13 +37,13 @@ interface Props {
   pendingFiles: PendingFile[]
   onPickFiles: (sectionId: string) => void
   onRemoveFile: (name: string) => void
-  /** Jen pro přihlášené — anonymní návštěvník žádné uložené přílohy nemá. */
+  /** Jen pro přihlášené – anonymní návštěvník žádné uložené přílohy nemá. */
   storedFiles?: StoredAnalysisFile[]
 }
 
 /**
  * Rozbalovací sekce finanční analýzy. Sdílí ji veřejný formulář na /analyza
- * i verze pro přihlášené na /dashboard/analyza — jinak by se obě kopie
+ * i verze pro přihlášené na /dashboard/analyza – jinak by se obě kopie
  * postupem času rozešly.
  */
 export default function AnalysisAccordion({
@@ -222,7 +222,7 @@ export default function AnalysisAccordion({
                         </div>
                       )}
 
-                      {/* Už nahrané přílohy — otevírají se přes signed URL */}
+                      {/* Už nahrané přílohy – otevírají se přes signed URL */}
                       {sectionStored.length > 0 && (
                         <div className="mt-2.5 space-y-1.5">
                           {sectionStored.map(f => (
@@ -257,7 +257,7 @@ export default function AnalysisAccordion({
 
 /**
  * Výška, váha, nemoci a úrazy jsou zvláštní kategorie osobních údajů
- * (čl. 9 GDPR) — na jejich zpracování je potřeba výslovný souhlas, ne pouhá
+ * (čl. 9 GDPR) – na jejich zpracování je potřeba výslovný souhlas, ne pouhá
  * informace. Sdělujeme ho tedy před vyplněním sekce, ne až v patičce.
  */
 function HealthDataNotice() {
@@ -269,7 +269,7 @@ function HealthDataNotice() {
           <p>
             Tahle sekce se ptá i na <strong className="font-semibold text-[#162459]">údaje o zdraví</strong>{' '}
             (výška, váha, nemoci, úrazy). Pojišťovny je vyžadují pro výpočet ceny
-            a rozsahu krytí — bez nich vám návrh životního pojištění nespočítáme.
+            a rozsahu krytí – bez nich vám návrh životního pojištění nespočítáme.
           </p>
           <p>
             Vyplněním a odesláním sekce udělujete výslovný souhlas s jejich

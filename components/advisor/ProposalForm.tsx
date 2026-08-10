@@ -96,7 +96,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
         return
       }
 
-      // Bucket je privátní — ukládáme storage CESTU, odkaz se generuje
+      // Bucket je privátní – ukládáme storage CESTU, odkaz se generuje
       // přes createSignedUrl až při zobrazení (viz ProposalCard / StoredFileLink)
       file_url = path
     }
@@ -138,7 +138,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
       setEnabledSections({})
       setSectionAmounts({})
 
-      // Notifikace přes n8n — návrh je uložen v DB, selhání webhoóku jen logujeme
+      // Notifikace přes n8n – návrh je uložen v DB, selhání webhoóku jen logujeme
       fetch('https://n8n.jevcakn8n.com/webhook/novy-navrh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -148,7 +148,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
           title: data.title,
           created_at: new Date().toISOString(),
         }),
-      }).catch(() => console.warn('[n8n] notifikace novy-navrh nedoručena — webhook nedostupný'))
+      }).catch(() => console.warn('[n8n] notifikace novy-navrh nedoručena – webhook nedostupný'))
 
       setTimeout(() => {
         setSuccess(false)
@@ -169,7 +169,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(1.25rem, 2vw, 1.5rem)', letterSpacing: '-0.01em' }}
         >
-          Odeslat <span style={{ fontStyle: 'italic', color: '#009EE2' }}>návrh</span>
+          Odeslat <span style={{ color: '#009EE2' }}>návrh</span>
         </h2>
       </div>
 

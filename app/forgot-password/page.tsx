@@ -38,11 +38,11 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthShell
-      numeral="—"
+      numeral="–"
       eyebrow="Reset hesla · klidně"
       title={sent
-        ? <>Odkaz <span style={{ fontStyle: 'italic', color: '#009EE2' }}>odeslán</span>.</>
-        : <>Nové <span style={{ fontStyle: 'italic', color: '#009EE2' }}>heslo</span> za minutu.</>
+        ? <>Odkaz <span style={{ color: '#009EE2' }}>odeslán</span>.</>
+        : <>Nové <span style={{ color: '#009EE2' }}>heslo</span> za minutu.</>
       }
       subtitle={sent
         ? 'Pokud e-mail existuje, najdete v něm odkaz pro reset hesla. Platí 60 minut.'

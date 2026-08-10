@@ -13,7 +13,7 @@ type Props = {
 export default function AuthShell({ eyebrow, numeral, title, subtitle, children, aside }: Props) {
   return (
     <div className="min-h-screen bg-[#F6F4EE] flex flex-col lg:flex-row">
-      {/* Brand panel — desktop only as side */}
+      {/* Brand panel – desktop only as side */}
       <aside
         className="relative lg:w-[44%] xl:w-[40%] overflow-hidden lg:min-h-screen bg-[#0B111F]"
       >
@@ -29,7 +29,7 @@ export default function AuthShell({ eyebrow, numeral, title, subtitle, children,
 
         <div className="relative z-10 flex flex-col justify-between h-full p-8 md:p-12 lg:p-14">
           <Link href="/" className="inline-flex items-center gap-2.5 group w-fit">
-            {/* Nový mark — papírový čtverec s azurovou tečkou (inverze landing loga) */}
+            {/* Nový mark – papírový čtverec s azurovou tečkou (inverze landing loga) */}
             <div className="w-8 h-8 bg-[#F6F4EE] flex items-end justify-end p-1.5">
               <span className="block w-1.5 h-1.5 rounded-full bg-[#009EE2]" />
             </div>
@@ -40,7 +40,7 @@ export default function AuthShell({ eyebrow, numeral, title, subtitle, children,
 
           <div className="py-12 lg:py-0">
             <div
-              className="font-display italic text-[#009EE2]/70 mb-4"
+              className="font-display text-[#009EE2]/70 mb-4"
               style={{ fontSize: 'clamp(3rem, 6vw, 5.5rem)', letterSpacing: '-0.04em', lineHeight: 0.9 }}
             >
               {numeral}

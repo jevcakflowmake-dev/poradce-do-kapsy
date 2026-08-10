@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { prefersReducedMotion } from '@/lib/motion'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -20,7 +21,7 @@ const STEPS = [
   {
     num: '02',
     title: 'Projdu to a napíšu plán',
-    desc: 'Podívám se i na smlouvy, které už máte, a u každé oblasti napíšu, jestli je v pořádku, nebo v ní máte díru — a co s tím.',
+    desc: 'Podívám se i na smlouvy, které už máte, a u každé oblasti napíšu, jestli je v pořádku, nebo v ní máte díru – a co s tím.',
     detail: 'Do 48 hodin, obvykle dřív',
   },
   {
@@ -31,14 +32,14 @@ const STEPS = [
   },
   {
     num: '04',
-    title: 'Rozhodnete se — i pro nic',
+    title: 'Rozhodnete se – i pro nic',
     desc: 'Vyberete si variantu, nebo mi napíšete, že to teď řešit nechcete. Obojí je v pořádku a nic za to neplatíte.',
     detail: 'Podepisuje se až tehdy, když sami chcete',
   },
 ]
 
 /**
- * Editorial číslovaný seznam — řádky jako položky smlouvy.
+ * Editorial číslovaný seznam – řádky jako položky smlouvy.
  * Žádné karty, žádné stíny: velký obrysový numerál, hairline mezi řádky,
  * hover přelije numerál azurem.
  */
@@ -48,6 +49,8 @@ export default function HowItWorksSection() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    if (prefersReducedMotion()) return
+
     const ctx = gsap.context(() => {
       gsap.from('.hiw-head > *', {
         y: 30,
@@ -86,9 +89,9 @@ export default function HowItWorksSection() {
               className="font-display text-[#162459]"
               style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
             >
-              Čtyři kroky —
+              Čtyři kroky –
               <br />
-              <span style={{ fontStyle: 'italic', color: '#009EE2' }}>žádné schůzky mezi nimi.</span>
+              <span style={{ color: '#009EE2' }}>žádné schůzky mezi nimi.</span>
             </h2>
           </div>
           <p className="col-span-12 md:col-span-5 text-[#66708C] text-sm md:text-base max-w-sm md:justify-self-end leading-relaxed">
@@ -103,13 +106,12 @@ export default function HowItWorksSection() {
               key={step.num}
               className="hiw-row group relative grid grid-cols-12 gap-4 md:gap-6 items-baseline py-8 md:py-10 border-b border-[#E4DFD2]"
             >
-              {/* Obrysový numerál — hover ho přelije azurem (viz .numeral-outline) */}
+              {/* Obrysový numerál – hover ho přelije azurem (viz .numeral-outline) */}
               <div
                 className="numeral-outline col-span-3 md:col-span-2 font-display"
                 style={{
                   fontSize: 'clamp(3rem, 6vw, 5.5rem)',
                   lineHeight: 0.9,
-                  fontStyle: 'italic',
                   letterSpacing: '-0.04em',
                 }}
               >

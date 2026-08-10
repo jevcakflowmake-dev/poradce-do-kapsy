@@ -11,7 +11,7 @@ export function calcHealthScore(profile: Profile): number {
   let score = 0
 
   // Analýza odeslaná (sloupec se z historických důvodů jmenuje
-  // onboarding_completed — úvodní wizard byl 7. 8. 2026 zrušen)
+  // onboarding_completed – úvodní wizard byl 7. 8. 2026 zrušen)
   if (profile.onboarding_completed) score += 20
 
   // Věk vyplněn
@@ -41,7 +41,7 @@ export function incomeLabel(income: string | null): string {
     '55k_80k': '55 000 – 80 000 Kč',
     over_80k: 'Nad 80 000 Kč',
   }
-  return income ? (map[income] ?? income) : '—'
+  return income ? (map[income] ?? income) : '–'
 }
 
 export function familyLabel(fs: string | null): string {
@@ -51,7 +51,7 @@ export function familyLabel(fs: string | null): string {
     family: 'Rodina s dětmi',
     single_parent: 'Samoživitel/ka',
   }
-  return fs ? (map[fs] ?? fs) : '—'
+  return fs ? (map[fs] ?? fs) : '–'
 }
 
 export function riskLabel(rp: string | null): string {
@@ -61,7 +61,7 @@ export function riskLabel(rp: string | null): string {
     balanced: 'Dynamický',
     aggressive: 'Agresivní',
   }
-  return rp ? (map[rp] ?? rp) : '—'
+  return rp ? (map[rp] ?? rp) : '–'
 }
 
 export function goalLabel(goal: string): string {
@@ -137,7 +137,7 @@ export const CLIENT_STATUS_META: Record<
 }
 
 export function statusLabel(s: string | null | undefined): string {
-  if (!s) return '—'
+  if (!s) return '–'
   return CLIENT_STATUS_META[s as ClientStatusValue]?.label ?? s
 }
 

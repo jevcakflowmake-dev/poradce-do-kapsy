@@ -12,7 +12,7 @@ import {
   type SectionData,
 } from '@/lib/analysis-sections'
 
-/** Rozepsaná analýza přežije zavření karty — 10 minut práce se nesmí ztratit. */
+/** Rozepsaná analýza přežije zavření karty – 10 minut práce se nesmí ztratit. */
 const DRAFT_KEY = 'pdk-analyza-draft'
 
 type Result =
@@ -51,7 +51,7 @@ export default function PublicAnalysisForm() {
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(data))
     } catch {
-      // Plný nebo zakázaný localStorage — formulář musí fungovat i tak.
+      // Plný nebo zakázaný localStorage – formulář musí fungovat i tak.
     }
   }, [data])
 
@@ -92,7 +92,7 @@ export default function PublicAnalysisForm() {
 
     const personal = data[HEALTH_SECTION_ID] ?? {}
     if (!personal.full_name?.trim() || !personal.email?.trim()) {
-      setError('Otevřete sekci „Osobní údaje“ a vyplňte alespoň jméno a e-mail — bez nich vám nemáme kam poslat návrh.')
+      setError('Otevřete sekci „Osobní údaje“ a vyplňte alespoň jméno a e-mail – bez nich vám nemáme kam poslat návrh.')
       setExpanded(prev => (prev.includes(HEALTH_SECTION_ID) ? prev : [...prev, HEALTH_SECTION_ID]))
       return
     }
@@ -116,7 +116,7 @@ export default function PublicAnalysisForm() {
         return
       }
 
-      // Koncept už není k čemu — data jsou u poradce.
+      // Koncept už není k čemu – data jsou u poradce.
       try {
         localStorage.removeItem(DRAFT_KEY)
       } catch {}
@@ -149,7 +149,7 @@ export default function PublicAnalysisForm() {
           className="hidden"
           onChange={handleFileChange}
         />
-        {/* Honeypot — skrytý před lidmi, viditelný pro jednoduché boty. */}
+        {/* Honeypot – skrytý před lidmi, viditelný pro jednoduché boty. */}
         <input
           type="text"
           name="website"
@@ -181,12 +181,12 @@ export default function PublicAnalysisForm() {
             className="font-display text-[#162459] mb-5"
             style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', letterSpacing: '-0.03em', lineHeight: 1.02 }}
           >
-            Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>analýza</span>
+            Finanční <span style={{ color: '#009EE2' }}>analýza</span>
           </h1>
 
           <p className="text-[#66708C] max-w-xl leading-relaxed">
             Sedm sekcí vypadá jako hodně, ale otevřete jen ty, které se vás
-            týkají — nemáte děti, přeskočte děti. Povinné jsou jenom jméno
+            týkají – nemáte děti, přeskočte děti. Povinné jsou jenom jméno
             a e-mail, u zbytku platí, že čím víc vyplníte, tím konkrétnější
             plán vám přijde zpátky.
           </p>
@@ -194,7 +194,7 @@ export default function PublicAnalysisForm() {
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#66708C]/85">
             <span className="flex items-center gap-2">
               <span className="w-1 h-1 rounded-full bg-[#009EE2]" aria-hidden />
-              Rozdělané se ukládá — můžete zavřít a vrátit se
+              Rozdělané se ukládá – můžete zavřít a vrátit se
             </span>
             <span className="flex items-center gap-2">
               <span className="w-1 h-1 rounded-full bg-[#009EE2]" aria-hidden />
@@ -229,17 +229,17 @@ export default function PublicAnalysisForm() {
           onRemoveFile={name => setFiles(prev => prev.filter(f => f.name !== name))}
         />
 
-        {/* Nepovinné heslo — kdo si ho zvolí, přihlásí se hned, jak plán dorazí. */}
+        {/* Nepovinné heslo – kdo si ho zvolí, přihlásí se hned, jak plán dorazí. */}
         <div className="mt-8 bg-[#FDFCF8] border border-[#E4DFD2] p-6 md:p-7">
           <h2
             className="font-display text-[#162459] mb-2"
             style={{ fontSize: '1.35rem', letterSpacing: '-0.01em' }}
           >
-            Chcete plán sledovat <span style={{ fontStyle: 'italic', color: '#009EE2' }}>online</span>?
+            Chcete plán sledovat <span style={{ color: '#009EE2' }}>online</span>?
           </h2>
           <p className="text-sm text-[#66708C] leading-relaxed mb-5">
             Nepovinné. Zvolte si heslo a hned po odeslání se budete moct přihlásit
-            do svého prostoru — uvidíte tam plán, návrhy i chat s poradcem.
+            do svého prostoru – uvidíte tam plán, návrhy i chat s poradcem.
             Když heslo nevyplníte, nic se neděje: přístup vám pošleme, jakmile
             bude plán hotový.
           </p>
@@ -337,19 +337,19 @@ function SubmittedScreen({ result }: { result: Result }) {
             className="font-display text-[#162459] mb-5"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Analýza <span style={{ fontStyle: 'italic', color: '#009EE2' }}>odeslána</span>.
+            Analýza <span style={{ color: '#009EE2' }}>odeslána</span>.
           </h1>
 
           {existing ? (
             <p className="text-[#66708C] mb-10 leading-relaxed">
               S tímhle e-mailem už u nás účet existuje, takže odpovědi zatím
-              nikam nepřepisujeme — projde je poradce a ozve se vám. Pokud jste
+              nikam nepřepisujeme – projde je poradce a ozve se vám. Pokud jste
               to vy a heslo si pamatujete, můžete se rovnou přihlásit.
             </p>
           ) : result.hasPassword ? (
             <p className="text-[#66708C] mb-10 leading-relaxed">
               Poradce připraví finanční plán na základě vašich odpovědí, obvykle
-              do 48 hodin. Účet už máte založený — přihlaste se e-mailem a heslem,
+              do 48 hodin. Účet už máte založený – přihlaste se e-mailem a heslem,
               které jste si zvolili, a plán uvidíte hned, jak bude hotový.
             </p>
           ) : (

@@ -27,7 +27,7 @@ export default async function HomePage() {
       <StatsBand />
       <LifePathSection />
       <HowItWorksSection />
-      {/* „Co dostanete“ hned za „jak to funguje“ — nejdřív proces, pak výstup */}
+      {/* „Co dostanete“ hned za „jak to funguje“ – nejdřív proces, pak výstup */}
       <DeliverableSection />
       <BenefitsSection />
       <FaqSection />
@@ -53,9 +53,22 @@ export default async function HomePage() {
               Ochrana údajů
             </Link>
           </div>
-          <span className="text-sm text-[#66708C]">
-            © 2026 Jakub Jevčák · certifikovaný poradce ProfiFP a OVB Allfinanz
-          </span>
+          <div className="flex flex-col sm:items-end gap-1.5">
+            <span className="text-sm text-[#66708C]">
+              © 2026 Jakub Jevčák · certifikovaný poradce ProfiFP a OVB Allfinanz
+            </span>
+            <span className="text-xs text-[#66708C]/70">
+              Web vytvořil{' '}
+              <a
+                href="https://www.robology.io/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link hover:text-[#162459] transition-colors"
+              >
+                &gt;robology
+              </a>
+            </span>
+          </div>
         </div>
       </footer>
     </div>

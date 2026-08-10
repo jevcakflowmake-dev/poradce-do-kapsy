@@ -192,7 +192,7 @@ export default function FinancniPlanPage() {
           className="font-display text-[#162459]"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
-          Finanční <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
+          Finanční <span style={{ color: '#009EE2' }}>plán</span>
         </h1>
         <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
           Váš osobní plán od certifikovaného poradce. Porovnejte varianty a vyberte tu, která vám sedí.
@@ -214,7 +214,7 @@ export default function FinancniPlanPage() {
             <FileText className="w-8 h-8 text-[#0079AD]" strokeWidth={1.5} />
           </div>
           <h2 className="font-display text-[#162459] mb-2" style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}>
-            Plán zatím <span style={{ fontStyle: 'italic', color: '#009EE2' }}>není</span>
+            Plán zatím <span style={{ color: '#009EE2' }}>není</span>
           </h2>
           <p className="text-[#66708C] mb-7 max-w-md mx-auto leading-relaxed">
             Nejdříve vyplňte finanční analýzu. Poradce připraví osobní plán do 48 hodin.
@@ -246,7 +246,7 @@ export default function FinancniPlanPage() {
                   className="font-display text-white"
                   style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
                 >
-                  Komplexní <span style={{ fontStyle: 'italic', color: '#009EE2' }}>plán</span>
+                  Komplexní <span style={{ color: '#009EE2' }}>plán</span>
                 </h2>
                 <p className="text-white/55 text-sm mt-2">
                   {planSections.length} oblastí · Porovnejte varianty a vyberte tu nejlepší

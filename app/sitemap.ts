@@ -3,7 +3,7 @@ import { absoluteUrl } from '@/lib/site'
 
 /**
  * Jen veřejné stránky. `lastModified` se vyhodnotí při buildu, takže se
- * datum posune s každým nasazením — pro web této velikosti to stačí.
+ * datum posune s každým nasazením – pro web této velikosti to stačí.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date()
@@ -16,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      // Hlavní vstupní bod pro nové klienty — analýzu vyplní bez registrace.
+      // Hlavní vstupní bod pro nové klienty – analýzu vyplní bez registrace.
       url: absoluteUrl('/analyza'),
       lastModified,
       changeFrequency: 'monthly',

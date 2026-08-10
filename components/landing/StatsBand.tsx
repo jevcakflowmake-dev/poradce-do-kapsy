@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { prefersReducedMotion } from '@/lib/motion'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -26,7 +27,7 @@ const STATS: Stat[] = [
 ]
 
 /**
- * Čísla jako v tiráži výroční zprávy — žádné karty, jen typografie,
+ * Čísla jako v tiráži výroční zprávy – žádné karty, jen typografie,
  * svislé hairlines mezi sloupci a counter-up při vjezdu do viewportu.
  */
 export default function StatsBand() {
@@ -37,6 +38,8 @@ export default function StatsBand() {
     if (!root) return
     const numbers = root.querySelectorAll<HTMLElement>('[data-count]')
     if (!numbers.length) return
+
+    if (prefersReducedMotion()) return
 
     const ctx = gsap.context(() => {
       numbers.forEach((el) => {
@@ -70,7 +73,7 @@ export default function StatsBand() {
     <section
       ref={ref}
       aria-label="Čísla, která mluví"
-      className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-20 md:py-28 bg-[#F6F4EE] overflow-hidden"
+      className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-24 md:py-32 bg-[#F6F4EE] overflow-hidden"
     >
       <div className="noise-paper" aria-hidden />
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -84,17 +87,17 @@ export default function StatsBand() {
             >
               Jednáte se mnou.
               <br className="hidden md:block" /> Za mnou stojí{' '}
-              <span style={{ fontStyle: 'italic', color: '#009EE2' }}>celá síť.</span>
+              <span style={{ color: '#009EE2' }}>celá síť.</span>
             </h2>
           </div>
           <p className="text-[#66708C] text-sm md:text-base max-w-sm leading-relaxed">
             Aby bylo jasno: čísla níž patří síti ProfiFP a OVB Allfinanz, ne mně
-            osobně. Znamenají ale, že vám nesjednávám smlouvy z jedné pojišťovny —
+            osobně. Znamenají ale, že vám nesjednávám smlouvy z jedné pojišťovny –
             mám přístup k nabídkám desítek partnerů a můžu je porovnat.
           </p>
         </div>
 
-        {/* Tiráž — sloupce oddělené hairline, žádné boxy */}
+        {/* Tiráž – sloupce oddělené hairline, žádné boxy */}
         <div className="grid grid-cols-1 md:grid-cols-3 border-t border-[#E4DFD2] md:divide-x md:divide-[#E4DFD2]">
           {STATS.map((s, i) => (
             <div

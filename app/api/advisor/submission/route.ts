@@ -15,8 +15,8 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
  * Rozhodnutí poradce o analýze, kterou z veřejného formuláře poslal někdo
  * s e-mailem stávajícího klienta.
  *
- *   apply   — překlopit odpovědi i přílohy ke klientovi (starší hodnoty přepíše)
- *   discard — zahodit; odeslání zůstane v tabulce jako auditní stopa
+ *   apply   – překlopit odpovědi i přílohy ke klientovi (starší hodnoty přepíše)
+ *   discard – zahodit; odeslání zůstane v tabulce jako auditní stopa
  *
  * Automaticky se to nedělá schválně: formulář s cizím e-mailem odešle kdokoliv
  * a jsou v něm zdravotní údaje.
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     const clientId = submission.matched_client_id
     if (!clientId) {
       return NextResponse.json(
-        { error: 'Odeslání nemá přiřazeného klienta — překlopit ho nelze.' },
+        { error: 'Odeslání nemá přiřazeného klienta – překlopit ho nelze.' },
         { status: 400 },
       )
     }

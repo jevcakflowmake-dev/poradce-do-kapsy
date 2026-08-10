@@ -3,7 +3,7 @@ import {
 } from 'lucide-react'
 
 /**
- * Jediná definice finanční analýzy — sdílí ji veřejný formulář na /analyza
+ * Jediná definice finanční analýzy – sdílí ji veřejný formulář na /analyza
  * i verze pro přihlášené na /dashboard/analyza. Když se tady přidá otázka,
  * objeví se na obou místech a poradce ji uvidí v detailu klienta.
  */
@@ -133,7 +133,7 @@ export const SECTIONS: Section[] = [
       { id: 'phone', label: 'Telefon', type: 'text', placeholder: '+420 777 123 456' },
       { id: 'age', label: 'Věk', type: 'number', placeholder: '35' },
       // Dřív se ptal úvodní wizard na /onboarding; ten je zrušený, ale poradce
-      // rodinný stav vidí v panelu a počítá se do skóre — proto je tady.
+      // rodinný stav vidí v panelu a počítá se do skóre – proto je tady.
       { id: 'family_status', label: 'Rodinná situace', type: 'select', options: ['Single', 'S partnerem/kou', 'Rodina s dětmi', 'Samoživitel/ka'] },
       { id: 'height', label: 'Výška (cm)', type: 'number', placeholder: '178' },
       { id: 'weight', label: 'Váha (kg)', type: 'number', placeholder: '80' },
@@ -144,7 +144,7 @@ export const SECTIONS: Section[] = [
   },
 ]
 
-/** Součet všech otázek napříč sekcemi — pro ukazatel postupu. */
+/** Součet všech otázek napříč sekcemi – pro ukazatel postupu. */
 export const TOTAL_QUESTIONS = SECTIONS.reduce((n, s) => n + s.questions.length, 0)
 
 /** Kolik procent otázek sekce je vyplněno. */

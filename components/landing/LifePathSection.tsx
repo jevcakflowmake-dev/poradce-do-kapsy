@@ -4,14 +4,13 @@ import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import MagneticButton from '@/components/motion/MagneticButton'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
 
 /**
- * SIGNATURE MOMENT — „cesta životem“
+ * SIGNATURE MOMENT – „cesta životem“
  * Jedna souvislá azurová linka se kreslí scrollem (strokeDashoffset scrub)
  * a prochází pěti životními etapami. Každá etapa = jedna oblast poradenství.
  * Desktop: serpentina kolem střední osy; mobil: přímá linka u levého okraje.
@@ -31,12 +30,12 @@ const STATIONS = [
   {
     stage: 'Etapa 03 · Domov a majetek',
     title: 'Pojištění majetku',
-    desc: 'Dům, byt, auto, odpovědnost. Pojištění nastavené podle skutečné hodnoty — ne podle tabulky pojišťovny.',
+    desc: 'Dům, byt, auto, odpovědnost. Pojištění nastavené podle skutečné hodnoty – ne podle tabulky pojišťovny.',
   },
   {
     stage: 'Etapa 04 · Rostoucí úspory',
     title: 'Investování',
-    desc: 'Peníze na účtu ztrácejí hodnotu. Pravidelné investice, které pracují za vás — srozumitelně a bez hazardu.',
+    desc: 'Peníze na účtu ztrácejí hodnotu. Pravidelné investice, které pracují za vás – srozumitelně a bez hazardu.',
   },
   {
     stage: 'Etapa 05 · Klidná renta',
@@ -45,11 +44,11 @@ const STATIONS = [
   },
 ]
 
-// Svislé pozice stanic v % výšky tracku — musí sedět s SVG path níže
+// Svislé pozice stanic v % výšky tracku – musí sedět s SVG path níže
 const STATION_TOPS = [10, 30, 50, 70, 90]
 
 // Serpentina: prochází středem (x=500) přesně v bodech stanic,
-// tečna v každé stanici je SVISLÁ — zákryt teček s linkou je pak
+// tečna v každé stanici je SVISLÁ – zákryt teček s linkou je pak
 // necitlivý na zaokrouhlení výšky tracku napříč breakpointy.
 const DESKTOP_PATH = [
   'M 500 0',
@@ -84,7 +83,7 @@ export default function LifePathSection() {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const ctx = gsap.context(() => {
-      // Kreslení linky — scrub svázaný se scrollem přes celý track
+      // Kreslení linky – scrub svázaný se scrollem přes celý track
       track.querySelectorAll<SVGPathElement>('.life-path').forEach((path) => {
         const length = path.getTotalLength()
         if (prefersReduced) {
@@ -114,7 +113,7 @@ export default function LifePathSection() {
         scrollTrigger: { trigger: section, start: 'top 75%' },
       })
 
-      // Stanice — obsah + tečka se objeví, když k nim linka dorazí
+      // Stanice – obsah + tečka se objeví, když k nim linka dorazí
       gsap.utils.toArray<HTMLElement>('.life-station').forEach((station) => {
         const dot = station.querySelector('.life-dot')
         const body = station.querySelector('.life-body')
@@ -158,7 +157,7 @@ export default function LifePathSection() {
       id="sluzby"
       className="relative bg-[#0B111F] overflow-hidden"
     >
-      {/* Inkoust nikdy plochý — zrno + azurové dechy po stranách */}
+      {/* Inkoust nikdy plochý – zrno + azurové dechy po stranách */}
       <div className="noise-overlay" aria-hidden />
       <div
         aria-hidden
@@ -182,19 +181,19 @@ export default function LifePathSection() {
             >
               Celý život
               <br />
-              <span style={{ fontStyle: 'italic', color: '#009EE2' }}>na jedné lince.</span>
+              <span style={{ color: '#009EE2' }}>na jedné lince.</span>
             </h2>
           </div>
           <p className="col-span-12 md:col-span-4 text-[#F6F4EE]/50 text-sm md:text-base leading-relaxed md:text-right md:pb-2">
-            Ne pět různých prodejců — jedna osoba, která ví, jak spolu bydlení,
+            Ne pět různých prodejců – jedna osoba, která ví, jak spolu bydlení,
             rodina, majetek i penze souvisí. Scrollujte a projděte si cestu.
           </p>
         </div>
       </div>
 
-      {/* Track s linkou — výška definuje tempo vyprávění */}
+      {/* Track s linkou – výška definuje tempo vyprávění */}
       <div ref={trackRef} className="relative z-10 h-[2150px] md:h-[2400px] max-w-7xl mx-auto">
-        {/* Podkladová „mapa“ trasy — celá cesta slabě viditelná dopředu */}
+        {/* Podkladová „mapa“ trasy – celá cesta slabě viditelná dopředu */}
         <svg
           className="hidden md:block absolute inset-0 w-full h-full"
           viewBox="0 0 1000 2000"
@@ -222,7 +221,7 @@ export default function LifePathSection() {
               className="life-station absolute inset-x-0"
               style={{ top: `${STATION_TOPS[i]}%` }}
             >
-              {/* Tečka na lince — mobil u levého okraje, desktop na střední ose */}
+              {/* Tečka na lince – mobil u levého okraje, desktop na střední ose */}
               <div className="life-dot absolute left-7 md:left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-[#F6F4EE]/30 bg-[#0B111F] flex items-center justify-center">
                 <span className="block w-1.5 h-1.5 rounded-full bg-[#009EE2]" />
               </div>
@@ -251,21 +250,19 @@ export default function LifePathSection() {
         })}
       </div>
 
-      {/* Konec cesty — CTA na ose linky */}
+      {/* Konec cesty – CTA na ose linky */}
       <div className="life-cta relative z-10 flex flex-col items-center gap-6 pb-24 md:pb-32 pt-4 px-6">
         <p className="text-[#F6F4EE]/45 text-sm">Kde na té lince právě jste?</p>
         <p className="text-[#F6F4EE]/70 text-center max-w-md leading-relaxed -mt-2">
-          Nemusíte to vědět. Od toho je analýza — vyplníte, co o sobě víte,
+          Nemusíte to vědět. Od toho je analýza – vyplníte, co o sobě víte,
           a zbytek vám dopovím já.
         </p>
-        <MagneticButton>
-          <Link
+        <Link
             href="/analyza"
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#009EE2] text-[#0B111F] font-semibold text-base hover:bg-[#1a9fdd] transition-colors"
           >
             Zjistit, kde mám díry →
           </Link>
-        </MagneticButton>
       </div>
     </section>
   )

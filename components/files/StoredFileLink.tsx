@@ -6,14 +6,14 @@ import { createClient } from '@/lib/supabase/client'
 
 type Props = {
   bucket: 'analysis' | 'proposals'
-  /** Storage cesta; starší záznamy mohou obsahovat plné http URL — ty pustíme rovnou. */
+  /** Storage cesta; starší záznamy mohou obsahovat plné http URL – ty pustíme rovnou. */
   path: string
   children: React.ReactNode
   className?: string
 }
 
 /**
- * Odkaz na soubor v privátním bucketu — signed URL se generuje až na klik,
+ * Odkaz na soubor v privátním bucketu – signed URL se generuje až na klik,
  * takže nikdy nevyprší „pod rukama“ a stránka nedělá N požadavků při načtení.
  */
 export default function StoredFileLink({ bucket, path, children, className }: Props) {

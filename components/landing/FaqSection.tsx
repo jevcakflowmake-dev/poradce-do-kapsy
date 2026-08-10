@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Minus, Plus } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { prefersReducedMotion } from '@/lib/motion'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -12,11 +13,11 @@ if (typeof window !== 'undefined') {
 
 /**
  * Námitky, na kterých to u finančního poradce v Česku padá nejčastěji.
- * Nechávat je nevyřčené konverzi nepomůže — člověk je má v hlavě tak jako tak,
+ * Nechávat je nevyřčené konverzi nepomůže – člověk je má v hlavě tak jako tak,
  * jen místo zeptání zavře kartu. První dvě otázky (provize a telefonáty) jsou
  * ty skutečné; zbytek je doplňkový.
  *
- * Odpovědi musí sedět s realitou aplikace — telefon se v analýze ptá, ale
+ * Odpovědi musí sedět s realitou aplikace – telefon se v analýze ptá, ale
  * volání si klient řídí sám, protože celý flow běží přes chat.
  */
 const FAQ = [
@@ -26,7 +27,7 @@ const FAQ = [
       <>
         Háček žádný není, ale je fér říct, jak to funguje: analýzu i plán
         dostanete zdarma a nic za ně neplatíte. Vydělávám až v momentě, kdy si
-        přes mě nějakou smlouvu sjednáte — provizi mi vyplatí pojišťovna nebo
+        přes mě nějakou smlouvu sjednáte – provizi mi vyplatí pojišťovna nebo
         banka, ne vy. Když si nesjednáte nic, prostě jsem si udělal práci
         zadarmo. Riziko nesu já, ne vy.
       </>
@@ -38,7 +39,7 @@ const FAQ = [
       <>
         Ne. Celá komunikace běží přes chat v aplikaci a odpovídám tam obvykle do
         24 hodin. Telefon v analýze chci jen proto, aby šlo něco doladit, když se
-        zasekne papírování — nebudu vám s ním volat kvůli „ověření zájmu“ ani ho
+        zasekne papírování – nebudu vám s ním volat kvůli „ověření zájmu“ ani ho
         nikomu nepředám. Když chcete zavolat vy, napište kdy a ozvu se.
       </>
     ),
@@ -48,7 +49,7 @@ const FAQ = [
     a: (
       <>
         Ne. Vyplnění analýzy vás k ničemu nezavazuje a plán, který dostanete,
-        není smlouva — je to podklad k rozhodnutí. Podepisuje se až ve chvíli,
+        není smlouva – je to podklad k rozhodnutí. Podepisuje se až ve chvíli,
         kdy si sami řeknete o konkrétní produkt. Do té doby můžete kdykoliv
         napsat, že to nechcete řešit, a tím to končí.
       </>
@@ -60,7 +61,7 @@ const FAQ = [
       <>
         Ne automaticky. Rušit fungující smlouvu jen proto, abych na nové vydělal,
         je přesně ten důvod, proč má tenhle obor pověst, jakou má. V analýze je
-        proto místo na nahrání stávajících smluv — projdu je a u každé napíšu,
+        proto místo na nahrání stávajících smluv – projdu je a u každé napíšu,
         jestli má smysl ji nechat být, upravit, nebo nahradit, a proč. Často
         vyjde, že to nejlepší, co můžete udělat, je nedělat nic.
       </>
@@ -71,7 +72,7 @@ const FAQ = [
     a: (
       <>
         Vyplnění zabere zhruba deset minut, když budete odpovídat od boku.
-        Nemusíte to ale stihnout najednou — rozepsané se ukládá ve vašem
+        Nemusíte to ale stihnout najednou – rozepsané se ukládá ve vašem
         prohlížeči, takže můžete zavřít kartu a vrátit se večer. Povinné jsou
         jen jméno a e-mail; všechno ostatní klidně přeskočte. Čím míň vyplníte,
         tím obecnější plán zpátky dostanete, ale i tak něco dostanete.
@@ -82,7 +83,7 @@ const FAQ = [
     q: 'Co uděláte s mými údaji?',
     a: (
       <>
-        Uloží se do databáze v EU, přístup k nim máte vy a já — nikdo jiný.
+        Uloží se do databáze v EU, přístup k nim máte vy a já – nikdo jiný.
         Neprodávám je a nepředávám je k marketingu. Konkrétní pojišťovně nebo
         bance jdou jen tehdy, když si vyberete produkt a řeknete mi, ať ho
         sjednám. Podrobně a bez právničiny je to popsané v{' '}
@@ -105,6 +106,8 @@ export default function FaqSection() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    if (prefersReducedMotion()) return
+
     const ctx = gsap.context(() => {
       gsap.from('.faq-head > *', {
         y: 30,
@@ -147,7 +150,7 @@ export default function FaqSection() {
             >
               To, na co se lidi
               <br />
-              <span style={{ fontStyle: 'italic', color: '#009EE2' }}>bojí zeptat.</span>
+              <span style={{ color: '#009EE2' }}>bojí zeptat.</span>
             </h2>
           </div>
           <p className="col-span-12 md:col-span-5 text-[#66708C] text-sm md:text-base leading-relaxed md:text-right md:pb-2">
@@ -171,7 +174,7 @@ export default function FaqSection() {
                   >
                     <span
                       className="font-display text-[#009EE2]/60 shrink-0 pt-1"
-                      style={{ fontSize: '0.95rem', fontStyle: 'italic' }}
+                      style={{ fontSize: '0.95rem' }}
                     >
                       0{i + 1}
                     </span>

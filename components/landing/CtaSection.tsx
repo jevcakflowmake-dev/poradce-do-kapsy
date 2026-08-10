@@ -5,7 +5,7 @@ import Link from 'next/link'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import InlineLogin from '@/components/auth/InlineLogin'
-import MagneticButton from '@/components/motion/MagneticButton'
+import { prefersReducedMotion } from '@/lib/motion'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -17,6 +17,8 @@ export default function CtaSection() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    if (prefersReducedMotion()) return
+
     const ctx = gsap.context(() => {
       gsap.from('.cta-left > *', {
         y: 40,
@@ -62,21 +64,19 @@ export default function CtaSection() {
             >
               Deset minut teď.
               <br />
-              Plán <span style={{ fontStyle: 'italic', color: '#009EE2' }}>do 48 hodin.</span>
+              Plán <span style={{ color: '#009EE2' }}>do 48 hodin.</span>
             </h2>
             <p className="text-[#F6F4EE]/55 leading-relaxed mb-8 max-w-md">
               Nejhorší, co se může stát, je že se dozvíte, že máte všechno
-              v pořádku. Nejlepší, že najdeme díru, o které jste nevěděli —
+              v pořádku. Nejlepší, že najdeme díru, o které jste nevěděli –
               dokud se do ní nepropadnete. Účet zakládat nemusíte.
             </p>
-            <MagneticButton>
-              <Link
+            <Link
                 href="/analyza"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-[#009EE2] font-semibold text-sm text-[#0B111F] hover:bg-[#1a9fdd] transition-colors"
               >
                 Chci svůj plán zdarma →
               </Link>
-            </MagneticButton>
           </div>
 
           <div className="cta-card bg-[#F6F4EE]/[0.04] backdrop-blur-md border border-[#F6F4EE]/10 p-8">

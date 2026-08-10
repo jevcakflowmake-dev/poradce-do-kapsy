@@ -7,7 +7,7 @@ export async function createClient() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!url || !key) {
-    // Env vars nejsou nastaveny — vrátíme mock klient s prázdným userem
+    // Env vars nejsou nastaveny – vrátíme mock klient s prázdným userem
     return {
       auth: {
         getUser: async () => ({ data: { user: null }, error: null }),
@@ -34,7 +34,7 @@ export async function createClient() {
             cookieStore.set(name, value, options)
           )
         } catch {
-          // Server Component — ignoruj
+          // Server Component – ignoruj
         }
       },
     },

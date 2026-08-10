@@ -50,7 +50,7 @@ export default function SectionInterestToolbar({
       return
     }
 
-    // Webhook — jen u "interested", "not_now" jde do daily digest
+    // Webhook – jen u "interested", "not_now" jde do daily digest
     if (next === 'interested') {
       notifyAdvisor({
         event: 'section_interest',

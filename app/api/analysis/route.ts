@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server'
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /**
- * Endpoint běží pod service role, takže si sám musí ohlídat, kdo na koho smí —
+ * Endpoint běží pod service role, takže si sám musí ohlídat, kdo na koho smí –
  * RLS ho neochrání. Klient jen sám sebe, poradce kohokoliv.
  *
  * Anonymní analýzu z /analyza sem neposílejte: má vlastní endpoint
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     }
 
     // Promítnout klíčová pole do profilu. Sdílíme tu samou funkci jako veřejný
-    // formulář — jinak by se přihlášená a anonymní cesta rozešly v tom, co
+    // formulář – jinak by se přihlášená a anonymní cesta rozešly v tom, co
     // poradce v panelu uvidí (rodinný stav, rizikový profil).
     await syncProfileFromResponses(supabase, clientId, responses as Responses)
 

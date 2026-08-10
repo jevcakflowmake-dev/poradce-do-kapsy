@@ -18,7 +18,7 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
   const sbRef = useRef<ReturnType<typeof createClient> | null>(null)
   const getSupabase = () => { if (!sbRef.current) sbRef.current = createClient(); return sbRef.current }
 
-  // file_url je storage cesta v privátním bucketu — signed URL řešíme
+  // file_url je storage cesta v privátním bucketu – signed URL řešíme
   // až při rozbalení karty (starší záznamy s plným http URL pustíme rovnou)
   useEffect(() => {
     if (!expanded || !proposal.file_url || fileUrl) return

@@ -3,11 +3,11 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { SITE_NAME } from '@/lib/site'
 
-export const alt = `${SITE_NAME} — finanční plán pro celý život`
+export const alt = `${SITE_NAME} – finanční plán pro celý život`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-// Paleta „inkoust a papír“ — viz app/globals.css
+// Paleta „inkoust a papír“ – viz app/globals.css
 const INK = '#0B111F'
 const NAVY = '#162459'
 const PAPER = '#F6F4EE'
@@ -18,15 +18,13 @@ const MUTED = 'rgba(246,244,238,0.55)'
  * Náhledový obrázek při sdílení odkazu (Facebook, LinkedIn, Messenger,
  * WhatsApp, Slack…). Stejný soubor obsluhuje i twitter-image.
  *
- * Satori (renderer za ImageResponse) umí jen flexbox a woff/ttf/otf —
+ * Satori (renderer za ImageResponse) umí jen flexbox a woff/ttf/otf –
  * proto lokální TTF v `assets/` místo next/font, a žádný grid ani noise
- * overlay z globals.css.
+ * overlay z globals.css. Kurzíva je na webu zakázaná, akcent nese barva.
  */
 export default async function Image() {
-  // Kurzívu načítáme jako samostatný řez — satori umělou italiku neumí.
-  const [serif, serifItalic, sans] = await Promise.all([
+  const [serif, sans] = await Promise.all([
     readFile(join(process.cwd(), 'assets/InstrumentSerif-Regular.ttf')),
-    readFile(join(process.cwd(), 'assets/InstrumentSerif-Italic.ttf')),
     readFile(join(process.cwd(), 'assets/IBMPlexSans-SemiBold.ttf')),
   ])
 
@@ -44,7 +42,7 @@ export default async function Image() {
           fontFamily: 'IBM Plex Sans',
         }}
       >
-        {/* Kicker — azurová linka + certifikace, stejně jako na hero */}
+        {/* Kicker – azurová linka + certifikace, stejně jako na hero */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
           <div style={{ width: 56, height: 2, background: AZUR }} />
           <div
@@ -59,7 +57,7 @@ export default async function Image() {
           </div>
         </div>
 
-        {/* Headline — shodný s landingem, „život.“ kurzívou v azuru */}
+        {/* Headline – shodný s landingem, „život.“ kurzívou v azuru */}
         <div
           style={{
             display: 'flex',
@@ -74,11 +72,11 @@ export default async function Image() {
           <div style={{ display: 'flex' }}>Finanční plán</div>
           <div style={{ display: 'flex' }}>
             pro celý&nbsp;
-            <span style={{ fontStyle: 'italic', color: AZUR }}>život.</span>
+            <span style={{ color: AZUR }}>život.</span>
           </div>
         </div>
 
-        {/* Patička — značka vlevo, claim vpravo */}
+        {/* Patička – značka vlevo, claim vpravo */}
         <div
           style={{
             display: 'flex',
@@ -89,7 +87,7 @@ export default async function Image() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {/* Logo — papírový čtverec s azurovou tečkou v pravém dolním rohu */}
+            {/* Logo – papírový čtverec s azurovou tečkou v pravém dolním rohu */}
             <div
               style={{
                 width: 40,
@@ -117,7 +115,6 @@ export default async function Image() {
       ...size,
       fonts: [
         { name: 'Instrument Serif', data: serif, style: 'normal', weight: 400 },
-        { name: 'Instrument Serif', data: serifItalic, style: 'italic', weight: 400 },
         { name: 'IBM Plex Sans', data: sans, style: 'normal', weight: 600 },
       ],
     }

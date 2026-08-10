@@ -43,7 +43,7 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
     e.preventDefault()
     const clean = text.trim()
     if (clean.length < 5) {
-      setError('Dotaz je moc krátký — napište alespoň pár slov.')
+      setError('Dotaz je moc krátký – napište alespoň pár slov.')
       return
     }
     setSending(true)
@@ -63,11 +63,11 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
       { onConflict: 'client_id,section' },
     )
 
-    // 2. Poslat do chatu jako zprávu — viditelné v conversationě s poradcem
+    // 2. Poslat do chatu jako zprávu – viditelné v conversationě s poradcem
     const { error: msgError } = await supabase.from('messages').insert({
       client_id: clientId,
       sender_role: 'client',
-      content: `📋 Dotaz k plánu — ${sectionLabel}\n\n${clean}`,
+      content: `📋 Dotaz k plánu – ${sectionLabel}\n\n${clean}`,
     })
 
     if (msgError) {
@@ -133,11 +133,11 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
                 className="font-display text-[#162459] mb-2"
                 style={{ fontSize: 'clamp(1.35rem, 2.5vw, 1.75rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
               >
-                Co vás <span style={{ fontStyle: 'italic', color: '#009EE2' }}>zajímá</span>?
+                Co vás <span style={{ color: '#009EE2' }}>zajímá</span>?
               </h2>
               <p className="text-sm text-[#66708C] mb-6 leading-relaxed">
                 Napište poradci, čemu u této oblasti nerozumíte nebo co byste chtěli upravit. Zpráva
-                půjde do vašeho chatu — odpověď dostanete obvykle do 24 hodin.
+                půjde do vašeho chatu – odpověď dostanete obvykle do 24 hodin.
               </p>
 
               <textarea

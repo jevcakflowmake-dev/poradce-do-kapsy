@@ -21,7 +21,7 @@ function calcAmount(v: IncomeVariant, risk: RiskDef): number {
   const raw = (v.details as Record<string, unknown> | null)?.[risk.key]
   if (typeof raw !== 'number') return 0
   if (risk.unit === 'lump') return raw
-  // daily — převedeme na měsíční ekvivalent
+  // daily – převedeme na měsíční ekvivalent
   if (risk.key === 'daily_sick_leave') {
     const karence = (v.details?.waiting_period_days ?? DEFAULT_WAITING_PERIOD_DAYS) as number
     return raw * Math.max(0, DAYS_IN_MONTH - karence)
@@ -30,7 +30,7 @@ function calcAmount(v: IncomeVariant, risk: RiskDef): number {
 }
 
 function fmtCzk(n: number, unit: 'monthly' | 'lump'): string {
-  if (n === 0) return '—'
+  if (n === 0) return '–'
   const rounded = Math.round(n).toLocaleString('cs-CZ')
   return unit === 'monthly' ? `${rounded} Kč/měs` : `${rounded} Kč`
 }
@@ -59,7 +59,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
     return () => ro.disconnect()
   }, [])
 
-  // Pro celé množinu variant max — drží konstantní Y-scale, ať klient
+  // Pro celé množinu variant max – drží konstantní Y-scale, ať klient
   // při přepnutí varianty vidí změnu pozice (a ne přepočítaný graf).
   const maxAmount = useMemo(() => {
     let m = 0
@@ -80,7 +80,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
   )
   if (visibleRisks.length === 0) return null
 
-  // Layout — vyšší kreslicí plocha, ať info panel vpravo dole nepřekrývá body.
+  // Layout – vyšší kreslicí plocha, ať info panel vpravo dole nepřekrývá body.
   const MIN_GAP_PX = 72
   const padX = 40
   const padTop = 80            // místo pro rotované labely
@@ -128,7 +128,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             {selected ? (
               <>Zvýrazněná je <strong className="text-[#162459]">{selected.company}</strong>. Ostatní jsou ztlumené pro porovnání.</>
             ) : (
-              <>Všechny varianty paralelně — vyber jednu výše a zvýrazní se.</>
+              <>Všechny varianty paralelně – vyber jednu výše a zvýrazní se.</>
             )}
           </p>
         </div>
@@ -188,7 +188,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             const isPinned = pinnedKey === risk.key
             return (
               <g key={`label-${risk.key}`}>
-                {/* invisible hover/click area — celá svislá zóna */}
+                {/* invisible hover/click area – celá svislá zóna */}
                 <rect
                   x={x - 40}
                   y={padTop - 30}
@@ -215,7 +215,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                   />
                 )}
 
-                {/* label nad osou — rotovaný */}
+                {/* label nad osou – rotovaný */}
                 <g transform={`translate(${x},${padTop - 6})`} style={{ pointerEvents: 'none' }}>
                   <text
                     textAnchor="start"
@@ -231,7 +231,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             )
           })}
 
-          {/* Per varianta: její body — bez per-bod tooltipů, info v sjednoceném panelu */}
+          {/* Per varianta: její body – bez per-bod tooltipů, info v sjednoceném panelu */}
           {variantSeries.map(({ variantIdx, color, pts }) => {
             const dim = selectedIdx >= 0 && selectedIdx !== variantIdx
             const variantOpacity = dim ? 0.35 : 1
@@ -262,7 +262,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             )
           })}
 
-          {/* Spodní markery — méně závažné / nejzávažnější */}
+          {/* Spodní markery – méně závažné / nejzávažnější */}
           <text
             x={padX}
             y={totalHeight - 18}
@@ -362,7 +362,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                         <span className="font-semibold text-[#162459] tabular-nums shrink-0">
                           {r.amount > 0
                             ? compactCzk(r.amount) + (activeRisk.unit === 'daily' ? '/měs' : '')
-                            : '—'}
+                            : '–'}
                         </span>
                       </div>
                       <div className="h-1 rounded-full bg-[#F1EEE6] overflow-hidden">
@@ -402,7 +402,7 @@ function smoothPath(pts: Array<[number, number]>): string {
 }
 
 function compactCzk(n: number): string {
-  if (n === 0) return '—'
+  if (n === 0) return '–'
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)} mil`
   if (n >= 1_000) return `${Math.round(n / 1_000)} tis`
   return `${Math.round(n)} Kč`
