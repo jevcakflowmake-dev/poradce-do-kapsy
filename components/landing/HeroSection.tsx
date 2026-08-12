@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ArrowRight, ArrowDown } from 'lucide-react'
 import { prefersReducedMotion } from '@/lib/motion'
+import HeroVideo from '@/components/landing/HeroVideo'
 
 const HEADLINE_LINE_1 = ['Finanční', 'plán']
 const HEADLINE_LINE_2 = ['pro', 'celý', 'život.']
@@ -68,6 +69,8 @@ export default function HeroSection() {
   return (
     <div ref={rootRef}>
       <header className="relative min-h-screen flex flex-col bg-[#F6F4EE] overflow-hidden">
+        {/* Ambientní podklad – pod závojem, tedy pod vším ostatním */}
+        <HeroVideo />
         {/* Zrno + azurový dech – papír nikdy není plochý */}
         <div className="hero-glow" aria-hidden />
         <div className="noise-paper" aria-hidden />

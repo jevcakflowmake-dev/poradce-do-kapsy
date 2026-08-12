@@ -106,6 +106,25 @@ body {
   z-index: 1;
 }
 
+/* Ambientní video pod hero typografií. Barevné stažení je zapečené v souboru
+   (ffmpeg), ne tady – CSS filter na přehrávaném videu stojí GPU. */
+.hero-video {
+  z-index: 0;
+}
+
+/* Povinný fallback: při omezení animací video zmizí a zůstane poster.
+   `display: none` na <video> zastaví i dekódování, ne jen pohyb. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-video {
+    display: none;
+  }
+  .hero-video-frame {
+    background-image: url('/images/hero-poster.webp');
+    background-size: cover;
+    background-position: center;
+  }
+}
+
 /* Hero headline word reveal — clip initial state, GSAP animates to visible.
    Padding + záporný margin: maska nesmí ořezávat ascendery/descendery
    při line-height < 1 (Instrument Serif má vysoké akcenty — Č, ž, í). */

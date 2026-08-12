@@ -46,6 +46,25 @@ v administracích, ke kterým Claude nemá (a nemá mít) přístup.
       si přes GET stáhl cizí analýzu včetně zdravotních údajů a přes POST ji
       přepsal. Nově klient smí jen sám sebe, poradce kohokoliv.
 
+## ⚠️ Hero video je NASAZENÉ, ale je to previz
+
+V hero sekci běží ambientní video (`public/video/hero.*`, komponenta
+`components/landing/HeroVideo.tsx`). **Poradce v něm není Jakub** – je to
+vygenerovaný placeholder z `~/Projects/pdk-promo-video`.
+
+Nasazeno na Jakubovo výslovné rozhodnutí 12. 8. 2026. Do doby, než se video
+přegeneruje s jeho fotkou, platí:
+
+- video je ambientní podklad pod textem, silně stažené závojem (nikde není
+  popsané jako „váš poradce"), ale postava je rozpoznatelná
+- **nikde k němu nepřidávat popisek, jméno ani titulek**, který by osobu
+  ve videu ztotožnil s Jakubem – tím by se z ilustrace stalo tvrzení
+
+Výměna: přegenerovat záběry 02, 03 a 05 s referencí
+`~/Projects/pdk-promo-video/assets/reference/poradce-ref.jpg`, spustit
+`build-hero.sh` a přepsat `hero.webm`, `hero.mp4`, `hero-poster.webp`.
+Kód na konkrétním souboru nezávisí.
+
 ## 🔴 Před spuštěním — nutné
 
 ### 1. SMTP pro e-maily (reset hesla, magic link) — musí udělat Jakub
