@@ -64,7 +64,6 @@ export default function BenefitsSection() {
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="benefits-head grid md:grid-cols-12 gap-8 mb-16 items-end">
           <div className="md:col-span-5">
-            <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-3">05</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Proč já · a ne pobočka banky</p>
           </div>
           <h2
@@ -86,9 +85,6 @@ Bez obleku, bez kanceláře
                 key={b.title}
                 className={`benefit-card card-hoverable group relative overflow-hidden p-7 md:p-8 border border-[#E4DFD2] bg-[#FDFCF8] hover:border-[#009EE2]/40 ${wide ? 'md:col-span-4' : 'md:col-span-2'}`}
               >
-                <div className="absolute top-5 right-6 font-mono text-[11px] text-[#66708C]/70 tracking-wider">
-                  0{i + 1}
-                </div>
                 <Icon className="w-7 h-7 mb-5 text-[#162459]" strokeWidth={1.4} />
                 <h3
                   className="font-display text-[#162459] mb-2"

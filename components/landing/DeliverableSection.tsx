@@ -22,22 +22,18 @@ if (typeof window !== 'undefined') {
  */
 const ITEMS = [
   {
-    num: '01',
     title: 'Mapu vašich děr',
     desc: 'Šest oblastí – příjem, bydlení, majetek, děti, investice, penze – a u každé barevně, jestli je v pořádku, nebo se v ní schovává problém.',
   },
   {
-    num: '02',
     title: 'Tři konkrétní varianty',
     desc: 'Ne „doporučuji pojištění“, ale tři nabídky od jmenovitých společností vedle sebe, s měsíční částkou a rozsahem krytí. Vyberete si sami.',
   },
   {
-    num: '03',
     title: 'Graf, co se stane při výpadku příjmu',
     desc: 'Uvidíte, kolik vám zbude, když onemocníte nebo se zraníte – a o kolik z toho vás pojistka dorovná. Bez toho jsou čísla jen čísla.',
   },
   {
-    num: '04',
     title: 'Poradce v aplikaci',
     desc: 'Chat, kde se doptáte na cokoliv, a všechny dokumenty na jednom místě. Žádné hledání v e-mailech půl roku zpátky.',
   },
@@ -91,7 +87,6 @@ export default function DeliverableSection() {
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="deliverable-head grid grid-cols-12 gap-6 items-end mb-14">
           <div className="col-span-12 md:col-span-8">
-            <div className="section-numeral-dark text-[3.5rem] md:text-[5rem] mb-3">04</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">
               Výstup · za deset minut vyplňování
             </p>
@@ -111,26 +106,18 @@ export default function DeliverableSection() {
         <div className="deliverable-grid grid grid-cols-1 md:grid-cols-2 border-t border-[#F6F4EE]/12">
           {ITEMS.map((item, i) => (
             <article
-              key={item.num}
+              key={item.title}
               className={`deliverable-item group relative py-8 md:py-10 border-b border-[#F6F4EE]/12 ${
                 i % 2 === 1 ? 'md:pl-12 md:border-l md:border-l-[#F6F4EE]/12' : 'md:pr-12'
               }`}
             >
-              <div className="flex items-baseline gap-4 mb-3">
-                <span
-                  className="font-display text-[#009EE2]/70"
-                  style={{ fontSize: '1.1rem' }}
-                >
-                  {item.num}
-                </span>
-                <h3
-                  className="font-display text-[#F6F4EE]"
-                  style={{ fontSize: 'clamp(1.3rem, 2.2vw, 1.75rem)', letterSpacing: '-0.015em', lineHeight: 1.15 }}
-                >
-                  {item.title}
-                </h3>
-              </div>
-              <p className="text-[#F6F4EE]/55 leading-relaxed md:pl-10 max-w-lg">
+              <h3
+                className="font-display text-[#F6F4EE] mb-3"
+                style={{ fontSize: 'clamp(1.3rem, 2.2vw, 1.75rem)', letterSpacing: '-0.015em', lineHeight: 1.15 }}
+              >
+                {item.title}
+              </h3>
+              <p className="text-[#F6F4EE]/55 leading-relaxed max-w-lg">
                 {item.desc}
               </p>
               <div className="absolute bottom-[-1px] left-0 h-px w-0 bg-[#009EE2] group-hover:w-full transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]" />

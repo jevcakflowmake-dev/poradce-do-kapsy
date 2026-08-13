@@ -99,7 +99,6 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
         <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
           {/* Header */}
           <div className="advisor-hero mb-10 md:mb-14">
-            <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-2">01</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Klienti · pipeline</p>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <h1
@@ -132,9 +131,6 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
           {/* List */}
           {clientsWithScore.length === 0 ? (
             <div className="advisor-hero bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-12 md:p-16 text-center">
-              <div className="section-numeral text-[3.5rem] mb-3" style={{ opacity: 0.15 }}>
-                00
-              </div>
               <p className="font-display text-[#162459] text-xl mb-1" style={{ letterSpacing: '-0.01em' }}>
                 {statusFilter ? 'Žádný klient v tomto stavu.' : 'Zatím žádní klienti.'}
               </p>

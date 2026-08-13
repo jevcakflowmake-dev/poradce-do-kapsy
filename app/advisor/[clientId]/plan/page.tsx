@@ -95,7 +95,6 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
         <header className="mb-10">
-          <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">04</div>
           <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Editor · plán na míru</p>
           <h1
             className="font-display text-[#162459]"

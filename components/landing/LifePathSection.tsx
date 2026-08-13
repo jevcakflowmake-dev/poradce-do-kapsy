@@ -18,27 +18,27 @@ if (typeof window !== 'undefined') {
 
 const STATIONS = [
   {
-    stage: 'Etapa 01 · Vlastní bydlení',
+    stage: 'Vlastní bydlení',
     title: 'Hypotéka',
     desc: 'První velký krok. Srovnáme nabídky bank a najdeme financování, které vás nebude dusit dalších třicet let.',
   },
   {
-    stage: 'Etapa 02 · Rodina a příjem',
+    stage: 'Rodina a příjem',
     title: 'Zajištění příjmů',
     desc: 'Když z jednoho příjmu žijí tři lidé, nesmí zmizet ze dne na den. Ochrana životní úrovně pro případ nemoci či úrazu.',
   },
   {
-    stage: 'Etapa 03 · Domov a majetek',
+    stage: 'Domov a majetek',
     title: 'Pojištění majetku',
     desc: 'Dům, byt, auto, odpovědnost. Pojištění nastavené podle skutečné hodnoty – ne podle tabulky pojišťovny.',
   },
   {
-    stage: 'Etapa 04 · Rostoucí úspory',
+    stage: 'Rostoucí úspory',
     title: 'Investování',
     desc: 'Peníze na účtu ztrácejí hodnotu. Pravidelné investice, které pracují za vás – srozumitelně a bez hazardu.',
   },
   {
-    stage: 'Etapa 05 · Klidná renta',
+    stage: 'Klidná renta',
     title: 'Příprava na penzi',
     desc: 'Důchod od státu nebude stačit. Penzijní spoření s příspěvkem státu i zaměstnavatele, dokud je čas.',
   },
@@ -171,7 +171,6 @@ export default function LifePathSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-24 md:pt-32 pb-10">
         <div className="life-head grid grid-cols-12 gap-6 items-end mb-6 md:mb-2">
           <div className="col-span-12 md:col-span-8">
-            <div className="section-numeral-dark text-[3.5rem] md:text-[5rem] mb-3">02</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">
               Oblasti · co pro vás řešíme
             </p>

@@ -56,7 +56,6 @@ export default function CtaSection() {
       <div className="relative z-10 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="cta-left">
-            <div className="section-numeral-dark text-[3.5rem] md:text-[5rem] mb-3">07</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">Začněte · zdarma, bez schůzky</p>
             <h2
               className="font-display text-[#F6F4EE] mb-5"

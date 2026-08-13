@@ -10,7 +10,8 @@ type Props = {
 
 /**
  * Sjednocený header pro všechny interní stránky.
- * - numeral (01, 02…) jako Instrument Serif, obrysový inkoust
+ * - numeral: obrysový stavový glyf (✓ hotovo, ↻ načítá, ✗ chyba).
+ *   Pořadová čísla sem nepatří – web číslování nepoužívá.
  * - eyebrow – tracking uppercase
  * - title – Instrument Serif, "jedno slovo azurem" pattern doporučený
  */

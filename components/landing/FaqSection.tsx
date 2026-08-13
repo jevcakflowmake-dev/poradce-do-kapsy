@@ -140,7 +140,6 @@ export default function FaqSection() {
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="faq-head grid grid-cols-12 gap-6 items-end mb-14">
           <div className="col-span-12 md:col-span-7">
-            <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-3">06</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">
               Otázky · na rovinu
             </p>
@@ -173,12 +172,6 @@ export default function FaqSection() {
                     className="group w-full flex items-start gap-5 py-6 md:py-7 text-left"
                   >
                     <span
-                      className="font-display text-[#009EE2]/60 shrink-0 pt-1"
-                      style={{ fontSize: '0.95rem' }}
-                    >
-                      0{i + 1}
-                    </span>
-                    <span
                       className="font-display text-[#162459] flex-1 group-hover:text-[#0079AD] transition-colors"
                       style={{ fontSize: 'clamp(1.15rem, 2vw, 1.55rem)', letterSpacing: '-0.015em', lineHeight: 1.25 }}
                     >
@@ -193,7 +186,7 @@ export default function FaqSection() {
                 <div
                   id={`faq-panel-${i}`}
                   hidden={!isOpen}
-                  className="pb-7 md:pb-8 md:pl-10 md:pr-16"
+                  className="pb-7 md:pb-8 md:pr-16"
                 >
                   <p className="text-[#66708C] leading-relaxed max-w-2xl">{item.a}</p>
                 </div>

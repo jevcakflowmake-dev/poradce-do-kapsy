@@ -96,7 +96,6 @@ export default function LoginForm() {
 
   return (
     <AuthShell
-      numeral="01"
       eyebrow="Přihlášení · klient nebo poradce"
       title={<>Vítejte <span style={{ color: '#009EE2' }}>zpět</span>.</>}
       subtitle="Přihlaste se k účtu, nebo si nechte poslat odkaz bez hesla. Bez schůzek, bez papírování."

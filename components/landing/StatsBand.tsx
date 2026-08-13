@@ -79,7 +79,6 @@ export default function StatsBand() {
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
           <div>
-            <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-3">01</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Čísla · důkaz, ne reklama</p>
             <h2
               className="font-display text-[#162459]"
@@ -106,9 +105,6 @@ export default function StatsBand() {
                 i > 0 ? 'md:pl-10' : ''
               } ${i < STATS.length - 1 ? 'md:pr-10' : ''}`}
             >
-              <span className="absolute top-6 right-0 text-[11px] text-[#66708C]/70 font-mono tracking-wider">
-                /0{i + 1}
-              </span>
               <div
                 className="font-display text-[#162459] flex items-baseline gap-1"
                 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', lineHeight: 1, letterSpacing: '-0.04em' }}

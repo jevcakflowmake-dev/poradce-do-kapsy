@@ -224,7 +224,6 @@ export default function FinancniPlanPage() {
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
-        <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">04</div>
         <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Plán · na míru vám</p>
         <h1
           className="font-display text-[#162459]"

@@ -272,7 +272,6 @@ export default function AnalyzaPage() {
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
-        <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">02</div>
         <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Analýza · o vaší situaci</p>
         <div className="flex items-start justify-between gap-4">
           <h1

@@ -88,9 +88,6 @@ export default function KlientPage() {
         <motion.p {...fadeUp(0)} className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">
           Váš prostor · vítejte zpět
         </motion.p>
-        <motion.div {...fadeUp(0.08)} className="section-numeral text-[3.5rem] md:text-[5rem] mb-2">
-          01
-        </motion.div>
         <motion.h1
           {...fadeUp(0.16)}
           className="font-display text-[#162459]"

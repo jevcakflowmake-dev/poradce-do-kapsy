@@ -244,7 +244,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
 
         {/* Hero header s jménem + status control */}
         <header>
-          <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-2">01</div>
           <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Klient · profil a aktivita</p>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <h1

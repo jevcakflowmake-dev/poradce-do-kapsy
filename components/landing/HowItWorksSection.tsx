@@ -13,25 +13,21 @@ if (typeof window !== 'undefined') {
 
 const STEPS = [
   {
-    num: '01',
     title: 'Řeknete mi, jak na tom jste',
     desc: 'Deset minut otázek o příjmu, bydlení, rodině a tom, co vás na penězích trápí. Účet zakládat nemusíte, rozdělané se ukládá.',
     detail: 'Bez registrace · Povinné jen jméno a e-mail',
   },
   {
-    num: '02',
     title: 'Projdu to a napíšu plán',
     desc: 'Podívám se i na smlouvy, které už máte, a u každé oblasti napíšu, jestli je v pořádku, nebo v ní máte díru – a co s tím.',
     detail: 'Do 48 hodin, obvykle dřív',
   },
   {
-    num: '03',
     title: 'Doptáte se na cokoliv',
     desc: 'Přímo v aplikaci, písemně, kdy se vám to hodí. Nemusíte nic chápat napoprvé a nemusíte předstírat, že rozumíte.',
     detail: 'Odpovídám obvykle do 24 hodin',
   },
   {
-    num: '04',
     title: 'Rozhodnete se – i pro nic',
     desc: 'Vyberete si variantu, nebo mi napíšete, že to teď řešit nechcete. Obojí je v pořádku a nic za to neplatíte.',
     detail: 'Podepisuje se až tehdy, když sami chcete',
@@ -39,9 +35,9 @@ const STEPS = [
 ]
 
 /**
- * Editorial číslovaný seznam – řádky jako položky smlouvy.
- * Žádné karty, žádné stíny: velký obrysový numerál, hairline mezi řádky,
- * hover přelije numerál azurem.
+ * Editorial seznam kroků – řádky jako položky smlouvy.
+ * Žádné karty, žádné stíny: jen typografie, hairline mezi řádky
+ * a azurová linka, která na hover podtrhne celý řádek.
  */
 export default function HowItWorksSection() {
   const ref = useRef<HTMLElement>(null)
@@ -83,7 +79,6 @@ export default function HowItWorksSection() {
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="hiw-head grid grid-cols-12 gap-6 items-end mb-16 md:mb-20">
           <div className="col-span-12 md:col-span-7">
-            <div className="section-numeral text-[3.5rem] md:text-[5rem] mb-3">03</div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">Proces · jak to funguje</p>
             <h2
               className="font-display text-[#162459]"
@@ -103,22 +98,11 @@ export default function HowItWorksSection() {
         <div className="hiw-rows border-t border-[#E4DFD2]">
           {STEPS.map((step, i) => (
             <article
-              key={step.num}
-              className="hiw-row group relative grid grid-cols-12 gap-4 md:gap-6 items-baseline py-8 md:py-10 border-b border-[#E4DFD2]"
+              key={step.title}
+              className="hiw-row group relative grid grid-cols-12 gap-4 md:gap-8 items-baseline py-8 md:py-10 border-b border-[#E4DFD2]"
             >
-              {/* Obrysový numerál – hover ho přelije azurem (viz .numeral-outline) */}
-              <div
-                className="numeral-outline col-span-3 md:col-span-2 font-display"
-                style={{
-                  fontSize: 'clamp(3rem, 6vw, 5.5rem)',
-                  lineHeight: 0.9,
-                  letterSpacing: '-0.04em',
-                }}
-              >
-                {step.num}
-              </div>
-
-              <div className="col-span-9 md:col-span-4">
+              {/* Bez numerálu: pořadí nese samotné pořadí řádků a hairline mezi nimi */}
+              <div className="col-span-12 md:col-span-5">
                 <h3
                   className="font-display text-[#162459]"
                   style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.9rem)', lineHeight: 1.12, letterSpacing: '-0.015em' }}
@@ -128,7 +112,7 @@ export default function HowItWorksSection() {
                 <p className="mt-2 text-xs tracking-[0.18em] uppercase text-[#66708C]/80">{step.detail}</p>
               </div>
 
-              <p className="col-span-9 col-start-4 md:col-span-5 md:col-start-8 text-[#66708C] leading-relaxed">
+              <p className="col-span-12 md:col-span-6 md:col-start-7 text-[#66708C] leading-relaxed">
                 {step.desc}
               </p>
 

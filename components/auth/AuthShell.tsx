@@ -3,7 +3,9 @@ import type { ReactNode } from 'react'
 
 type Props = {
   eyebrow: string
-  numeral: string
+  /** Stavový glyf (↻ načítá, ✗ chyba, ↗ odesláno). Volitelný — přihlášení
+   *  a registrace ho nemají, web pořadová čísla nepoužívá. */
+  numeral?: string
   title: ReactNode
   subtitle?: ReactNode
   children: ReactNode
@@ -39,12 +41,14 @@ export default function AuthShell({ eyebrow, numeral, title, subtitle, children,
           </Link>
 
           <div className="py-12 lg:py-0">
-            <div
-              className="font-display text-[#009EE2]/70 mb-4"
-              style={{ fontSize: 'clamp(3rem, 6vw, 5.5rem)', letterSpacing: '-0.04em', lineHeight: 0.9 }}
-            >
-              {numeral}
-            </div>
+            {numeral && (
+              <div
+                className="font-display text-[#009EE2]/70 mb-4"
+                style={{ fontSize: 'clamp(3rem, 6vw, 5.5rem)', letterSpacing: '-0.04em', lineHeight: 0.9 }}
+              >
+                {numeral}
+              </div>
+            )}
             <p className="text-xs tracking-[0.3em] uppercase text-[#009EE2]/70 mb-3">{eyebrow}</p>
             <h1
               className="font-display text-white mb-4"

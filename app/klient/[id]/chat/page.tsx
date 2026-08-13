@@ -24,7 +24,6 @@ export default async function KlientChatPage({ params }: { params: Promise<{ id:
       </Link>
 
       <div className="mb-6">
-        <div className="section-numeral text-[3rem] md:text-[4rem] mb-2">05</div>
         <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Chat · přímo na poradce</p>
         <h1
           className="font-display text-[#162459]"
