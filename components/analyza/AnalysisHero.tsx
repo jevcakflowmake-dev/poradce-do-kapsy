@@ -5,50 +5,69 @@ import Image from 'next/image'
  *
  * Stránka je dlouhý formulář, takže fotka nesmí ležet pod poli – pod
  * vstupy by ničila čitelnost a při scrollu rušila. Leží proto jen za
- * úvodním blokem (nadpis, popis, ukazatel postupu) a dole se rozplyne
- * do papíru, takže formulář sám začíná na čisté ploše.
+ * úvodním blokem a dole se rozplyne do papíru, takže formulář sám
+ * začíná na čisté ploše.
  *
- * Šířky nejsou zvolené od oka. Sazba sedí ve sloupci `max-w-4xl`
- * s odsazením `px-16` a odstavec je `max-w-xl`, takže jeho pravá hrana
- * leží na `(100vw − 896px)/2 + 640px`. Fotka musí začínat až za ní –
- * jinak řádky padnou na měď a šedý text (#66708C) tam měří 2,25:1
- * místo požadovaných 4,5:1 (změřeno vzorkováním pixelů pod řádky).
- * Odtud limit `šířka ≤ 50 % − 192px`, tedy zhruba 31 % při 1024px
- * a 37 % při 1440px; níž jsou hodnoty s rezervou.
+ * Umístění řídí čitelnost, ne estetika: šedý text #66708C má na papíru
+ * 4,47:1, tedy prakticky na hraně AA – za ním nesmí být vůbec nic.
+ * Odtud dvě varianty:
  *
- * Na úzkých displejích text zabírá celou šířku a žádné „vedle“ neexistuje,
- * proto tam fotka jen prosvítá jako textura za nadpisem (hustší závoj).
+ * - `responsive` (veřejná analýza): do lg pruh nad sazbou, od lg fotka
+ *   přilepená v pravém okraji vedle textového sloupce. Sloupec je tam
+ *   `max-w-4xl`, takže vpravo zbývá dost místa, kam řádky nedosáhnou.
+ * - `band` (přihlášená analýza): vždycky jen pruh nad sazbou. Tamní
+ *   sloupec je `max-w-7xl` a na 1440 px zbývá po stranách 80 px –
+ *   na fotku vedle textu tam prostor není.
  *
- * Barva je stažená už v souboru (ffmpeg: desaturace, posun k papíru), ne
- * CSS filtrem – ten by se přepočítával při každém překreslení; stejný
- * princip jako u `HeroVideo` na úvodní stránce.
+ * Každá varianta má vlastní snímek. Do úzkého pruhu přes celou šířku
+ * by se běžný záběr ořízl na proužek, proto je pro něj panoramatická
+ * verze s prázdným polem vlevo (v souboru bezešvě dotažené pozadí).
+ *
+ * Barva je stažená rovněž už v souboru (ffmpeg: desaturace, posun
+ * k papíru), ne CSS filtrem – ten by se přepočítával při každém
+ * překreslení; stejný princip jako u `HeroVideo` na úvodní stránce.
  *
  * Pořadí vrstev: fotka (z-0) → závoj (z-1) → zrno (z-1)
- * → obsah hlavičky (z-10, v PublicAnalysisForm).
+ * → obsah hlavičky (z-10 v rodiči; obal fotky má `-z-10`).
  *
  * Foto: Kamil (@kamil916) na Unsplash, licence Unsplash (volné i pro
  * komerční užití, bez povinné atribuce – uvedeno z korektnosti).
  */
+type Props = {
+  /** `band` = vždy pruh nad sazbou, `responsive` = od lg pravý okraj. */
+  variant?: 'responsive' | 'band'
+}
 
-export default function AnalysisHero() {
+export default function AnalysisHero({ variant = 'responsive' }: Props) {
+  const band = variant === 'band'
+
   return (
     <div className="absolute inset-0 overflow-hidden" aria-hidden>
-      {/* Do lg pruh přes celou šířku nad sazbou, od lg jen pravý okraj
-          vedle ní. Masky k tomu jsou v `.analysis-hero-media`. */}
-      <div className="analysis-hero-media absolute inset-y-0 right-0 w-full lg:w-[30%] xl:w-[34%]">
+      {/* Šířku i umístění řídí obal, tady už jen vyplňujeme. */}
+      <div className={`absolute inset-0 ${band ? 'analysis-hero-band' : 'analysis-hero-media'}`}>
         <Image
-          src="/images/analyza-hero.webp"
+          src={band ? '/images/analyza-hero-wide.webp' : '/images/analyza-hero.webp'}
           alt=""
           fill
           priority
-          sizes="(max-width: 1024px) 100vw, 34vw"
+          sizes={band ? '100vw' : '(max-width: 1023px) 100vw, 34vw'}
           // Mince sedí u spodní hrany snímku a nejvyšší sloupce vpravo –
           // při ořezu je musíme udržet v záběru, jinak zbude prázdný stůl.
-          className="object-cover object-bottom lg:object-right-bottom"
+          className={
+            band
+              ? 'object-cover object-bottom'
+              : 'object-cover object-bottom lg:object-right-bottom'
+          }
         />
-        {/* Fotka je podklad, ne obraz – závoj jí ubere důraz. V pruhu nad
-            sazbou na ní nic neleží, takže smí být vidět víc. */}
-        <div className="absolute inset-0 bg-[#F6F4EE]/35 lg:bg-[#F6F4EE]/55" />
+        {/* Fotka je podklad, ne obraz – závoj jí ubere důraz. V pruhu na ní
+            nic neleží, takže smí být vidět víc než v panelu vedle sazby. */}
+        <div
+          className={
+            band
+              ? 'absolute inset-0 bg-[#F6F4EE]/35'
+              : 'absolute inset-0 bg-[#F6F4EE]/35 lg:bg-[#F6F4EE]/55'
+          }
+        />
       </div>
 
       {/* Zrno jako na zbytku webu, aby fotka nepůsobila nalepeně */}

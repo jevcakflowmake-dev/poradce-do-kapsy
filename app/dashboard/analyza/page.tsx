@@ -11,6 +11,7 @@ import AnalysisAccordion, {
   type StoredAnalysisFile,
 } from '@/components/analysis/AnalysisAccordion'
 import { SECTIONS, type SectionData } from '@/lib/analysis-sections'
+import AnalysisHero from '@/components/analyza/AnalysisHero'
 
 export default function AnalyzaPage() {
   const [data, setData] = useState<Record<string, SectionData>>({})
@@ -180,7 +181,14 @@ export default function AnalyzaPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    // Fotka je tu pruhem nad sazbou, ne přilepená vpravo jako na veřejné
+    // analýze: tenhle sloupec je `max-w-7xl`, takže na 1440 px zbývá po
+    // stranách jen 80 px a karty sekcí by fotku stejně překryly.
+    <div className="relative max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-[9.5rem] md:pt-[15rem] pb-10 md:pb-14">
+      <div className="absolute inset-x-[calc(50%-50vw)] top-0 h-[8rem] md:h-[13.5rem] -z-10 pointer-events-none">
+        <AnalysisHero variant="band" />
+      </div>
+
       <input
         ref={fileRef}
         type="file"

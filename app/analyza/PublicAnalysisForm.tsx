@@ -137,16 +137,21 @@ export default function PublicAnalysisForm() {
   if (result) return <SubmittedScreen result={result} />
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE]">
+    // Bez `bg`: papír dodává `body`. Kdyby ho měl tenhle obal, překryl by
+    // fotku, která je pod obsahem (`-z-10`) – pozadí bloků se kreslí až
+    // po vrstvě záporných z-indexů.
+    <div className="min-h-screen">
       <form
         onSubmit={handleSubmit}
         // Do lg tlačí `pt` obsah pod fotku, od lg se vrací k běžnému odsazení.
         className="relative max-w-4xl mx-auto px-6 md:px-10 lg:px-16 pt-[8.5rem] lg:pt-16 pb-10 md:pb-16"
       >
         {/* Fotka je vytažená přes celou šířku okna, ne jen přes max-w-4xl sloupec.
-            Do lg je to pruh nad sazbou (výška ladí s `pt` formuláře), od lg
-            sedí v pravém okraji vedle textu a smí být vyšší. */}
-        <div className="absolute inset-x-[calc(50%-50vw)] top-0 h-[7rem] lg:h-[23rem] pointer-events-none">
+            Do lg je to pruh nad sazbou (výška ladí s `pt` formuláře); od lg se
+            přilepí do pravého horního rohu okna a zůstane při scrollu na místě.
+            `-z-10` drží fotku pod obsahem – jinak by se fixní prvek kreslil
+            přes karty sekcí. */}
+        <div className="absolute inset-x-[calc(50%-50vw)] top-0 h-[7rem] lg:fixed lg:inset-x-auto lg:right-0 lg:h-[23rem] lg:w-[30%] xl:w-[34%] -z-10 pointer-events-none">
           <AnalysisHero />
         </div>
 

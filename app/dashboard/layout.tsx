@@ -16,7 +16,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Klient'
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE]">
+    // Bez `bg`: papír dodává `body`. Neprůhledné pozadí tady by překrylo
+    // podkladovou fotku analýzy, která leží pod obsahem (`-z-10`).
+    <div className="min-h-screen">
       <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2.5">
