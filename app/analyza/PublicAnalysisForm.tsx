@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react'
 import AnalysisAccordion, { type PendingFile } from '@/components/analysis/AnalysisAccordion'
+import AnalysisHero from '@/components/analyza/AnalysisHero'
 import {
   SECTIONS,
   TOTAL_QUESTIONS,
@@ -139,8 +140,16 @@ export default function PublicAnalysisForm() {
     <div className="min-h-screen bg-[#F6F4EE]">
       <form
         onSubmit={handleSubmit}
-        className="max-w-4xl mx-auto px-6 md:px-10 lg:px-16 py-10 md:py-16"
+        // Do lg tlačí `pt` obsah pod fotku, od lg se vrací k běžnému odsazení.
+        className="relative max-w-4xl mx-auto px-6 md:px-10 lg:px-16 pt-[8.5rem] lg:pt-16 pb-10 md:pb-16"
       >
+        {/* Fotka je vytažená přes celou šířku okna, ne jen přes max-w-4xl sloupec.
+            Do lg je to pruh nad sazbou (výška ladí s `pt` formuláře), od lg
+            sedí v pravém okraji vedle textu a smí být vyšší. */}
+        <div className="absolute inset-x-[calc(50%-50vw)] top-0 h-[7rem] lg:h-[23rem] pointer-events-none">
+          <AnalysisHero />
+        </div>
+
         <input
           ref={fileRef}
           type="file"
@@ -163,7 +172,7 @@ export default function PublicAnalysisForm() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-10"
+          className="relative z-10 mb-10"
         >
           <Link
             href="/"
