@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator'
 import { createClient } from '@/lib/supabase/client'
 import { uploadAnalysisFile } from '@/lib/storage'
 import StoredFileLink from '@/components/files/StoredFileLink'
+import AnalysisHero from '@/components/analyza/AnalysisHero'
 
 interface SectionData { [key: string]: string }
 interface UploadedFile { name: string; size: number; section: string; file: File }
@@ -258,7 +259,13 @@ export default function AnalyzaPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    // Pruh nad sazbou, ne fotka vedle ní: sloupec je `max-w-7xl`, takže
+    // na 1440 px zbývá po stranách 80 px – stejně jako u klientské verze.
+    <div className="relative max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-[9.5rem] md:pt-[15rem] pb-10 md:pb-14">
+      <div className="absolute inset-x-[calc(50%-50vw)] top-0 h-[8rem] md:h-[13.5rem] -z-10 pointer-events-none">
+        <AnalysisHero variant="band" />
+      </div>
+
       <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" multiple className="hidden" onChange={handleFileChange} />
       <motion.div
         initial={{ opacity: 0, y: 24 }}
