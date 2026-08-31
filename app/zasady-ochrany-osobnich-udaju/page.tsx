@@ -10,22 +10,25 @@ export const metadata: Metadata = {
 }
 
 /**
- * ⚠️ Zbývající `[DOPLNIT]` doplnit před spuštěním – bez nich nejsou zásady
- * platné. Správcem je fyzická osoba podnikající, takže IČO i adresa sídla
- * patří z živnostenského rejstříku.
+ * Údaje správce doplněny 31. 8. 2026. IČO a sídlo ověřeny proti ARES
+ * (Jakub Jevčák, aktivní OSVČ od 30. 6. 2017) – ne opsány z paměti.
  *
- * E-mail schválně nevyplňuju za tebe: na veřejné stránce bude viditelný
- * pro kohokoliv včetně sběračů adres, takže je to tvoje rozhodnutí, jestli
- * sem dát osobní schránku, nebo si založit něco jako info@<doména>.
+ * Pozor při změnách: `email` je na veřejné stránce viditelný komukoliv včetně
+ * sběračů adres a je to kontakt, přes který subjekt údajů uplatňuje svá práva.
+ * Doména `ovbmail.cz` patří OVB, ne správci – kdyby spolupráce skončila,
+ * schránka zanikne a zásady budou odkazovat naprázdno. Pak sem dát adresu
+ * na vlastní doméně.
  */
 const SPRAVCE = {
   jmeno: 'Jakub Jevčák',
-  ico: '[DOPLNIT – IČO]',
-  adresa: '[DOPLNIT – adresa sídla]',
-  email: '[DOPLNIT – kontaktní e-mail]',
+  ico: '06241557',
+  adresa: 'Čížová 59, 398 31 Čížová',
+  email: 'jakub.jevcak@ovbmail.cz',
 } as const
 
-const UCINNOST_OD = '7. srpna 2026'
+// Datum, kdy zásady poprvé skutečně identifikovaly správce. Do 31. 8. 2026
+// byly na jeho místě zástupné texty, takže dokument nebyl úplný.
+const UCINNOST_OD = '31. srpna 2026'
 
 export default function ZasadyPage() {
   return (
