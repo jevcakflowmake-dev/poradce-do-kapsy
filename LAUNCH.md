@@ -1,6 +1,6 @@
 # Checklist před ostrým spuštěním
 
-Stav k 7. 8. 2026. Co je hotové, je odškrtnuté; zbytek jsou ruční kroky
+Stav k 31. 8. 2026. Co je hotové, je odškrtnuté; zbytek jsou ruční kroky
 v administracích, ke kterým Claude nemá (a nemá mít) přístup.
 
 ## Jak teď vypadá cesta klienta
@@ -34,7 +34,8 @@ v administracích, ke kterým Claude nemá (a nemá mít) přístup.
 - [x] PDF návrhy přes signed URL (bucket `proposals` je privátní)
 - [x] Notifikace na n8n: server awaituje + loguje selhání, klient loguje
       do konzole; zájem/dotazy jsou vždy v DB i bez n8n
-- [x] GitHub Actions keepalive proti uspání Supabase (2× denně)
+- [x] ~~GitHub Actions keepalive proti uspání Supabase~~ — smazáno 31. 8. 2026,
+      po přechodu na Supabase Pro už projekt neusíná
 - [x] Vercel auto-deploy z `main` + service role key v env
 - [x] **Veřejná analýza bez přihlášení** (7. 8. 2026) — `/analyza`, endpoint
       `/api/analyza/odeslat`, migrace 009 (`public_submissions`), rozhodování
@@ -105,18 +106,29 @@ Ověřeno 6. 8. 2026 sondou na `/auth/v1/verify` (bez posílání e-mailu):
 
 Až přibude vlastní doména, přidat sem i její varianty.
 
-### 3. Supabase Pro plán (~$25/měs)
-Free tier projekt usíná po týdnu neaktivity (stalo se 2× jen během vývoje).
-Keepalive workflow to zmírňuje, ale pro ostrý provoz s klienty je Pro nutnost
-(navíc: denní zálohy, žádné usínání, vyšší limity).
-Poznámka: po přechodu na Pro lze smazat `.github/workflows/supabase-keepalive.yml`.
+### 3. Supabase Pro plán — ✅ HOTOVO (31. 8. 2026)
+Organizace `jevcakflowmake-dev's Org` je na tarifu **pro**, projekt
+`riyxkbylqdimksbtxihr` je `ACTIVE_HEALTHY` (ověřeno reálným SQL dotazem, ne jen
+statusem z API — ten hlásí `ACTIVE` i u projektu, který se teprve probouzí).
+Projekt už neusíná, `.github/workflows/supabase-keepalive.yml` proto smazán.
 
-### 4. n8n — nahodit instanci
-`n8n.jevcakn8n.com` vrací HTTP 530 (origin down). Webhooky, které aplikace volá:
-- `POST /webhook/novy-klient` — nová registrace (jméno, e-mail, telefon)
-- `POST /webhook/klient-zajem` — zájem o sekci/variantu, dotaz k plánu
-- `POST /webhook/novy-navrh` — poradce vytvořil návrh
-Do té doby: nic se neztratí (vše je v DB), jen nechodí upozornění.
+### 4. n8n — ✅ instance běží, ale 🔴 GMAIL CREDENTIAL JE PROPADLÝ
+Instance `n8n.jevcakn8n.com` je nahozená (dřívější HTTP 530 pominul) a všechny
+tři webhooky existují a odpovídají 200:
+- `POST /webhook/novy-klient` — `ProfiFP_novy_klient_notifikace` (`7eYhQeLIRmPSNu9G`)
+- `POST /webhook/klient-zajem` — `ProfiFP_klient_zajem_notifikace` (`lBnWV2S2Pyyy6Z3f`),
+  doplněno 31. 8. 2026; do té doby cesta vůbec neexistovala a vracela 404
+- `POST /webhook/novy-navrh` — `ProfiFP_novy_navrh_notifikace` (`sDhvGCMcd5ES0Syv`)
+
+**Jenže e-mail z nich neodejde.** Sdílený n8n credential „Gmail account"
+(`5JlwUx7B7AZMc5GS`) vrací `invalid_grant` — propadlý/odvolaný refresh token.
+Ověřeno na všech třech workflow. Data se neztrácí (jsou v Supabase), ale poradce
+nedostane žádné upozornění. **Oprava: v n8n credential znovu propojit s Googlem.**
+Když se to bude opakovat po ~7 dnech, má OAuth consent screen v Google Cloudu
+stav *Testing* — přepnout na *In production*.
+
+Pozn.: `novy-klient` a `novy-navrh` existují v n8n **dvakrát** se stejnou cestou
+(vždy jeden aktivní, jeden vypnutý) — při úpravách sáhnout do toho aktivního.
 
 ## 🟡 Před předáním klientům — doporučené
 
