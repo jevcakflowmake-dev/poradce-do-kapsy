@@ -165,8 +165,14 @@ Pozn.: `novy-klient` a `novy-navrh` existují v n8n **dvakrát** se stejnou cest
       ⚠️ `ovbmail.cz` je doména OVB, ne správcova. Až bude vlastní doména,
       kontakt vyměnit — jinak po případném konci spolupráce s OVB budou
       zásady odkazovat na zaniklou schránku.
-- [ ] **Mock data**: `/dashboard/produkty` zobrazuje smyšlené platební údaje
-      (mockPayments) — před ostrým provozem skrýt nebo napojit na DB
+- [x] **Mock data** — hotovo 31. 8. 2026. `mockPayments` (vymyšlené IBANy a VS)
+      byly **na dvou místech**: `/dashboard/produkty` i v poradcově náhledu
+      `/klient/[id]/produkty`. Sekce teď ukazuje jen reálné údaje z návrhů
+      (`monthly_price` + společnost) a součet měsíčně. Číslo účtu, VS a termín
+      splatnosti aplikace nesbírá, takže se nezobrazují vůbec — kdyby je někdo
+      chtěl doplnit, potřebují vlastní tabulku a poradcovo zadání, ne výplň.
+      Logika i UI jsou nově v `lib/payments.ts` a
+      `components/products/MesicniPlatby.tsx`, aby stránky nedržely dvě kopie.
 
 ## 🧪 Ruční smoke test po nasazení (5 minut)
 
