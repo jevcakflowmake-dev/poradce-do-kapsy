@@ -2,12 +2,13 @@
 
 import { motion } from 'framer-motion'
 import StoredFileLink from '@/components/files/StoredFileLink'
-import { ArrowLeft, Shield, Clock, TrendingUp, CreditCard, Calendar, FileText, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Shield, Clock, TrendingUp, FileText, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import MesicniPlatby from '@/components/products/MesicniPlatby'
 
 interface Product {
   id: string
@@ -24,11 +25,6 @@ const typeConfig = {
   pension: { label: 'Penzijní produkty', icon: Clock, gradient: 'from-[#009EE2] to-[#0079AD]' },
   invest: { label: 'Investice', icon: TrendingUp, gradient: 'from-[#162459] to-[#009EE2]' },
 }
-
-const mockPayments = [
-  { product: 'Životní pojištění Premium', amount: '1 250 Kč', frequency: 'měsíčně', nextDate: '15. 5. 2026', account: 'CZ65 0800 0000 0019 2000 0010', vs: '1234567890' },
-  { product: 'Doplňkové penzijní spoření', amount: '1 500 Kč', frequency: 'měsíčně', nextDate: '1. 5. 2026', account: 'CZ77 0300 0000 0000 1234 5678', vs: '9876543210' },
-]
 
 export default function ProduktyPage() {
   const { id } = useParams<{ id: string }>()
@@ -152,61 +148,7 @@ export default function ProduktyPage() {
 
       <Separator className="my-10 bg-[#E4DFD2]" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
-      >
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-none bg-[#162459] flex items-center justify-center">
-            <CreditCard className="w-5 h-5 text-white" strokeWidth={1.8} />
-          </div>
-          <h2 className="font-display text-[#162459]" style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}>
-            Platební <span style={{ color: '#009EE2' }}>informace</span>
-          </h2>
-        </div>
-        <div className="space-y-3">
-          {mockPayments.map((payment, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 + idx * 0.08 }}
-              className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.08)] transition-all"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-display text-[#162459]" style={{ fontSize: '1rem', letterSpacing: '-0.01em' }}>
-                  {payment.product}
-                </h3>
-                <span className="font-display text-[#0079AD] tabular-nums" style={{ fontSize: '1.15rem' }}>
-                  {payment.amount}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#66708C] block mb-0.5">Frekvence</span>
-                  <span className="text-[#162459] font-medium">{payment.frequency}</span>
-                </div>
-                <div>
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#66708C] block mb-0.5">Další platba</span>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#66708C]" />
-                    <span className="text-[#162459] font-medium">{payment.nextDate}</span>
-                  </div>
-                </div>
-                <div className="col-span-2">
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[#66708C] block mb-0.5">Číslo účtu</span>
-                  <span className="text-[#162459] font-mono text-xs">{payment.account}</span>
-                </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-[#E4DFD2]">
-                <span className="text-[11px] tracking-[0.15em] uppercase text-[#66708C]">VS · </span>
-                <span className="text-[#162459] font-mono text-xs">{payment.vs}</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+      <MesicniPlatby navrhy={products} pohled="poradce" />
     </div>
   )
 }
