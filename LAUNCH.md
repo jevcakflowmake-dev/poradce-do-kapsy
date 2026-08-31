@@ -112,7 +112,7 @@ Organizace `jevcakflowmake-dev's Org` je na tarifu **pro**, projekt
 statusem z API — ten hlásí `ACTIVE` i u projektu, který se teprve probouzí).
 Projekt už neusíná, `.github/workflows/supabase-keepalive.yml` proto smazán.
 
-### 4. n8n — ✅ instance běží, ale 🔴 GMAIL CREDENTIAL JE PROPADLÝ
+### 4. n8n — ✅ HOTOVO (31. 8. 2026)
 Instance `n8n.jevcakn8n.com` je nahozená (dřívější HTTP 530 pominul) a všechny
 tři webhooky existují a odpovídají 200:
 - `POST /webhook/novy-klient` — `ProfiFP_novy_klient_notifikace` (`7eYhQeLIRmPSNu9G`)
@@ -120,12 +120,16 @@ tři webhooky existují a odpovídají 200:
   doplněno 31. 8. 2026; do té doby cesta vůbec neexistovala a vracela 404
 - `POST /webhook/novy-navrh` — `ProfiFP_novy_navrh_notifikace` (`sDhvGCMcd5ES0Syv`)
 
-**Jenže e-mail z nich neodejde.** Sdílený n8n credential „Gmail account"
-(`5JlwUx7B7AZMc5GS`) vrací `invalid_grant` — propadlý/odvolaný refresh token.
-Ověřeno na všech třech workflow. Data se neztrácí (jsou v Supabase), ale poradce
-nedostane žádné upozornění. **Oprava: v n8n credential znovu propojit s Googlem.**
-Když se to bude opakovat po ~7 dnech, má OAuth consent screen v Google Cloudu
-stav *Testing* — přepnout na *In production*.
+E-maily reálně odcházejí — ověřeno 31. 8. 2026 testovacím requestem na každý
+ze tří webhooků; Gmail u všech vrátil ID zprávy se štítkem `SENT`. Pozor při
+budoucích kontrolách: **webhook vrací 200 dřív, než se e-mail odešle** (uzel
+`Respond OK` běží paralelně), takže samotné HTTP 200 o doručení nic neříká —
+kouknout do execution history na výstup uzlu `Email poradci`.
+
+Historie: sdílený credential „Gmail account" (`5JlwUx7B7AZMc5GS`) byl do 31. 8.
+propadlý (`invalid_grant`) a notifikace tiše nechodily ze všech tří workflow.
+Kdyby se to opakovalo po ~7 dnech, má OAuth consent screen v Google Cloudu stav
+*Testing* — ten ruší refresh tokeny týdně, řeší se přepnutím na *In production*.
 
 Pozn.: `novy-klient` a `novy-navrh` existují v n8n **dvakrát** se stejnou cestou
 (vždy jeden aktivní, jeden vypnutý) — při úpravách sáhnout do toho aktivního.
