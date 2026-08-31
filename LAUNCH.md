@@ -151,11 +151,15 @@ Pozn.: `novy-klient` a `novy-navrh` existují v n8n **dvakrát** se stejnou cest
       odkaz v patičce, v registraci a v analýze. Zdravotní údaje z analýzy jsou
       řešené jako zvláštní kategorie (čl. 9 GDPR) s výslovným souhlasem před
       vyplněním sekce. Cookies lišta není potřeba (žádná analytika).
-      🔴 **Musí doplnit Jakub**: v `app/zasady-ochrany-osobnich-udaju/page.tsx`
-      je konstanta `SPRAVCE` se čtyřmi `[DOPLNIT]` — jméno, IČO, adresa sídla
-      a kontaktní e-mail. Bez nich zásady nejsou platné. Text je návrh, ne
-      právní posudek — doporučuji ho nechat proběhnout právníkem, hlavně
-      lhůty archivace a odkazy na zákon o distribuci pojištění.
+      ✅ **Údaje správce doplněny 31. 8. 2026**: Jakub Jevčák, IČO `06241557`,
+      Čížová 59, 398 31 Čížová, kontakt `jakub.jevcak@ovbmail.cz`. IČO a sídlo
+      ověřeny proti ARES. Účinnost zásad posunuta na 31. 8. 2026 (do té doby
+      dokument neidentifikoval správce). Text je pořád návrh, ne právní
+      posudek — doporučuji ho nechat proběhnout právníkem, hlavně lhůty
+      archivace a odkazy na zákon o distribuci pojištění.
+      ⚠️ `ovbmail.cz` je doména OVB, ne správcova. Až bude vlastní doména,
+      kontakt vyměnit — jinak po případném konci spolupráce s OVB budou
+      zásady odkazovat na zaniklou schránku.
 - [ ] **Mock data**: `/dashboard/produkty` zobrazuje smyšlené platební údaje
       (mockPayments) — před ostrým provozem skrýt nebo napojit na DB
 
