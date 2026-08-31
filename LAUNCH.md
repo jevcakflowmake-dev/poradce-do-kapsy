@@ -139,9 +139,14 @@ Pozn.: `novy-klient` a `novy-navrh` existují v n8n **dvakrát** se stejnou cest
 - [ ] **Doména** — koupit + přidat ve Vercelu, poté aktualizovat bod 2
 - [ ] **Čísla na landingu** (69 000+ klientů, od 2003, 500+ poradců) jsou čísla
       sítě ProfiFP/OVB — ověřit, že je lze takto prezentovat
-- [ ] **Smazat testovací účty** v Supabase (Authentication → Users):
-      `test123@test.cz`, příp. staré testy `kuba.jevcak@gmail.com`,
-      `jakub.jevcak@ovbmail.cz`
+- [x] **Smazat testovací účty** — hotovo 31. 8. 2026. Odstraněny
+      `test123@test.cz`, `kuba.jevcak@gmail.com` a `jakub.jevcak@ovbmail.cz`
+      včetně navázaných dat (1 návrh, 2 varianty plánu, 16 odpovědí analýzy,
+      1 finanční přehled). V `auth.users` zůstal jediný účet — poradcův
+      `jevcak.flowmake@gmail.com` (role `advisor`); všechny klientské tabulky
+      i storage jsou prázdné, databáze je připravená na prvního reálného
+      klienta. Pozor: `jakub.jevcak@ovbmail.cz` je nadále kontakt správce
+      v zásadách ochrany osobních údajů — smazal se testovací *účet*, ne adresa.
 - [x] **SEO** — hotovo 7. 8. 2026: `app/robots.ts`, `app/sitemap.ts`,
       `metadataBase` + OG/Twitter metadata v `app/layout.tsx` a OG obrázek
       (`app/opengraph-image.tsx`, prerenderuje se při buildu z fontů
