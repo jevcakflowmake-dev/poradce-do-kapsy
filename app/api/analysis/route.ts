@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
-import { syncProfileFromResponses, type Responses } from '@/lib/submissions'
+import { applyResponses, syncProfileFromResponses, type Responses } from '@/lib/submissions'
 import { NextResponse } from 'next/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -47,15 +47,15 @@ export async function POST(request: Request) {
 
     const supabase = createAdminClient()
 
-    // Upsert all responses
-    for (const [sectionId, questions] of Object.entries(responses as Record<string, Record<string, string>>)) {
-      for (const [questionId, value] of Object.entries(questions)) {
-        if (!value) continue
-        await (supabase.from('analysis_responses') as any).upsert(
-          { client_id: clientId, section: sectionId, question_id: questionId, value, updated_at: new Date().toISOString() },
-          { onConflict: 'client_id,section,question_id' }
-        )
-      }
+    // Stejná funkce jako u veřejného formuláře: jeden upsert a hlavně kontrola
+    // chyby. Dřív se výsledek každého dotazu zahazoval, takže při selhání
+    // endpoint vrátil úspěch a autosave v UI hlásil „Uloženo“, i když
+    // v databázi nic nebylo.
+    try {
+      await applyResponses(supabase, clientId, responses as Responses)
+    } catch (err) {
+      console.error('[analysis]', err instanceof Error ? err.message : err)
+      return NextResponse.json({ error: 'Odpovědi se nepodařilo uložit.' }, { status: 500 })
     }
 
     // Promítnout klíčová pole do profilu. Sdílíme tu samou funkci jako veřejný
