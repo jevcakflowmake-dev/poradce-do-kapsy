@@ -83,7 +83,7 @@ export default function HeroSection() {
               : 'bg-transparent border-b border-transparent'
           }`}
         >
-          <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-4 flex items-center justify-between">
+          <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               {/* Logo – inkoustový čtverec s azurovou tečkou, žádná ikona ze setu */}
               <div className="w-8 h-8 bg-[#162459] flex items-end justify-end p-1.5">

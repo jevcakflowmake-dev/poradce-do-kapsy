@@ -235,7 +235,7 @@ export default function LifePathSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-24 md:pt-32 pb-10">
+      <div className="relative z-10 max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-24 md:pt-32 pb-10">
         <div className="life-head grid grid-cols-12 gap-6 items-end mb-6 md:mb-2">
           <div className="col-span-12 md:col-span-8">
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">

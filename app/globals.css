@@ -44,6 +44,11 @@
   /* Hlavní kontejner webu. Výchozí 7xl (80rem) nechával na velkých
      monitorech po stranách ~400 px prázdné plochy – obsah jde víc do stran. */
   --container-8xl: 100rem;
+
+  /* Kontejnery s paddingem přímo na sobě (hlavičky, stránky aplikace):
+     100rem obsahu + 2 × 5rem odsazení (xl:px-20). Jejich obsah tak lícuje
+     se sekcemi, kde padding nese obal a uvnitř je čisté max-w-8xl. */
+  --container-shell: 110rem;
 }
 
 body {

@@ -112,7 +112,7 @@ const fadeUp = (delay: number) => ({
 
 export default function ClientHome({ firstName }: { firstName: string }) {
   return (
-    <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
       {/* Header */}
       <div className="mb-10 md:mb-14">
         <motion.p

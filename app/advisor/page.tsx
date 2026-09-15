@@ -96,7 +96,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
       </nav>
 
       <AdvisorListReveal>
-        <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
+        <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
           {/* Header */}
           <div className="advisor-hero mb-10 md:mb-14">
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Klienti · pipeline</p>
