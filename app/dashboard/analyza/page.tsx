@@ -182,9 +182,9 @@ export default function AnalyzaPage() {
 
   return (
     // Fotka je tu pruhem nad sazbou, ne přilepená vpravo jako na veřejné
-    // analýze: tenhle sloupec je `max-w-7xl`, takže na 1440 px zbývá po
-    // stranách jen 80 px a karty sekcí by fotku stejně překryly.
-    <div className="relative max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-[9.5rem] md:pt-[15rem] pb-10 md:pb-14">
+    // analýze: tenhle sloupec je `max-w-8xl` (1 600 px), takže na běžných
+    // obrazovkách vyplní celou šířku a karty sekcí by fotku stejně překryly.
+    <div className="relative max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-[9.5rem] md:pt-[15rem] pb-10 md:pb-14">
       <div className="absolute inset-x-[calc(50%-50vw)] top-0 h-[8rem] md:h-[13.5rem] -z-10 pointer-events-none">
         <AnalysisHero variant="band" />
       </div>

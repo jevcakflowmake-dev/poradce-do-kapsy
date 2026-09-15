@@ -37,7 +37,7 @@ export default async function HomePage() {
       {/* pb-24 na mobilu: sticky lišta nesmí překrýt patičku */}
       <footer className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-12 pb-28 md:pb-12 border-t border-[#E4DFD2] bg-[#F6F4EE] overflow-hidden">
         <div className="noise-paper" aria-hidden />
-        <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div className="relative z-10 max-w-8xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 bg-[#162459] flex items-end justify-end p-1.5">
               <span className="block w-1 h-1 rounded-full bg-[#009EE2]" />

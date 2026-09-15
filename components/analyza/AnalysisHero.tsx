@@ -16,8 +16,8 @@ import Image from 'next/image'
  *   přilepená v pravém okraji vedle textového sloupce. Sloupec je tam
  *   `max-w-4xl`, takže vpravo zbývá dost místa, kam řádky nedosáhnou.
  * - `band` (přihlášená analýza): vždycky jen pruh nad sazbou. Tamní
- *   sloupec je `max-w-7xl` a na 1440 px zbývá po stranách 80 px –
- *   na fotku vedle textu tam prostor není.
+ *   sloupec je `max-w-8xl` (1 600 px), takže na běžných obrazovkách
+ *   vyplní celou šířku a na fotku vedle textu tam prostor není.
  *
  * Každá varianta má vlastní snímek. Do úzkého pruhu přes celou šířku
  * by se běžný záběr ořízl na proužek, proto je pro něj panoramatická

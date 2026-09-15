@@ -83,7 +83,7 @@ export default function HeroSection() {
               : 'bg-transparent border-b border-transparent'
           }`}
         >
-          <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-4 flex items-center justify-between">
+          <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               {/* Logo – inkoustový čtverec s azurovou tečkou, žádná ikona ze setu */}
               <div className="w-8 h-8 bg-[#162459] flex items-end justify-end p-1.5">
@@ -118,7 +118,7 @@ export default function HeroSection() {
 
         {/* Hero – asymetrická kompozice: copy vlevo, marginálie vpravo */}
         <div className="relative z-10 flex-1 flex items-center pt-28 pb-10 md:pt-32 md:pb-12 px-6 md:px-10 lg:px-16 xl:px-20 w-full">
-          <div className="max-w-7xl mx-auto w-full grid grid-cols-12 gap-6 items-end">
+          <div className="max-w-8xl mx-auto w-full grid grid-cols-12 gap-6 items-end">
             <div className="col-span-12 lg:col-span-9">
               <p className="hero-kicker flex flex-wrap items-center gap-x-3 gap-y-1 text-xs tracking-[0.3em] uppercase text-[#66708C] mb-6">
                 <span className="inline-block w-10 h-px bg-[#009EE2]" />

@@ -137,7 +137,7 @@ export default function FaqSection() {
     >
       <div className="noise-paper" aria-hidden />
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="relative z-10 max-w-8xl mx-auto">
         <div className="faq-head grid grid-cols-12 gap-6 items-end mb-14">
           <div className="col-span-12 md:col-span-7">
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">

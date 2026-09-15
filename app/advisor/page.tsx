@@ -79,7 +79,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     <div className="min-h-screen bg-[#F6F4EE]">
       {/* Navbar */}
       <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-8xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-none bg-[#162459] flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
@@ -96,7 +96,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
       </nav>
 
       <AdvisorListReveal>
-        <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
+        <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
           {/* Header */}
           <div className="advisor-hero mb-10 md:mb-14">
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Klienti · pipeline</p>

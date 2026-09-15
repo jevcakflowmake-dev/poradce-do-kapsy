@@ -53,7 +53,7 @@ export default function CtaSection() {
         style={{ background: 'radial-gradient(600px circle at 80% 20%, rgba(0,158,226,0.12), transparent 55%)' }}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="relative z-10 max-w-8xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="cta-left">
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-3">Začněte · zdarma, bez schůzky</p>

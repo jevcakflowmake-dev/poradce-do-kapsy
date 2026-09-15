@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     // podkladovou fotku analýzy, která leží pod obsahem (`-z-10`).
     <div className="min-h-screen">
       <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-8xl mx-auto flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-[#162459] flex items-end justify-end p-1.5">
               <span className="block w-1.5 h-1.5 rounded-full bg-[#009EE2]" />

@@ -76,7 +76,7 @@ export default function StatsBand() {
       className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-24 md:py-32 bg-[#F6F4EE] overflow-hidden"
     >
       <div className="noise-paper" aria-hidden />
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="relative z-10 max-w-8xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
           <div>
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Čísla · důkaz, ne reklama</p>

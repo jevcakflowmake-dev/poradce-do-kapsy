@@ -40,6 +40,10 @@
 
   --font-sans: var(--font-body);
   --font-serif: var(--font-display);
+
+  /* Hlavní kontejner webu. Výchozí 7xl (80rem) nechával na velkých
+     monitorech po stranách ~400 px prázdné plochy – obsah jde víc do stran. */
+  --container-8xl: 100rem;
 }
 
 body {

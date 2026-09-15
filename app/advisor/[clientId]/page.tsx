@@ -197,7 +197,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
     <div className="min-h-screen bg-[#F6F4EE]">
       {/* Navbar */}
       <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto flex items-center gap-3">
+        <div className="max-w-8xl mx-auto flex items-center gap-3">
           <Link
             href="/advisor"
             className="inline-flex items-center gap-2 text-[#66708C] hover:text-[#162459] transition-colors text-sm font-medium"
@@ -231,7 +231,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14 space-y-10">
+      <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14 space-y-10">
         {pendingSubmission && (
           <PendingSubmission
             submissionId={pendingSubmission.id}

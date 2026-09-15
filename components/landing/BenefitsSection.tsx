@@ -61,7 +61,7 @@ export default function BenefitsSection() {
   return (
     <section ref={ref} className="relative px-6 md:px-10 lg:px-16 xl:px-20 py-24 md:py-32 bg-[#EFEBE0] overflow-hidden">
       <div className="noise-paper" aria-hidden />
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="relative z-10 max-w-8xl mx-auto">
         <div className="benefits-head grid md:grid-cols-12 gap-8 mb-16 items-end">
           <div className="md:col-span-5">
             <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Proč já · a ne pobočka banky</p>
