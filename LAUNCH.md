@@ -46,6 +46,16 @@ v administracích, ke kterým Claude nemá (a nemá mít) přístup.
       service role a neměl žádnou kontrolu přihlášení: kdokoli, kdo uhodl UUID,
       si přes GET stáhl cizí analýzu včetně zdravotních údajů a přes POST ji
       přepsal. Nově klient smí jen sám sebe, poradce kohokoliv.
+- [x] **Reakce klienta na plán** (16. 9. 2026) — migrace 007
+      (`plan_section_interest`, `plan_variant_selection`) je konečně v ostré
+      databázi. Do té doby tam obě tabulky **vůbec nebyly**: klient klikl „Mám
+      zájem“ nebo vybral variantu, zápis tiše spadl a poradce viděl napořád
+      „Klient zatím na plán nereagoval“. Ověřeno end-to-end proti produkci —
+      RLS (cizí `client_id` zamítnut, nepřihlášený nevidí nic), upsert při
+      opakovaném kliku, trigger na `updated_at`, odznačení varianty i zobrazení
+      štítků a preferované varianty v panelu poradce. Pozor do budoucna:
+      soubory v `supabase/migrations/` nejsou důkaz, že migrace v produkci
+      proběhla — ověřovat `to_regclass`, ne přítomnost souboru.
 
 ## ⚠️ Hero video je NASAZENÉ, ale je to previz
 
