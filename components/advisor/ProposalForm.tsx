@@ -110,7 +110,9 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
 
       const insuranceData = {
         sections,
-        company: selectedCompany || null,
+        // Ukládáme název, ne id z výběru – klient by jinak v produktech
+        // viděl „kooperativa“ místo „Kooperativa“.
+        company: company?.name || null,
         logo: company?.emoji || null,
         monthly_price: Number(monthlyPrice) || 0,
         description: data.content || null,
