@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import { notFound } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { notFound, redirect } from 'next/navigation'
 import type { Profile } from '@/lib/types/database'
 
 export const dynamic = 'force-dynamic'
@@ -12,6 +13,15 @@ export default async function KlientLayout({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+
+  // Náhled klientova portálu je nástroj poradce a profil pod ním čte service
+  // role klient, který obchází RLS. Bez téhle kontroly stačilo znát UUID z URL
+  // a stránka se otevřela komukoliv i bez přihlášení, včetně jména klienta.
+  const auth = await createClient()
+  const { data: { user } } = await auth.auth.getUser()
+  if (!user) redirect('/login')
+  if (user.user_metadata?.role !== 'advisor' && user.id !== id) redirect('/dashboard')
+
   const supabase = createAdminClient()
   const { data } = await supabase.from('profiles').select('*').eq('id', id).single()
   if (!data) notFound()
