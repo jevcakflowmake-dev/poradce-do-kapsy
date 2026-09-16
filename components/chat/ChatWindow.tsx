@@ -26,11 +26,14 @@ export default function ChatWindow({
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [loading, setLoading] = useState(true)
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
   const supabase = useMemo(() => createClient(), [])
 
+  // Posouváme jen seznam zpráv. scrollIntoView by rolovalo i všechny předky,
+  // tedy celou stránku a kartu s overflow-hidden, které pak uřízne hlavičku.
   const scrollToBottom = useCallback(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const list = listRef.current
+    if (list) list.scrollTo({ top: list.scrollHeight, behavior: 'smooth' })
   }, [])
 
   // Načti zprávy
@@ -120,9 +123,11 @@ export default function ChatWindow({
     )
   }
 
+  // min-h-0: flex položka jinak nesmí být nižší než svůj obsah. U delší
+  // konverzace na nízké obrazovce by chat přetekl kartu o výšku její hlavičky.
   return (
-    <div className="flex flex-col h-full bg-[#F6F4EE]">
-      <div className="flex-1 overflow-y-auto p-5 space-y-3 min-h-0">
+    <div className="flex flex-col h-full min-h-0 bg-[#F6F4EE]">
+      <div ref={listRef} className="flex-1 overflow-y-auto p-5 space-y-3 min-h-0">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="w-14 h-14 rounded-2xl bg-[#009EE2]/10 border border-[#009EE2]/25 flex items-center justify-center mb-4">
@@ -165,8 +170,9 @@ export default function ChatWindow({
                     P
                   </div>
                 )}
+                {/* Strop šířky: na kontejneru 1 600 px by 75 % dalo řádky přes 1 000 px */}
                 <div
-                  className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${
+                  className={`max-w-[min(75%,40rem)] px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${
                     isMe
                       ? 'rounded-br-sm text-white shadow-sm'
                       : 'rounded-bl-sm bg-[#FDFCF8] border border-[#E4DFD2] text-[#162459]'
@@ -184,7 +190,6 @@ export default function ChatWindow({
             </div>
           )
         })}
-        <div ref={bottomRef} />
       </div>
 
       <div className="border-t border-[#E4DFD2] p-4 bg-[#FDFCF8]">

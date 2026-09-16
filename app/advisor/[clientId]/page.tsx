@@ -2,7 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { calcHealthScore, incomeLabel, familyLabel, riskLabel, goalLabel, proposalTypeLabel, formatDate } from '@/lib/utils'
+import { calcHealthScore, incomeLabel, familyLabel, riskLabel, goalLabel, proposalTypeLabel, formatDate, plural } from '@/lib/utils'
 import type { Profile, Proposal } from '@/lib/types/database'
 import ProposalForm from '@/components/advisor/ProposalForm'
 import StatusControl from '@/components/advisor/StatusControl'
@@ -87,10 +87,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   const clientHasPassword = (appliedRaw?.length ?? 0) > 0
 
   // Existuje už nějaký plán pro klienta?
-  const { data: planVariantsCount } = await (supabase.from('plan_variants') as any)
+  // S head: true dotaz nevrací řádky – počet je v `count` vedle `data`, ne uvnitř.
+  const { count: planVariantsCount } = await (supabase.from('plan_variants') as any)
     .select('id', { count: 'exact', head: true })
     .eq('client_id', clientId)
-  const hasPlan = ((planVariantsCount as { count?: number } | null)?.count ?? 0) > 0
+  const hasPlan = (planVariantsCount ?? 0) > 0
 
   // Reakce klienta na finanční plán
   const [{ data: interestRaw }, { data: selRaw }] = await Promise.all([
@@ -362,7 +363,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         <section>
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">02 · analýza</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">analýza</p>
               <h2
                 className="font-display text-[#162459]"
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
@@ -373,7 +374,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             </div>
             {hasAnalysis && (
               <span className="text-sm text-[#66708C]">
-                {Object.keys(analysisResponses).length} sekcí vyplněno
+                {Object.keys(analysisResponses).length}{' '}
+                {plural(Object.keys(analysisResponses).length, 'sekce vyplněna', 'sekce vyplněny', 'sekcí vyplněno')}
               </span>
             )}
           </div>
@@ -444,7 +446,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         <section>
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">03 · reakce na plán</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">reakce na plán</p>
               <h2
                 className="font-display text-[#162459]"
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
@@ -583,7 +585,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         <section>
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">04 · aktivita</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">aktivita</p>
               <h2
                 className="font-display text-[#162459]"
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
@@ -593,7 +595,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               </h2>
             </div>
             {proposals && proposals.length > 0 && (
-              <span className="text-sm text-[#66708C]">{proposals.length} záznamů</span>
+              <span className="text-sm text-[#66708C]">
+                {proposals.length} {plural(proposals.length, 'záznam', 'záznamy', 'záznamů')}
+              </span>
             )}
           </div>
 

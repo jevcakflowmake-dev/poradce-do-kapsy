@@ -91,6 +91,13 @@ export function formatDate(dateStr: string): string {
   }).format(new Date(dateStr))
 }
 
+// Tvar podle počtu: plural(n, 'klient', 'klienti', 'klientů')
+export function plural(n: number, one: string, few: string, many: string): string {
+  if (n === 1) return one
+  if (n >= 2 && n <= 4) return few
+  return many
+}
+
 // Pipeline status klienta
 export const CLIENT_STATUS_VALUES = ['novy', 'financni_plan', 'podepsano', 'servis', 'zmena'] as const
 export type ClientStatusValue = (typeof CLIENT_STATUS_VALUES)[number]

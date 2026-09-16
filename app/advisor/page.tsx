@@ -2,12 +2,14 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Shield, MessageCircle, ArrowUpRight, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   calcHealthScore,
   familyLabel,
   riskLabel,
   goalLabel,
   formatDate,
+  plural,
   CLIENT_STATUS_VALUES,
   isClientStatus,
 } from '@/lib/utils'
@@ -33,7 +35,15 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     .select('*')
     .order('created_at', { ascending: false })
 
-  const clients: Profile[] = (clientsData as Profile[] | null) ?? []
+  // Profil zakládá trigger pro každý účet, tedy i pro poradce, a role je jen
+  // v auth metadatech. Bez tohoto filtru by se poradci vypsali jako klienti.
+  const { data: usersData } = await createAdminClient().auth.admin.listUsers({ perPage: 1000 })
+  const advisorIds = new Set(
+    usersData.users.filter((u) => u.user_metadata?.role === 'advisor').map((u) => u.id),
+  )
+  advisorIds.add(user.id)
+
+  const clients: Profile[] = ((clientsData as Profile[] | null) ?? []).filter((c) => !advisorIds.has(c.id))
 
   const { data: unreadMessages } = await supabase
     .from('messages')
@@ -84,8 +94,9 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
             <div className="w-9 h-9 rounded-none bg-[#162459] flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
-            <span className="font-bold text-[#162459] text-lg tracking-tight">Poradce do kapsy</span>
-            <span className="ml-2 text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-[#009EE2]/10 text-[#0079AD] border border-[#009EE2]/30 font-semibold">
+            {/* Na mobilu by se název i štítek zalomily do dvou řádků – stačí logo se štítkem */}
+            <span className="hidden sm:inline font-bold text-[#162459] text-lg tracking-tight">Poradce do kapsy</span>
+            <span className="ml-2 whitespace-nowrap text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-[#009EE2]/10 text-[#0079AD] border border-[#009EE2]/30 font-semibold">
               Panel poradce
             </span>
           </div>
@@ -109,7 +120,8 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                   lineHeight: 1.05,
                 }}
               >
-                {clients.length} <span style={{ color: '#009EE2' }}>klientů</span>
+                {clients.length}{' '}
+                <span style={{ color: '#009EE2' }}>{plural(clients.length, 'klient', 'klienti', 'klientů')}</span>
                 <span className="text-[#66708C] font-normal" style={{ fontSize: '0.5em' }}>
                   {' '}ve vaší síti
                 </span>
@@ -180,7 +192,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                           </span>
                           {unreadCounts[client.id] > 0 && (
                             <span
-                              title={`${unreadCounts[client.id]} nepřečtených zpráv`}
+                              title={`${unreadCounts[client.id]} ${plural(unreadCounts[client.id], 'nepřečtená zpráva', 'nepřečtené zprávy', 'nepřečtených zpráv')}`}
                               className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center"
                             >
                               {unreadCounts[client.id]}
@@ -188,7 +200,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                           )}
                           {reactionCounts[client.id] > 0 && (
                             <span
-                              title={`${reactionCounts[client.id]} reakcí na plán`}
+                              title={`${reactionCounts[client.id]} ${plural(reactionCounts[client.id], 'reakce', 'reakce', 'reakcí')} na plán`}
                               className="inline-flex items-center gap-1 bg-[#009EE2]/12 text-[#0079AD] text-[10px] font-bold rounded-full border border-[#009EE2]/30 h-5 px-1.5"
                             >
                               <Sparkles className="w-2.5 h-2.5" />
