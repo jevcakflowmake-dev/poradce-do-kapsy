@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import {
-  Plus, Trash2, Save, ChevronDown, ChevronUp, Edit3, X, Check,
+  Plus, Trash2, Save, ChevronDown, ChevronUp, X,
   Shield, Home, Clock, Baby, TrendingUp, Building2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -56,15 +56,6 @@ interface PlanEditorProps {
   analysisResponses: Record<string, Record<string, string>>
 }
 
-const SECTION_LABELS: Record<string, string> = {
-  income: 'Zajisteni prijmu',
-  housing: 'Bydleni',
-  retirement: 'Duchod',
-  children: 'Deti',
-  investing: 'Investice',
-  property: 'Majetek',
-}
-
 export default function PlanEditor({
   clientId,
   initialVariants,
@@ -86,13 +77,12 @@ export default function PlanEditor({
   const [newLogo, setNewLogo] = useState('')
   const [newPayment, setNewPayment] = useState('')
 
-  // Editing param state
-  const [editingParam, setEditingParam] = useState<string | null>(null)
+  // Editing param state – čte se jen setter, hodnota nikde potřeba není
+  const [, setEditingParam] = useState<string | null>(null)
   const [addingParamForVariant, setAddingParamForVariant] = useState<string | null>(null)
   const [paramForm, setParamForm] = useState({ param_label: '', value: '', note: '' })
 
   const sectionVariants = variants.filter(v => v.section === activeSection)
-  const sectionRec = recommendations.find(r => r.section === activeSection)
 
   const [recText, setRecText] = useState('')
   const [recStatus, setRecStatus] = useState<'ok' | 'recommendation' | 'action'>('recommendation')

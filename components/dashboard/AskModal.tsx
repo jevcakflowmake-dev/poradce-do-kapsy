@@ -23,6 +23,7 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
 
   useEffect(() => {
     if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- úklid formuláře po zavření; komponenta zůstává kvůli výjezdové animaci připojená
       setText('')
       setError(null)
       setSending(false)
@@ -52,7 +53,7 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
     const supabase = createClient()
 
     // 1. Označit sekci jako "question"
-    await (supabase.from('plan_section_interest') as any).upsert(
+    await supabase.from('plan_section_interest').upsert(
       {
         client_id: clientId,
         section,

@@ -29,12 +29,6 @@ function calcAmount(v: IncomeVariant, risk: RiskDef): number {
   return raw * DAYS_IN_MONTH
 }
 
-function fmtCzk(n: number, unit: 'monthly' | 'lump'): string {
-  if (n === 0) return '–'
-  const rounded = Math.round(n).toLocaleString('cs-CZ')
-  return unit === 'monthly' ? `${rounded} Kč/měs` : `${rounded} Kč`
-}
-
 /**
  * Řadíme rizika podél osy "od méně závažných po nejzávažnější".
  * Stejný řád jak `RISK_DEFS` (denní → jednorázové → invalidita → smrt).

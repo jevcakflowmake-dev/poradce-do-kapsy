@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { Shield, Save, Plus, Trash2, Loader2, Check, ChevronDown, ChevronUp } from 'lucide-react'
 import { RISK_DEFS, RISK_GROUPS, type RiskKey } from '@/lib/income-risks'
+import type { Json } from '@/lib/types/database'
 
 type Coverage = Partial<Record<RiskKey, number | null>>
 
@@ -17,18 +18,25 @@ interface VariantInput {
   coverage: Coverage
 }
 
-interface ExistingVariant {
+/** Tvar sloupce `details` (jsonb). Databáze ho nehlídá, hlídá si ho editor. */
+type Details = {
+  payout_60?: number | null  // serverside vypočítaný – read only
+  payout_50?: number | null
+  waiting_period_days?: number | null
+  max_payout_years?: number | null
+  accident_pn_combine?: boolean
+} & Coverage
+
+export interface ExistingVariant {
   id: string
   company: string
   logo: string
   monthly_payment: string
-  details: ({
-    payout_60?: number | null  // serverside vypočítaný – read only
-    payout_50?: number | null
-    waiting_period_days?: number | null
-    max_payout_years?: number | null
-    accident_pn_combine?: boolean
-  } & Coverage) | null
+  details: Json | null
+}
+
+function detailsOf(details: Json | null): Details {
+  return details && typeof details === 'object' && !Array.isArray(details) ? (details as Details) : {}
 }
 
 const DEFAULT_WAITING_PERIOD_DAYS = 14
@@ -65,16 +73,19 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
   const [open, setOpen] = useState(true)
   const [variants, setVariants] = useState<VariantInput[]>(() =>
     initial.length > 0
-      ? initial.map((v) => ({
-          id: v.id,
-          company: v.company,
-          logo: v.logo,
-          monthly_payment: v.monthly_payment,
-          waiting_period_days: v.details?.waiting_period_days ?? null,
-          max_payout_years: v.details?.max_payout_years ?? null,
-          accident_pn_combine: Boolean(v.details?.accident_pn_combine),
-          coverage: extractCoverage(v.details),
-        }))
+      ? initial.map((v) => {
+          const d = detailsOf(v.details)
+          return {
+            id: v.id,
+            company: v.company,
+            logo: v.logo,
+            monthly_payment: v.monthly_payment,
+            waiting_period_days: d.waiting_period_days ?? null,
+            max_payout_years: d.max_payout_years ?? null,
+            accident_pn_combine: Boolean(d.accident_pn_combine),
+            coverage: extractCoverage(d),
+          }
+        })
       : [{ ...EMPTY }],
   )
   const [saving, setSaving] = useState(false)

@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, MessageCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import type { PlanParam } from '@/lib/types/database'
 import PlanEditor from '@/components/advisor/PlanEditor'
 import ClientFinancialsEditor, { type ClientFinancials } from '@/components/advisor/ClientFinancialsEditor'
 import IncomeProtectionEditor from '@/components/advisor/IncomeProtectionEditor'
@@ -23,16 +24,16 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
   if (!profile) return notFound()
 
   // Load variants
-  const { data: variants } = await (supabase.from('plan_variants') as any)
+  const { data: variants } = await supabase.from('plan_variants')
     .select('*')
     .eq('client_id', clientId)
     .order('sort_order')
 
   // Load params for all variants
-  const variantIds = (variants || []).map((v: { id: string }) => v.id)
-  let allParams: Record<string, unknown>[] = []
+  const variantIds = (variants ?? []).map((v) => v.id)
+  let allParams: PlanParam[] = []
   if (variantIds.length > 0) {
-    const { data: paramsData } = await (supabase.from('plan_params') as any)
+    const { data: paramsData } = await supabase.from('plan_params')
       .select('*')
       .in('variant_id', variantIds)
       .order('sort_order')
@@ -40,18 +41,18 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
   }
 
   // Load recommendations
-  const { data: recommendations } = await (supabase.from('plan_recommendations') as any)
+  const { data: recommendations } = await supabase.from('plan_recommendations')
     .select('*')
     .eq('client_id', clientId)
 
   // Load client financials (vstupní data)
-  const { data: clientFinancials } = await (supabase.from('client_financials') as any)
+  const { data: clientFinancials } = await supabase.from('client_financials')
     .select('*')
     .eq('client_id', clientId)
     .maybeSingle()
 
   // Load analysis responses
-  const { data: analysisData } = await (supabase.from('analysis_responses') as any)
+  const { data: analysisData } = await supabase.from('analysis_responses')
     .select('section, question_id, value')
     .eq('client_id', clientId)
 
@@ -114,15 +115,25 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
 
         <IncomeProtectionEditor
           clientId={clientId}
-          initial={(variants || []).filter((v: { section: string }) => v.section === 'income') as any[]}
+          initial={(variants ?? []).filter((v) => v.section === 'income')}
           monthlyIncomeNet={(clientFinancials as { monthly_income_net: number | null } | null)?.monthly_income_net ?? null}
         />
 
+        {/* Databáze nechává pořadí, poznámku i stav prázdné; editor je chce
+            vyplněné, tak je doplňujeme tady na hranici, ne uvnitř komponenty. */}
         <PlanEditor
           clientId={clientId}
-          initialVariants={variants || []}
-          initialParams={allParams as any[]}
-          initialRecommendations={recommendations || []}
+          initialVariants={(variants ?? []).map((v) => ({ ...v, sort_order: v.sort_order ?? 0 }))}
+          initialParams={(allParams ?? []).map((p) => ({
+            ...p,
+            note: p.note ?? '',
+            sort_order: p.sort_order ?? 0,
+          }))}
+          initialRecommendations={(recommendations ?? []).map((r) => ({
+            ...r,
+            status: r.status ?? 'recommendation',
+            items: r.items ?? [],
+          }))}
           analysisResponses={analysisResponses}
         />
       </div>

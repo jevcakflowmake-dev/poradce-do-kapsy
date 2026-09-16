@@ -96,7 +96,7 @@ export default function HowItWorksSection() {
         </div>
 
         <div className="hiw-rows border-t border-[#E4DFD2]">
-          {STEPS.map((step, i) => (
+          {STEPS.map((step) => (
             <article
               key={step.title}
               className="hiw-row group relative grid grid-cols-12 gap-4 md:gap-8 items-baseline py-8 md:py-10 border-b border-[#E4DFD2]"

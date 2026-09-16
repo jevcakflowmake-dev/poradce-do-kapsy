@@ -58,11 +58,11 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
 
   // Plan reactions – počet sekcí se statusem 'interested' nebo 'question' + vybrané varianty.
   // Zobrazeno jako cyan badge; advisor se rozhodne jak zareagovat.
-  const { data: planInterests } = await (supabase.from('plan_section_interest') as any)
+  const { data: planInterests } = await supabase.from('plan_section_interest')
     .select('client_id, status')
     .in('status', ['interested', 'question'])
 
-  const { data: planVariantSel } = await (supabase.from('plan_variant_selection') as any)
+  const { data: planVariantSel } = await supabase.from('plan_variant_selection')
     .select('client_id')
 
   const reactionCounts: Record<string, number> = {}

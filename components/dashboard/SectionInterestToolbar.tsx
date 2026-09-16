@@ -34,7 +34,7 @@ export default function SectionInterestToolbar({
     onStatusChange(next) // optimistic
 
     const supabase = createClient()
-    const { error } = await (supabase.from('plan_section_interest') as any).upsert(
+    const { error } = await supabase.from('plan_section_interest').upsert(
       {
         client_id: clientId,
         section,

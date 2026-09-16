@@ -67,6 +67,9 @@ export default function SignupForm() {
         return
       }
 
+      // Tvrdé přesměrování schválně: registrace i přihlášení mění auth cookie
+      // a celé načtení je jistota, že server vykreslí stránku s novou session.
+      // eslint-disable-next-line react-hooks/immutability, @next/next/no-location-assign-relative-destination
       window.location.href = '/dashboard'
     } catch {
       setError('Chyba připojení. Zkuste to prosím znovu.')

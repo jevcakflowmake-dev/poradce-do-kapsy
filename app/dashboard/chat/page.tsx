@@ -57,7 +57,7 @@ export default async function ClientChatPage() {
             </div>
           </div>
         </div>
-        <ChatWindow clientId={user.id} myRole="client" advisorName="Váš poradce" />
+        <ChatWindow clientId={user.id} myRole="client" />
       </div>
     </div>
   )

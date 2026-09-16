@@ -40,7 +40,7 @@ export default function SelectVariantButton({
         .eq('variant_id', variantId)
       if (!error) onToggle(false)
     } else {
-      const { error } = await (supabase.from('plan_variant_selection') as any).insert({
+      const { error } = await supabase.from('plan_variant_selection').insert({
         client_id: clientId,
         variant_id: variantId,
       })

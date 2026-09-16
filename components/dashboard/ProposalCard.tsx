@@ -23,6 +23,7 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
   useEffect(() => {
     if (!expanded || !proposal.file_url || fileUrl) return
     if (proposal.file_url.startsWith('http')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- starší záznam má rovnou veřejnou adresu, není co podepisovat
       setFileUrl(proposal.file_url)
       return
     }

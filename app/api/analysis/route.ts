@@ -92,11 +92,11 @@ export async function GET(request: Request) {
 
     const supabase = createAdminClient()
 
-    const { data: responses } = await (supabase.from('analysis_responses') as any)
+    const { data: responses } = await supabase.from('analysis_responses')
       .select('*')
       .eq('client_id', clientId)
 
-    const { data: files } = await (supabase.from('analysis_files') as any)
+    const { data: files } = await supabase.from('analysis_files')
       .select('*')
       .eq('client_id', clientId)
 

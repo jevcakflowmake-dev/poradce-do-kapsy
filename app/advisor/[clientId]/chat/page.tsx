@@ -54,7 +54,7 @@ export default async function AdvisorChatPage({ params }: { params: Promise<{ cl
       {/* Chat vyplní zbytek okna; min-h-0 pustí scrollování dovnitř seznamu zpráv */}
       <div className="flex-1 min-h-0 max-w-shell mx-auto w-full px-6 md:px-10 lg:px-16 xl:px-20 py-6 flex flex-col">
         <div className="flex-1 min-h-0 bg-[#FDFCF8] rounded-none border border-[#E4DFD2] overflow-hidden flex flex-col shadow-[0_10px_30px_-10px_rgba(22,36,89,0.08)]">
-          <ChatWindow clientId={clientId} myRole="advisor" advisorName={profile.full_name ?? 'Klient'} />
+          <ChatWindow clientId={clientId} myRole="advisor" />
         </div>
       </div>
     </div>

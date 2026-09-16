@@ -7,7 +7,7 @@
  */
 
 import {
-  Activity, BedDouble, Bandage, Heart, Stethoscope,
+  Activity, BedDouble, Bandage, Stethoscope,
   ShieldAlert, ShieldX, AlertOctagon, Accessibility, Skull,
   type LucideIcon,
 } from 'lucide-react'

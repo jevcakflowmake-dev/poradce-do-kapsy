@@ -16,11 +16,9 @@ function formatTime(dateStr: string) {
 export default function ChatWindow({
   clientId,
   myRole,
-  advisorName = 'Váš poradce',
 }: {
   clientId: string
   myRole: 'client' | 'advisor'
-  advisorName?: string
 }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -57,7 +55,7 @@ export default function ChatWindow({
         .eq('is_read', false)
     }
     load()
-  }, [clientId, myRole])
+  }, [clientId, myRole, supabase])
 
   // Realtime subscription
   useEffect(() => {
@@ -87,7 +85,7 @@ export default function ChatWindow({
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [clientId, myRole])
+  }, [clientId, myRole, supabase])
 
   useEffect(() => {
     scrollToBottom()

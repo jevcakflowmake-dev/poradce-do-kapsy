@@ -40,6 +40,9 @@ export default function InlineLogin() {
       return
     }
     const role = authData.user?.user_metadata?.role
+    // Tvrdé přesměrování schválně: přihlášením se mění auth cookie a celé
+    // načtení je jistota, že serverové komponenty vykreslí novou session.
+    // eslint-disable-next-line react-hooks/immutability
     window.location.href = role === 'advisor' ? '/advisor' : '/dashboard'
   }
 

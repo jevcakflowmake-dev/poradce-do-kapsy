@@ -36,7 +36,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   const proposals = proposalsData as Proposal[] | null
 
   // Load analysis responses
-  const { data: analysisRaw } = await (supabase.from('analysis_responses') as any)
+  const { data: analysisRaw } = await supabase.from('analysis_responses')
     .select('*')
     .eq('client_id', clientId)
 
@@ -49,7 +49,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   const hasAnalysis = Object.keys(analysisResponses).length > 0
 
   // Dokumenty nahrané klientem v analýze (smlouvy, pojistky)
-  const { data: analysisFilesRaw } = await (supabase.from('analysis_files') as any)
+  const { data: analysisFilesRaw } = await supabase.from('analysis_files')
     .select('*')
     .eq('client_id', clientId)
     .order('created_at', { ascending: false })
@@ -88,17 +88,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
 
   // Existuje už nějaký plán pro klienta?
   // S head: true dotaz nevrací řádky – počet je v `count` vedle `data`, ne uvnitř.
-  const { count: planVariantsCount } = await (supabase.from('plan_variants') as any)
+  const { count: planVariantsCount } = await supabase.from('plan_variants')
     .select('id', { count: 'exact', head: true })
     .eq('client_id', clientId)
   const hasPlan = (planVariantsCount ?? 0) > 0
 
   // Reakce klienta na finanční plán
   const [{ data: interestRaw }, { data: selRaw }] = await Promise.all([
-    (supabase.from('plan_section_interest') as any)
+    supabase.from('plan_section_interest')
       .select('section, status, note, updated_at')
       .eq('client_id', clientId),
-    (supabase.from('plan_variant_selection') as any)
+    supabase.from('plan_variant_selection')
       .select('variant_id, selected_at, plan_variants(company, section, monthly_payment)')
       .eq('client_id', clientId),
   ])

@@ -8,10 +8,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { createClient } from '@/lib/supabase/client'
 import { uploadAnalysisFile } from '@/lib/storage'
 import StoredFileLink from '@/components/files/StoredFileLink'
@@ -167,6 +164,7 @@ export default function AnalyzaPage() {
   useEffect(() => {
     if (Object.keys(data).length === 0) return
     if (saveTimeout.current) clearTimeout(saveTimeout.current)
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- indikátor „Ukládám…“ reaguje na změnu odpovědí, ne na událost
     setSaveStatus('saving')
     saveTimeout.current = setTimeout(async () => {
       try {

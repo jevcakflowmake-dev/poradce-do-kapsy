@@ -52,43 +52,55 @@ const SECTION_LABELS: Record<string, string> = {
   long_term_care: 'Dlouhodobá péče',
 }
 
+type InsuranceContent = {
+  logo?: string
+  company?: string
+  monthly_price?: number | string
+  sections?: Array<{ id: string; amount: number }>
+  description?: string
+}
+
 function InsuranceDetail({ content }: { content: string | null }) {
   if (!content) return null
 
+  // V try/catch je jen parsování. React JSX nevyhodnocuje hned při vytvoření,
+  // takže chyba při renderu by tímhle catch stejně jen propadla dál.
+  let parsed: InsuranceContent | null = null
   try {
-    const parsed = JSON.parse(content)
-    if (!parsed.sections) {
-      return <p className="text-sm text-[#66708C] mt-2">{content}</p>
-    }
-
-    return (
-      <div className="mt-4 pt-4 border-t border-[#E4DFD2]">
-        <div className="flex items-center gap-2 mb-3">
-          {parsed.logo && <span className="text-lg">{parsed.logo}</span>}
-          {parsed.company && <span className="text-sm font-semibold text-[#162459]">{parsed.company}</span>}
-          {parsed.monthly_price && (
-            <span className="ml-auto text-sm font-bold text-[#0079AD]">
-              {parsed.monthly_price} Kč/měsíc
-            </span>
-          )}
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {(parsed.sections as Array<{ id: string; amount: number }>).map((s) => (
-            <div key={s.id} className="flex items-center gap-2 text-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#009EE2] shrink-0" />
-              <span className="text-[#66708C]">{SECTION_LABELS[s.id] || s.id}</span>
-              <span className="font-medium text-[#162459] ml-auto tabular-nums">
-                {s.amount?.toLocaleString('cs-CZ')} Kč
-              </span>
-            </div>
-          ))}
-        </div>
-        {parsed.description && <p className="text-sm text-[#66708C] mt-3">{parsed.description}</p>}
-      </div>
-    )
+    parsed = JSON.parse(content) as InsuranceContent
   } catch {
+    parsed = null
+  }
+
+  if (!parsed?.sections) {
     return <p className="text-sm text-[#66708C] mt-2">{content}</p>
   }
+
+  return (
+    <div className="mt-4 pt-4 border-t border-[#E4DFD2]">
+      <div className="flex items-center gap-2 mb-3">
+        {parsed.logo && <span className="text-lg">{parsed.logo}</span>}
+        {parsed.company && <span className="text-sm font-semibold text-[#162459]">{parsed.company}</span>}
+        {parsed.monthly_price && (
+          <span className="ml-auto text-sm font-bold text-[#0079AD]">
+            {parsed.monthly_price} Kč/měsíc
+          </span>
+        )}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {parsed.sections.map((s) => (
+          <div key={s.id} className="flex items-center gap-2 text-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#009EE2] shrink-0" />
+            <span className="text-[#66708C]">{SECTION_LABELS[s.id] || s.id}</span>
+            <span className="font-medium text-[#162459] ml-auto tabular-nums">
+              {s.amount?.toLocaleString('cs-CZ')} Kč
+            </span>
+          </div>
+        ))}
+      </div>
+      {parsed.description && <p className="text-sm text-[#66708C] mt-3">{parsed.description}</p>}
+    </div>
+  )
 }
 
 export default function ProduktyPage() {

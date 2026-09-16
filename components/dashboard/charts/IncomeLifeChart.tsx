@@ -49,18 +49,6 @@ export default function IncomeLifeChart({
   selectedVariantId,
   onSelect,
 }: Props) {
-  if (!monthlyIncomeNet || variants.length === 0) {
-    return (
-      <div className="rounded-none border border-dashed border-[#E4DFD2] p-8 text-center">
-        <p className="text-sm text-[#66708C]">
-          {!monthlyIncomeNet
-            ? 'Poradce zatím nenastavil tvůj příjem v plánu.'
-            : 'Žádná varianta zatím není k dispozici.'}
-        </p>
-      </div>
-    )
-  }
-
   // Stacked data: per scénář + per varianta dva stacky:
   //   `zustatek_<i>` = zbytek příjmu (60 % / 50 % z monthly net)
   //   `payout_<i>`   = co pojistka dorovná (vrch stacku)
@@ -72,7 +60,7 @@ export default function IncomeLifeChart({
     ]
 
     return incomes.map(({ label, factor, key }) => {
-      const remainder = Math.round(monthlyIncomeNet * factor)
+      const remainder = Math.round((monthlyIncomeNet ?? 0) * factor)
       const row: Record<string, string | number> = {
         scenario: label,
         zustatek_bez: remainder,
@@ -91,6 +79,20 @@ export default function IncomeLifeChart({
     () => (selectedVariantId ? variants.find((v) => v.id === selectedVariantId) : null),
     [selectedVariantId, variants],
   )
+
+  // Až za hooky: dřív tu byl brzký návrat a `useMemo` výš se pak volaly
+  // podmíněně – při prvním naplnění dat by se pořadí hooků změnilo.
+  if (!monthlyIncomeNet || variants.length === 0) {
+    return (
+      <div className="rounded-none border border-dashed border-[#E4DFD2] p-8 text-center">
+        <p className="text-sm text-[#66708C]">
+          {!monthlyIncomeNet
+            ? 'Poradce zatím nenastavil tvůj příjem v plánu.'
+            : 'Žádná varianta zatím není k dispozici.'}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-5">

@@ -3,16 +3,15 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
 import ChatWindow from '@/components/chat/ChatWindow'
-import type { Profile } from '@/lib/types/database'
 
 export const dynamic = 'force-dynamic'
 
 export default async function KlientChatPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = createAdminClient()
-  const { data } = await supabase.from('profiles').select('*').eq('id', id).single()
+  // Profil čteme jen kvůli ověření, že klient existuje – chat si data tahá sám.
+  const { data } = await supabase.from('profiles').select('id').eq('id', id).single()
   if (!data) notFound()
-  const _profile = data as Profile
 
   return (
     <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
@@ -63,7 +62,7 @@ export default async function KlientChatPage({ params }: { params: Promise<{ id:
             </div>
           </div>
         </div>
-        <ChatWindow clientId={id} myRole="client" advisorName="Váš poradce" />
+        <ChatWindow clientId={id} myRole="client" />
       </div>
     </div>
   )

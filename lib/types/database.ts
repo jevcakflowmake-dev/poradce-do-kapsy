@@ -228,6 +228,264 @@ export type Database = {
         }
         Relationships: []
       }
+      /** Varianty pojistek/produktů, které poradce staví klientovi v editoru plánu. */
+      plan_variants: {
+        Row: {
+          id: string
+          client_id: string
+          section: string
+          company: string
+          /** Zkratka nebo písmeno, ne obrázek – ať web nenese cizí ochranné známky. */
+          logo: string
+          /** Text, ne číslo: poradce píše i rozpětí („1 200 – 1 450 Kč“). */
+          monthly_payment: string
+          sort_order: number | null
+          created_at: string
+          details: Json | null
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          section: string
+          company: string
+          logo?: string
+          monthly_payment: string
+          sort_order?: number | null
+          created_at?: string
+          details?: Json | null
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          section?: string
+          company?: string
+          logo?: string
+          monthly_payment?: string
+          sort_order?: number | null
+          created_at?: string
+          details?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'plan_variants_client_id_fkey'
+            columns: ['client_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      /** Řádky parametrů uvnitř varianty (krytí, výluky, čekací doby). */
+      plan_params: {
+        Row: {
+          id: string
+          variant_id: string
+          param_key: string
+          param_label: string
+          value: string
+          note: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          id?: string
+          variant_id: string
+          param_key: string
+          param_label: string
+          value: string
+          note?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          id?: string
+          variant_id?: string
+          param_key?: string
+          param_label?: string
+          value?: string
+          note?: string | null
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'plan_params_variant_id_fkey'
+            columns: ['variant_id']
+            isOneToOne: false
+            referencedRelation: 'plan_variants'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      /** Slovní doporučení poradce k jednotlivým oblastem plánu. */
+      plan_recommendations: {
+        Row: {
+          id: string
+          client_id: string
+          section: string
+          status: 'ok' | 'recommendation' | 'action' | null
+          items: string[] | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          section: string
+          status?: 'ok' | 'recommendation' | 'action' | null
+          items?: string[] | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          section?: string
+          status?: 'ok' | 'recommendation' | 'action' | null
+          items?: string[] | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'plan_recommendations_client_id_fkey'
+            columns: ['client_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      /** Vstupní čísla pro graf života – jeden řádek na klienta. */
+      client_financials: {
+        Row: {
+          id: string
+          client_id: string
+          age: number | null
+          retirement_age: number | null
+          monthly_income_net: number | null
+          dependents_count: number | null
+          has_mortgage: boolean | null
+          mortgage_remaining_amount: number | null
+          mortgage_remaining_years: number | null
+          property_value_real_estate: number | null
+          property_value_movables: number | null
+          notes: string | null
+          updated_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          age?: number | null
+          retirement_age?: number | null
+          monthly_income_net?: number | null
+          dependents_count?: number | null
+          has_mortgage?: boolean | null
+          mortgage_remaining_amount?: number | null
+          mortgage_remaining_years?: number | null
+          property_value_real_estate?: number | null
+          property_value_movables?: number | null
+          notes?: string | null
+          updated_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          age?: number | null
+          retirement_age?: number | null
+          monthly_income_net?: number | null
+          dependents_count?: number | null
+          has_mortgage?: boolean | null
+          mortgage_remaining_amount?: number | null
+          mortgage_remaining_years?: number | null
+          property_value_real_estate?: number | null
+          property_value_movables?: number | null
+          notes?: string | null
+          updated_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'client_financials_client_id_fkey'
+            columns: ['client_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      /** Reakce klienta na oblast plánu – jedna volba na (client_id, section). */
+      plan_section_interest: {
+        Row: {
+          id: string
+          client_id: string
+          section: string
+          status: 'interested' | 'question' | 'not_now'
+          note: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          section: string
+          status: 'interested' | 'question' | 'not_now'
+          note?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          section?: string
+          status?: 'interested' | 'question' | 'not_now'
+          note?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'plan_section_interest_client_id_fkey'
+            columns: ['client_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      /** Varianta, kterou si klient označil jako preferovanou (poradce ji dojedná mimo aplikaci). */
+      plan_variant_selection: {
+        Row: {
+          id: string
+          client_id: string
+          variant_id: string
+          selected_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          variant_id: string
+          selected_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          variant_id?: string
+          selected_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'plan_variant_selection_client_id_fkey'
+            columns: ['client_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'plan_variant_selection_variant_id_fkey'
+            columns: ['variant_id']
+            isOneToOne: false
+            referencedRelation: 'plan_variants'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -250,3 +508,11 @@ export type ProposalType = Proposal['type']
 export type ClientStatus = Profile['status']
 export type PublicSubmission = Database['public']['Tables']['public_submissions']['Row']
 export type SubmissionStatus = PublicSubmission['status']
+export type PlanVariant = Database['public']['Tables']['plan_variants']['Row']
+export type PlanParam = Database['public']['Tables']['plan_params']['Row']
+export type PlanRecommendation = Database['public']['Tables']['plan_recommendations']['Row']
+export type RecommendationStatus = NonNullable<PlanRecommendation['status']>
+export type ClientFinancials = Database['public']['Tables']['client_financials']['Row']
+export type PlanSectionInterest = Database['public']['Tables']['plan_section_interest']['Row']
+export type InterestStatus = PlanSectionInterest['status']
+export type PlanVariantSelection = Database['public']['Tables']['plan_variant_selection']['Row']

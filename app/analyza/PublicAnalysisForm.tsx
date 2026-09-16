@@ -38,6 +38,7 @@ export default function PublicAnalysisForm() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(DRAFT_KEY)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage při renderu na serveru není, koncept jde obnovit až po připojení
       if (raw) setData(JSON.parse(raw))
     } catch {
       // Poškozený koncept není důvod nepustit člověka k formuláři.

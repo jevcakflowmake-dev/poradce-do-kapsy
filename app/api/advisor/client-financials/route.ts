@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     notes: body.notes ?? null,
   }
 
-  const { data, error } = await (supabase.from('client_financials') as any)
+  const { data, error } = await supabase.from('client_financials')
     .upsert(upsertData, { onConflict: 'client_id' })
     .select()
     .single()

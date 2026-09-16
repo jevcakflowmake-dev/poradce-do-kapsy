@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   }
 
   // Smaž existující income varianty (i s params přes ON DELETE CASCADE)
-  const { error: delErr } = await (supabase.from('plan_variants') as any)
+  const { error: delErr } = await supabase.from('plan_variants')
     .delete()
     .eq('client_id', body.client_id)
     .eq('section', 'income')
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
     }
   })
 
-  const { data, error } = await (supabase.from('plan_variants') as any)
+  const { data, error } = await supabase.from('plan_variants')
     .insert(rows)
     .select()
 

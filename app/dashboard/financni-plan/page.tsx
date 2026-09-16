@@ -95,12 +95,12 @@ export default function FinancniPlanPage() {
 
     // Paralelně
     const [variantsRes, paramsRes, recsRes, interestRes, selectionRes, financialsRes] = await Promise.all([
-      (supabase.from('plan_variants') as any).select('*').eq('client_id', user.id).order('sort_order'),
-      (supabase.from('plan_params') as any).select('*').order('sort_order'),
-      (supabase.from('plan_recommendations') as any).select('*').eq('client_id', user.id),
-      (supabase.from('plan_section_interest') as any).select('section, status').eq('client_id', user.id),
-      (supabase.from('plan_variant_selection') as any).select('variant_id').eq('client_id', user.id),
-      (supabase.from('client_financials') as any).select('monthly_income_net').eq('client_id', user.id).maybeSingle(),
+      supabase.from('plan_variants').select('*').eq('client_id', user.id).order('sort_order'),
+      supabase.from('plan_params').select('*').order('sort_order'),
+      supabase.from('plan_recommendations').select('*').eq('client_id', user.id),
+      supabase.from('plan_section_interest').select('section, status').eq('client_id', user.id),
+      supabase.from('plan_variant_selection').select('variant_id').eq('client_id', user.id),
+      supabase.from('client_financials').select('monthly_income_net').eq('client_id', user.id).maybeSingle(),
     ])
 
     setMonthlyIncomeNet((financialsRes.data as { monthly_income_net: number | null } | null)?.monthly_income_net ?? null)
@@ -144,7 +144,7 @@ export default function FinancniPlanPage() {
         })
         sections.push({ id, ...cfg, type: 'variants', variants: mapped, status: rec?.status || 'recommendation' })
       } else if (rec) {
-        sections.push({ id, ...cfg, type: 'simple', items: rec.items || [], status: rec.status })
+        sections.push({ id, ...cfg, type: 'simple', items: rec.items || [], status: rec.status ?? 'recommendation' })
       }
     }
     setPlanSections(sections)
@@ -171,6 +171,7 @@ export default function FinancniPlanPage() {
     setLoading(false)
   }, [supabase])
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- načtení plánu po připojení, stav se plní z odpovědi Supabase
   useEffect(() => { loadData() }, [loadData])
 
   function showToast(msg: string) {
@@ -188,7 +189,7 @@ export default function FinancniPlanPage() {
       status: 'interested' as const,
       updated_at: new Date().toISOString(),
     }))
-    const { error } = await (supabase.from('plan_section_interest') as any).upsert(rows, {
+    const { error } = await supabase.from('plan_section_interest').upsert(rows, {
       onConflict: 'client_id,section',
     })
 
@@ -378,12 +379,12 @@ export default function FinancniPlanPage() {
                         if (!clientId) return
                         // Single-select pro income – nahradíme jakoukoli předchozí volbu
                         const previousIncomeIds = incomeVariants.map(v => v.id)
-                        await (supabase.from('plan_variant_selection') as any)
+                        await supabase.from('plan_variant_selection')
                           .delete()
                           .eq('client_id', clientId)
                           .in('variant_id', previousIncomeIds)
                         if (selectedIncomeVariantId !== variantId) {
-                          await (supabase.from('plan_variant_selection') as any).insert({
+                          await supabase.from('plan_variant_selection').insert({
                             client_id: clientId,
                             variant_id: variantId,
                           })

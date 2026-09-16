@@ -9,13 +9,11 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { createClient } from '@/lib/supabase/client'
 
 interface ParamDetail { value: string; note: string }
 interface Variant { company: string; logo: string; monthlyPayment: string; params: Record<string, ParamDetail> }
-interface Recommendation { section: string; status: 'ok' | 'recommendation' | 'action'; items: string[] }
 interface PlanSection {
   id: string; title: string; icon: typeof Shield; gradient: string
   type: 'variants' | 'simple'
@@ -131,16 +129,16 @@ export default function FinancniPlanPage() {
   useEffect(() => {
     async function load() {
       // Load variants with their params
-      const { data: variants } = await (supabase.from('plan_variants') as any)
+      const { data: variants } = await supabase.from('plan_variants')
         .select('*')
         .eq('client_id', id)
         .order('sort_order')
 
-      const { data: params } = await (supabase.from('plan_params') as any)
+      const { data: params } = await supabase.from('plan_params')
         .select('*')
         .order('sort_order')
 
-      const { data: recommendations } = await (supabase.from('plan_recommendations') as any)
+      const { data: recommendations } = await supabase.from('plan_recommendations')
         .select('*')
         .eq('client_id', id)
 
@@ -165,7 +163,7 @@ export default function FinancniPlanPage() {
           })
           sections.push({ id: sectionId, ...config, type: 'variants', variants: mappedVariants, status: rec?.status || 'recommendation' })
         } else if (rec) {
-          sections.push({ id: sectionId, ...config, type: 'simple', items: rec.items || [], status: rec.status })
+          sections.push({ id: sectionId, ...config, type: 'simple', items: rec.items || [], status: rec.status ?? 'recommendation' })
         }
       }
 
