@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  ArrowLeft, FileText, Download, Clock, Shield, TrendingUp,
+  FileText, Download, Clock, Shield, TrendingUp,
   Home as HomeIcon, Baby, Building2, ChevronDown, ChevronUp,
   CheckCircle2, AlertCircle, Target, Sparkles, Loader2, X,
 } from 'lucide-react'
@@ -13,6 +13,9 @@ import { notifyAdvisor } from '@/lib/notify'
 import SectionInterestToolbar, { type InterestStatus } from '@/components/dashboard/SectionInterestToolbar'
 import AskModal from '@/components/dashboard/AskModal'
 import SelectVariantButton from '@/components/dashboard/SelectVariantButton'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { formatDate, plural } from '@/lib/utils'
+import { PORADCE } from '@/lib/poradce'
 import FinancialPlanOverview from '@/components/dashboard/charts/FinancialPlanOverview'
 import IncomeLifeChart, { type IncomeVariant } from '@/components/dashboard/charts/IncomeLifeChart'
 
@@ -28,42 +31,31 @@ interface PlanSection {
   id: string
   title: string
   icon: typeof Shield
-  gradient: string
   type: 'variants' | 'simple'
   variants?: Variant[]
   items?: string[]
   status: 'ok' | 'recommendation' | 'action'
 }
 
-const sectionConfig: Record<string, { title: string; icon: typeof Shield; gradient: string }> = {
-  income:     { title: 'Zajištění příjmů', icon: Shield,     gradient: 'from-[#162459] to-[#243471]' },
-  housing:    { title: 'Bydlení',          icon: HomeIcon,   gradient: 'from-[#009EE2] to-[#0079AD]' },
-  retirement: { title: 'Příprava na důchod', icon: Clock,    gradient: 'from-[#162459] to-[#009EE2]' },
-  children:   { title: 'Děti',             icon: Baby,       gradient: 'from-[#009EE2] to-[#0079AD]' },
-  investing:  { title: 'Investice',        icon: TrendingUp, gradient: 'from-[#162459] to-[#243471]' },
-  property:   { title: 'Pojištění majetku', icon: Building2, gradient: 'from-[#009EE2] to-[#0079AD]' },
-}
-
-const companyColors: Record<string, string> = {
-  Kooperativa: 'from-green-600 to-green-700',
-  'ČPP': 'from-red-600 to-red-700',
-  MetLife: 'from-[#162459] to-[#0e1a3d]',
-  Allianz: 'from-[#0079AD] to-[#162459]',
-  Generali: 'from-red-700 to-rose-800',
-  NN: 'from-orange-500 to-orange-600',
-  Uniqa: 'from-purple-600 to-purple-700',
+const sectionConfig: Record<string, { title: string; icon: typeof Shield }> = {
+  income:     { title: 'Zajištění příjmů',   icon: Shield },
+  housing:    { title: 'Bydlení',            icon: HomeIcon },
+  retirement: { title: 'Příprava na důchod', icon: Clock },
+  children:   { title: 'Děti',               icon: Baby },
+  investing:  { title: 'Investice',          icon: TrendingUp },
+  property:   { title: 'Pojištění majetku',  icon: Building2 },
 }
 
 const statusConfig = {
-  ok:             { label: 'V pořádku',    icon: CheckCircle2, color: '#15803d', bg: 'rgba(22,163,74,0.10)',  border: 'rgba(22,163,74,0.30)'  },
-  recommendation: { label: 'Doporučení',    icon: Target,       color: '#0079AD', bg: 'rgba(0,158,226,0.10)',  border: 'rgba(0,158,226,0.30)'  },
-  action:         { label: 'Vyžaduje akci', icon: AlertCircle,  color: '#b45309', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.35)' },
+  ok:             { label: 'V pořádku',     icon: CheckCircle2, trida: 'bg-mint/15 text-navy' },
+  recommendation: { label: 'Doporučení',    icon: Target,       trida: 'bg-navy/8 text-navy' },
+  action:         { label: 'Vyžaduje akci', icon: AlertCircle,  trida: 'bg-amber/25 text-navy' },
 }
 
 const interestBorderClass: Record<Exclude<InterestStatus, null>, string> = {
-  interested: 'border-[#009EE2] shadow-[inset_0_0_0_1px_#009EE2]',
-  question:   'border-[#162459]/40',
-  not_now:    'border-[#E4DFD2] opacity-60',
+  interested: 'border-mint ring-2 ring-mint',
+  question:   'border-navy/40',
+  not_now:    'border-line opacity-60',
 }
 
 
@@ -84,6 +76,7 @@ export default function FinancniPlanPage() {
   })
   const [toast, setToast] = useState<string | null>(null)
   const [bulkLoading, setBulkLoading] = useState(false)
+  const [planDatum, setPlanDatum] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -123,6 +116,14 @@ export default function FinancniPlanPage() {
 
     // Agregace do PlanSection[]
     const variants = variantsRes.data || []
+
+    // Datum plánu = kdy poradce naposledy přidal variantu
+    setPlanDatum(
+      variants.reduce<string | null>((nej, v) => {
+        const d = (v as { created_at?: string }).created_at
+        return d && (!nej || d > nej) ? d : nej
+      }, null),
+    )
     const params = paramsRes.data || []
     const recs = recsRes.data || []
 
@@ -212,127 +213,71 @@ export default function FinancniPlanPage() {
     hasPlan && planSections.every(s => interests[s.id] === 'interested')
 
   return (
-    <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-10"
-      >
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-[#66708C] hover:text-[#162459] transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Zpět
-        </Link>
-        <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Plán · na míru vám</p>
-        <h1
-          className="font-display text-[#162459]"
-          style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
-        >
-          Finanční <span style={{ color: '#009EE2' }}>plán</span>
-        </h1>
-        <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
-          Váš osobní plán od certifikovaného poradce. Prohlédněte si doporučení – u každé oblasti řekněte, zda
-          chcete pokračovat nebo máte otázky.
+    <div>
+      <header className="mb-10">
+        <h1 className="font-display text-h2 text-navy">Váš finanční plán</h1>
+        <p className="mt-3 text-base text-slate">
+          Připravil {PORADCE.jmeno}
+          {planDatum ? ` · ${formatDate(planDatum)}` : ''}
         </p>
-      </motion.div>
+        <p className="mt-4 text-lead text-slate max-w-2xl text-pretty">
+          U každé oblasti mi dejte vědět, jestli chcete pokračovat, nebo máte otázku.
+        </p>
+      </header>
 
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 animate-pulse">
-              <div className="h-6 bg-[#F6F4EE] rounded w-1/3 mb-3" />
-              <div className="h-4 bg-[#F6F4EE] rounded w-2/3" />
+            <div key={i} className="bg-surface rounded-card border border-line p-6 animate-pulse">
+              <div className="h-6 bg-cream rounded w-1/3 mb-3" />
+              <div className="h-4 bg-cream rounded w-2/3" />
             </div>
           ))}
         </div>
       ) : !hasPlan ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-12 md:p-16 text-center"
-        >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-none bg-[#009EE2]/10 border border-[#009EE2]/25 mb-5">
-            <FileText className="w-8 h-8 text-[#0079AD]" strokeWidth={1.5} />
+        <div className="bg-surface rounded-card border border-line p-12 md:p-16 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-card bg-mint/15 mb-5">
+            <FileText className="w-8 h-8 text-navy" strokeWidth={1.5} />
           </div>
-          <h2 className="font-display text-[#162459] mb-2" style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}>
-            Plán se <span style={{ color: '#009EE2' }}>připravuje</span>
-          </h2>
-          <p className="text-[#66708C] mb-7 max-w-md mx-auto leading-relaxed">
-            Jakmile vyplníte finanční analýzu, poradce připraví osobní plán obvykle do 48 hodin.
+          <h2 className="font-display text-h3 text-navy mb-2">Plán se připravuje</h2>
+          <p className="text-base text-slate mb-7 max-w-md mx-auto">
+            Jakmile vyplníte finanční analýzu, připravím vám osobní plán obvykle do 48 hodin.
           </p>
-          <Link
-            href="/dashboard/analyza"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-            style={{ background: '#162459' }}
-          >
+          <Link href="/dashboard/analyza" className={buttonVariants({ size: 'lg' })}>
             Vyplnit analýzu
           </Link>
-        </motion.div>
+        </div>
       ) : (
         <>
-          {/* Summary card – mega CTA + PDF */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-none p-6 md:p-8 mb-10 overflow-hidden"
-            style={{ background: '#0B111F' }}
-          >
-            <div className="noise-overlay" aria-hidden />
-            <div
-              aria-hidden
-              className="absolute inset-0 pointer-events-none"
-              style={{ background: 'radial-gradient(500px circle at 90% 90%, rgba(0,158,226,0.25), transparent 55%)' }}
-            />
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          {/* Souhrn plánu. Bez gradientu i zrna — hloubku dělá plocha, ne efekt. */}
+          <div className="rounded-card bg-navy text-cream p-6 md:p-8 mb-10">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
               <div>
-                <p className="text-xs tracking-[0.3em] uppercase text-[#009EE2]/70 mb-2">
-                  Plán · {planSections.length} oblast{planSections.length > 1 ? 'í' : ''}
-                </p>
-                <h2
-                  className="font-display text-white"
-                  style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
-                >
-                  Komplexní <span style={{ color: '#009EE2' }}>plán</span>
+                <h2 className="font-display text-h3 text-cream">
+                  Plán pokrývá {planSections.length} {plural(planSections.length, 'oblast', 'oblasti', 'oblastí')}
                 </h2>
-                <p className="text-white/55 text-sm mt-2">
-                  Projděte si sekce níže a u každé řekněte, zda chcete pokračovat.
+                <p className="text-base text-cream/70 mt-2">
+                  Projděte si je a u každé řekněte, jestli chcete pokračovat.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-2.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={handleBulkInterest}
-                  disabled={bulkLoading || allInterested}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-none font-semibold text-[15px] transition-all disabled:opacity-60 shadow-sm"
-                  style={{
-                    background: allInterested
-                      ? 'rgba(0,158,226,0.18)'
-                      : '#162459',
-                    color: allInterested ? '#a0dff5' : 'white',
-                  }}
-                >
+                <Button type="button" onClick={handleBulkInterest} disabled={bulkLoading || allInterested}>
                   {bulkLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
                   ) : allInterested ? (
-                    <CheckCircle2 className="w-4 h-4" />
+                    <CheckCircle2 className="w-4 h-4" aria-hidden />
                   ) : (
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4" aria-hidden />
                   )}
                   {allInterested ? 'Zájem potvrzen' : 'Mám zájem o celý plán'}
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-none font-semibold text-[#162459] bg-[#FDFCF8] hover:bg-white/90 transition-all"
-                >
-                  <Download className="w-4 h-4" />
+                </Button>
+                <Button type="button" variant="onDark">
+                  <Download className="w-4 h-4" aria-hidden />
                   PDF
-                </button>
+                </Button>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Vizuální přehled – radar pokrytí + donut nákladů + srovnání variant */}
           {hasPlan && <FinancialPlanOverview sections={planSections} />}
@@ -343,32 +288,29 @@ export default function FinancniPlanPage() {
               const status = statusConfig[section.status]
               const currentInterest = interests[section.id] ?? null
               const interestClass =
-                currentInterest ? interestBorderClass[currentInterest] : 'border-[#E4DFD2]'
+                currentInterest ? interestBorderClass[currentInterest] : 'border-line'
               return (
                 <motion.div
                   key={section.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25 + idx * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                  className={`bg-[#FDFCF8] rounded-none border p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] transition-all ${interestClass}`}
+                  className={`bg-surface rounded-card border border-l-4 border-l-mint p-5 md:p-6 shadow-card transition-colors ${interestClass}`}
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-11 h-11 rounded-none bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-sm`}>
-                      <section.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
+                    <div className="w-11 h-11 rounded-input bg-navy flex items-center justify-center">
+                      <section.icon className="w-5 h-5 text-cream" strokeWidth={1.8} aria-hidden />
                     </div>
-                    <h3 className="font-display text-[#162459] flex-1" style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
+                    <h3 className="font-display text-navy flex-1" style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
                       {section.title}
                     </h3>
-                    <div
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium"
-                      style={{ background: status.bg, borderColor: status.border, color: status.color }}
-                    >
-                      <status.icon className="w-3.5 h-3.5" />
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-pill text-base ${status.trida}`}>
+                      <status.icon className="w-4 h-4" aria-hidden />
                       {status.label}
                     </div>
                   </div>
 
-                  <div className="h-px bg-[#E4DFD2] mb-4" />
+                  <div className="h-px bg-line mb-4" />
 
                   {section.id === 'income' ? (
                     <IncomeLifeChart
@@ -410,7 +352,7 @@ export default function FinancniPlanPage() {
                     />
                   ) : section.type === 'variants' && section.variants ? (
                     <div className="space-y-3">
-                      <p className="text-sm text-[#66708C] mb-1">
+                      <p className="text-sm text-slate mb-1">
                         {section.variants.length} varian{section.variants.length === 1 ? 'ta' : 'ty'} k porovnání – rozklikněte detail nebo označte tu, o kterou máte zájem.
                       </p>
                       {section.variants.map((variant, i) => (
@@ -436,8 +378,8 @@ export default function FinancniPlanPage() {
                   ) : (
                     <ul className="space-y-2.5">
                       {section.items?.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-[14px] text-[#162459]/85 leading-relaxed">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#009EE2] mt-2 flex-shrink-0" />
+                        <li key={i} className="flex items-start gap-2.5 text-[14px] text-navy/85 leading-relaxed">
+                          <div className="w-1.5 h-1.5 rounded-full bg-mint mt-2 flex-shrink-0" />
                           {item}
                         </li>
                       ))}
@@ -489,9 +431,9 @@ export default function FinancniPlanPage() {
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: 50, x: '-50%' }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-6 left-1/2 z-40 bg-[#162459] text-white text-sm px-5 py-3 rounded-full shadow-xl flex items-center gap-3 max-w-[92vw]"
+            className="fixed bottom-6 left-1/2 z-40 bg-navy text-white text-sm px-5 py-3 rounded-full shadow-xl flex items-center gap-3 max-w-[92vw]"
           >
-            <CheckCircle2 className="w-4 h-4 text-[#009EE2] shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-navy shrink-0" />
             <span className="min-w-0">{toast}</span>
             <button
               onClick={() => setToast(null)}
@@ -524,38 +466,37 @@ function VariantCardInteractive({
   onToggleSelect: (selected: boolean) => void
 }) {
   const [open, setOpen] = useState(false)
-  const gradient = companyColors[variant.company] || 'from-[#162459] to-[#243471]'
   return (
     <div
-      className={`rounded-none overflow-hidden transition-all border ${
+      className={`rounded-card overflow-hidden transition-all border ${
         isSelected
-          ? 'border-[#009EE2] bg-[#009EE2]/5 shadow-[inset_0_0_0_1px_#009EE2]'
+          ? 'border-mint bg-mint/5 ring-2 ring-mint'
           : open
-          ? 'border-[#009EE2]/40 bg-[#FDFCF8]'
-          : 'border-[#E4DFD2] bg-[#FDFCF8] hover:border-[#009EE2]/40 hover:shadow-sm'
+          ? 'border-mint/40 bg-surface'
+          : 'border-line bg-surface hover:border-mint/40 hover:shadow-sm'
       }`}
     >
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-4 p-4 text-left transition-colors"
       >
-        <div className={`w-11 h-11 rounded-none bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm`}>
+        <div className="w-11 h-11 rounded-input bg-navy flex items-center justify-center text-cream font-semibold text-lg shrink-0">
           {variant.logo}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-[#162459] text-[15px]">{variant.company}</h4>
-          <p className="text-[11px] tracking-[0.15em] uppercase text-[#66708C] mt-0.5">
+          <h4 className="font-semibold text-navy text-[15px]">{variant.company}</h4>
+          <p className="text-[11px] tracking-[0.15em] uppercase text-slate mt-0.5">
             Varianta {index + 1}
           </p>
         </div>
         <div className="text-right flex-shrink-0 mr-2 hidden sm:block">
-          <span className="font-display text-[#162459] text-xl">{variant.monthlyPayment}</span>
-          <p className="text-[11px] tracking-[0.1em] uppercase text-[#66708C]">/ měsíc</p>
+          <span className="font-display text-navy text-xl">{variant.monthlyPayment}</span>
+          <p className="text-[11px] tracking-[0.1em] uppercase text-slate">/ měsíc</p>
         </div>
         {open ? (
-          <ChevronUp className="w-5 h-5 text-[#0079AD]" strokeWidth={1.8} />
+          <ChevronUp className="w-5 h-5 text-navy" strokeWidth={1.8} />
         ) : (
-          <ChevronDown className="w-5 h-5 text-[#66708C]" strokeWidth={1.8} />
+          <ChevronDown className="w-5 h-5 text-slate" strokeWidth={1.8} />
         )}
       </button>
 
@@ -569,28 +510,28 @@ function VariantCardInteractive({
             className="overflow-hidden"
           >
             <div className="px-4 pb-4">
-              <div className="h-px bg-[#E4DFD2] mb-3" />
+              <div className="h-px bg-line mb-3" />
               <div className="space-y-2">
                 {Object.entries(variant.params).map(([key, detail]) => (
                   <div
                     key={key}
-                    className="bg-white/70 backdrop-blur-sm rounded-none px-4 py-3 border border-[#E4DFD2]"
+                    className="bg-white/70 backdrop-blur-sm rounded-card px-4 py-3 border border-line"
                   >
                     <div className="flex items-center justify-between mb-1 gap-3">
-                      <span className="text-[13px] font-medium text-[#162459]/80">{key}</span>
-                      <span className="text-sm font-semibold text-[#162459] bg-[#F6F4EE] border border-[#E4DFD2] px-3 py-0.5 rounded-none">
+                      <span className="text-[13px] font-medium text-navy/80">{key}</span>
+                      <span className="text-sm font-semibold text-navy bg-cream border border-line px-3 py-0.5 rounded-card">
                         {detail.value}
                       </span>
                     </div>
                     {detail.note && (
-                      <p className="text-xs text-[#66708C] leading-relaxed mt-1">{detail.note}</p>
+                      <p className="text-xs text-slate leading-relaxed mt-1">{detail.note}</p>
                     )}
                   </div>
                 ))}
               </div>
 
               {/* Select CTA – always visible when detail is open */}
-              <div className="flex items-center justify-end mt-4 pt-3 border-t border-[#E4DFD2]">
+              <div className="flex items-center justify-end mt-4 pt-3 border-t border-line">
                 <SelectVariantButton
                   clientId={clientId}
                   variantId={variant.id}

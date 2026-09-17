@@ -33,18 +33,18 @@ interface Props {
 
 // ── Konfigurace ──────────────────────────────────────────
 const SECTION_COLOR: Record<string, string> = {
-  income: '#162459',
-  housing: '#009EE2',
-  retirement: '#243471',
-  children: '#0079AD',
-  investing: '#243471',
-  property: '#5cb8ec',
+  income: '#0F2A44',
+  housing: '#1FB58F',
+  retirement: '#1B3B5A',
+  children: '#179A78',
+  investing: '#1B3B5A',
+  property: '#1FB58F',
 }
 
 const STATUS_COLOR = {
-  ok: '#16a34a',
-  recommendation: '#009EE2',
-  action: '#f59e0b',
+  ok: '#1FB58F',
+  recommendation: '#1FB58F',
+  action: '#F2B441',
 } as const
 
 const STATUS_LABEL = {
@@ -98,7 +98,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
         return {
           section: s.title,
           value: indicative,
-          fill: SECTION_COLOR[s.id] ?? '#162459',
+          fill: SECTION_COLOR[s.id] ?? '#0F2A44',
         }
       })
       .filter((d) => d.value > 0)
@@ -135,17 +135,17 @@ export default function FinancialPlanOverview({ sections }: Props) {
         >
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 10, left: 30 }}>
-              <PolarGrid stroke="#E4DFD2" />
+              <PolarGrid stroke="#E2E0D9" />
               <PolarAngleAxis
                 dataKey="section"
-                tick={{ fill: '#162459', fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: '#0F2A44', fontSize: 12, fontWeight: 500 }}
               />
               <Radar
                 name="Stav pokrytí"
                 dataKey="score"
-                stroke="#009EE2"
+                stroke="#1FB58F"
                 strokeWidth={2}
-                fill="#009EE2"
+                fill="#1FB58F"
                 fillOpacity={0.25}
               />
               <Tooltip content={<RadarTooltip />} />
@@ -183,7 +183,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
                   verticalAlign="bottom"
                   height={36}
                   iconType="circle"
-                  formatter={(value) => <span className="text-xs text-[#162459]">{value}</span>}
+                  formatter={(value) => <span className="text-xs text-navy">{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -209,7 +209,7 @@ function StatusCard({
   const label = STATUS_LABEL[status]
   return (
     <div
-      className="rounded-none p-4 border bg-[#FDFCF8]"
+      className="rounded-card p-4 border bg-surface"
       style={{ borderColor: color + '33' }}
     >
       <div className="flex items-baseline gap-2">
@@ -219,7 +219,7 @@ function StatusCard({
         >
           {count}
         </span>
-        <span className="text-sm text-[#162459]/80">{label}</span>
+        <span className="text-sm text-navy/80">{label}</span>
       </div>
       <div
         className="h-1 rounded-full mt-3"
@@ -249,11 +249,11 @@ function ChartCard({
   children: React.ReactNode
 }) {
   return (
-    <div className={`bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 ${className ?? ''}`}>
+    <div className={`bg-surface rounded-card border border-line p-6 ${className ?? ''}`}>
       <div className="mb-4">
-        <h3 className="text-[#162459] font-display text-lg font-semibold">{title}</h3>
+        <h3 className="text-navy font-display text-lg font-semibold">{title}</h3>
         {subtitle && (
-          <p className="text-xs text-[#66708C] mt-0.5">{subtitle}</p>
+          <p className="text-xs text-slate mt-0.5">{subtitle}</p>
         )}
       </div>
       {children}
@@ -263,7 +263,7 @@ function ChartCard({
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="h-[320px] flex items-center justify-center text-sm text-[#66708C]">
+    <div className="h-[320px] flex items-center justify-center text-sm text-slate">
       {message}
     </div>
   )
@@ -275,9 +275,9 @@ function RadarTooltip({ active, payload }: { active?: boolean; payload?: RadarPa
   if (!active || !payload?.length) return null
   const item = payload[0]
   return (
-    <div className="bg-[#FDFCF8] border border-[#E4DFD2] rounded-none px-3 py-2 shadow-sm">
-      <p className="text-xs font-semibold text-[#162459]">{item.payload?.section}</p>
-      <p className="text-xs text-[#66708C] mt-0.5">Skóre {item.value}/100</p>
+    <div className="bg-surface border border-line rounded-card px-3 py-2 shadow-sm">
+      <p className="text-xs font-semibold text-navy">{item.payload?.section}</p>
+      <p className="text-xs text-slate mt-0.5">Skóre {item.value}/100</p>
     </div>
   )
 }
@@ -296,15 +296,15 @@ function DonutTooltip({
   const item = payload[0]
   const pct = total > 0 ? (item.value / total) * 100 : 0
   return (
-    <div className="bg-[#FDFCF8] border border-[#E4DFD2] rounded-none px-3 py-2 shadow-sm">
+    <div className="bg-surface border border-line rounded-card px-3 py-2 shadow-sm">
       <div className="flex items-center gap-2">
         <span
           className="inline-block w-2.5 h-2.5 rounded-full"
           style={{ background: item.payload.fill }}
         />
-        <p className="text-xs font-semibold text-[#162459]">{item.name}</p>
+        <p className="text-xs font-semibold text-navy">{item.name}</p>
       </div>
-      <p className="text-xs text-[#66708C] mt-1">
+      <p className="text-xs text-slate mt-1">
         {fmtCzk(item.value)} · {pct.toFixed(0)}%
       </p>
     </div>

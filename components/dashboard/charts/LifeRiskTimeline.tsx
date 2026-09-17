@@ -9,7 +9,7 @@ interface Props {
   selectedVariantId: string | null
 }
 
-const VARIANT_COLORS = ['#009EE2', '#162459', '#0079AD']
+const VARIANT_COLORS = ['#1FB58F', '#0F2A44', '#179A78']
 const DEFAULT_WAITING_PERIOD_DAYS = 14
 const DAYS_IN_MONTH = 30
 
@@ -101,7 +101,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
 
   // Pro každou variantu její vlastní křivka skrz body
   const variantSeries = variants.map((v, vIdx) => {
-    const color = VARIANT_COLORS[vIdx] ?? '#162459'
+    const color = VARIANT_COLORS[vIdx] ?? '#0F2A44'
     const pts = visibleRisks.map((r, rIdx) => {
       const amount = calcAmount(v, r)
       return { x: xFor(rIdx), y: yFor(amount), risk: r, amount }
@@ -114,13 +114,13 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
   const selectedIdx = selected ? variants.indexOf(selected) : -1
 
   return (
-    <div className="rounded-none border border-[#E4DFD2] bg-[#FDFCF8] p-4 md:p-6">
+    <div className="rounded-card border border-line bg-surface p-4 md:p-6">
       <div className="flex flex-wrap items-baseline justify-between mb-4 gap-3">
         <div>
-          <h3 className="text-[#162459] font-display text-base font-semibold">Co se ti může v životě stát</h3>
-          <p className="text-xs text-[#66708C] mt-0.5">
+          <h3 className="text-navy font-display text-base font-semibold">Co se ti může v životě stát</h3>
+          <p className="text-xs text-slate mt-0.5">
             {selected ? (
-              <>Zvýrazněná je <strong className="text-[#162459]">{selected.company}</strong>. Ostatní jsou ztlumené pro porovnání.</>
+              <>Zvýrazněná je <strong className="text-navy">{selected.company}</strong>. Ostatní jsou ztlumené pro porovnání.</>
             ) : (
               <>Všechny varianty paralelně – vyber jednu výše a zvýrazní se.</>
             )}
@@ -128,12 +128,12 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
         </div>
         <div className="flex flex-wrap items-center gap-3 text-xs">
           {variants.map((v, idx) => {
-            const color = VARIANT_COLORS[idx] ?? '#162459'
+            const color = VARIANT_COLORS[idx] ?? '#0F2A44'
             const dim = selectedIdx >= 0 && selectedIdx !== idx
             return (
               <span key={v.id} className={`inline-flex items-center gap-1.5 ${dim ? 'opacity-50' : ''}`}>
                 <span className="w-3 h-3 rounded-full" style={{ background: color }} />
-                <span className="text-[#162459]">{v.company}</span>
+                <span className="text-navy">{v.company}</span>
               </span>
             )
           })}
@@ -154,7 +154,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             x2={computedWidth - padX}
             y1={padTop + innerHeight}
             y2={padTop + innerHeight}
-            stroke="#E4DFD2"
+            stroke="#E2E0D9"
             strokeWidth={1}
           />
 
@@ -215,7 +215,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                     textAnchor="start"
                     fontSize={10}
                     fontWeight={isActive ? 700 : 600}
-                    fill={isActive ? risk.color : '#162459'}
+                    fill={isActive ? risk.color : '#0F2A44'}
                     transform="rotate(-32) translate(5 0)"
                   >
                     {risk.short}
@@ -245,7 +245,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                       cx={x}
                       cy={y}
                       r={r}
-                      fill={amount > 0 ? color : '#D8D2C2'}
+                      fill={amount > 0 ? color : '#E2E0D9'}
                       stroke="#fff"
                       strokeWidth={1.5}
                       style={{ transition: 'cx 0.45s ease, cy 0.45s ease, r 0.2s ease' }}
@@ -262,7 +262,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             y={totalHeight - 18}
             textAnchor="start"
             fontSize={10}
-            fill="#15803d"
+            fill="#179A78"
             fontWeight={600}
           >
             ← Méně závažné
@@ -272,7 +272,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             y={totalHeight - 18}
             textAnchor="end"
             fontSize={10}
-            fill="#b91c1c"
+            fill="#C2410C"
             fontWeight={600}
           >
             Nejzávažnější →
@@ -285,7 +285,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           const activeRisk = activeKey ? ORDERED_RISKS.find((r) => r.key === activeKey) : null
           if (!activeRisk) {
             return (
-              <div className="absolute bottom-4 right-4 max-w-xs rounded-none bg-white/95 backdrop-blur-sm border border-dashed border-[#E4DFD2] px-4 py-3 text-xs text-[#66708C] leading-relaxed pointer-events-none hidden lg:block">
+              <div className="absolute bottom-4 right-4 max-w-xs rounded-card bg-white/95 backdrop-blur-sm border border-dashed border-line px-4 py-3 text-xs text-slate leading-relaxed pointer-events-none hidden lg:block">
                 Najeď myší na bod na ose. Pro zafixování klikni.
               </div>
             )
@@ -295,14 +295,14 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           // Spočti částky per varianta a najdi max pro highlight
           const rows = variants.map((v, idx) => ({
             variant: v,
-            color: VARIANT_COLORS[idx] ?? '#162459',
+            color: VARIANT_COLORS[idx] ?? '#0F2A44',
             amount: calcAmount(v, activeRisk),
             isSelected: selectedVariantId === v.id,
           }))
           const maxAmt = Math.max(...rows.map((r) => r.amount), 0)
           return (
             <div
-              className="absolute bottom-3 right-3 w-[260px] sm:w-[290px] rounded-none bg-[#FDFCF8] border-2 shadow-xl overflow-hidden"
+              className="absolute bottom-3 right-3 w-[260px] sm:w-[290px] rounded-card bg-surface border-2 shadow-xl overflow-hidden"
               style={{
                 borderColor: `${activeRisk.color}55`,
                 // pinned = klient může klikat (zavřít, vybrat); hovered = nesmí blokovat hover na grafu pod ním
@@ -311,14 +311,14 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             >
               <div className="flex items-start gap-3 p-4" style={{ background: `${activeRisk.color}0d` }}>
                 <div
-                  className="w-10 h-10 rounded-none flex items-center justify-center text-white shrink-0"
+                  className="w-10 h-10 rounded-card flex items-center justify-center text-white shrink-0"
                   style={{ background: activeRisk.color }}
                 >
                   <Icon className="w-5 h-5" strokeWidth={1.8} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-[#162459] font-semibold text-sm">{activeRisk.label}</h4>
-                  <p className="text-[11px] text-[#66708C] mt-1 leading-snug">
+                  <h4 className="text-navy font-semibold text-sm">{activeRisk.label}</h4>
+                  <p className="text-[11px] text-slate mt-1 leading-snug">
                     {activeRisk.description}
                   </p>
                 </div>
@@ -327,7 +327,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                     type="button"
                     onClick={() => setPinnedKey(null)}
                     aria-label="Zavřít"
-                    className="text-[#66708C] hover:text-[#162459] text-xs leading-none"
+                    className="text-slate hover:text-navy text-xs leading-none"
                   >
                     ✕
                   </button>
@@ -339,27 +339,27 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                   return (
                     <div
                       key={r.variant.id}
-                      className="rounded-none px-2.5 py-2"
+                      className="rounded-card px-2.5 py-2"
                       style={{
-                        background: r.isSelected ? '#16a34a0c' : 'transparent',
-                        border: r.isSelected ? '1px solid #16a34a55' : '1px solid transparent',
+                        background: r.isSelected ? '#1FB58F0c' : 'transparent',
+                        border: r.isSelected ? '1px solid #1FB58F55' : '1px solid transparent',
                       }}
                     >
                       <div className="flex items-center justify-between gap-2 text-xs mb-1">
                         <span className="inline-flex items-center gap-1.5 truncate">
                           <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: r.color }} />
-                          <span className="font-medium text-[#162459] truncate">{r.variant.company}</span>
+                          <span className="font-medium text-navy truncate">{r.variant.company}</span>
                           {r.isSelected && (
-                            <span className="text-[9px] uppercase tracking-wide text-[#15803d] font-semibold shrink-0">vybráno</span>
+                            <span className="text-[9px] uppercase tracking-wide text-[#179A78] font-semibold shrink-0">vybráno</span>
                           )}
                         </span>
-                        <span className="font-semibold text-[#162459] tabular-nums shrink-0">
+                        <span className="font-semibold text-navy tabular-nums shrink-0">
                           {r.amount > 0
                             ? compactCzk(r.amount) + (activeRisk.unit === 'daily' ? '/měs' : '')
                             : '–'}
                         </span>
                       </div>
-                      <div className="h-1 rounded-full bg-[#F1EEE6] overflow-hidden">
+                      <div className="h-1 rounded-full bg-[#EDEBE4] overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{ width: `${pct}%`, background: r.color }}
@@ -369,7 +369,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                   )
                 })}
               </div>
-              <div className="px-4 py-2 text-[10px] text-[#66708C] text-center border-t border-[#E4DFD2]">
+              <div className="px-4 py-2 text-[10px] text-slate text-center border-t border-line">
                 {isPinned ? 'Klikni jinam pro odpíchnutí' : 'Klikni pro zafixování'}
               </div>
             </div>

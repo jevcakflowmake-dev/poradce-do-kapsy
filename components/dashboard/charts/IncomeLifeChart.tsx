@@ -37,7 +37,7 @@ interface Props {
   onSelect: (variantId: string) => void
 }
 
-const VARIANT_COLORS = ['#009EE2', '#162459', '#0079AD']
+const VARIANT_COLORS = ['#1FB58F', '#0F2A44', '#179A78']
 
 function fmtCzk(n: number): string {
   return Math.round(n).toLocaleString('cs-CZ') + ' Kč'
@@ -84,8 +84,8 @@ export default function IncomeLifeChart({
   // podmíněně – při prvním naplnění dat by se pořadí hooků změnilo.
   if (!monthlyIncomeNet || variants.length === 0) {
     return (
-      <div className="rounded-none border border-dashed border-[#E4DFD2] p-8 text-center">
-        <p className="text-sm text-[#66708C]">
+      <div className="rounded-card border border-dashed border-line p-8 text-center">
+        <p className="text-sm text-slate">
           {!monthlyIncomeNet
             ? 'Poradce zatím nenastavil tvůj příjem v plánu.'
             : 'Žádná varianta zatím není k dispozici.'}
@@ -99,15 +99,15 @@ export default function IncomeLifeChart({
       {/* Header s referencí */}
       <div className="flex flex-wrap items-center gap-3 justify-between">
         <div>
-          <h3 className="text-[#162459] font-display text-base font-semibold">Co se stane, když ti klesne příjem?</h3>
-          <p className="text-xs text-[#66708C] mt-0.5">
-            Tvůj současný příjem: <strong className="text-[#162459]">{fmtCzk(monthlyIncomeNet)}</strong> / měs · Vespod sloupce vidíš svůj zůstatek, navrch ti pojistka dorovnává.
+          <h3 className="text-navy font-display text-base font-semibold">Co se stane, když ti klesne příjem?</h3>
+          <p className="text-xs text-slate mt-0.5">
+            Tvůj současný příjem: <strong className="text-navy">{fmtCzk(monthlyIncomeNet)}</strong> / měs · Vespod sloupce vidíš svůj zůstatek, navrch ti pojistka dorovnává.
           </p>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="rounded-none border border-[#E4DFD2] bg-[#FDFCF8] p-4 md:p-6">
+      <div className="rounded-card border border-line bg-surface p-4 md:p-6">
         <ResponsiveContainer width="100%" height={340}>
           <BarChart
             data={chartData}
@@ -116,39 +116,39 @@ export default function IncomeLifeChart({
           >
             <XAxis
               dataKey="scenario"
-              stroke="#162459"
+              stroke="#0F2A44"
               fontSize={13}
               tickLine={false}
-              axisLine={{ stroke: '#E4DFD2' }}
+              axisLine={{ stroke: '#E2E0D9' }}
             />
             <YAxis
-              stroke="#66708C"
+              stroke="#64707D"
               fontSize={11}
               tickFormatter={(v) => `${Math.round(v / 1000)}k`}
               tickLine={false}
-              axisLine={{ stroke: '#E4DFD2' }}
+              axisLine={{ stroke: '#E2E0D9' }}
             />
-            <Tooltip content={<IncomeStackTooltip variants={variants} />} cursor={{ fill: '#F6F4EE' }} />
+            <Tooltip content={<IncomeStackTooltip variants={variants} />} cursor={{ fill: '#F6F5F1' }} />
             <ReferenceLine
               y={monthlyIncomeNet}
-              stroke="#15803d"
+              stroke="#179A78"
               strokeDasharray="4 4"
               strokeWidth={1.5}
               label={{
                 value: `100 % příjem (${fmtCzk(monthlyIncomeNet)})`,
                 position: 'top',
-                fill: '#15803d',
+                fill: '#179A78',
                 fontSize: 11,
                 fontWeight: 600,
               }}
             />
 
             {/* Reference sloupec – bez pojistky */}
-            <Bar dataKey="zustatek_bez" stackId="bez" fill="#E4DFD2" radius={[4, 4, 0, 0]} name="Bez pojistky – zůstatek" />
+            <Bar dataKey="zustatek_bez" stackId="bez" fill="#E2E0D9" radius={[4, 4, 0, 0]} name="Bez pojistky – zůstatek" />
 
             {/* Sloupce per varianta – stack: zůstatek (světlejší) + payout (brand barva) */}
             {variants.map((v, idx) => {
-              const color = VARIANT_COLORS[idx] ?? '#162459'
+              const color = VARIANT_COLORS[idx] ?? '#0F2A44'
               const isSelected = selectedVariantId === v.id
               const dim = selectedVariantId && !isSelected ? 0.35 : 1
               return [
@@ -156,7 +156,7 @@ export default function IncomeLifeChart({
                   key={`base-${v.id}`}
                   dataKey={`zustatek_${idx}`}
                   stackId={`v${idx}`}
-                  fill="#E4DFD2"
+                  fill="#E2E0D9"
                   fillOpacity={dim}
                   name={`${v.company} – tvůj zůstatek`}
                 />,
@@ -177,12 +177,12 @@ export default function IncomeLifeChart({
 
         {/* Custom legenda – méně položek než auto-legenda Recharts */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-xs">
-          <LegendDot color="#E4DFD2" label="Tvůj zůstatek" />
-          <LegendDot color="#E4DFD2" label="Bez pojistky" muted />
+          <LegendDot color="#E2E0D9" label="Tvůj zůstatek" />
+          <LegendDot color="#E2E0D9" label="Bez pojistky" muted />
           {variants.map((v, idx) => (
             <LegendDot
               key={v.id}
-              color={VARIANT_COLORS[idx] ?? '#162459'}
+              color={VARIANT_COLORS[idx] ?? '#0F2A44'}
               label={`${v.company} dorovná`}
             />
           ))}
@@ -192,7 +192,7 @@ export default function IncomeLifeChart({
       {/* Variant cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {variants.map((v, idx) => {
-          const color = VARIANT_COLORS[idx] ?? '#162459'
+          const color = VARIANT_COLORS[idx] ?? '#0F2A44'
           const isSelected = selectedVariantId === v.id
           const payout60 = v.details?.payout_60 ?? 0
           const payout50 = v.details?.payout_50 ?? 0
@@ -202,26 +202,26 @@ export default function IncomeLifeChart({
               key={v.id}
               type="button"
               onClick={() => onSelect(v.id)}
-              className={`text-left rounded-none p-4 border-2 transition-all hover:-translate-y-0.5 ${
+              className={`text-left rounded-card p-4 border-2 transition-all hover:-translate-y-0.5 ${
                 isSelected
-                  ? 'bg-[#16a34a]/8 border-[#16a34a] shadow-[0_8px_24px_-12px_rgba(22,163,74,0.4)]'
-                  : 'bg-[#FDFCF8] border-[#E4DFD2] hover:border-[#009EE2]/40 hover:shadow-sm'
+                  ? 'bg-[#1FB58F]/8 border-[#1FB58F] shadow-[0_8px_24px_-12px_rgba(22,163,74,0.4)]'
+                  : 'bg-surface border-line hover:border-mint/40 hover:shadow-sm'
               }`}
             >
               <div className="flex items-center gap-3 mb-3">
                 <div
-                  className="w-10 h-10 rounded-none flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm"
+                  className="w-10 h-10 rounded-card flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm"
                   style={{ background: color }}
                 >
                   {v.logo}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className={`font-semibold ${isSelected ? 'text-[#15803d]' : 'text-[#162459]'}`}>
+                  <h4 className={`font-semibold ${isSelected ? 'text-[#179A78]' : 'text-navy'}`}>
                     {v.company}
                   </h4>
-                  <p className="text-[11px] uppercase tracking-[0.1em] text-[#66708C]">Varianta {idx + 1}</p>
+                  <p className="text-[11px] uppercase tracking-[0.1em] text-slate">Varianta {idx + 1}</p>
                 </div>
-                {isSelected && <CheckCircle2 className="w-5 h-5 text-[#15803d] shrink-0" />}
+                {isSelected && <CheckCircle2 className="w-5 h-5 text-[#179A78] shrink-0" />}
               </div>
 
               <div className="space-y-1.5 text-xs">
@@ -237,10 +237,10 @@ export default function IncomeLifeChart({
               </div>
 
               <div
-                className={`mt-4 text-center text-xs font-semibold py-2 rounded-none ${
+                className={`mt-4 text-center text-xs font-semibold py-2 rounded-card ${
                   isSelected
-                    ? 'bg-[#16a34a] text-white'
-                    : 'bg-[#162459]/5 text-[#162459]'
+                    ? 'bg-[#1FB58F] text-white'
+                    : 'bg-navy/5 text-navy'
                 }`}
               >
                 {isSelected ? '✓ Vybráno' : 'Vybrat tuto variantu'}
@@ -252,14 +252,14 @@ export default function IncomeLifeChart({
 
       {/* Vybraná varianta – sumář */}
       {selected && (
-        <div className="rounded-none bg-[#16a34a]/8 border border-[#16a34a]/25 p-4 md:p-5">
+        <div className="rounded-card bg-[#1FB58F]/8 border border-[#1FB58F]/25 p-4 md:p-5">
           <div className="flex items-start gap-3">
-            <Shield className="w-5 h-5 text-[#15803d] mt-0.5 shrink-0" />
+            <Shield className="w-5 h-5 text-[#179A78] mt-0.5 shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-semibold text-[#15803d]">
+              <p className="text-sm font-semibold text-[#179A78]">
                 Vybraná varianta: {selected.company}
               </p>
-              <p className="text-xs text-[#162459]/80 mt-1 leading-relaxed">
+              <p className="text-xs text-navy/80 mt-1 leading-relaxed">
                 Při výpadku příjmu na 60 % ti pojistka pošle <strong>{fmtCzk(selected.details?.payout_60 ?? 0)}</strong> měsíčně,
                 při 50 % až <strong>{fmtCzk(selected.details?.payout_50 ?? 0)}</strong> měsíčně.
                 Měsíční pojistné: <strong>{selected.monthly_payment}</strong>.
@@ -299,14 +299,14 @@ function CoveragePanel({
   if (!hasAny) return null
 
   return (
-    <div className="rounded-none border border-[#E4DFD2] bg-[#FDFCF8] p-4 md:p-6">
+    <div className="rounded-card border border-line bg-surface p-4 md:p-6">
       <div className="flex items-start justify-between mb-5 gap-3">
         <div>
-          <h3 className="text-[#162459] font-display text-base font-semibold">Co tě pojistka chrání</h3>
-          <p className="text-xs text-[#66708C] mt-0.5">
+          <h3 className="text-navy font-display text-base font-semibold">Co tě pojistka chrání</h3>
+          <p className="text-xs text-slate mt-0.5">
             {selected
-              ? <>Krytí ve vybrané variantě <strong className="text-[#162459]">{display.company}</strong>.</>
-              : <>Náhled krytí varianty <strong className="text-[#162459]">{display.company}</strong> – vyber konkrétní variantu výše pro definitivní hodnoty.</>}
+              ? <>Krytí ve vybrané variantě <strong className="text-navy">{display.company}</strong>.</>
+              : <>Náhled krytí varianty <strong className="text-navy">{display.company}</strong> – vyber konkrétní variantu výše pro definitivní hodnoty.</>}
           </p>
         </div>
       </div>
@@ -323,8 +323,8 @@ function CoveragePanel({
           return (
             <div key={g.id}>
               <div className="flex items-baseline justify-between mb-2.5">
-                <h4 className="text-xs uppercase tracking-[0.15em] text-[#66708C] font-semibold">{g.label}</h4>
-                <span className="text-[11px] text-[#66708C]/80">{g.subtitle}</span>
+                <h4 className="text-xs uppercase tracking-[0.15em] text-slate font-semibold">{g.label}</h4>
+                <span className="text-[11px] text-slate/80">{g.subtitle}</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {populated.map((r) => (
@@ -347,8 +347,8 @@ function CoveragePanel({
 function LegendDot({ color, label, muted }: { color: string; label: string; muted?: boolean }) {
   return (
     <span className={`inline-flex items-center gap-1.5 ${muted ? 'opacity-70' : ''}`}>
-      <span className="w-3 h-3 rounded-none" style={{ background: color, border: muted ? '1px solid #D8D2C2' : 'none' }} />
-      <span className="text-[#162459]">{label}</span>
+      <span className="w-3 h-3 rounded-card" style={{ background: color, border: muted ? '1px solid #E2E0D9' : 'none' }} />
+      <span className="text-navy">{label}</span>
     </span>
   )
 }
@@ -369,25 +369,25 @@ function RiskCard({
     : `${Math.round(value).toLocaleString('cs-CZ')} Kč`
   return (
     <div
-      className="rounded-none border p-3.5 transition-all"
+      className="rounded-card border p-3.5 transition-all"
       style={{
-        background: highlighted ? `${def.color}0d` : '#FDFCF8',
-        borderColor: highlighted ? `${def.color}55` : '#E4DFD2',
+        background: highlighted ? `${def.color}0d` : '#FFFFFF',
+        borderColor: highlighted ? `${def.color}55` : '#E2E0D9',
       }}
     >
       <div className="flex items-start gap-3">
         <div
-          className="w-9 h-9 rounded-none flex items-center justify-center text-white shrink-0"
+          className="w-9 h-9 rounded-card flex items-center justify-center text-white shrink-0"
           style={{ background: def.color }}
         >
           <Icon className="w-4 h-4" strokeWidth={1.8} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline justify-between gap-2 mb-0.5">
-            <span className="text-[13px] font-semibold text-[#162459] leading-tight">{def.short}</span>
+            <span className="text-[13px] font-semibold text-navy leading-tight">{def.short}</span>
             <span className="text-[13px] font-semibold tabular-nums" style={{ color: def.color }}>{formatted}</span>
           </div>
-          <p className="text-[11px] text-[#66708C] leading-snug">{def.description}</p>
+          <p className="text-[11px] text-slate leading-snug">{def.description}</p>
         </div>
       </div>
     </div>
@@ -397,8 +397,8 @@ function RiskCard({
 function Row({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
   return (
     <div className={`flex items-baseline justify-between gap-2 ${muted ? 'opacity-60' : ''}`}>
-      <span className="text-[#66708C]">{label}</span>
-      <span className="font-semibold text-[#162459] text-right">{value}</span>
+      <span className="text-slate">{label}</span>
+      <span className="font-semibold text-navy text-right">{value}</span>
     </div>
   )
 }
@@ -425,7 +425,7 @@ function IncomeStackTooltip({
   const groups = new Map<string, { label: string; remainder: number; payout: number; color: string }>()
   for (const p of payload) {
     if (p.dataKey === 'zustatek_bez') {
-      groups.set('bez', { label: 'Bez pojistky', remainder: p.value, payout: 0, color: '#8B93A8' })
+      groups.set('bez', { label: 'Bez pojistky', remainder: p.value, payout: 0, color: '#7A8794' })
       continue
     }
     const m = /^(zustatek|payout)_(\d+)$/.exec(p.dataKey)
@@ -441,8 +441,8 @@ function IncomeStackTooltip({
   }
 
   return (
-    <div className="bg-[#FDFCF8] border border-[#E4DFD2] rounded-none px-3 py-2.5 shadow-sm min-w-[200px]">
-      <p className="text-xs font-semibold text-[#162459] mb-2">{label}</p>
+    <div className="bg-surface border border-line rounded-card px-3 py-2.5 shadow-sm min-w-[200px]">
+      <p className="text-xs font-semibold text-navy mb-2">{label}</p>
       <div className="space-y-2">
         {Array.from(groups.values()).map((g, idx) => {
           const total = g.remainder + g.payout
@@ -450,13 +450,13 @@ function IncomeStackTooltip({
             <div key={idx} className="text-xs">
               <div className="flex items-center justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-none" style={{ background: g.color }} />
-                  <span className="font-semibold text-[#162459]">{g.label}</span>
+                  <span className="w-2 h-2 rounded-card" style={{ background: g.color }} />
+                  <span className="font-semibold text-navy">{g.label}</span>
                 </span>
-                <span className="font-semibold text-[#162459]">{fmtCzk(total)}</span>
+                <span className="font-semibold text-navy">{fmtCzk(total)}</span>
               </div>
               {g.payout > 0 && (
-                <div className="pl-3.5 mt-0.5 text-[10px] text-[#66708C]">
+                <div className="pl-3.5 mt-0.5 text-[10px] text-slate">
                   zůstatek {fmtCzk(g.remainder)} + pojistka {fmtCzk(g.payout)}
                 </div>
               )}
