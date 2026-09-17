@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import PublicAnalysisForm from './PublicAnalysisForm'
+import AnalysisWizard from './AnalysisWizard'
 
 export const metadata: Metadata = {
   title: 'Finanční analýza zdarma',
@@ -20,5 +20,5 @@ export default async function PublicAnalysisPage() {
     redirect(role === 'advisor' ? '/advisor' : '/dashboard/analyza')
   }
 
-  return <PublicAnalysisForm />
+  return <AnalysisWizard />
 }
