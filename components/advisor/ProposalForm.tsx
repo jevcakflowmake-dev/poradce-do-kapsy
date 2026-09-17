@@ -169,10 +169,9 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
           Návrh · pro klienta
         </p>
         <h2
-          className="font-display text-navy"
-          style={{ fontSize: 'clamp(1.25rem, 2vw, 1.5rem)', letterSpacing: '-0.01em' }}
+          className="font-display text-navy text-h3"
         >
-          Odeslat <span style={{ color: BARVY.mint }}>návrh</span>
+          Odeslat návrh
         </h2>
       </div>
 

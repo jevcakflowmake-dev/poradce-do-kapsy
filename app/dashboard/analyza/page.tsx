@@ -159,10 +159,9 @@ export default function AnalyzaPage() {
         >
           <div className="section-numeral text-[4rem] md:text-[6rem] mb-3">✓</div>
           <h1
-            className="font-display text-navy mb-5"
-            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
+            className="font-display text-navy mb-5 text-h2"
           >
-            Analýza <span style={{ color: BARVY.mint }}>odeslána</span>.
+            Analýza odeslána.
           </h1>
           <p className="text-slate mb-10 max-w-md mx-auto leading-relaxed">
             Váš poradce připraví finanční plán na základě vašich odpovědí. Výsledky obvykle do 48 hodin.

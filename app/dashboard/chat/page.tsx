@@ -31,7 +31,7 @@ export default async function ClientChatPage() {
             P
           </div>
           <div className="relative z-10">
-            <div className="font-display text-white" style={{ fontSize: '0.95rem', letterSpacing: '-0.01em' }}>
+            <div className="font-display text-white text-lead">
               Váš finanční poradce
             </div>
             <div className="flex items-center gap-1.5 mt-0.5">

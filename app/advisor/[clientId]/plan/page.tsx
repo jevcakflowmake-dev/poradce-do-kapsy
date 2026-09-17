@@ -99,10 +99,9 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
         <header className="mb-10">
           <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Editor · plán na míru</p>
           <h1
-            className="font-display text-navy"
-            style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
+            className="font-display text-navy text-h2"
           >
-            Finanční <span style={{ color: BARVY.mint }}>plán</span>
+            Finanční plán
           </h1>
           <p className="text-slate mt-3 max-w-xl leading-relaxed">
             Spravujte varianty, parametry a doporučení pro každý finanční okruh klienta.

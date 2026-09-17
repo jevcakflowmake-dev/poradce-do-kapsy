@@ -57,8 +57,7 @@ export default function ForgotPasswordPage() {
               <CheckCircle2 className="w-7 h-7 text-navy" strokeWidth={1.8} />
             </div>
             <h2
-              className="font-display text-navy mb-2"
-              style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}
+              className="font-display text-navy mb-2 text-h3"
             >
               Zkontrolujte schránku
             </h2>

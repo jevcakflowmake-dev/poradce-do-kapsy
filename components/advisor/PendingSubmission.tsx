@@ -66,8 +66,7 @@ export default function PendingSubmission({
           <AlertTriangle className="w-5 h-5 text-navy shrink-0 mt-0.5" strokeWidth={1.8} />
           <div className="min-w-0">
             <h3
-              className="font-display text-navy mb-1"
-              style={{ fontSize: '1.15rem', letterSpacing: '-0.01em' }}
+              className="font-display text-navy mb-1 text-h3"
             >
               Nová analýza z veřejného formuláře
             </h3>

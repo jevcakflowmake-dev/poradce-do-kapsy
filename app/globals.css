@@ -191,11 +191,11 @@ html.lenis, html.lenis body { height: auto; }
 /* Velký obrysový stavový glyf (✓ hotovo, ✗ chyba, ↻ načítá).
    Pořadová čísla web nepoužívá — hierarchii nese typografie a hairlines. */
 .section-numeral {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-body), system-ui, sans-serif;
   letter-spacing: -0.04em;
   line-height: 1;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(22, 36, 89, 0.28);
+  -webkit-text-stroke: 1px rgba(15, 42, 68, 0.28);
 }
 
 /* Underline sweep for nav links */

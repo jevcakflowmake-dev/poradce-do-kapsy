@@ -301,7 +301,7 @@ export default function FinancniPlanPage() {
                     <div className="w-11 h-11 rounded-input bg-navy flex items-center justify-center">
                       <section.icon className="w-5 h-5 text-cream" strokeWidth={1.8} aria-hidden />
                     </div>
-                    <h3 className="font-display text-navy flex-1" style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
+                    <h3 className="font-display text-navy flex-1 text-h3">
                       {section.title}
                     </h3>
                     <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-pill text-base ${status.trida}`}>

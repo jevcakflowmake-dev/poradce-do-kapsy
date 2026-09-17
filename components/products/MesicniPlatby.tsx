@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import { CreditCard } from 'lucide-react'
 import { mesicniPlatby, type NavrhProPlatbu } from '@/lib/payments'
-import { BARVY } from '@/lib/barvy'
 
 /**
  * Přehled pravidelných plateb. Sdílený klientským dashboardem i poradcovým
@@ -30,10 +29,9 @@ export default function MesicniPlatby({
           <CreditCard className="w-5 h-5 text-white" strokeWidth={1.8} />
         </div>
         <h2
-          className="font-display text-navy"
-          style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}
+          className="font-display text-navy text-h3"
         >
-          Měsíční <span style={{ color: BARVY.mint }}>platby</span>
+          Měsíční platby
         </h2>
       </div>
 
@@ -59,8 +57,7 @@ export default function MesicniPlatby({
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
                     <h3
-                      className="font-display text-navy truncate"
-                      style={{ fontSize: '1rem', letterSpacing: '-0.01em' }}
+                      className="font-display text-navy truncate text-lead"
                     >
                       {platba.title}
                     </h3>
@@ -72,8 +69,7 @@ export default function MesicniPlatby({
                     )}
                   </div>
                   <span
-                    className="font-display text-navy tabular-nums whitespace-nowrap"
-                    style={{ fontSize: '1.15rem' }}
+                    className="font-display text-navy tabular-nums whitespace-nowrap text-h3"
                   >
                     {platba.monthly.toLocaleString('cs-CZ')} Kč
                     <span className="text-sm text-slate"> / měsíc</span>
@@ -88,8 +84,7 @@ export default function MesicniPlatby({
               Celkem měsíčně
             </span>
             <span
-              className="font-display text-navy tabular-nums"
-              style={{ fontSize: '1.25rem' }}
+              className="font-display text-navy tabular-nums text-h3"
             >
               {celkem.toLocaleString('cs-CZ')} Kč
             </span>

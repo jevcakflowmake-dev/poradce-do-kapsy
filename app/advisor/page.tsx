@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Shield, MessageCircle, ArrowUpRight, Sparkles } from 'lucide-react'
+import { MessageCircle, ArrowUpRight, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
@@ -16,8 +16,6 @@ import {
 import type { Profile } from '@/lib/types/database'
 import StatusBadge from '@/components/advisor/StatusBadge'
 import StatusFilter from '@/components/advisor/StatusFilter'
-import AdvisorListReveal from '@/components/advisor/AdvisorListReveal'
-import { BARVY } from '@/lib/barvy'
 
 type PageProps = {
   searchParams: Promise<{ status?: string; q?: string }>
@@ -92,38 +90,33 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
       <nav className="bg-surface border-b border-line px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-8xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-card bg-navy flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
-            </div>
+            {/* Stejná značka jako v hlavičce webu – mátová dlaždice, navy tečka */}
+            <span aria-hidden className="w-9 h-9 rounded-input bg-mint flex items-end justify-end p-2">
+              <span className="block w-1.5 h-1.5 rounded-pill bg-navy" />
+            </span>
             {/* Na mobilu by se název i štítek zalomily do dvou řádků – stačí logo se štítkem */}
-            <span className="hidden sm:inline font-bold text-navy text-lg tracking-tight">Poradce do kapsy</span>
-            <span className="ml-2 whitespace-nowrap text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-mint/10 text-navy border border-mint/30 font-semibold">
+            <span className="hidden sm:inline font-display text-navy text-lg">Poradce do kapsy</span>
+            <span className="ml-2 whitespace-nowrap text-base px-3 py-1 rounded-pill bg-mint/12 text-navy border border-mint/30 font-semibold">
               Panel poradce
             </span>
           </div>
           <form action="/api/auth/signout" method="POST">
-            <button className="nav-link text-sm text-slate hover:text-navy font-medium">Odhlásit</button>
+            <button className="text-base text-slate hover:text-navy font-medium rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Odhlásit</button>
           </form>
         </div>
       </nav>
 
-      <AdvisorListReveal>
-        <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
+      <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
           {/* Header */}
           <div className="advisor-hero mb-10 md:mb-14">
             <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Klienti · pipeline</p>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <h1
-                className="font-display text-navy"
-                style={{
-                  fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.05,
-                }}
+                className="font-display text-navy text-h2"
               >
                 {clients.length}{' '}
-                <span style={{ color: BARVY.mint }}>{plural(clients.length, 'klient', 'klienti', 'klientů')}</span>
-                <span className="text-slate font-normal" style={{ fontSize: '0.5em' }}>
+                {plural(clients.length, 'klient', 'klienti', 'klientů')}
+                <span className="text-slate font-normal text-lead">
                   {' '}ve vaší síti
                 </span>
               </h1>
@@ -152,7 +145,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
               </p>
             </div>
           ) : (
-            <div className="client-table advisor-hero bg-surface rounded-card border border-line overflow-hidden">
+            <div className="bg-surface rounded-card border border-line overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-line bg-cream">
@@ -184,7 +177,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                   {clientsWithScore.map((client) => (
                     <tr
                       key={client.id}
-                      className="client-row group hover:bg-cream transition-colors"
+                      className="group hover:bg-cream transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -273,7 +266,6 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
             </div>
           )}
         </div>
-      </AdvisorListReveal>
     </div>
   )
 }

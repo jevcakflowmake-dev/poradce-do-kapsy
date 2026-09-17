@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { BARVY } from '@/lib/barvy'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
@@ -50,12 +49,11 @@ export default function ZasadyPage() {
           </p>
 
           <h1
-            className="font-display text-navy mb-6"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', lineHeight: 1, letterSpacing: '-0.03em' }}
+            className="font-display text-navy mb-6 text-h2"
           >
             Zásady zpracování
             <br />
-            osobních <span style={{ color: BARVY.mint }}>údajů</span>
+            osobních údajů
           </h1>
 
           <p className="text-lead text-slate leading-relaxed mb-4">
@@ -369,8 +367,7 @@ function Section({
       <div className="flex items-baseline gap-4 mb-5 pb-4 border-b border-line">
         <span className="text-xs tabular-nums tracking-[0.2em] text-navy">{number}</span>
         <h2
-          className="font-display text-navy"
-          style={{ fontSize: '1.6rem', letterSpacing: '-0.02em' }}
+          className="font-display text-navy text-h3"
         >
           {title}
         </h2>

@@ -132,10 +132,9 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
                 Dotaz · {sectionLabel}
               </p>
               <h2
-                className="font-display text-navy mb-2"
-                style={{ fontSize: 'clamp(1.35rem, 2.5vw, 1.75rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
+                className="font-display text-navy mb-2 text-h3"
               >
-                Co vás <span style={{ color: BARVY.mint }}>zajímá</span>?
+                Co vás zajímá?
               </h2>
               <p className="text-sm text-slate mb-6 leading-relaxed">
                 Napište poradci, čemu u této oblasti nerozumíte nebo co byste chtěli upravit. Zpráva

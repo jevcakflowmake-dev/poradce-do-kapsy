@@ -161,8 +161,7 @@ export default function ProduktyPage() {
                 <config.icon className="w-5 h-5 text-cream" strokeWidth={1.8} />
               </div>
               <h2
-                className="font-display text-navy"
-                style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}
+                className="font-display text-navy text-h3"
               >
                 {config.label}
               </h2>
@@ -183,7 +182,7 @@ export default function ProduktyPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <h3 className="font-display text-navy" style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
+                        <h3 className="font-display text-navy text-lead">
                           {product.title}
                         </h3>
                         <span className="text-xs text-slate mt-1 block">

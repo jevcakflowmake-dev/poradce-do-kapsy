@@ -60,8 +60,7 @@ export default function AccessLinkButton({ clientId, hasPassword }: Props) {
         <KeyRound className="w-5 h-5 text-navy shrink-0 mt-0.5" strokeWidth={1.8} />
         <div>
           <h3
-            className="font-display text-navy mb-1"
-            style={{ fontSize: '1.15rem', letterSpacing: '-0.01em' }}
+            className="font-display text-navy mb-1 text-h3"
           >
             Přístup do aplikace
           </h3>

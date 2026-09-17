@@ -135,8 +135,7 @@ export default function ChatWindow({
               </svg>
             </div>
             <h3
-              className="font-display text-navy mb-1"
-              style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}
+              className="font-display text-navy mb-1 text-h3"
             >
               Zahajte konverzaci
             </h3>

@@ -24,12 +24,7 @@ export default function PageHeader({ eyebrow, numeral, title, subtitle, right }:
       )}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <h1
-          className="font-display text-navy"
-          style={{
-            fontSize: 'clamp(1.75rem, 4vw, 3rem)',
-            letterSpacing: '-0.02em',
-            lineHeight: 1.05,
-          }}
+          className="font-display text-navy text-h2"
         >
           {title}
         </h1>

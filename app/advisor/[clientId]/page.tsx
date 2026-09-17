@@ -249,12 +249,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Klient · profil a aktivita</p>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <h1
-              className="font-display text-navy"
-              style={{
-                fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
-                letterSpacing: '-0.02em',
-                lineHeight: 1.05,
-              }}
+              className="font-display text-navy text-h2"
             >
               {profile.full_name || 'Bez jména'}
             </h1>
@@ -300,8 +295,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           <div className="bg-surface rounded-card border border-line p-6 md:p-7">
             <div className="flex items-center justify-between mb-5">
               <h2
-                className="font-display text-navy"
-                style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}
+                className="font-display text-navy text-h3"
               >
                 Profil klienta
               </h2>
@@ -366,11 +360,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             <div>
               <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">analýza</p>
               <h2
-                className="font-display text-navy"
-                style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
+                className="font-display text-navy text-h3"
               >
                 Odpovědi z{' '}
-                <span style={{ color: BARVY.mint }}>analýzy</span>
+                analýzy
               </h2>
             </div>
             {hasAnalysis && (
@@ -393,8 +386,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                   className="bg-surface rounded-card border border-line p-6"
                 >
                   <h3
-                    className="font-display text-navy mb-4"
-                    style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                    className="font-display text-navy mb-4 text-lead"
                   >
                     {SECTION_LABELS[sectionId] || sectionId}
                   </h3>
@@ -417,8 +409,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           {analysisFiles.length > 0 && (
             <div className="mt-4 bg-surface rounded-card border border-line p-6">
               <h3
-                className="font-display text-navy mb-4"
-                style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                className="font-display text-navy mb-4 text-lead"
               >
                 Dokumenty od klienta
               </h3>
@@ -449,11 +440,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             <div>
               <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">reakce na plán</p>
               <h2
-                className="font-display text-navy"
-                style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
+                className="font-display text-navy text-h3"
               >
                 Jak klient{' '}
-                <span style={{ color: BARVY.mint }}>reagoval</span>
+                reagoval
               </h2>
             </div>
             {hasAnyReaction && (
@@ -475,8 +465,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               {/* Sekce */}
               <div className="bg-surface rounded-card border border-line p-6 md:p-7">
                 <h3
-                  className="font-display text-navy mb-5"
-                  style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                  className="font-display text-navy mb-5 text-lead"
                 >
                   Oblasti
                 </h3>
@@ -538,8 +527,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               {/* Vybrané varianty */}
               <div className="bg-surface rounded-card border border-line p-6 md:p-7">
                 <h3
-                  className="font-display text-navy mb-5 flex items-center gap-2"
-                  style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                  className="font-display text-navy mb-5 flex items-center gap-2 text-lead"
                 >
                   <Heart className="w-4 h-4 text-navy" strokeWidth={2} />
                   Preferované varianty
@@ -588,11 +576,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             <div>
               <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">aktivita</p>
               <h2
-                className="font-display text-navy"
-                style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
+                className="font-display text-navy text-h3"
               >
                 Odeslané{' '}
-                <span style={{ color: BARVY.mint }}>návrhy</span>
+                návrhy
               </h2>
             </div>
             {proposals && proposals.length > 0 && (

@@ -86,8 +86,7 @@ export default function AnalysisAccordion({
               </div>
               <div className="flex-1 min-w-0">
                 <h3
-                  className="font-display text-navy"
-                  style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}
+                  className="font-display text-navy text-h3"
                 >
                   {section.title}
                 </h3>
