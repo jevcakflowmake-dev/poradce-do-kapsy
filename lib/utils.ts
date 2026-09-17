@@ -91,6 +91,20 @@ export function formatDate(dateStr: string): string {
   }).format(new Date(dateStr))
 }
 
+/**
+ * Oslovení křestním jménem v 5. pádě.
+ *
+ * Řeší jen jména na -a (Petra → Petro, Honza → Honzo, Nikola → Nikolo), kde
+ * je pravidlo jednoznačné. U ostatních vrací jméno beze změny: tvary jako
+ * Jan → Jane nebo Tomáš → Tomáši mají tolik výjimek, že by se to častěji
+ * spletlo, než trefilo, a zkomolené jméno je horší než první pád.
+ */
+export function osloveni(jmeno: string): string {
+  const krestni = jmeno.trim().split(' ')[0]
+  if (krestni.length > 2 && krestni.endsWith('a')) return krestni.slice(0, -1) + 'o'
+  return krestni
+}
+
 // Tvar podle počtu: plural(n, 'klient', 'klienti', 'klientů')
 export function plural(n: number, one: string, few: string, many: string): string {
   if (n === 1) return one
