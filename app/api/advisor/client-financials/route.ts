@@ -12,6 +12,8 @@ interface Payload {
   mortgage_remaining_years?: number | null
   property_value_real_estate?: number | null
   property_value_movables?: number | null
+  possible_savings?: number | null
+  reserve?: number | null
   notes?: string | null
 }
 
@@ -45,6 +47,8 @@ export async function POST(request: Request) {
     mortgage_remaining_years: toNumberOrNull(body.mortgage_remaining_years),
     property_value_real_estate: toNumberOrNull(body.property_value_real_estate),
     property_value_movables: toNumberOrNull(body.property_value_movables),
+    possible_savings: toNumberOrNull(body.possible_savings),
+    reserve: toNumberOrNull(body.reserve),
     notes: body.notes ?? null,
   }
 

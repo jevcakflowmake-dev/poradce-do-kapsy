@@ -396,6 +396,8 @@ export type Database = {
           property_value_real_estate: number | null
           property_value_movables: number | null
           notes: string | null
+          possible_savings: number | null
+          reserve: number | null
           updated_at: string
           created_at: string
         }
@@ -412,6 +414,8 @@ export type Database = {
           property_value_real_estate?: number | null
           property_value_movables?: number | null
           notes?: string | null
+          possible_savings?: number | null
+          reserve?: number | null
           updated_at?: string
           created_at?: string
         }
@@ -428,6 +432,8 @@ export type Database = {
           property_value_real_estate?: number | null
           property_value_movables?: number | null
           notes?: string | null
+          possible_savings?: number | null
+          reserve?: number | null
           updated_at?: string
           created_at?: string
         }

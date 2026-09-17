@@ -15,6 +15,9 @@ export interface ClientFinancials {
   mortgage_remaining_years: number | null
   property_value_real_estate: number | null
   property_value_movables: number | null
+  /** Čísla do dlaždic na klientském přehledu. Prázdné = klient uvidí pomlčku. */
+  possible_savings: number | null
+  reserve: number | null
   notes: string | null
 }
 
@@ -34,6 +37,8 @@ const DEFAULTS: Omit<ClientFinancials, 'client_id'> = {
   mortgage_remaining_years: null,
   property_value_real_estate: null,
   property_value_movables: null,
+  possible_savings: null,
+  reserve: null,
   notes: null,
 }
 
@@ -117,6 +122,9 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
           <Group title="Majetek">
             <NumField label="Hodnota nemovitosti" value={data.property_value_real_estate} onChange={(v) => update('property_value_real_estate', v)} suffix="Kč" />
             <NumField label="Hodnota movitého majetku" value={data.property_value_movables} onChange={(v) => update('property_value_movables', v)} suffix="Kč" />
+            {/* Obě čísla vidí klient na přehledu jako dlaždice. Prázdné pole = pomlčka. */}
+            <NumField label="Možná úspora (dlaždice)" value={data.possible_savings} onChange={(v) => update('possible_savings', v)} suffix="Kč/měs" />
+            <NumField label="Doporučená rezerva (dlaždice)" value={data.reserve} onChange={(v) => update('reserve', v)} suffix="Kč" />
           </Group>
 
           <div>
