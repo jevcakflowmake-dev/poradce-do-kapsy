@@ -3,33 +3,32 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
+/**
+ * Tlačítka jsou vždycky pilulka (radius 999px) a mají jediný stupeň stínu.
+ * `primary` je mint s navy textem — hlavní akce na tmavém i světlém pozadí.
+ * `onDark` je obrys pro tmavé sekce, `outline` obrys pro krémové pozadí.
+ */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#009EE2]/20 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-pill font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default:
-          "bg-[#162459] text-[#F6F4EE] hover:bg-[#0e1a3d] hover:-translate-y-0.5",
-        navy:
-          "bg-[#162459] text-[#F6F4EE] hover:bg-[#0e1a3d] hover:-translate-y-0.5",
-        accent:
-          "bg-[#009EE2] text-[#0B111F] hover:bg-[#1a9fdd] hover:-translate-y-0.5",
-        outline:
-          "border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] hover:border-[#009EE2] hover:text-[#0079AD]",
-        ghost: "text-[#162459] hover:bg-[#EFEBE0]",
-        destructive:
-          "bg-[#ea580c] text-white hover:bg-[#c2410c]",
-        link:
-          "text-[#0079AD] underline-offset-4 hover:underline",
+        primary: "bg-mint text-navy hover:bg-mint-dark",
+        navy: "bg-navy text-cream hover:bg-navy-deep",
+        outline: "border border-navy/25 text-navy hover:border-navy hover:bg-navy/5",
+        onDark: "border border-cream/30 text-cream hover:border-cream hover:bg-cream/10",
+        ghost: "text-navy hover:bg-navy/5",
+        destructive: "bg-danger text-white hover:opacity-90",
+        link: "text-navy underline underline-offset-4 hover:text-mint-dark",
       },
       size: {
-        default: "h-11 px-5",
-        sm: "h-9 px-4 text-xs",
-        lg: "h-12 px-7 text-base",
-        icon: "h-10 w-10",
+        default: "h-12 px-6 text-base",
+        sm: "h-10 px-5 text-base",
+        lg: "h-14 px-8 text-base",
+        icon: "h-11 w-11",
       },
     },
-    defaultVariants: { variant: "default", size: "default" },
+    defaultVariants: { variant: "primary", size: "default" },
   },
 )
 

@@ -1,23 +1,14 @@
 import type { Metadata } from 'next'
-import { IBM_Plex_Sans, Instrument_Serif } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import LenisProvider from '@/components/providers/LenisProvider'
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site'
 
-const ibmPlex = IBM_Plex_Sans({
+// Jedna rodina na celý web: nadpisy nese váha, ne jiný řez.
+// latin-ext kvůli české diakritice, variable řez kvůli jedinému stažení.
+const inter = Inter({
   subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '500', '700'],
   variable: '--font-body',
-  display: 'swap',
-})
-
-// Display – Instrument Serif má jen regular (400); váhu neřešíme řezem,
-// ale velikostí a barvou. Kurzívní řez nestahujeme, kurzíva je zakázaná.
-// latin-ext kvůli české diakritice.
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['400'],
-  variable: '--font-display',
   display: 'swap',
 })
 
@@ -69,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="cs" className={`h-full antialiased ${ibmPlex.variable} ${instrumentSerif.variable}`}>
+    <html lang="cs" className={`h-full antialiased ${inter.variable}`}>
       <body className="min-h-full">
         <LenisProvider>{children}</LenisProvider>
       </body>

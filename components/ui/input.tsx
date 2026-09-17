@@ -9,10 +9,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "flex h-11 w-full rounded-none border border-[#E4DFD2] bg-[#FDFCF8] px-4 py-2.5 text-[15px] text-[#162459] placeholder:text-[#66708C] transition-all",
-          "focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10",
+          // 48 px výška a 16 px text: menší pole se na mobilu špatně trefují
+          // a iOS by při psaní zoomoval stránku.
+          "flex h-12 w-full rounded-input border border-line bg-surface px-4 text-base text-navy placeholder:text-slate transition-colors",
+          "focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20",
           "disabled:cursor-not-allowed disabled:opacity-50",
-          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#162459]",
+          "file:border-0 file:bg-transparent file:text-base file:font-medium file:text-navy",
           className,
         )}
         ref={ref}
