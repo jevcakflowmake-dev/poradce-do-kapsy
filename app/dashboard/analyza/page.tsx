@@ -159,7 +159,6 @@ export default function AnalyzaPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="section-numeral text-[4rem] md:text-[6rem] mb-3">✓</div>
-          <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Hotovo · poradce je o tom ví</p>
           <h1
             className="font-display text-navy mb-5"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
@@ -205,19 +204,9 @@ export default function AnalyzaPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="mb-10"
       >
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-slate hover:text-navy transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Zpět
-        </Link>
-        <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Analýza · o vaší situaci</p>
         <div className="flex items-start justify-between gap-4">
-          <h1
-            className="font-display text-navy"
-            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
-          >
-            Finanční <span style={{ color: BARVY.mint }}>analýza</span>
+          <h1 className="font-display text-h2 text-navy">
+            Finanční analýza
           </h1>
           {saveStatus !== 'idle' && (
             <div className="flex items-center gap-2 text-xs mt-2 shrink-0">

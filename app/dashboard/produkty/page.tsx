@@ -137,18 +137,8 @@ export default function ProduktyPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="mb-10"
       >
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-slate hover:text-navy transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Zpět
-        </Link>
-        <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Portfolio · co už máte</p>
-        <h1
-          className="font-display text-navy"
-          style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
-        >
-          Moje <span style={{ color: BARVY.mint }}>produkty</span>
+        <h1 className="font-display text-h2 text-navy">
+          Moje smlouvy
         </h1>
         <p className="text-slate mt-3 max-w-xl leading-relaxed">
           Přehled vašich finančních produktů a platebních informací.

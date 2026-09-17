@@ -14,20 +14,10 @@ export default async function ClientChatPage() {
 
   return (
     <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
-      <Link
-        href="/dashboard"
-        className="inline-flex items-center gap-1 text-sm text-slate hover:text-navy transition-colors mb-6"
-      >
-        <ArrowLeft className="w-4 h-4" /> Zpět
-      </Link>
 
       <div className="mb-6">
-        <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Chat · přímo na poradce</p>
-        <h1
-          className="font-display text-navy"
-          style={{ fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
-        >
-          Napište <span style={{ color: BARVY.mint }}>poradci</span>
+        <h1 className="font-display text-h2 text-navy">
+          Napište poradci
         </h1>
       </div>
 
