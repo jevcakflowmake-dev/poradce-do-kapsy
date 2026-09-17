@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import SiteHeader from '@/components/landing/SiteHeader'
 import HeroSection from '@/components/landing/HeroSection'
 import StatsBand from '@/components/landing/StatsBand'
 import LifePathSection from '@/components/landing/LifePathSection'
@@ -10,7 +11,6 @@ import BenefitsSection from '@/components/landing/BenefitsSection'
 import FaqSection from '@/components/landing/FaqSection'
 import CtaSection from '@/components/landing/CtaSection'
 import StickyMobileCta from '@/components/landing/StickyMobileCta'
-import CursorFollower from '@/components/motion/CursorFollower'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -22,7 +22,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F6F4EE]">
-      <CursorFollower />
+      <SiteHeader />
       <HeroSection />
       <StatsBand />
       <LifePathSection />

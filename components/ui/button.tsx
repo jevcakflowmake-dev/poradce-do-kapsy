@@ -23,7 +23,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-12 px-6 text-base",
-        sm: "h-10 px-5 text-base",
+        sm: "h-11 px-5 text-base",  // 44 px = minimální dotykový cíl
         lg: "h-14 px-8 text-base",
         icon: "h-11 w-11",
       },
