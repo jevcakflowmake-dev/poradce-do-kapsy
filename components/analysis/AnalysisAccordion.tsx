@@ -11,6 +11,7 @@ import {
   sectionProgress,
   type SectionData,
 } from '@/lib/analysis-sections'
+import { BARVY } from '@/lib/barvy'
 
 /** Příloha vybraná v prohlížeči, ještě neodeslaná. */
 export interface PendingFile {
@@ -70,7 +71,7 @@ export default function AnalysisAccordion({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: sIdx * 0.05 }}
-            className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.12)]"
+            className="bg-surface rounded-card border border-line overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.12)]"
           >
             <button
               type="button"
@@ -79,36 +80,36 @@ export default function AnalysisAccordion({
               className="w-full flex items-center gap-4 p-5 md:p-6 text-left"
             >
               <div
-                className={`w-11 h-11 rounded-none bg-gradient-to-br ${section.color} flex items-center justify-center flex-shrink-0 shadow-sm`}
+                className={`w-11 h-11 rounded-card ${section.color} flex items-center justify-center flex-shrink-0 shadow-sm`}
               >
                 <section.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
               </div>
               <div className="flex-1 min-w-0">
                 <h3
-                  className="font-display text-[#162459]"
+                  className="font-display text-navy"
                   style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}
                 >
                   {section.title}
                 </h3>
                 <div className="flex items-center gap-2 mt-1.5">
-                  <div className="w-28 h-1 bg-[#E4DFD2] rounded-full overflow-hidden">
+                  <div className="w-28 h-1 bg-line rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${progress}%`, background: '#009EE2' }}
+                      style={{ width: `${progress}%`, background: BARVY.mint }}
                     />
                   </div>
-                  <span className="text-xs text-[#66708C] tabular-nums">{progress}%</span>
+                  <span className="text-xs text-slate tabular-nums">{progress}%</span>
                 </div>
               </div>
               {progress === 100 && (
-                <div className="w-7 h-7 bg-[#16a34a]/10 border border-[#16a34a]/30 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Check className="w-4 h-4 text-[#15803d]" />
+                <div className="w-7 h-7 bg-mint/10 border border-mint/30 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Check className="w-4 h-4 text-navy" />
                 </div>
               )}
               {isExpanded ? (
-                <ChevronUp className="w-5 h-5 text-[#66708C] flex-shrink-0" />
+                <ChevronUp className="w-5 h-5 text-slate flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-[#66708C] flex-shrink-0" />
+                <ChevronDown className="w-5 h-5 text-slate flex-shrink-0" />
               )}
             </button>
 
@@ -121,20 +122,20 @@ export default function AnalysisAccordion({
                   transition={{ duration: 0.3 }}
                   className="overflow-hidden"
                 >
-                  <div className="h-px bg-[#E4DFD2]" />
+                  <div className="h-px bg-line" />
                   <div className="p-5 md:p-7 space-y-5">
                     {section.id === HEALTH_SECTION_ID && <HealthDataNotice />}
 
                     {section.questions.map(q => (
                       <div key={q.id}>
-                        <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
+                        <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
                           {q.label}
                         </label>
                         {q.type === 'select' ? (
                           <select
                             value={data[section.id]?.[q.id] || ''}
                             onChange={e => onChange(section.id, q.id, e.target.value)}
-                            className="w-full h-11 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] px-4 text-[15px] text-[#162459] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+                            className="w-full h-11 rounded-card border border-line bg-surface px-4 text-[15px] text-navy focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all"
                           >
                             <option value="">Vyberte…</option>
                             {q.options?.map(opt => (
@@ -149,10 +150,10 @@ export default function AnalysisAccordion({
                               return (
                                 <label
                                   key={opt}
-                                  className={`flex items-center gap-2 px-3 py-2.5 rounded-none border cursor-pointer transition-all text-sm ${
+                                  className={`flex items-center gap-2 px-3 py-2.5 rounded-card border cursor-pointer transition-all text-sm ${
                                     checked
-                                      ? 'border-[#009EE2] bg-[#009EE2]/8 text-[#0079AD] shadow-[inset_0_0_0_1px_#009EE2]'
-                                      : 'border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] hover:border-[#009EE2]/50'
+                                      ? 'border-mint bg-mint/8 text-navy ring-2 ring-mint'
+                                      : 'border-line bg-surface text-navy hover:border-mint/50'
                                   }`}
                                 >
                                   <input
@@ -164,7 +165,7 @@ export default function AnalysisAccordion({
                                         : [...current, opt]
                                       onChange(section.id, q.id, next.join(','))
                                     }}
-                                    className="accent-[#009EE2]"
+                                    className="accent-mint"
                                   />
                                   {opt}
                                 </label>
@@ -182,19 +183,19 @@ export default function AnalysisAccordion({
                       </div>
                     ))}
 
-                    <div className="h-px bg-[#E4DFD2]" />
+                    <div className="h-px bg-line" />
 
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
+                      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
                         Přílohy (PDF, foto smluv)
                       </label>
                       <button
                         type="button"
                         onClick={() => onPickFiles(section.id)}
-                        className="w-full border border-dashed border-[#E4DFD2] rounded-none p-5 text-center hover:border-[#009EE2] hover:bg-[#009EE2]/5 transition-all group"
+                        className="w-full border border-dashed border-line rounded-card p-5 text-center hover:border-mint hover:bg-mint/5 transition-all group"
                       >
-                        <Upload className="w-5 h-5 text-[#66708C] mx-auto mb-1.5 group-hover:text-[#0079AD]" />
-                        <span className="text-sm text-[#66708C] group-hover:text-[#162459]">
+                        <Upload className="w-5 h-5 text-slate mx-auto mb-1.5 group-hover:text-navy" />
+                        <span className="text-sm text-slate group-hover:text-navy">
                           Klikněte pro nahrání PDF nebo fotky
                         </span>
                       </button>
@@ -204,16 +205,16 @@ export default function AnalysisAccordion({
                           {sectionFiles.map(f => (
                             <div
                               key={f.name}
-                              className="flex items-center gap-2 bg-[#F6F4EE] rounded-none px-3 py-2.5 text-sm border border-[#E4DFD2]"
+                              className="flex items-center gap-2 bg-cream rounded-card px-3 py-2.5 text-sm border border-line"
                             >
-                              <FileText className="w-4 h-4 text-[#66708C]" />
-                              <span className="flex-1 text-[#162459] truncate">{f.name}</span>
-                              <span className="text-xs text-[#66708C]">{(f.size / 1024).toFixed(0)} KB</span>
+                              <FileText className="w-4 h-4 text-slate" />
+                              <span className="flex-1 text-navy truncate">{f.name}</span>
+                              <span className="text-xs text-slate">{(f.size / 1024).toFixed(0)} KB</span>
                               <button
                                 type="button"
                                 onClick={() => onRemoveFile(f.name)}
                                 aria-label={`Odebrat ${f.name}`}
-                                className="text-[#66708C] hover:text-[#c2410c]"
+                                className="text-slate hover:text-danger"
                               >
                                 <X className="w-4 h-4" />
                               </button>
@@ -228,17 +229,17 @@ export default function AnalysisAccordion({
                           {sectionStored.map(f => (
                             <div
                               key={f.id}
-                              className="flex items-center gap-2 bg-[#009EE2]/5 rounded-none px-3 py-2.5 text-sm border border-[#009EE2]/25"
+                              className="flex items-center gap-2 bg-mint/5 rounded-card px-3 py-2.5 text-sm border border-mint/25"
                             >
-                              <Check className="w-4 h-4 text-[#0079AD] shrink-0" />
+                              <Check className="w-4 h-4 text-navy shrink-0" />
                               <StoredFileLink
                                 bucket="analysis"
                                 path={f.file_url}
-                                className="flex-1 min-w-0 text-left text-[#162459] truncate hover:text-[#0079AD] transition-colors"
+                                className="flex-1 min-w-0 text-left text-navy truncate hover:text-navy transition-colors"
                               >
                                 {f.file_name}
                               </StoredFileLink>
-                              <span className="text-xs text-[#66708C] shrink-0">nahráno</span>
+                              <span className="text-xs text-slate shrink-0">nahráno</span>
                             </div>
                           ))}
                         </div>
@@ -262,12 +263,12 @@ export default function AnalysisAccordion({
  */
 function HealthDataNotice() {
   return (
-    <div className="bg-[#F6F4EE] border border-[#E4DFD2] border-l-2 border-l-[#009EE2] p-4 md:p-5">
+    <div className="bg-cream border border-line border-l-4 border-l-mint p-4 md:p-5">
       <div className="flex items-start gap-3">
-        <Shield className="w-4 h-4 text-[#009EE2] flex-shrink-0 mt-0.5" strokeWidth={1.8} />
-        <div className="text-[13px] text-[#66708C] leading-relaxed space-y-2">
+        <Shield className="w-4 h-4 text-navy flex-shrink-0 mt-0.5" strokeWidth={1.8} />
+        <div className="text-[13px] text-slate leading-relaxed space-y-2">
           <p>
-            Tahle sekce se ptá i na <strong className="font-semibold text-[#162459]">údaje o zdraví</strong>{' '}
+            Tahle sekce se ptá i na <strong className="font-semibold text-navy">údaje o zdraví</strong>{' '}
             (výška, váha, nemoci, úrazy). Pojišťovny je vyžadují pro výpočet ceny
             a rozsahu krytí – bez nich vám návrh životního pojištění nespočítáme.
           </p>
@@ -277,7 +278,7 @@ function HealthDataNotice() {
             můžete i přeskočit. Podrobnosti v{' '}
             <Link
               href="/zasady-ochrany-osobnich-udaju"
-              className="underline underline-offset-2 hover:text-[#162459] transition-colors"
+              className="underline underline-offset-2 hover:text-navy transition-colors"
             >
               zásadách ochrany osobních údajů
             </Link>

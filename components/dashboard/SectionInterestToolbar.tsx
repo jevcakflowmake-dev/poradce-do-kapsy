@@ -65,8 +65,8 @@ export default function SectionInterestToolbar({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-[#E4DFD2]">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#66708C] mr-1">
+    <div className="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-line">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate mr-1">
         Vaše reakce:
       </span>
 
@@ -122,16 +122,16 @@ function Btn({
     'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all disabled:opacity-50 border'
   const tones: Record<typeof tone, { active: string; inactive: string }> = {
     positive: {
-      active: 'bg-[#009EE2] text-white border-[#009EE2] shadow-sm shadow-[#009EE2]/25',
-      inactive: 'bg-[#FDFCF8] text-[#0079AD] border-[#009EE2]/30 hover:border-[#009EE2] hover:bg-[#009EE2]/5',
+      active: 'bg-mint text-navy border-mint',
+      inactive: 'bg-surface text-navy border-mint/30 hover:border-mint hover:bg-mint/5',
     },
     neutral: {
-      active: 'bg-[#162459] text-white border-[#162459]',
-      inactive: 'bg-[#FDFCF8] text-[#162459] border-[#E4DFD2] hover:border-[#162459]/40',
+      active: 'bg-navy text-white border-navy',
+      inactive: 'bg-surface text-navy border-line hover:border-navy/40',
     },
     muted: {
-      active: 'bg-[#66708C]/15 text-[#66708C] border-[#66708C]/30',
-      inactive: 'bg-[#FDFCF8] text-[#66708C] border-[#E4DFD2] hover:border-[#66708C]/50',
+      active: 'bg-slate/15 text-navy border-slate/30',
+      inactive: 'bg-surface text-slate border-line hover:border-slate/50',
     },
   }
   const state = active ? tones[tone].active : tones[tone].inactive

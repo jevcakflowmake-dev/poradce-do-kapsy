@@ -9,10 +9,10 @@ export default function ProposalList({ proposals }: { proposals: Proposal[] }) {
 
   if (list.length === 0) {
     return (
-      <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-8 text-center">
+      <div className="bg-surface rounded-card border border-line p-8 text-center">
         <div className="text-4xl mb-3">📭</div>
-        <p className="text-[#66708C] font-medium">Zatím žádné návrhy</p>
-        <p className="text-[#8B93A8] text-sm mt-1">Poradce vám návrhy zašle do 48 hodin</p>
+        <p className="text-slate font-medium">Zatím žádné návrhy</p>
+        <p className="text-slate text-sm mt-1">Poradce vám návrhy zašle do 48 hodin</p>
       </div>
     )
   }
@@ -22,7 +22,7 @@ export default function ProposalList({ proposals }: { proposals: Proposal[] }) {
   return (
     <div className="space-y-2">
       {unread > 0 && (
-        <p className="text-sm text-[#0079AD] font-medium">{unread} nepřečtených návrhů</p>
+        <p className="text-sm text-navy font-medium">{unread} nepřečtených návrhů</p>
       )}
       {list.map(p => (
         <ProposalCard

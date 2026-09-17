@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import MesicniPlatby from '@/components/products/MesicniPlatby'
+import { BARVY } from '@/lib/barvy'
 
 interface Product {
   id: string
@@ -23,19 +24,19 @@ const typeConfig = {
   insurance: {
     label: 'Pojištění',
     icon: Shield,
-    gradient: 'from-[#162459] to-[#243471]',
+    gradient: 'bg-navy',
     numeral: '01',
   },
   pension: {
     label: 'Penzijní produkty',
     icon: Clock,
-    gradient: 'from-[#009EE2] to-[#0079AD]',
+    gradient: 'bg-mint',
     numeral: '02',
   },
   invest: {
     label: 'Investice',
     icon: TrendingUp,
-    gradient: 'from-[#162459] to-[#009EE2]',
+    gradient: 'bg-navy-soft',
     numeral: '03',
   },
 }
@@ -73,16 +74,16 @@ function InsuranceDetail({ content }: { content: string | null }) {
   }
 
   if (!parsed?.sections) {
-    return <p className="text-sm text-[#66708C] mt-2">{content}</p>
+    return <p className="text-sm text-slate mt-2">{content}</p>
   }
 
   return (
-    <div className="mt-4 pt-4 border-t border-[#E4DFD2]">
+    <div className="mt-4 pt-4 border-t border-line">
       <div className="flex items-center gap-2 mb-3">
         {parsed.logo && <span className="text-lg">{parsed.logo}</span>}
-        {parsed.company && <span className="text-sm font-semibold text-[#162459]">{parsed.company}</span>}
+        {parsed.company && <span className="text-sm font-semibold text-navy">{parsed.company}</span>}
         {parsed.monthly_price && (
-          <span className="ml-auto text-sm font-bold text-[#0079AD]">
+          <span className="ml-auto text-sm font-bold text-navy">
             {parsed.monthly_price} Kč/měsíc
           </span>
         )}
@@ -90,15 +91,15 @@ function InsuranceDetail({ content }: { content: string | null }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {parsed.sections.map((s) => (
           <div key={s.id} className="flex items-center gap-2 text-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#009EE2] shrink-0" />
-            <span className="text-[#66708C]">{SECTION_LABELS[s.id] || s.id}</span>
-            <span className="font-medium text-[#162459] ml-auto tabular-nums">
+            <span className="w-1.5 h-1.5 rounded-full bg-mint shrink-0" />
+            <span className="text-slate">{SECTION_LABELS[s.id] || s.id}</span>
+            <span className="font-medium text-navy ml-auto tabular-nums">
               {s.amount?.toLocaleString('cs-CZ')} Kč
             </span>
           </div>
         ))}
       </div>
-      {parsed.description && <p className="text-sm text-[#66708C] mt-3">{parsed.description}</p>}
+      {parsed.description && <p className="text-sm text-slate mt-3">{parsed.description}</p>}
     </div>
   )
 }
@@ -138,18 +139,18 @@ export default function ProduktyPage() {
       >
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-[#66708C] hover:text-[#162459] transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-sm text-slate hover:text-navy transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
-        <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Portfolio · co už máte</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Portfolio · co už máte</p>
         <h1
-          className="font-display text-[#162459]"
+          className="font-display text-navy"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
         >
-          Moje <span style={{ color: '#009EE2' }}>produkty</span>
+          Moje <span style={{ color: BARVY.mint }}>produkty</span>
         </h1>
-        <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
+        <p className="text-slate mt-3 max-w-xl leading-relaxed">
           Přehled vašich finančních produktů a platebních informací.
         </p>
       </motion.div>
@@ -167,37 +168,37 @@ export default function ProduktyPage() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div
-                className={`w-10 h-10 rounded-none bg-gradient-to-br ${config.gradient} flex items-center justify-center shadow-sm`}
+                className={`w-10 h-10 rounded-card ${config.gradient} flex items-center justify-center shadow-sm`}
               >
-                <config.icon className="w-5 h-5 text-white" strokeWidth={1.8} />
+                <config.icon className="w-5 h-5 text-cream" strokeWidth={1.8} />
               </div>
               <h2
-                className="font-display text-[#162459]"
+                className="font-display text-navy"
                 style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}
               >
                 {config.label}
               </h2>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-[#F6F4EE] text-[#66708C] border border-[#E4DFD2] font-medium">
+              <span className="text-xs px-2.5 py-1 rounded-full bg-cream text-slate border border-line font-medium">
                 {items.length}
               </span>
             </div>
             {items.length === 0 ? (
-              <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-8 text-center">
-                <p className="text-sm text-[#66708C]">Zatím žádné produkty</p>
+              <div className="bg-surface rounded-card border border-line p-8 text-center">
+                <p className="text-sm text-slate">Zatím žádné produkty</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {items.map((product) => (
                   <div
                     key={product.id}
-                    className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-5 md:p-6 transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] hover:border-[#009EE2]/30"
+                    className="bg-surface rounded-card border border-line p-5 md:p-6 transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] hover:border-mint/30"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <h3 className="font-display text-[#162459]" style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
+                        <h3 className="font-display text-navy" style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
                           {product.title}
                         </h3>
-                        <span className="text-xs text-[#66708C] mt-1 block">
+                        <span className="text-xs text-slate mt-1 block">
                           {new Date(product.created_at).toLocaleDateString('cs-CZ')}
                         </span>
                       </div>
@@ -206,7 +207,7 @@ export default function ProduktyPage() {
                           <StoredFileLink
                             bucket="proposals"
                             path={product.file_url}
-                            className="w-9 h-9 bg-[#F6F4EE] border border-[#E4DFD2] rounded-none flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors group"
+                            className="w-9 h-9 bg-cream border border-line rounded-card flex items-center justify-center hover:bg-navy hover:text-white hover:border-navy transition-colors group"
                           >
                             <FileText className="w-4 h-4" />
                           </StoredFileLink>
@@ -216,7 +217,7 @@ export default function ProduktyPage() {
                             href={product.link_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="w-9 h-9 bg-[#F6F4EE] border border-[#E4DFD2] rounded-none flex items-center justify-center hover:bg-[#162459] hover:text-white hover:border-[#162459] transition-colors"
+                            className="w-9 h-9 bg-cream border border-line rounded-card flex items-center justify-center hover:bg-navy hover:text-white hover:border-navy transition-colors"
                           >
                             <ExternalLink className="w-4 h-4" />
                           </a>
@@ -232,7 +233,7 @@ export default function ProduktyPage() {
         )
       })}
 
-      <Separator className="my-10 bg-[#E4DFD2]" />
+      <Separator className="my-10 bg-line" />
 
       <MesicniPlatby navrhy={products} pohled="klient" />
     </div>

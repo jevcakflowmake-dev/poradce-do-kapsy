@@ -12,6 +12,7 @@ import AnalysisAccordion, {
 } from '@/components/analysis/AnalysisAccordion'
 import { SECTIONS, type SectionData } from '@/lib/analysis-sections'
 import AnalysisHero from '@/components/analyza/AnalysisHero'
+import { BARVY } from '@/lib/barvy'
 
 export default function AnalyzaPage() {
   const [data, setData] = useState<Record<string, SectionData>>({})
@@ -158,20 +159,20 @@ export default function AnalyzaPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="section-numeral text-[4rem] md:text-[6rem] mb-3">✓</div>
-          <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Hotovo · poradce je o tom ví</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Hotovo · poradce je o tom ví</p>
           <h1
-            className="font-display text-[#162459] mb-5"
+            className="font-display text-navy mb-5"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Analýza <span style={{ color: '#009EE2' }}>odeslána</span>.
+            Analýza <span style={{ color: BARVY.mint }}>odeslána</span>.
           </h1>
-          <p className="text-[#66708C] mb-10 max-w-md mx-auto leading-relaxed">
+          <p className="text-slate mb-10 max-w-md mx-auto leading-relaxed">
             Váš poradce připraví finanční plán na základě vašich odpovědí. Výsledky obvykle do 48 hodin.
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-            style={{ background: '#162459' }}
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-card font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-card hover:-translate-y-0.5"
+            style={{ background: BARVY.navy }}
           >
             <ArrowLeft className="w-4 h-4" /> Zpět na přehled
           </Link>
@@ -206,36 +207,36 @@ export default function AnalyzaPage() {
       >
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-[#66708C] hover:text-[#162459] transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-sm text-slate hover:text-navy transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" /> Zpět
         </Link>
-        <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Analýza · o vaší situaci</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Analýza · o vaší situaci</p>
         <div className="flex items-start justify-between gap-4">
           <h1
-            className="font-display text-[#162459]"
+            className="font-display text-navy"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Finanční <span style={{ color: '#009EE2' }}>analýza</span>
+            Finanční <span style={{ color: BARVY.mint }}>analýza</span>
           </h1>
           {saveStatus !== 'idle' && (
             <div className="flex items-center gap-2 text-xs mt-2 shrink-0">
               <span
                 className={`w-2 h-2 rounded-full ${
                   saveStatus === 'saving'
-                    ? 'bg-[#f59e0b] animate-pulse'
+                    ? 'bg-amber animate-pulse'
                     : saveStatus === 'saved'
-                      ? 'bg-[#16a34a]'
-                      : 'bg-[#ea580c]'
+                      ? 'bg-mint'
+                      : 'bg-danger'
                 }`}
               />
-              <span className="text-[#66708C]">
+              <span className="text-slate">
                 {saveStatus === 'saving' ? 'Ukládám…' : saveStatus === 'saved' ? 'Uloženo' : 'Chyba'}
               </span>
             </div>
           )}
         </div>
-        <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
+        <p className="text-slate mt-3 max-w-xl leading-relaxed">
           Odpovězte na otázky v jednotlivých sekcích. Čím víc vyplníte, tím přesnější plán dostanete. Průběh se ukládá sám.
         </p>
       </motion.div>
@@ -252,7 +253,7 @@ export default function AnalyzaPage() {
       />
 
       {fileError && (
-        <div className="mt-6 p-4 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
+        <div className="mt-6 p-4 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-card text-sm text-danger">
           {fileError}
         </div>
       )}
@@ -266,8 +267,8 @@ export default function AnalyzaPage() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-          style={{ background: '#162459' }}
+          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-card font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-card hover:-translate-y-0.5"
+          style={{ background: BARVY.navy }}
         >
           {loading ? 'Odesílám…' : 'Odeslat analýzu'}
           <ArrowRight className="w-4 h-4" />

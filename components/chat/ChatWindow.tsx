@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Message } from '@/lib/types/database'
+import { BARVY } from '@/lib/barvy'
 
 function formatTime(dateStr: string) {
   return new Intl.DateTimeFormat('cs-CZ', {
@@ -116,7 +117,7 @@ export default function ChatWindow({
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-[#162459]/15 border-t-[#009EE2] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[3px] border-navy/15 border-t-mint rounded-full animate-spin" />
       </div>
     )
   }
@@ -124,22 +125,22 @@ export default function ChatWindow({
   // min-h-0: flex položka jinak nesmí být nižší než svůj obsah. U delší
   // konverzace na nízké obrazovce by chat přetekl kartu o výšku její hlavičky.
   return (
-    <div className="flex flex-col h-full min-h-0 bg-[#F6F4EE]">
+    <div className="flex flex-col h-full min-h-0 bg-cream">
       <div ref={listRef} className="flex-1 overflow-y-auto p-5 space-y-3 min-h-0">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
-            <div className="w-14 h-14 rounded-2xl bg-[#009EE2]/10 border border-[#009EE2]/25 flex items-center justify-center mb-4">
-              <svg className="w-7 h-7 text-[#0079AD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-14 h-14 rounded-2xl bg-mint/10 border border-mint/25 flex items-center justify-center mb-4">
+              <svg className="w-7 h-7 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
             <h3
-              className="font-display text-[#162459] mb-1"
+              className="font-display text-navy mb-1"
               style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}
             >
               Zahajte konverzaci
             </h3>
-            <p className="text-sm text-[#66708C] max-w-xs">
+            <p className="text-sm text-slate max-w-xs">
               {myRole === 'client'
                 ? 'Máte otázky? Napište poradci – odpovídá zpravidla do 24 hodin.'
                 : 'Napište klientovi zprávu nebo odpovězte na jeho dotazy.'}
@@ -155,7 +156,7 @@ export default function ChatWindow({
           return (
             <div key={msg.id}>
               {showTime && (
-                <div className="text-center text-[11px] tracking-wider uppercase text-[#66708C] my-3">
+                <div className="text-center text-[11px] tracking-wider uppercase text-slate my-3">
                   {formatTime(msg.created_at)}
                 </div>
               )}
@@ -163,7 +164,7 @@ export default function ChatWindow({
                 {!isMe && (
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white mr-2 shrink-0 mt-1"
-                    style={{ background: '#162459' }}
+                    style={{ background: BARVY.navy }}
                   >
                     P
                   </div>
@@ -173,9 +174,9 @@ export default function ChatWindow({
                   className={`max-w-[min(75%,40rem)] px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${
                     isMe
                       ? 'rounded-br-sm text-white shadow-sm'
-                      : 'rounded-bl-sm bg-[#FDFCF8] border border-[#E4DFD2] text-[#162459]'
+                      : 'rounded-bl-sm bg-surface border border-line text-navy'
                   }`}
-                  style={isMe ? { background: '#162459' } : {}}
+                  style={isMe ? { background: BARVY.navy } : {}}
                 >
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                   {isMe && (
@@ -190,21 +191,21 @@ export default function ChatWindow({
         })}
       </div>
 
-      <div className="border-t border-[#E4DFD2] p-4 bg-[#FDFCF8]">
+      <div className="border-t border-line p-4 bg-surface">
         <div className="flex items-end gap-2">
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={myRole === 'client' ? 'Napište poradci…' : 'Odpovědět klientovi…'}
-            className="chat-input flex-1 px-4 py-3 bg-[#F6F4EE] border border-[#E4DFD2] rounded-2xl text-[14px] text-[#162459] placeholder:text-[#66708C] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+            className="chat-input flex-1 px-4 py-3 bg-cream border border-line rounded-2xl text-[14px] text-navy placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all"
             rows={1}
           />
           <button
             onClick={sendMessage}
             disabled={!input.trim() || sending}
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-white transition-all disabled:opacity-40 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5 shrink-0"
-            style={{ background: '#162459' }}
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-cream transition-colors disabled:opacity-40 hover:bg-navy-deep shrink-0"
+            style={{ background: BARVY.navy }}
             aria-label="Odeslat"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +213,7 @@ export default function ChatWindow({
             </svg>
           </button>
         </div>
-        <p className="text-[11px] text-[#66708C] mt-2 tracking-wide">Enter = odeslat · Shift+Enter = nový řádek</p>
+        <p className="text-[11px] text-slate mt-2 tracking-wide">Enter = odeslat · Shift+Enter = nový řádek</p>
       </div>
     </div>
   )

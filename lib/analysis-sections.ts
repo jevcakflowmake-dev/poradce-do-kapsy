@@ -37,7 +37,7 @@ export const SECTIONS: Section[] = [
     id: 'income',
     title: 'Zajištění příjmů',
     icon: Shield,
-    color: 'from-[#162459] to-[#243471]',
+    color: 'bg-navy',
     questions: [
       { id: 'employment', label: 'Jaký je váš pracovní poměr?', type: 'select', options: ['Zaměstnanec', 'OSVČ', 'Kombinace', 'Student', 'Důchodce'] },
       { id: 'monthly_income', label: 'Čistý měsíční příjem (Kč)', type: 'number', placeholder: '35 000' },
@@ -56,7 +56,7 @@ export const SECTIONS: Section[] = [
     id: 'housing',
     title: 'Bydlení',
     icon: Home,
-    color: 'from-[#009EE2] to-[#0079AD]',
+    color: 'bg-navy',
     questions: [
       { id: 'has_mortgage', label: 'Máte hypotéku?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'plan_mortgage', label: 'Pokud ne, plánujete ji řešit?', type: 'select', options: ['Ano', 'Ne', 'Možná v budoucnu'] },
@@ -70,7 +70,7 @@ export const SECTIONS: Section[] = [
     id: 'retirement',
     title: 'Příprava na důchod',
     icon: Clock,
-    color: 'from-[#162459] to-[#243471]',
+    color: 'bg-navy',
     questions: [
       { id: 'current_savings', label: 'Kolik si aktuálně odkládáte na důchod? (Kč/měsíc)', type: 'number', placeholder: '500' },
       { id: 'pension_gap', label: 'Když byste od zítra pobírali důchod 9 000 Kč, kolik Kč byste ještě potřebovali k tomu?', type: 'number', placeholder: '15 000' },
@@ -81,7 +81,7 @@ export const SECTIONS: Section[] = [
     id: 'children',
     title: 'Děti',
     icon: Baby,
-    color: 'from-[#009EE2] to-[#0079AD]',
+    color: 'bg-navy',
     questions: [
       { id: 'children_count', label: 'Kolik máte dětí?', type: 'number', placeholder: '0' },
       { id: 'children_ages', label: 'Jaký je jejich věk? (oddělte čárkou)', type: 'text', placeholder: '5, 8, 12' },
@@ -95,7 +95,7 @@ export const SECTIONS: Section[] = [
     id: 'investing',
     title: 'Investice',
     icon: TrendingUp,
-    color: 'from-[#162459] to-[#243471]',
+    color: 'bg-navy',
     questions: [
       { id: 'investing_experience', label: 'Zkušenosti s investováním', type: 'select', options: ['Žádné', 'Začátečník', 'Mírně pokročilý', 'Pokročilý'] },
       { id: 'risk_tolerance', label: 'Tolerance k riziku', type: 'select', options: ['Konzervativní', 'Vyvážený', 'Dynamický', 'Agresivní'] },
@@ -108,7 +108,7 @@ export const SECTIONS: Section[] = [
     id: 'property',
     title: 'Pojištění majetku',
     icon: Building2,
-    color: 'from-[#009EE2] to-[#0079AD]',
+    color: 'bg-navy',
     questions: [
       { id: 'has_car', label: 'Vlastníte auto?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'car_insurance', label: 'Jak jej máte pojištěné?', type: 'select', options: ['Povinné ručení', 'Povinné ručení + havarijní', 'Nemám pojištění', 'Nevlastním auto'] },
@@ -126,7 +126,7 @@ export const SECTIONS: Section[] = [
     id: 'personal',
     title: 'Osobní údaje',
     icon: UserCircle,
-    color: 'from-[#162459] to-[#0e1a3d]',
+    color: 'bg-navy',
     questions: [
       { id: 'full_name', label: 'Jméno a příjmení', type: 'text', placeholder: 'Jan Novák' },
       { id: 'email', label: 'E-mail', type: 'text', placeholder: 'jan@email.cz' },

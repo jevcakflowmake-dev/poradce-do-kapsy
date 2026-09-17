@@ -63,10 +63,10 @@ export default function SelectVariantButton({
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-none text-xs font-semibold transition-all disabled:opacity-60 ${
+      className={`inline-flex items-center gap-2 px-4 py-2 rounded-card text-xs font-semibold transition-all disabled:opacity-60 ${
         isSelected
-          ? 'bg-[#009EE2] text-white shadow-sm shadow-[#009EE2]/25 hover:bg-[#0079AD]'
-          : 'bg-[#FDFCF8] border border-[#009EE2]/40 text-[#0079AD] hover:bg-[#009EE2]/5 hover:border-[#009EE2]'
+          ? 'bg-mint text-navy hover:bg-mint-dark'
+          : 'bg-surface border border-mint/40 text-navy hover:bg-mint/5 hover:border-mint'
       }`}
     >
       {loading ? (
