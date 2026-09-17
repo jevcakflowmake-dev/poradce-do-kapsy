@@ -22,19 +22,19 @@ const typeConfig = {
   insurance: {
     label: 'Pojištění',
     icon: Shield,
-    gradient: 'bg-navy',
+    plocha: 'bg-navy',
     numeral: '01',
   },
   pension: {
     label: 'Penzijní produkty',
     icon: Clock,
-    gradient: 'bg-mint',
+    plocha: 'bg-mint',
     numeral: '02',
   },
   invest: {
     label: 'Investice',
     icon: TrendingUp,
-    gradient: 'bg-navy-soft',
+    plocha: 'bg-navy-soft',
     numeral: '03',
   },
 }
@@ -156,7 +156,7 @@ export default function ProduktyPage() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div
-                className={`w-10 h-10 rounded-card ${config.gradient} flex items-center justify-center shadow-sm`}
+                className={`w-10 h-10 rounded-card ${config.plocha} flex items-center justify-center shadow-sm`}
               >
                 <config.icon className="w-5 h-5 text-cream" strokeWidth={1.8} />
               </div>
