@@ -248,8 +248,8 @@ export default function ZasadyPage() {
                   dobu, kterou ukládá zákon (u distribuce pojištění a úvěrů
                   zpravidla 5–10 let od zániku smlouvy).
                 </>,
-                {/* TODO (Jakub): znění si projdi, je to můj návrh. Odpovídá tomu,
-                    co reálně dělá /api/analyza/koncept a migrace 010. */}
+                // TODO (Jakub): znění si projdi, je to můj návrh. Odpovídá tomu,
+                // co reálně dělá /api/analyza/koncept a migrace 010.
                 <>
                   <B>Rozepsaná analýza</B> – ukládá se až od chvíle, kdy v
                   posledním kroku vyplníte kontakt, abyste o odpovědi nepřišli.
