@@ -5,8 +5,8 @@ import SiteHeader from '@/components/landing/SiteHeader'
 import HeroSection from '@/components/landing/HeroSection'
 import ProblemSection from '@/components/landing/ProblemSection'
 import HowItWorksSection from '@/components/landing/HowItWorksSection'
-import DeliverableSection from '@/components/landing/DeliverableSection'
-import BenefitsSection from '@/components/landing/BenefitsSection'
+import AboutSection from '@/components/landing/AboutSection'
+import PricingSection from '@/components/landing/PricingSection'
 import FaqSection from '@/components/landing/FaqSection'
 import CtaSection from '@/components/landing/CtaSection'
 import StickyMobileCta from '@/components/landing/StickyMobileCta'
@@ -25,9 +25,8 @@ export default async function HomePage() {
       <HeroSection />
       <ProblemSection />
       <HowItWorksSection />
-      {/* „Co dostanete“ hned za „jak to funguje“ – nejdřív proces, pak výstup */}
-      <DeliverableSection />
-      <BenefitsSection />
+      <AboutSection />
+      <PricingSection />
       <FaqSection />
       <CtaSection />
       <StickyMobileCta />
