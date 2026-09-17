@@ -3,8 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import SiteHeader from '@/components/landing/SiteHeader'
 import HeroSection from '@/components/landing/HeroSection'
-import StatsBand from '@/components/landing/StatsBand'
-import LifePathSection from '@/components/landing/LifePathSection'
+import ProblemSection from '@/components/landing/ProblemSection'
 import HowItWorksSection from '@/components/landing/HowItWorksSection'
 import DeliverableSection from '@/components/landing/DeliverableSection'
 import BenefitsSection from '@/components/landing/BenefitsSection'
@@ -21,11 +20,10 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE]">
+    <div className="min-h-screen bg-cream">
       <SiteHeader />
       <HeroSection />
-      <StatsBand />
-      <LifePathSection />
+      <ProblemSection />
       <HowItWorksSection />
       {/* „Co dostanete“ hned za „jak to funguje“ – nejdřív proces, pak výstup */}
       <DeliverableSection />
