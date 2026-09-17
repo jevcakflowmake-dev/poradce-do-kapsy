@@ -111,7 +111,7 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
             className="relative w-full max-w-lg bg-surface rounded-card border border-line shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Gradient top accent */}
+            {/* Navy proužek nahoře – bez gradientu, jen plocha */}
             <div
               className="absolute top-0 inset-x-0 h-1"
               style={{ background: BARVY.navy }}

@@ -7,12 +7,12 @@ import {
   calcHealthScore,
   familyLabel,
   riskLabel,
-  goalLabel,
   formatDate,
   plural,
   CLIENT_STATUS_VALUES,
   isClientStatus,
 } from '@/lib/utils'
+import { goalLabel } from '@/lib/analysis-sections'
 import type { Profile } from '@/lib/types/database'
 import StatusBadge from '@/components/advisor/StatusBadge'
 import StatusFilter from '@/components/advisor/StatusFilter'

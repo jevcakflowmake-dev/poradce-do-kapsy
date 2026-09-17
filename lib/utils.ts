@@ -65,17 +65,6 @@ export function riskLabel(rp: string | null): string {
   return rp ? (map[rp] ?? rp) : '–'
 }
 
-export function goalLabel(goal: string): string {
-  const map: Record<string, string> = {
-    insurance: 'Pojištění',
-    pension: 'Důchod',
-    invest: 'Investice',
-    mortgage: 'Hypotéka',
-    savings: 'Stavební spoření',
-  }
-  return map[goal] ?? goal
-}
-
 export function proposalTypeLabel(type: string): string {
   return {
     insurance: 'Pojištění',

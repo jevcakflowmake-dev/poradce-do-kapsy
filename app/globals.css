@@ -45,20 +45,6 @@
   --color-success: #15803D;
   --color-danger: #C2410C;
 
-  /* Dočasné aliasy staré palety „inkoust a papír“. Drží při životě sekce,
-     které ještě čekají na přepis — zmizí spolu s posledním hexem. */
-  --color-paper: var(--color-cream);
-  --color-paper-raised: var(--color-surface);
-  --color-paper-deep: var(--color-cream-deep);
-  --color-ink: var(--color-navy-deep);
-  --color-navy-light: var(--color-navy-soft);
-  --color-accent: var(--color-mint);
-  --color-accent-light: var(--color-mint);
-  --color-accent-dark: var(--color-mint-dark);
-  --color-muted: var(--color-slate);
-  --color-hairline: var(--color-line);
-  --color-surface-soft: var(--color-surface);
-
   /* Jedna rodina na všechno. Nadpisy nese váha, ne jiný řez. */
   --font-sans: var(--font-body);
   --font-serif: var(--font-body);
@@ -103,10 +89,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar — inkoustový proužek na papíru */
+/* Scrollbar — tenký proužek v barvě sekundárního textu */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-cream-deep); }
-::-webkit-scrollbar-thumb { background: #C7CBD1; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--color-slate-soft); border-radius: 3px; }
 
 /* Výběr textu */
 ::selection { background: var(--color-navy); color: var(--color-cream); }
@@ -127,66 +113,11 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* Noise texture — celoplošné zrno, jemnější na papíru než na inkoustu */
-.noise-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.04;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  background-size: 320px 320px;
-}
-
-/* Varianta zrna pro světlé (papírové) sekce — multiply, nižší opacita */
-.noise-paper {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.03;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  background-size: 320px 320px;
-}
-
-/* Radial glow — na papíru azurový dech za hero copy */
-.hero-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse 70% 55% at 30% 35%, rgba(0, 158, 226, 0.07), transparent 60%);
-  z-index: 1;
-}
-
-/* Hero headline word reveal — clip initial state, GSAP animates to visible.
-   Padding + záporný margin: maska nesmí ořezávat ascendery/descendery
-   při line-height < 1 (Instrument Serif má vysoké akcenty — Č, ž, í). */
-.hero-word {
-  display: inline-block;
-  overflow: hidden;
-  padding: 0.16em 0.12em 0.18em 0;
-  margin: -0.16em 0 -0.18em 0;
-  vertical-align: bottom;
-}
-
-.hero-word > span {
-  display: inline-block;
-  will-change: transform, opacity;
-}
-
 /* Lenis smooth scroll — root html marker */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
-
-/* Magnetic button — reset transition for transform so GSAP controls it */
-.magnetic { will-change: transform; }
-
-/* Reveal helpers (initial states for GSAP scroll reveal) */
-.reveal-up { opacity: 0; transform: translate3d(0, 40px, 0); will-change: transform, opacity; }
 
 /* Velký obrysový stavový glyf (✓ hotovo, ✗ chyba, ↻ načítá).
    Pořadová čísla web nepoužívá — hierarchii nese typografie a hairlines. */
@@ -198,69 +129,3 @@ html.lenis, html.lenis body { height: auto; }
   -webkit-text-stroke: 1px rgba(15, 42, 68, 0.28);
 }
 
-/* Underline sweep for nav links */
-.nav-link {
-  position: relative;
-}
-.nav-link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  height: 1px;
-  width: 0;
-  background: currentColor;
-  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.nav-link:hover::after { width: 100%; }
-
-/* Soft card hover — zdvih bez stínové exploze, stín řeší border + underline */
-.card-hoverable {
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s, border-color 0.45s, background-color 0.45s;
-}
-.card-hoverable:hover {
-  transform: translateY(-4px);
-}
-
-/* Art-directed hairline — krátká inkoustová linka místo defaultního <hr> */
-.rule-ink {
-  height: 1px;
-  width: 3.5rem;
-  background: #162459;
-  opacity: 0.35;
-}
-.rule-accent {
-  height: 1px;
-  width: 3.5rem;
-  background: #009EE2;
-}
-
-/* Vlastní kurzor — tečka + prstenec, jen desktop s jemnou myší */
-@media (pointer: fine) {
-  .cursor-dot,
-  .cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9999;
-    border-radius: 9999px;
-    will-change: transform;
-  }
-  .cursor-dot {
-    width: 6px;
-    height: 6px;
-    background: #009EE2;
-  }
-  .cursor-ring {
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgba(22, 36, 89, 0.35);
-    transition: width 0.25s, height 0.25s, border-color 0.25s;
-  }
-  .cursor-ring.is-active {
-    width: 52px;
-    height: 52px;
-    border-color: rgba(0, 158, 226, 0.7);
-  }
-}

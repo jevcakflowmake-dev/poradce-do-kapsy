@@ -11,10 +11,10 @@ import { Separator } from '@/components/ui/separator'
 import { BARVY } from '@/lib/barvy'
 
 const SECTIONS = [
-  { id: 'income', title: 'Zajisteni prijmu', label: 'Zajisteni prijmu', icon: Shield },
-  { id: 'housing', title: 'Bydleni', label: 'Bydleni', icon: Home },
-  { id: 'retirement', title: 'Duchod', label: 'Duchod', icon: Clock },
-  { id: 'children', title: 'Deti', label: 'Deti', icon: Baby },
+  { id: 'income', title: 'Zajištění příjmů', label: 'Zajištění příjmů', icon: Shield },
+  { id: 'housing', title: 'Bydlení', label: 'Bydlení', icon: Home },
+  { id: 'retirement', title: 'Důchod', label: 'Důchod', icon: Clock },
+  { id: 'children', title: 'Děti', label: 'Děti', icon: Baby },
   { id: 'investing', title: 'Investice', label: 'Investice', icon: TrendingUp },
   { id: 'property', title: 'Majetek', label: 'Majetek', icon: Building2 },
 ] as const
@@ -151,7 +151,7 @@ export default function PlanEditor({
       setNewLogo('')
       setNewPayment('')
       setShowAddVariant(false)
-      setFeedback('Varianta pridana')
+      setFeedback('Varianta přidána')
       setTimeout(() => setFeedback(null), 2000)
     }
   }
@@ -161,7 +161,7 @@ export default function PlanEditor({
     if (result) {
       setVariants(prev => prev.filter(v => v.id !== variantId))
       setParams(prev => prev.filter(p => p.variant_id !== variantId))
-      setFeedback('Varianta smazana')
+      setFeedback('Varianta smazána')
       setTimeout(() => setFeedback(null), 2000)
     }
   }
@@ -198,7 +198,7 @@ export default function PlanEditor({
       setParams(prev => [...prev.filter(p => p.variant_id !== variantId), ...newParamObjects])
       setParamForm({ param_label: '', value: '', note: '' })
       setAddingParamForVariant(null)
-      setFeedback('Parametr pridan')
+      setFeedback('Parametr přidán')
       setTimeout(() => setFeedback(null), 2000)
     }
   }
@@ -214,7 +214,7 @@ export default function PlanEditor({
     const result = await apiCall({ action: 'upsert_params', variant_id: variantId, params: newParams })
     if (result) {
       setParams(prev => prev.filter(p => p.id !== paramId))
-      setFeedback('Parametr smazan')
+      setFeedback('Parametr smazán')
       setTimeout(() => setFeedback(null), 2000)
     }
   }
@@ -240,7 +240,7 @@ export default function PlanEditor({
           { id: `temp-${Date.now()}`, client_id: clientId, section: activeSection, status: recStatus, items },
         ])
       }
-      setFeedback('Doporuceni ulozeno')
+      setFeedback('Doporučení uloženo')
       setTimeout(() => setFeedback(null), 2000)
     }
   }
@@ -261,7 +261,7 @@ export default function PlanEditor({
               className={`flex items-center gap-2 px-4 py-2.5 rounded-card text-sm font-medium whitespace-nowrap transition-all ${
                 isActive
                   ? 'text-white shadow-md'
-                  : 'bg-surface text-muted border border-surface hover:border-accent/30 hover:text-navy'
+                  : 'bg-surface text-slate border border-surface hover:border-mint/40 hover:text-navy'
               }`}
               style={isActive ? { backgroundColor: BARVY.navy } : undefined}
             >
@@ -274,7 +274,7 @@ export default function PlanEditor({
 
       {/* Feedback */}
       {feedback && (
-        <div className="px-4 py-2.5 rounded-card text-sm font-medium bg-accent/10 text-accent border border-accent/20">
+        <div className="px-4 py-2.5 rounded-card text-sm font-medium bg-mint/10 text-navy border border-mint/30">
           {feedback}
         </div>
       )}
@@ -285,8 +285,8 @@ export default function PlanEditor({
           onClick={() => setShowAnswers(!showAnswers)}
           className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-surface/30 transition-colors"
         >
-          <span className="font-semibold text-navy">Odpovedi klienta</span>
-          <span className="flex items-center gap-2 text-muted text-sm">
+          <span className="font-semibold text-navy">Odpovědi klienta</span>
+          <span className="flex items-center gap-2 text-slate text-sm">
             {Object.keys(sectionAnswers).length} odpovedi
             {showAnswers ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </span>
@@ -295,12 +295,12 @@ export default function PlanEditor({
           <div className="px-5 pb-5">
             <Separator className="mb-4" />
             {Object.keys(sectionAnswers).length === 0 ? (
-              <p className="text-sm text-muted">Klient zatim nevyplnil tuto sekci.</p>
+              <p className="text-sm text-slate">Klient zatim nevyplnil tuto sekci.</p>
             ) : (
               <dl className="space-y-3">
                 {Object.entries(sectionAnswers).map(([key, value]) => (
                   <div key={key} className="flex flex-col sm:flex-row sm:justify-between gap-1 text-sm">
-                    <dt className="text-muted font-medium">{key}</dt>
+                    <dt className="text-slate font-medium">{key}</dt>
                     <dd className="text-navy font-semibold sm:text-right">{value}</dd>
                   </div>
                 ))}
@@ -321,17 +321,17 @@ export default function PlanEditor({
             style={{ backgroundColor: BARVY.mint }}
           >
             <Plus className="w-4 h-4" />
-            Pridat variantu
+            Přidat variantu
           </Button>
         </div>
 
         {/* Add variant form */}
         {showAddVariant && (
-          <div className="bg-surface rounded-card border-2 border-accent/30 p-5 mb-4 space-y-4">
-            <h4 className="font-medium text-navy">Nova varianta</h4>
+          <div className="bg-surface rounded-card border-2 border-mint/40 p-5 mb-4 space-y-4">
+            <h4 className="font-medium text-navy">Nová varianta</h4>
             <div className="grid sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-sm font-medium text-muted mb-1">Spolecnost</label>
+                <label className="block text-sm font-medium text-slate mb-1">Společnost</label>
                 <Input
                   value={newCompany}
                   onChange={e => setNewCompany(e.target.value)}
@@ -339,7 +339,7 @@ export default function PlanEditor({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-muted mb-1">Logo (emoji)</label>
+                <label className="block text-sm font-medium text-slate mb-1">Logo (emoji)</label>
                 <Input
                   value={newLogo}
                   onChange={e => setNewLogo(e.target.value)}
@@ -347,7 +347,7 @@ export default function PlanEditor({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-muted mb-1">Mesicni platba</label>
+                <label className="block text-sm font-medium text-slate mb-1">Měsíční platba</label>
                 <Input
                   value={newPayment}
                   onChange={e => setNewPayment(e.target.value)}
@@ -371,7 +371,7 @@ export default function PlanEditor({
                 className="text-white rounded-card"
                 style={{ backgroundColor: BARVY.navy }}
               >
-                {saving ? 'Ukladam...' : 'Ulozit'}
+                {saving ? 'Ukládám…' : 'Uložit'}
               </Button>
             </div>
           </div>
@@ -379,7 +379,7 @@ export default function PlanEditor({
 
         {/* Variant cards */}
         {sectionVariants.length === 0 && !showAddVariant ? (
-          <div className="bg-surface rounded-card border border-surface p-8 text-center text-muted text-sm">
+          <div className="bg-surface rounded-card border border-surface p-8 text-center text-slate text-sm">
             Zatim zadne varianty pro tuto sekci.
           </div>
         ) : (
@@ -398,13 +398,13 @@ export default function PlanEditor({
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-navy">{variant.company}</h4>
-                      <p className="text-sm text-muted">
+                      <p className="text-sm text-slate">
                         {variant.monthly_payment} / mesic
                       </p>
                     </div>
                     <button
                       onClick={() => handleDeleteVariant(variant.id)}
-                      className="p-2 text-muted hover:text-red-500 transition-colors rounded-card hover:bg-red-50"
+                      className="p-2 text-slate hover:text-red-500 transition-colors rounded-card hover:bg-red-50"
                       title="Smazat variantu"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -426,12 +426,12 @@ export default function PlanEditor({
                                 </span>
                               </div>
                               {param.note && (
-                                <p className="text-xs text-muted mt-0.5">{param.note}</p>
+                                <p className="text-xs text-slate mt-0.5">{param.note}</p>
                               )}
                             </div>
                             <button
                               onClick={() => handleDeleteParam(variant.id, param.id)}
-                              className="p-1 text-muted hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                              className="p-1 text-slate hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                               title="Smazat parametr"
                             >
                               <X className="w-3.5 h-3.5" />
@@ -445,10 +445,10 @@ export default function PlanEditor({
                   {/* Add param */}
                   <div className="px-5 pb-4">
                     {addingParamForVariant === variant.id ? (
-                      <div className="border border-accent/20 rounded-card p-4 mt-2 space-y-3 bg-accent/5">
+                      <div className="border border-mint/30 rounded-card p-4 mt-2 space-y-3 bg-mint/8">
                         <div className="grid sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs font-medium text-muted mb-1">Nazev parametru</label>
+                            <label className="block text-xs font-medium text-slate mb-1">Název parametru</label>
                             <Input
                               value={paramForm.param_label}
                               onChange={e => setParamForm(prev => ({ ...prev, param_label: e.target.value }))}
@@ -457,7 +457,7 @@ export default function PlanEditor({
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-muted mb-1">Hodnota</label>
+                            <label className="block text-xs font-medium text-slate mb-1">Hodnota</label>
                             <Input
                               value={paramForm.value}
                               onChange={e => setParamForm(prev => ({ ...prev, value: e.target.value }))}
@@ -467,7 +467,7 @@ export default function PlanEditor({
                           </div>
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-muted mb-1">Poznamka (volitelne)</label>
+                          <label className="block text-xs font-medium text-slate mb-1">Poznámka (volitelné)</label>
                           <Input
                             value={paramForm.note}
                             onChange={e => setParamForm(prev => ({ ...prev, note: e.target.value }))}
@@ -504,10 +504,10 @@ export default function PlanEditor({
                           setAddingParamForVariant(variant.id)
                           setParamForm({ param_label: '', value: '', note: '' })
                         }}
-                        className="flex items-center gap-1.5 text-sm text-accent hover:text-accent-light transition-colors mt-2"
+                        className="flex items-center gap-1.5 text-sm text-navy hover:text-mint-dark transition-colors mt-2"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        Pridat parametr
+                        Přidat parametr
                       </button>
                     )}
                   </div>
@@ -520,26 +520,26 @@ export default function PlanEditor({
 
       {/* Recommendation */}
       <div className="bg-surface rounded-card border border-surface p-5 space-y-4">
-        <h3 className="font-semibold text-navy text-lg">Doporuceni</h3>
+        <h3 className="font-semibold text-navy text-lg">Doporučení</h3>
         <div>
-          <label className="block text-sm font-medium text-muted mb-1.5">Status</label>
+          <label className="block text-sm font-medium text-slate mb-1.5">Status</label>
           <select
             value={recStatus}
             onChange={e => setRecStatus(e.target.value as 'ok' | 'recommendation' | 'action')}
-            className="w-full h-10 rounded-card border border-surface bg-surface px-3 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full h-10 rounded-card border border-line bg-surface px-3 text-sm text-navy focus:outline-none focus:ring-4 focus:ring-mint/20"
           >
-            <option value="ok">V poradku</option>
-            <option value="recommendation">Doporuceni</option>
-            <option value="action">Vyzaduje akci</option>
+            <option value="ok">V pořádku</option>
+            <option value="recommendation">Doporučení</option>
+            <option value="action">Vyžaduje akci</option>
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-muted mb-1.5">Body doporuceni (kazdy radek = 1 bod)</label>
+          <label className="block text-sm font-medium text-slate mb-1.5">Body doporuceni (kazdy radek = 1 bod)</label>
           <textarea
             value={recText}
             onChange={e => setRecText(e.target.value)}
             rows={5}
-            className="w-full px-4 py-3 border border-surface rounded-card text-sm text-navy focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+            className="w-full px-4 py-3 border border-line rounded-card text-sm text-navy focus:outline-none focus:ring-4 focus:ring-mint/20 resize-none"
             placeholder="Doporucujeme sjednat zivotni pojisteni...&#10;Zvazit navyseni krytí invalidni renty...&#10;..."
           />
         </div>
@@ -551,7 +551,7 @@ export default function PlanEditor({
             style={{ backgroundColor: BARVY.navy }}
           >
             <Save className="w-4 h-4" />
-            {saving ? 'Ukladam...' : 'Ulozit doporuceni'}
+            {saving ? 'Ukládám…' : 'Uložit doporučení'}
           </Button>
         </div>
       </div>

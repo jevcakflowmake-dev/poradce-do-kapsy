@@ -153,3 +153,22 @@ export function sectionProgress(section: Section, answers: SectionData | undefin
   const answered = section.questions.filter(q => answers?.[q.id]).length
   return Math.round((answered / section.questions.length) * 100)
 }
+
+/**
+ * Popisek oblasti, kterou si klient v analýze vyplnil. `profiles.goals` drží
+ * id sekcí (viz výše), takže název bere odsud – dřív měl vlastní slovník
+ * (insurance, pension…), který se s id sekcí nepotkal a poradci se v tabulce
+ * ukazovalo holé „income“. Starší hodnoty ze slovníku zůstávají kvůli datům
+ * založeným před sjednocením.
+ */
+const STARE_OBLASTI: Record<string, string> = {
+  insurance: 'Pojištění',
+  pension: 'Důchod',
+  invest: 'Investice',
+  mortgage: 'Hypotéka',
+  savings: 'Stavební spoření',
+}
+
+export function goalLabel(goal: string): string {
+  return SECTIONS.find((s) => s.id === goal)?.title ?? STARE_OBLASTI[goal] ?? goal
+}
