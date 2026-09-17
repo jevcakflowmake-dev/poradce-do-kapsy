@@ -3,13 +3,14 @@
 import { useState, useMemo, useRef, useLayoutEffect } from 'react'
 import { RISK_DEFS, type RiskKey, type RiskDef } from '@/lib/income-risks'
 import type { IncomeVariant } from './IncomeLifeChart'
+import { BARVY } from '@/lib/barvy'
 
 interface Props {
   variants: IncomeVariant[]
   selectedVariantId: string | null
 }
 
-const VARIANT_COLORS = ['#1FB58F', '#0F2A44', '#179A78']
+const VARIANT_COLORS = [BARVY.mint, BARVY.navy, BARVY.mintDark]
 const DEFAULT_WAITING_PERIOD_DAYS = 14
 const DAYS_IN_MONTH = 30
 
@@ -101,7 +102,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
 
   // Pro každou variantu její vlastní křivka skrz body
   const variantSeries = variants.map((v, vIdx) => {
-    const color = VARIANT_COLORS[vIdx] ?? '#0F2A44'
+    const color = VARIANT_COLORS[vIdx] ?? BARVY.navy
     const pts = visibleRisks.map((r, rIdx) => {
       const amount = calcAmount(v, r)
       return { x: xFor(rIdx), y: yFor(amount), risk: r, amount }
@@ -128,7 +129,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
         </div>
         <div className="flex flex-wrap items-center gap-3 text-xs">
           {variants.map((v, idx) => {
-            const color = VARIANT_COLORS[idx] ?? '#0F2A44'
+            const color = VARIANT_COLORS[idx] ?? BARVY.navy
             const dim = selectedIdx >= 0 && selectedIdx !== idx
             return (
               <span key={v.id} className={`inline-flex items-center gap-1.5 ${dim ? 'opacity-50' : ''}`}>
@@ -154,7 +155,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             x2={computedWidth - padX}
             y1={padTop + innerHeight}
             y2={padTop + innerHeight}
-            stroke="#E2E0D9"
+            stroke={BARVY.line}
             strokeWidth={1}
           />
 
@@ -215,7 +216,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                     textAnchor="start"
                     fontSize={10}
                     fontWeight={isActive ? 700 : 600}
-                    fill={isActive ? risk.color : '#0F2A44'}
+                    fill={isActive ? risk.color : BARVY.navy}
                     transform="rotate(-32) translate(5 0)"
                   >
                     {risk.short}
@@ -245,7 +246,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                       cx={x}
                       cy={y}
                       r={r}
-                      fill={amount > 0 ? color : '#E2E0D9'}
+                      fill={amount > 0 ? color : BARVY.line}
                       stroke="#fff"
                       strokeWidth={1.5}
                       style={{ transition: 'cx 0.45s ease, cy 0.45s ease, r 0.2s ease' }}
@@ -262,7 +263,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             y={totalHeight - 18}
             textAnchor="start"
             fontSize={10}
-            fill="#179A78"
+            fill={BARVY.mintDark}
             fontWeight={600}
           >
             ← Méně závažné
@@ -272,7 +273,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
             y={totalHeight - 18}
             textAnchor="end"
             fontSize={10}
-            fill="#C2410C"
+            fill={BARVY.danger}
             fontWeight={600}
           >
             Nejzávažnější →
@@ -295,7 +296,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           // Spočti částky per varianta a najdi max pro highlight
           const rows = variants.map((v, idx) => ({
             variant: v,
-            color: VARIANT_COLORS[idx] ?? '#0F2A44',
+            color: VARIANT_COLORS[idx] ?? BARVY.navy,
             amount: calcAmount(v, activeRisk),
             isSelected: selectedVariantId === v.id,
           }))
@@ -341,8 +342,8 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                       key={r.variant.id}
                       className="rounded-card px-2.5 py-2"
                       style={{
-                        background: r.isSelected ? '#1FB58F0c' : 'transparent',
-                        border: r.isSelected ? '1px solid #1FB58F55' : '1px solid transparent',
+                        background: r.isSelected ? `${BARVY.mint}14` : 'transparent',
+                        border: r.isSelected ? `1px solid ${BARVY.mint}55` : '1px solid transparent',
                       }}
                     >
                       <div className="flex items-center justify-between gap-2 text-xs mb-1">
@@ -350,7 +351,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                           <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: r.color }} />
                           <span className="font-medium text-navy truncate">{r.variant.company}</span>
                           {r.isSelected && (
-                            <span className="text-[9px] uppercase tracking-wide text-[#179A78] font-semibold shrink-0">vybráno</span>
+                            <span className="text-[9px] uppercase tracking-wide text-navy font-semibold shrink-0">vybráno</span>
                           )}
                         </span>
                         <span className="font-semibold text-navy tabular-nums shrink-0">
@@ -359,7 +360,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
                             : '–'}
                         </span>
                       </div>
-                      <div className="h-1 rounded-full bg-[#EDEBE4] overflow-hidden">
+                      <div className="h-1 rounded-full bg-cream-deep overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{ width: `${pct}%`, background: r.color }}

@@ -13,6 +13,7 @@ import {
 import { Shield, CheckCircle2 } from 'lucide-react'
 import { RISK_DEFS, RISK_GROUPS, type RiskKey, type RiskDef } from '@/lib/income-risks'
 import LifeRiskTimeline from './LifeRiskTimeline'
+import { BARVY } from '@/lib/barvy'
 
 type IncomeDetails = {
   payout_60?: number | null
@@ -37,7 +38,7 @@ interface Props {
   onSelect: (variantId: string) => void
 }
 
-const VARIANT_COLORS = ['#1FB58F', '#0F2A44', '#179A78']
+const VARIANT_COLORS = [BARVY.mint, BARVY.navy, BARVY.mintDark]
 
 function fmtCzk(n: number): string {
   return Math.round(n).toLocaleString('cs-CZ') + ' Kč'
@@ -116,39 +117,39 @@ export default function IncomeLifeChart({
           >
             <XAxis
               dataKey="scenario"
-              stroke="#0F2A44"
+              stroke={BARVY.navy}
               fontSize={13}
               tickLine={false}
-              axisLine={{ stroke: '#E2E0D9' }}
+              axisLine={{ stroke: BARVY.line }}
             />
             <YAxis
-              stroke="#64707D"
+              stroke={BARVY.slate}
               fontSize={11}
               tickFormatter={(v) => `${Math.round(v / 1000)}k`}
               tickLine={false}
-              axisLine={{ stroke: '#E2E0D9' }}
+              axisLine={{ stroke: BARVY.line }}
             />
-            <Tooltip content={<IncomeStackTooltip variants={variants} />} cursor={{ fill: '#F6F5F1' }} />
+            <Tooltip content={<IncomeStackTooltip variants={variants} />} cursor={{ fill: BARVY.cream }} />
             <ReferenceLine
               y={monthlyIncomeNet}
-              stroke="#179A78"
+              stroke={BARVY.mintDark}
               strokeDasharray="4 4"
               strokeWidth={1.5}
               label={{
                 value: `100 % příjem (${fmtCzk(monthlyIncomeNet)})`,
                 position: 'top',
-                fill: '#179A78',
+                fill: BARVY.mintDark,
                 fontSize: 11,
                 fontWeight: 600,
               }}
             />
 
             {/* Reference sloupec – bez pojistky */}
-            <Bar dataKey="zustatek_bez" stackId="bez" fill="#E2E0D9" radius={[4, 4, 0, 0]} name="Bez pojistky – zůstatek" />
+            <Bar dataKey="zustatek_bez" stackId="bez" fill={BARVY.line} radius={[4, 4, 0, 0]} name="Bez pojistky – zůstatek" />
 
             {/* Sloupce per varianta – stack: zůstatek (světlejší) + payout (brand barva) */}
             {variants.map((v, idx) => {
-              const color = VARIANT_COLORS[idx] ?? '#0F2A44'
+              const color = VARIANT_COLORS[idx] ?? BARVY.navy
               const isSelected = selectedVariantId === v.id
               const dim = selectedVariantId && !isSelected ? 0.35 : 1
               return [
@@ -156,7 +157,7 @@ export default function IncomeLifeChart({
                   key={`base-${v.id}`}
                   dataKey={`zustatek_${idx}`}
                   stackId={`v${idx}`}
-                  fill="#E2E0D9"
+                  fill={BARVY.line}
                   fillOpacity={dim}
                   name={`${v.company} – tvůj zůstatek`}
                 />,
@@ -177,12 +178,12 @@ export default function IncomeLifeChart({
 
         {/* Custom legenda – méně položek než auto-legenda Recharts */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-xs">
-          <LegendDot color="#E2E0D9" label="Tvůj zůstatek" />
-          <LegendDot color="#E2E0D9" label="Bez pojistky" muted />
+          <LegendDot color={BARVY.line} label="Tvůj zůstatek" />
+          <LegendDot color={BARVY.line} label="Bez pojistky" muted />
           {variants.map((v, idx) => (
             <LegendDot
               key={v.id}
-              color={VARIANT_COLORS[idx] ?? '#0F2A44'}
+              color={VARIANT_COLORS[idx] ?? BARVY.navy}
               label={`${v.company} dorovná`}
             />
           ))}
@@ -192,7 +193,7 @@ export default function IncomeLifeChart({
       {/* Variant cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {variants.map((v, idx) => {
-          const color = VARIANT_COLORS[idx] ?? '#0F2A44'
+          const color = VARIANT_COLORS[idx] ?? BARVY.navy
           const isSelected = selectedVariantId === v.id
           const payout60 = v.details?.payout_60 ?? 0
           const payout50 = v.details?.payout_50 ?? 0
@@ -204,7 +205,7 @@ export default function IncomeLifeChart({
               onClick={() => onSelect(v.id)}
               className={`text-left rounded-card p-4 border-2 transition-all hover:-translate-y-0.5 ${
                 isSelected
-                  ? 'bg-[#1FB58F]/8 border-[#1FB58F] shadow-[0_8px_24px_-12px_rgba(22,163,74,0.4)]'
+                  ? 'bg-mint/8 border-mint shadow-[0_8px_24px_-12px_rgba(22,163,74,0.4)]'
                   : 'bg-surface border-line hover:border-mint/40 hover:shadow-sm'
               }`}
             >
@@ -216,12 +217,12 @@ export default function IncomeLifeChart({
                   {v.logo}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className={`font-semibold ${isSelected ? 'text-[#179A78]' : 'text-navy'}`}>
+                  <h4 className={`font-semibold ${isSelected ? 'text-navy' : 'text-navy'}`}>
                     {v.company}
                   </h4>
                   <p className="text-[11px] uppercase tracking-[0.1em] text-slate">Varianta {idx + 1}</p>
                 </div>
-                {isSelected && <CheckCircle2 className="w-5 h-5 text-[#179A78] shrink-0" />}
+                {isSelected && <CheckCircle2 className="w-5 h-5 text-navy shrink-0" />}
               </div>
 
               <div className="space-y-1.5 text-xs">
@@ -239,7 +240,7 @@ export default function IncomeLifeChart({
               <div
                 className={`mt-4 text-center text-xs font-semibold py-2 rounded-card ${
                   isSelected
-                    ? 'bg-[#1FB58F] text-white'
+                    ? 'bg-mint text-navy'
                     : 'bg-navy/5 text-navy'
                 }`}
               >
@@ -252,11 +253,11 @@ export default function IncomeLifeChart({
 
       {/* Vybraná varianta – sumář */}
       {selected && (
-        <div className="rounded-card bg-[#1FB58F]/8 border border-[#1FB58F]/25 p-4 md:p-5">
+        <div className="rounded-card bg-mint/8 border border-mint/25 p-4 md:p-5">
           <div className="flex items-start gap-3">
-            <Shield className="w-5 h-5 text-[#179A78] mt-0.5 shrink-0" />
+            <Shield className="w-5 h-5 text-navy mt-0.5 shrink-0" />
             <div className="flex-1">
-              <p className="text-sm font-semibold text-[#179A78]">
+              <p className="text-sm font-semibold text-navy">
                 Vybraná varianta: {selected.company}
               </p>
               <p className="text-xs text-navy/80 mt-1 leading-relaxed">
@@ -347,7 +348,7 @@ function CoveragePanel({
 function LegendDot({ color, label, muted }: { color: string; label: string; muted?: boolean }) {
   return (
     <span className={`inline-flex items-center gap-1.5 ${muted ? 'opacity-70' : ''}`}>
-      <span className="w-3 h-3 rounded-card" style={{ background: color, border: muted ? '1px solid #E2E0D9' : 'none' }} />
+      <span className="w-3 h-3 rounded-card" style={{ background: color, border: muted ? `1px solid ${BARVY.line}` : 'none' }} />
       <span className="text-navy">{label}</span>
     </span>
   )
@@ -371,8 +372,8 @@ function RiskCard({
     <div
       className="rounded-card border p-3.5 transition-all"
       style={{
-        background: highlighted ? `${def.color}0d` : '#FFFFFF',
-        borderColor: highlighted ? `${def.color}55` : '#E2E0D9',
+        background: highlighted ? `${def.color}0d` : BARVY.surface,
+        borderColor: highlighted ? `${def.color}55` : BARVY.line,
       }}
     >
       <div className="flex items-start gap-3">
@@ -425,7 +426,7 @@ function IncomeStackTooltip({
   const groups = new Map<string, { label: string; remainder: number; payout: number; color: string }>()
   for (const p of payload) {
     if (p.dataKey === 'zustatek_bez') {
-      groups.set('bez', { label: 'Bez pojistky', remainder: p.value, payout: 0, color: '#7A8794' })
+      groups.set('bez', { label: 'Bez pojistky', remainder: p.value, payout: 0, color: BARVY.slateSoft })
       continue
     }
     const m = /^(zustatek|payout)_(\d+)$/.exec(p.dataKey)

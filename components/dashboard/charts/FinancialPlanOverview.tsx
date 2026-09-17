@@ -13,6 +13,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts'
+import { BARVY } from '@/lib/barvy'
 
 // ── Typy ─────────────────────────────────────────────────
 interface Variant {
@@ -33,18 +34,18 @@ interface Props {
 
 // ── Konfigurace ──────────────────────────────────────────
 const SECTION_COLOR: Record<string, string> = {
-  income: '#0F2A44',
-  housing: '#1FB58F',
-  retirement: '#1B3B5A',
-  children: '#179A78',
-  investing: '#1B3B5A',
-  property: '#1FB58F',
+  income: BARVY.navy,
+  housing: BARVY.mint,
+  retirement: BARVY.navySoft,
+  children: BARVY.mintDark,
+  investing: BARVY.navySoft,
+  property: BARVY.mint,
 }
 
 const STATUS_COLOR = {
-  ok: '#1FB58F',
-  recommendation: '#1FB58F',
-  action: '#F2B441',
+  ok: BARVY.mint,
+  recommendation: BARVY.mint,
+  action: BARVY.amber,
 } as const
 
 const STATUS_LABEL = {
@@ -98,7 +99,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
         return {
           section: s.title,
           value: indicative,
-          fill: SECTION_COLOR[s.id] ?? '#0F2A44',
+          fill: SECTION_COLOR[s.id] ?? BARVY.navy,
         }
       })
       .filter((d) => d.value > 0)
@@ -135,17 +136,17 @@ export default function FinancialPlanOverview({ sections }: Props) {
         >
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 10, left: 30 }}>
-              <PolarGrid stroke="#E2E0D9" />
+              <PolarGrid stroke={BARVY.line} />
               <PolarAngleAxis
                 dataKey="section"
-                tick={{ fill: '#0F2A44', fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: BARVY.navy, fontSize: 12, fontWeight: 500 }}
               />
               <Radar
                 name="Stav pokrytí"
                 dataKey="score"
-                stroke="#1FB58F"
+                stroke={BARVY.mint}
                 strokeWidth={2}
-                fill="#1FB58F"
+                fill={BARVY.mint}
                 fillOpacity={0.25}
               />
               <Tooltip content={<RadarTooltip />} />
