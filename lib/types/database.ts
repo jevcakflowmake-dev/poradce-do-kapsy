@@ -228,6 +228,37 @@ export type Database = {
         }
         Relationships: []
       }
+      /** Rozepsaná veřejná analýza. Zapisuje jen serverová routa pod service role. */
+      analysis_drafts: {
+        Row: {
+          id: string
+          draft_key: string
+          responses: Json
+          step: number
+          email: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          draft_key: string
+          responses?: Json
+          step?: number
+          email?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          draft_key?: string
+          responses?: Json
+          step?: number
+          email?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       /** Varianty pojistek/produktů, které poradce staví klientovi v editoru plánu. */
       plan_variants: {
         Row: {
@@ -508,6 +539,7 @@ export type ProposalType = Proposal['type']
 export type ClientStatus = Profile['status']
 export type PublicSubmission = Database['public']['Tables']['public_submissions']['Row']
 export type SubmissionStatus = PublicSubmission['status']
+export type AnalysisDraft = Database['public']['Tables']['analysis_drafts']['Row']
 export type PlanVariant = Database['public']['Tables']['plan_variants']['Row']
 export type PlanParam = Database['public']['Tables']['plan_params']['Row']
 export type PlanRecommendation = Database['public']['Tables']['plan_recommendations']['Row']

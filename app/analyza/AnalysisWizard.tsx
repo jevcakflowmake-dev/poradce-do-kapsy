@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label'
 /** Rozepsaná analýza přežije zavření karty – čtvrt hodiny práce se nesmí ztratit. */
 const DRAFT_KEY = 'pdk-analyza-draft'
 const STEP_KEY = 'pdk-analyza-krok'
+/** Náhodný klíč konceptu. Podle něj se na serveru přepisuje jeden a ten samý řádek. */
+const KEY_KLIC = 'pdk-analyza-klic'
 
 type PendingFile = { name: string; size: number; section: string; file: File }
 
@@ -26,6 +28,8 @@ export default function AnalysisWizard() {
   const [error, setError] = useState<string | null>(null)
 
   const fileRef = useRef<HTMLInputElement>(null)
+  const klicRef = useRef('')
+  const ulozTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const honeypotRef = useRef<HTMLInputElement>(null)
   const nadpisRef = useRef<HTMLHeadingElement>(null)
   const draftLoaded = useRef(false)
@@ -41,6 +45,13 @@ export default function AnalysisWizard() {
       if (raw) setData(JSON.parse(raw))
       const ulozenyKrok = Number(localStorage.getItem(STEP_KEY))
       if (ulozenyKrok > 0 && ulozenyKrok < SECTIONS.length) setKrok(ulozenyKrok)
+
+      let klic = localStorage.getItem(KEY_KLIC)
+      if (!klic) {
+        klic = crypto.randomUUID()
+        localStorage.setItem(KEY_KLIC, klic)
+      }
+      klicRef.current = klic
     } catch {
       // Poškozený koncept není důvod nepustit člověka k formuláři.
     }
@@ -56,6 +67,29 @@ export default function AnalysisWizard() {
       // Plný nebo zakázaný localStorage – formulář musí fungovat i tak.
     }
   }, [data, krok])
+
+  // Kopie u poradce vzniká až od posledního kroku, kdy je znám e-mail a člověk
+  // na obrazovce vidí, že odpovědi ukládáme. Dřív by se zdravotní údaje ocitly
+  // na serveru dřív, než k tomu dá souhlas.
+  useEffect(() => {
+    if (!draftLoaded.current || !posledni || !klicRef.current) return
+    const email = data[HEALTH_SECTION_ID]?.email?.trim()
+    if (!email) return
+
+    if (ulozTimeout.current) clearTimeout(ulozTimeout.current)
+    ulozTimeout.current = setTimeout(() => {
+      fetch('/api/analyza/koncept', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ draftKey: klicRef.current, responses: data, step: krok, email }),
+        // Hlavní kopie leží v localStorage, takže selhání jen ignorujeme.
+      }).catch(() => {})
+    }, 1500)
+
+    return () => {
+      if (ulozTimeout.current) clearTimeout(ulozTimeout.current)
+    }
+  }, [data, krok, posledni])
 
   function uprav(questionId: string, hodnota: string) {
     setData((prev) => ({ ...prev, [sekce.id]: { ...prev[sekce.id], [questionId]: hodnota } }))
@@ -115,7 +149,15 @@ export default function AnalysisWizard() {
       try {
         localStorage.removeItem(DRAFT_KEY)
         localStorage.removeItem(STEP_KEY)
+        localStorage.removeItem(KEY_KLIC)
       } catch {}
+
+      // Odpovědi jsou u poradce v public_submissions, koncept už nemá důvod žít.
+      fetch('/api/analyza/koncept', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ draftKey: klicRef.current }),
+      }).catch(() => {})
 
       const stav = payload.status === 'existing' ? 'existujici' : 'novy'
       const heslo = payload.hasPassword ? '&heslo=1' : ''
@@ -159,6 +201,13 @@ export default function AnalysisWizard() {
         >
           {sekce.title}
         </h1>
+
+        {posledni && (
+          <p className="mt-3 text-base text-slate max-w-2xl">
+            Od téhle chvíle si rozepsané odpovědi ukládám i u sebe, abyste o ně nepřišli.
+            Po odeslání analýzy je smažu.
+          </p>
+        )}
 
         <div className="mt-8 md:mt-10 space-y-8">
           {sekce.questions.map((q) => (
