@@ -18,6 +18,8 @@ export default function SiteHeader() {
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 h-20 flex items-center justify-between gap-4">
         <Link
           href="/"
+          // Pod sm je vidět jen dlaždice, takže odkaz potřebuje vlastní název
+          aria-label="Poradce do kapsy — úvodní stránka"
           className="flex items-center gap-2.5 rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
         >
           <span aria-hidden className="w-9 h-9 rounded-input bg-mint flex items-end justify-end p-2">
