@@ -13,7 +13,7 @@ const POLOZKY = [
   { href: '/dashboard', label: 'Přehled', mobil: 'Přehled', icon: LayoutGrid },
   { href: '/dashboard/produkty', label: 'Moje smlouvy', mobil: 'Smlouvy', icon: FileText },
   { href: '/dashboard/financni-plan', label: 'Finanční plán', mobil: 'Plán', icon: Target },
-  { href: '/dashboard/dokumenty', label: 'Dokumenty', mobil: 'Doklady', icon: FolderOpen },
+  { href: '/dashboard/dokumenty', label: 'Dokumenty', mobil: 'Soubory', icon: FolderOpen },
   { href: '/dashboard/chat', label: 'Chat s poradcem', mobil: 'Chat', icon: MessageCircle },
 ]
 

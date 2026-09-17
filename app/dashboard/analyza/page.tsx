@@ -11,7 +11,6 @@ import AnalysisAccordion, {
   type StoredAnalysisFile,
 } from '@/components/analysis/AnalysisAccordion'
 import { SECTIONS, type SectionData } from '@/lib/analysis-sections'
-import AnalysisHero from '@/components/analyza/AnalysisHero'
 import { BARVY } from '@/lib/barvy'
 
 export default function AnalyzaPage() {
@@ -181,13 +180,7 @@ export default function AnalyzaPage() {
   }
 
   return (
-    // Fotka je tu pruhem nad sazbou, ne přilepená vpravo jako na veřejné
-    // analýze: tenhle sloupec je `max-w-shell` (obsah 1 600 px), takže na běžných
-    // obrazovkách vyplní celou šířku a karty sekcí by fotku stejně překryly.
-    <div className="relative max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-[9.5rem] md:pt-[15rem] pb-10 md:pb-14">
-      <div className="absolute inset-x-[calc(50%-50vw)] top-0 h-[8rem] md:h-[13.5rem] -z-10 pointer-events-none">
-        <AnalysisHero variant="band" />
-      </div>
+    <div>
 
       <input
         ref={fileRef}
@@ -242,7 +235,7 @@ export default function AnalyzaPage() {
       />
 
       {fileError && (
-        <div className="mt-6 p-4 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-card text-sm text-danger">
+        <div className="mt-6 p-4 bg-[rgba(194,65,12,0.08)] border border-[rgba(194,65,12,0.3)] rounded-card text-sm text-danger">
           {fileError}
         </div>
       )}
