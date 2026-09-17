@@ -11,6 +11,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
  */
 const KLIC = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const MAX_ZNAKU = 100_000
+/** Koncepty obsahují zdravotní údaje, nedrží se déle než dva měsíce. */
+const RETENCE_DNI = 60
 
 export async function POST(request: Request) {
   try {
@@ -43,6 +45,10 @@ export async function POST(request: Request) {
       console.error('[koncept]', error.message)
       return NextResponse.json({ error: 'Koncept se nepodařilo uložit.' }, { status: 500 })
     }
+
+    // Úklid při zápisu: levné (index na updated_at) a nepotřebuje plánovač.
+    const hranice = new Date(Date.now() - RETENCE_DNI * 24 * 60 * 60 * 1000).toISOString()
+    await admin.from('analysis_drafts').delete().lt('updated_at', hranice)
 
     return NextResponse.json({ ok: true })
   } catch {

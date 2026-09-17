@@ -26,5 +26,6 @@ create trigger analysis_drafts_updated
 create index if not exists analysis_drafts_updated_idx
   on public.analysis_drafts (updated_at desc);
 
--- POZOR: koncepty obsahují zdravotní údaje (čl. 9 GDPR). Až bude jasné, jak
--- dlouho se mají držet, přidat pravidelný úklid starších řádků.
+-- Koncepty obsahují zdravotní údaje (čl. 9 GDPR), takže se nedrží věčně:
+-- routa /api/analyza/koncept při každém zápisu smaže řádky starší 60 dnů.
+-- Kdyby měla platit lhůta i bez provozu, jde místo toho zapnout pg_cron.
