@@ -84,12 +84,12 @@ export default function LoginForm() {
           >
             E-mail je na cestě
           </h2>
-          <p className="text-sm text-slate mb-6">
+          <p className="text-base text-slate mb-6">
             Pokud zprávu nevidíte do 2 minut, zkuste to znovu nebo zkontrolujte spam.
           </p>
           <button
             onClick={() => { setMagicLinkSent(false); setMagicLink(false) }}
-            className="text-sm font-semibold text-navy hover:text-navy transition-colors inline-flex items-center gap-1 hover:gap-2"
+            className="text-base font-semibold text-navy hover:text-navy transition-colors inline-flex items-center gap-1 hover:gap-2"
           >
             ← Zpět na přihlášení
           </button>
@@ -106,7 +106,7 @@ export default function LoginForm() {
     >
       <div className="bg-surface rounded-card border border-line p-6 md:p-8">
         {error && (
-          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-sm text-danger">
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-base text-danger">
             {error}
           </div>
         )}
@@ -131,7 +131,7 @@ export default function LoginForm() {
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Přihlásit se <ArrowRight className="w-4 h-4" /></>)}
             </button>
-            <div className="flex items-center justify-between mt-1 text-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-1 text-base">
               <Link href="/forgot-password" className="text-slate hover:text-navy transition-colors">
                 Zapomenuté heslo?
               </Link>
@@ -161,7 +161,7 @@ export default function LoginForm() {
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Odeslat přihlašovací odkaz'}
             </button>
-            <p className="text-center text-xs">
+            <p className="text-center text-base">
               <button
                 type="button"
                 onClick={() => { setMagicLink(false); setError(null) }}
@@ -174,7 +174,7 @@ export default function LoginForm() {
         )}
       </div>
 
-      <p className="text-center text-sm text-slate mt-6">
+      <p className="text-center text-base text-slate mt-6">
         Ještě u nás nejste?{' '}
         <Link href="/analyza" className="text-navy hover:text-navy font-semibold transition-colors">
           Vyplňte analýzu zdarma

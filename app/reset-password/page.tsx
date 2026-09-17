@@ -116,10 +116,10 @@ export default function ResetPasswordPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-card mb-5 bg-danger/10 border border-[rgba(194,65,12,0.25)]">
             <AlertCircle className="w-7 h-7 text-danger" strokeWidth={1.8} />
           </div>
-          {error && <p className="text-sm text-danger mb-4">{error}</p>}
+          {error && <p className="text-base text-danger mb-4">{error}</p>}
           <Link
             href="/forgot-password"
-            className="inline-flex items-center gap-2 px-5 h-11 rounded-card font-semibold text-white text-sm transition-all hover:shadow-lg hover:shadow-mint/25 hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-5 h-12 rounded-pill bg-navy font-semibold text-cream text-base transition-colors hover:bg-navy-deep focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
            
           >
             Vyžádat nový odkaz <ArrowRight className="w-4 h-4" />
@@ -138,7 +138,7 @@ export default function ResetPasswordPage() {
     >
       <div className="bg-surface rounded-card border border-line p-6 md:p-8">
         {error && phase === 'ready' && (
-          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-sm text-danger">
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-base text-danger">
             {error}
           </div>
         )}
@@ -189,7 +189,7 @@ function PasswordField({
 }) {
   return (
     <div>
-      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
+      <label className="block text-base font-medium text-navy mb-2">
         {label}
       </label>
       <div className="relative">
@@ -198,7 +198,7 @@ function PasswordField({
           type={show ? 'text' : 'password'}
           placeholder="••••••••"
           autoComplete="new-password"
-          className="w-full h-11 px-4 pr-11 rounded-card border border-line bg-surface text-navy text-[15px] placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20 transition-all"
+          className="w-full h-12 px-4 pr-12 rounded-input border border-line bg-surface text-navy text-base placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20 transition-all"
         />
         <button
           type="button"
@@ -210,7 +210,7 @@ function PasswordField({
           {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
         </button>
       </div>
-      {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
+      {error && <p className="mt-1.5 text-base text-danger">{error}</p>}
     </div>
   )
 }

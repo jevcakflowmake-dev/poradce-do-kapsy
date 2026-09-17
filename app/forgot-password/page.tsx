@@ -61,12 +61,12 @@ export default function ForgotPasswordPage() {
             >
               Zkontrolujte schránku
             </h2>
-            <p className="text-sm text-slate mb-6">
+            <p className="text-base text-slate mb-6">
               Odkaz na reset hesla platí 60 minut. Pokud ho nevidíte, zkontrolujte spam.
             </p>
             <Link
               href="/login"
-              className="text-sm font-semibold text-navy hover:text-navy transition-colors inline-flex items-center gap-1 hover:gap-2"
+              className="text-base font-semibold text-navy hover:text-navy transition-colors inline-flex items-center gap-1 hover:gap-2"
             >
               ← Zpět na přihlášení
             </Link>
@@ -74,13 +74,13 @@ export default function ForgotPasswordPage() {
         ) : (
           <>
             {error && (
-              <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-sm text-danger">
+              <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-base text-danger">
                 {error}
               </div>
             )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
+                <label className="block text-base font-medium text-navy mb-2">
                   E-mail
                 </label>
                 <input
@@ -88,9 +88,9 @@ export default function ForgotPasswordPage() {
                   type="email"
                   placeholder="vas@email.cz"
                   autoComplete="email"
-                  className="w-full h-11 px-4 rounded-card border border-line bg-surface text-navy text-[15px] placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20 transition-all"
+                  className="w-full h-11 px-4 rounded-card border border-line bg-surface text-navy text-base placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20 transition-all"
                 />
-                {errors.email && <p className="mt-1.5 text-xs text-danger">{errors.email.message}</p>}
+                {errors.email && <p className="mt-1.5 text-base text-danger">{errors.email.message}</p>}
               </div>
               <button
                 type="submit"
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Poslat odkaz pro reset'}
               </button>
             </form>
-            <p className="text-center text-sm text-slate mt-6">
+            <p className="text-center text-base text-slate mt-6">
               <Link href="/login" className="hover:text-navy transition-colors">
                 ← Zpět na přihlášení
               </Link>

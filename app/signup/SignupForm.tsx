@@ -87,7 +87,7 @@ export default function SignupForm() {
     >
       <div className="bg-surface rounded-card border border-line p-6 md:p-8">
         {error && (
-          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-sm text-danger">
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-base text-danger">
             {error}
           </div>
         )}
@@ -110,7 +110,7 @@ export default function SignupForm() {
           />
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
+            <label className="block text-base font-medium text-navy mb-2">
               Heslo
             </label>
             <div className="relative">
@@ -119,7 +119,7 @@ export default function SignupForm() {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Alespoň 8 znaků"
                 autoComplete="new-password"
-                className="w-full h-11 px-4 pr-11 rounded-card border border-line bg-surface text-navy text-[15px] placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20 transition-all"
+                className="w-full h-12 px-4 pr-12 rounded-input border border-line bg-surface text-navy text-base placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20 transition-all"
               />
               <button
                 type="button"
@@ -131,7 +131,7 @@ export default function SignupForm() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            {errors.password && <p className="mt-1.5 text-xs text-danger">{errors.password.message}</p>}
+            {errors.password && <p className="mt-1.5 text-base text-danger">{errors.password.message}</p>}
           </div>
 
           <button
@@ -144,7 +144,7 @@ export default function SignupForm() {
           </button>
         </form>
 
-        <p className="text-center text-xs text-slate mt-5 leading-relaxed">
+        <p className="text-center text-base text-slate mt-5 leading-relaxed">
           Registrací berete na vědomí{' '}
           <Link
             href="/zasady-ochrany-osobnich-udaju"
@@ -156,7 +156,7 @@ export default function SignupForm() {
         </p>
       </div>
 
-      <p className="text-center text-sm text-slate mt-6">
+      <p className="text-center text-base text-slate mt-6">
         Už máte účet?{' '}
         <Link href="/login" className="text-navy hover:text-navy font-semibold transition-colors">
           Přihlásit se
