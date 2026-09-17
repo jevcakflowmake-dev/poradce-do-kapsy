@@ -6,6 +6,7 @@ import type { PlanParam } from '@/lib/types/database'
 import PlanEditor from '@/components/advisor/PlanEditor'
 import ClientFinancialsEditor, { type ClientFinancials } from '@/components/advisor/ClientFinancialsEditor'
 import IncomeProtectionEditor from '@/components/advisor/IncomeProtectionEditor'
+import { BARVY } from '@/lib/barvy'
 
 export default async function AdvisorPlanPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = await params
@@ -68,25 +69,25 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
   const clientName = (profile as { full_name: string | null }).full_name || 'Klient'
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE]">
+    <div className="min-h-screen bg-cream">
       {/* Navbar */}
-      <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
+      <nav className="bg-surface border-b border-line px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-8xl mx-auto flex items-center gap-3">
           <Link
             href={`/advisor/${clientId}`}
-            className="inline-flex items-center gap-1 text-[#66708C] hover:text-[#162459] transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-1 text-slate hover:text-navy transition-colors text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Detail</span>
           </Link>
-          <div className="h-6 w-px bg-[#E4DFD2] mx-1 hidden sm:block" />
-          <span className="font-semibold text-[#162459] flex-1 truncate">
+          <div className="h-6 w-px bg-line mx-1 hidden sm:block" />
+          <span className="font-semibold text-navy flex-1 truncate">
             {clientName} · Finanční plán
           </span>
           <Link
             href={`/advisor/${clientId}/chat`}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-none text-sm font-semibold text-white"
-            style={{ background: '#162459' }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-card text-sm font-semibold text-white"
+            style={{ background: BARVY.navy }}
           >
             <MessageCircle className="w-4 h-4" />
             <span className="hidden md:inline">Chat</span>
@@ -96,14 +97,14 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
 
       <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
         <header className="mb-10">
-          <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Editor · plán na míru</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Editor · plán na míru</p>
           <h1
-            className="font-display text-[#162459]"
+            className="font-display text-navy"
             style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', letterSpacing: '-0.02em', lineHeight: 1.05 }}
           >
-            Finanční <span style={{ color: '#009EE2' }}>plán</span>
+            Finanční <span style={{ color: BARVY.mint }}>plán</span>
           </h1>
-          <p className="text-[#66708C] mt-3 max-w-xl leading-relaxed">
+          <p className="text-slate mt-3 max-w-xl leading-relaxed">
             Spravujte varianty, parametry a doporučení pro každý finanční okruh klienta.
           </p>
         </header>

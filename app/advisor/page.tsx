@@ -17,6 +17,7 @@ import type { Profile } from '@/lib/types/database'
 import StatusBadge from '@/components/advisor/StatusBadge'
 import StatusFilter from '@/components/advisor/StatusFilter'
 import AdvisorListReveal from '@/components/advisor/AdvisorListReveal'
+import { BARVY } from '@/lib/barvy'
 
 type PageProps = {
   searchParams: Promise<{ status?: string; q?: string }>
@@ -86,22 +87,22 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
   }))
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE]">
+    <div className="min-h-screen bg-cream">
       {/* Navbar */}
-      <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
+      <nav className="bg-surface border-b border-line px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-8xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-none bg-[#162459] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-card bg-navy flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
             {/* Na mobilu by se název i štítek zalomily do dvou řádků – stačí logo se štítkem */}
-            <span className="hidden sm:inline font-bold text-[#162459] text-lg tracking-tight">Poradce do kapsy</span>
-            <span className="ml-2 whitespace-nowrap text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-[#009EE2]/10 text-[#0079AD] border border-[#009EE2]/30 font-semibold">
+            <span className="hidden sm:inline font-bold text-navy text-lg tracking-tight">Poradce do kapsy</span>
+            <span className="ml-2 whitespace-nowrap text-[11px] tracking-[0.2em] uppercase px-2 py-1 rounded-full bg-mint/10 text-navy border border-mint/30 font-semibold">
               Panel poradce
             </span>
           </div>
           <form action="/api/auth/signout" method="POST">
-            <button className="nav-link text-sm text-[#66708C] hover:text-[#162459] font-medium">Odhlásit</button>
+            <button className="nav-link text-sm text-slate hover:text-navy font-medium">Odhlásit</button>
           </form>
         </div>
       </nav>
@@ -110,10 +111,10 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
         <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 md:py-16">
           {/* Header */}
           <div className="advisor-hero mb-10 md:mb-14">
-            <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Klienti · pipeline</p>
+            <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Klienti · pipeline</p>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <h1
-                className="font-display text-[#162459]"
+                className="font-display text-navy"
                 style={{
                   fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
                   letterSpacing: '-0.02em',
@@ -121,14 +122,14 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                 }}
               >
                 {clients.length}{' '}
-                <span style={{ color: '#009EE2' }}>{plural(clients.length, 'klient', 'klienti', 'klientů')}</span>
-                <span className="text-[#66708C] font-normal" style={{ fontSize: '0.5em' }}>
+                <span style={{ color: BARVY.mint }}>{plural(clients.length, 'klient', 'klienti', 'klientů')}</span>
+                <span className="text-slate font-normal" style={{ fontSize: '0.5em' }}>
                   {' '}ve vaší síti
                 </span>
               </h1>
-              <div className="text-sm text-[#66708C]">
+              <div className="text-sm text-slate">
                 Filtr:{' '}
-                <span className="text-[#162459] font-medium">
+                <span className="text-navy font-medium">
                   {statusFilter ? `${statusFilter.replace('_', ' ')} · ${filtered.length}` : `vše · ${filtered.length}`}
                 </span>
               </div>
@@ -136,64 +137,64 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
           </div>
 
           {/* Filter bar */}
-          <div className="advisor-hero mb-8 p-5 md:p-6 rounded-none bg-[#FDFCF8] border border-[#E4DFD2] shadow-[0_1px_0_rgba(22,36,89,0.03)]">
+          <div className="advisor-hero mb-8 p-5 md:p-6 rounded-card bg-surface border border-line shadow-[0_1px_0_rgba(15,42,68,0.03)]">
             <StatusFilter counts={statusCounts} total={clients.length} />
           </div>
 
           {/* List */}
           {clientsWithScore.length === 0 ? (
-            <div className="advisor-hero bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-12 md:p-16 text-center">
-              <p className="font-display text-[#162459] text-xl mb-1" style={{ letterSpacing: '-0.01em' }}>
+            <div className="advisor-hero bg-surface rounded-card border border-line p-12 md:p-16 text-center">
+              <p className="font-display text-navy text-xl mb-1" style={{ letterSpacing: '-0.01em' }}>
                 {statusFilter ? 'Žádný klient v tomto stavu.' : 'Zatím žádní klienti.'}
               </p>
-              <p className="text-[#66708C] text-sm">
+              <p className="text-slate text-sm">
                 {statusFilter ? 'Zkuste jiný filtr.' : 'Klienti se zobrazí po registraci.'}
               </p>
             </div>
           ) : (
-            <div className="client-table advisor-hero bg-[#FDFCF8] rounded-none border border-[#E4DFD2] overflow-hidden">
+            <div className="client-table advisor-hero bg-surface rounded-card border border-line overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#E4DFD2] bg-[#F6F4EE]">
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-6 py-4">
+                  <tr className="border-b border-line bg-cream">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-6 py-4">
                       Klient
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4 hidden md:table-cell">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-4 py-4 hidden md:table-cell">
                       Stav
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4 hidden sm:table-cell">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-4 py-4 hidden sm:table-cell">
                       Situace
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
                       Oblasti
                     </th>
-                    <th className="text-center text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4">
+                    <th className="text-center text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-4 py-4">
                       Skóre
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-4 py-4 hidden lg:table-cell">
                       Registrace
                     </th>
-                    <th className="px-4 py-4 text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase text-center">
+                    <th className="px-4 py-4 text-[11px] font-semibold text-slate tracking-[0.15em] uppercase text-center">
                       Chat
                     </th>
                     <th className="px-6 py-4" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E4DFD2]">
+                <tbody className="divide-y divide-line">
                   {clientsWithScore.map((client) => (
                     <tr
                       key={client.id}
-                      className="client-row group hover:bg-[#F6F4EE] transition-colors"
+                      className="client-row group hover:bg-cream transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-medium text-[#162459] text-sm md:text-[15px]">
+                          <span className="font-medium text-navy text-sm md:text-[15px]">
                             {client.full_name || '(bez jména)'}
                           </span>
                           {unreadCounts[client.id] > 0 && (
                             <span
                               title={`${unreadCounts[client.id]} ${plural(unreadCounts[client.id], 'nepřečtená zpráva', 'nepřečtené zprávy', 'nepřečtených zpráv')}`}
-                              className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center"
+                              className="bg-danger text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center"
                             >
                               {unreadCounts[client.id]}
                             </span>
@@ -201,27 +202,27 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                           {reactionCounts[client.id] > 0 && (
                             <span
                               title={`${reactionCounts[client.id]} ${plural(reactionCounts[client.id], 'reakce', 'reakce', 'reakcí')} na plán`}
-                              className="inline-flex items-center gap-1 bg-[#009EE2]/12 text-[#0079AD] text-[10px] font-bold rounded-full border border-[#009EE2]/30 h-5 px-1.5"
+                              className="inline-flex items-center gap-1 bg-mint/12 text-navy text-[10px] font-bold rounded-full border border-mint/30 h-5 px-1.5"
                             >
                               <Sparkles className="w-2.5 h-2.5" />
                               {reactionCounts[client.id]}
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-[#66708C] mt-0.5">{riskLabel(client.risk_profile)}</div>
+                        <div className="text-xs text-slate mt-0.5">{riskLabel(client.risk_profile)}</div>
                       </td>
                       <td className="px-4 py-4 hidden md:table-cell">
                         <StatusBadge value={client.status} />
                       </td>
                       <td className="px-4 py-4 hidden sm:table-cell">
-                        <span className="text-sm text-[#162459]/80">{familyLabel(client.family_status)}</span>
+                        <span className="text-sm text-navy/80">{familyLabel(client.family_status)}</span>
                       </td>
                       <td className="px-4 py-4 hidden lg:table-cell">
                         <div className="flex flex-wrap gap-1">
                           {(client.goals ?? []).slice(0, 3).map((g) => (
                             <span
                               key={g}
-                              className="text-xs bg-[#F6F4EE] text-[#162459]/70 border border-[#E4DFD2] px-2 py-0.5 rounded-full"
+                              className="text-xs bg-cream text-navy/70 border border-line px-2 py-0.5 rounded-full"
                             >
                               {goalLabel(g)}
                             </span>
@@ -232,26 +233,26 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                         <span
                           className={`inline-flex items-center justify-center text-sm font-bold w-9 h-9 rounded-full ${
                             client.score >= 70
-                              ? 'bg-[#16a34a]/10 text-[#15803d] border border-[#16a34a]/30'
+                              ? 'bg-mint/10 text-navy border border-mint/30'
                               : client.score >= 40
-                                ? 'bg-[#f59e0b]/12 text-[#b45309] border border-[#f59e0b]/35'
-                                : 'bg-[#ea580c]/10 text-[#c2410c] border border-[#ea580c]/30'
+                                ? 'bg-amber/12 text-navy border border-amber/35'
+                                : 'bg-danger/10 text-danger border border-danger/30'
                           }`}
                         >
                           {client.score}
                         </span>
                       </td>
-                      <td className="px-4 py-4 text-sm text-[#66708C] hidden lg:table-cell">
+                      <td className="px-4 py-4 text-sm text-slate hidden lg:table-cell">
                         {formatDate(client.created_at)}
                       </td>
                       <td className="px-4 py-4 text-center">
                         <Link
                           href={`/advisor/${client.id}/chat`}
-                          className="inline-flex items-center gap-1.5 text-[#0079AD] hover:text-[#162459] transition-colors"
+                          className="inline-flex items-center gap-1.5 text-navy hover:text-navy transition-colors"
                         >
                           <MessageCircle className="w-4 h-4" />
                           {unreadCounts[client.id] > 0 && (
-                            <span className="bg-[#ea580c] text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
+                            <span className="bg-danger text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
                               {unreadCounts[client.id]}
                             </span>
                           )}
@@ -260,7 +261,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                       <td className="px-6 py-4">
                         <Link
                           href={`/advisor/${client.id}`}
-                          className="inline-flex items-center gap-1 text-sm text-[#162459] font-semibold hover:gap-2 transition-all whitespace-nowrap"
+                          className="inline-flex items-center gap-1 text-sm text-navy font-semibold hover:gap-2 transition-all whitespace-nowrap"
                         >
                           Detail <ArrowUpRight className="w-3.5 h-3.5" />
                         </Link>

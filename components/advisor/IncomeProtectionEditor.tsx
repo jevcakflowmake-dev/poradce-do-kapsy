@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { Shield, Save, Plus, Trash2, Loader2, Check, ChevronDown, ChevronUp } from 'lucide-react'
 import { RISK_DEFS, RISK_GROUPS, type RiskKey } from '@/lib/income-risks'
 import type { Json } from '@/lib/types/database'
+import { BARVY } from '@/lib/barvy'
 
 type Coverage = Partial<Record<RiskKey, number | null>>
 
@@ -130,40 +131,40 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
   }
 
   return (
-    <section className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] mb-6 overflow-hidden">
+    <section className="bg-surface rounded-card border border-line mb-6 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-4 p-5 md:p-6 text-left hover:bg-[#F6F4EE] transition-colors"
+        className="w-full flex items-center gap-4 p-5 md:p-6 text-left hover:bg-cream transition-colors"
       >
         <div
-          className="w-10 h-10 rounded-none flex items-center justify-center text-white shrink-0"
-          style={{ background: '#162459' }}
+          className="w-10 h-10 rounded-card flex items-center justify-center text-white shrink-0"
+          style={{ background: BARVY.navy }}
         >
           <Shield className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="text-[#162459] font-display text-lg">Zajištění příjmu – graf života</h2>
-          <p className="text-xs text-[#66708C] mt-0.5">
+          <h2 className="text-navy font-display text-lg">Zajištění příjmu – graf života</h2>
+          <p className="text-xs text-slate mt-0.5">
             {variants.filter((v) => v.company.trim()).length === 0
               ? 'Přidejte až 3 varianty pojistky – klient uvidí graf "kolik mu zůstane při poklesu na 60% a 50%".'
               : `${variants.filter((v) => v.company.trim()).length}/3 variant nahrato`}
           </p>
         </div>
-        {open ? <ChevronUp className="w-5 h-5 text-[#0079AD]" /> : <ChevronDown className="w-5 h-5 text-[#66708C]" />}
+        {open ? <ChevronUp className="w-5 h-5 text-navy" /> : <ChevronDown className="w-5 h-5 text-slate" />}
       </button>
 
       {open && (
-        <div className="border-t border-[#E4DFD2] p-5 md:p-6 space-y-5">
+        <div className="border-t border-line p-5 md:p-6 space-y-5">
           {monthlyIncomeNet === null && (
-            <div className="px-4 py-3 bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.3)] rounded-none text-sm text-[#b45309]">
+            <div className="px-4 py-3 bg-[rgba(242,180,65,0.08)] border border-[rgba(242,180,65,0.3)] rounded-card text-sm text-navy">
               ⚠ Pro graf života je třeba nejdřív vyplnit <strong>Měsíční čistý příjem</strong> ve vstupních datech klienta výše.
             </div>
           )}
 
           {monthlyIncomeNet !== null && (
-            <div className="rounded-none bg-[#F6F4EE] border border-[#E4DFD2] px-4 py-3 text-sm text-[#162459]/80">
-              Klient má příjem <strong className="text-[#162459]">{Math.round(monthlyIncomeNet).toLocaleString('cs-CZ')} Kč/měs</strong>.
+            <div className="rounded-card bg-cream border border-line px-4 py-3 text-sm text-navy/80">
+              Klient má příjem <strong className="text-navy">{Math.round(monthlyIncomeNet).toLocaleString('cs-CZ')} Kč/měs</strong>.
               Při poklesu na 60 % mu bude chybět ~<strong>{Math.round(monthlyIncomeNet * 0.4).toLocaleString('cs-CZ')} Kč</strong>, při 50 % ~<strong>{Math.round(monthlyIncomeNet * 0.5).toLocaleString('cs-CZ')} Kč</strong> měsíčně.
             </div>
           )}
@@ -185,7 +186,7 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
             <button
               type="button"
               onClick={addVariant}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-none border border-dashed border-[#009EE2]/40 text-[#0079AD] hover:bg-[#009EE2]/5 hover:border-[#009EE2] text-sm font-medium transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-card border border-dashed border-mint/40 text-navy hover:bg-mint/5 hover:border-mint text-sm font-medium transition-all"
             >
               <Plus className="w-4 h-4" />
               Přidat variantu ({variants.length}/3)
@@ -193,14 +194,14 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
           )}
 
           {error && (
-            <div className="px-4 py-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
+            <div className="px-4 py-3 bg-[rgba(194,65,12,0.08)] border border-[rgba(194,65,12,0.3)] rounded-card text-sm text-danger">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3 pt-2">
             {saved && (
-              <span className="text-sm text-[#15803d] inline-flex items-center gap-1">
+              <span className="text-sm text-navy inline-flex items-center gap-1">
                 <Check className="w-4 h-4" /> Uloženo
               </span>
             )}
@@ -208,8 +209,8 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-none font-semibold text-white text-sm transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-              style={{ background: '#162459' }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-card font-semibold text-white text-sm transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-mint/25 hover:-translate-y-0.5"
+              style={{ background: BARVY.navy }}
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Uložit varianty pojistky
@@ -235,14 +236,14 @@ function VariantCard({
   canRemove: boolean
 }) {
   return (
-    <div className="rounded-none border border-[#E4DFD2] p-4 md:p-5 bg-[#FDFCF8]">
+    <div className="rounded-card border border-line p-4 md:p-5 bg-surface">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-[#162459]">Varianta {index + 1}</h3>
+        <h3 className="text-sm font-semibold text-navy">Varianta {index + 1}</h3>
         {canRemove && (
           <button
             type="button"
             onClick={onRemove}
-            className="text-[#66708C] hover:text-[#c2410c] transition-colors"
+            className="text-slate hover:text-danger transition-colors"
             aria-label="Odebrat variantu"
           >
             <Trash2 className="w-4 h-4" />
@@ -265,25 +266,25 @@ function VariantCard({
         const payout60 = Math.round(da * DAYS_IN_MONTH + (variant.accident_pn_combine ? pnAfterKar : 0))
         const payout50 = Math.round(pnAfterKar)
         return (
-          <div className="rounded-none bg-[#009EE2]/5 border border-[#009EE2]/20 px-4 py-3 mb-4 text-xs text-[#162459]/85 leading-relaxed">
-            <div className="font-semibold text-[#0079AD] mb-2">Modelace výpočtu pro graf života</div>
+          <div className="rounded-card bg-mint/5 border border-mint/20 px-4 py-3 mb-4 text-xs text-navy/85 leading-relaxed">
+            <div className="font-semibold text-navy mb-2">Modelace výpočtu pro graf života</div>
             <label className="flex items-start gap-2 cursor-pointer mb-3">
               <input
                 type="checkbox"
                 checked={variant.accident_pn_combine}
                 onChange={(e) => onChange('accident_pn_combine', e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-[#E4DFD2] text-[#009EE2] focus:ring-2 focus:ring-[#009EE2]/30"
+                className="mt-0.5 w-4 h-4 rounded border-line text-navy focus:ring-2 focus:ring-mint/30"
               />
-              <span className="text-[12px] text-[#162459]/90 leading-snug">
+              <span className="text-[12px] text-navy/90 leading-snug">
                 Při úrazu se sčítá <strong>úrazové denní odškodné + pracovní neschopenka</strong>
-                <span className="text-[#66708C]">{' '}(klient dostává obojí naráz)</span>
+                <span className="text-slate">{' '}(klient dostává obojí naráz)</span>
               </span>
             </label>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <span className="text-[#66708C]">Pokles 60 % (úraz):</span>{' '}
-                <strong className="text-[#162459]">{payout60.toLocaleString('cs-CZ')} Kč/měs</strong>
-                <div className="text-[10px] text-[#66708C]/80 mt-0.5">
+                <span className="text-slate">Pokles 60 % (úraz):</span>{' '}
+                <strong className="text-navy">{payout60.toLocaleString('cs-CZ')} Kč/měs</strong>
+                <div className="text-[10px] text-slate/80 mt-0.5">
                   úrazové × {DAYS_IN_MONTH}
                   {variant.accident_pn_combine && (
                     <> + PN × ({DAYS_IN_MONTH} − {karence})</>
@@ -291,22 +292,22 @@ function VariantCard({
                 </div>
               </div>
               <div>
-                <span className="text-[#66708C]">Pokles 50 % (nemoc):</span>{' '}
-                <strong className="text-[#162459]">{payout50.toLocaleString('cs-CZ')} Kč/měs</strong>
-                <div className="text-[10px] text-[#66708C]/80 mt-0.5">PN × ({DAYS_IN_MONTH} − {karence}) dnů</div>
+                <span className="text-slate">Pokles 50 % (nemoc):</span>{' '}
+                <strong className="text-navy">{payout50.toLocaleString('cs-CZ')} Kč/měs</strong>
+                <div className="text-[10px] text-slate/80 mt-0.5">PN × ({DAYS_IN_MONTH} − {karence}) dnů</div>
               </div>
             </div>
           </div>
         )
       })()}
 
-      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">Pojistné krytí (10 typů rizik)</h4>
+      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">Pojistné krytí (10 typů rizik)</h4>
       <div className="space-y-3">
         {RISK_GROUPS.map((g) => {
           const risks = RISK_DEFS.filter((r) => r.group === g.id)
           return (
-            <div key={g.id} className="rounded-none bg-[#FDFCF8] border border-[#E4DFD2] p-3">
-              <div className="text-[11px] uppercase tracking-[0.15em] text-[#66708C] mb-2">{g.label}</div>
+            <div key={g.id} className="rounded-card bg-surface border border-line p-3">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-slate mb-2">{g.label}</div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {risks.map((r) => (
                   <NumField
@@ -326,7 +327,7 @@ function VariantCard({
       </div>
 
       <details className="text-sm mt-3">
-        <summary className="cursor-pointer text-xs text-[#0079AD] hover:text-[#162459]">Pokročilé parametry</summary>
+        <summary className="cursor-pointer text-xs text-navy hover:text-navy">Pokročilé parametry</summary>
         <div className="grid grid-cols-2 gap-3 mt-3">
           <NumField label="Karenční doba" value={variant.waiting_period_days} onChange={(v) => onChange('waiting_period_days', v)} suffix="dní" />
           <NumField label="Max. délka výplaty" value={variant.max_payout_years} onChange={(v) => onChange('max_payout_years', v)} suffix="let" />
@@ -346,13 +347,13 @@ function TextField({
 }) {
   return (
     <div>
-      <label className="block text-xs text-[#162459]/70 mb-1">{label}</label>
+      <label className="block text-xs text-navy/70 mb-1">{label}</label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full h-10 px-3 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] focus:outline-none focus:border-[#009EE2] focus:ring-2 focus:ring-[#009EE2]/10 transition-all"
+        className="w-full h-10 px-3 rounded-card border border-line bg-surface text-navy text-[15px] focus:outline-none focus:border-mint focus:ring-2 focus:ring-mint/10 transition-all"
       />
     </div>
   )
@@ -368,7 +369,7 @@ function NumField({
 }) {
   return (
     <div>
-      <label className="block text-xs text-[#162459]/70 mb-1">{label}</label>
+      <label className="block text-xs text-navy/70 mb-1">{label}</label>
       <div className="relative">
         <input
           type="number"
@@ -378,10 +379,10 @@ function NumField({
             const raw = e.target.value
             onChange(raw === '' ? null : Number(raw))
           }}
-          className="w-full h-10 px-3 pr-14 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] focus:outline-none focus:border-[#009EE2] focus:ring-2 focus:ring-[#009EE2]/10 transition-all"
+          className="w-full h-10 px-3 pr-14 rounded-card border border-line bg-surface text-navy text-[15px] focus:outline-none focus:border-mint focus:ring-2 focus:ring-mint/10 transition-all"
         />
         {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#66708C]">{suffix}</span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate">{suffix}</span>
         )}
       </div>
     </div>

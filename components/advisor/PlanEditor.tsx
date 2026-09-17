@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { BARVY } from '@/lib/barvy'
 
 const SECTIONS = [
   { id: 'income', title: 'Zajisteni prijmu', label: 'Zajisteni prijmu', icon: Shield },
@@ -257,12 +258,12 @@ export default function PlanEditor({
             <button
               key={section.id}
               onClick={() => handleSectionChange(section.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-none text-sm font-medium whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-card text-sm font-medium whitespace-nowrap transition-all ${
                 isActive
                   ? 'text-white shadow-md'
-                  : 'bg-[#FDFCF8] text-muted border border-surface hover:border-accent/30 hover:text-navy'
+                  : 'bg-surface text-muted border border-surface hover:border-accent/30 hover:text-navy'
               }`}
-              style={isActive ? { backgroundColor: '#162459' } : undefined}
+              style={isActive ? { backgroundColor: BARVY.navy } : undefined}
             >
               <SectionIcon className="w-4 h-4" />
               {section.title}
@@ -273,13 +274,13 @@ export default function PlanEditor({
 
       {/* Feedback */}
       {feedback && (
-        <div className="px-4 py-2.5 rounded-none text-sm font-medium bg-accent/10 text-accent border border-accent/20">
+        <div className="px-4 py-2.5 rounded-card text-sm font-medium bg-accent/10 text-accent border border-accent/20">
           {feedback}
         </div>
       )}
 
       {/* Client answers collapsible */}
-      <div className="bg-[#FDFCF8] rounded-none border border-surface overflow-hidden">
+      <div className="bg-surface rounded-card border border-surface overflow-hidden">
         <button
           onClick={() => setShowAnswers(!showAnswers)}
           className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-surface/30 transition-colors"
@@ -316,8 +317,8 @@ export default function PlanEditor({
           <Button
             onClick={() => setShowAddVariant(!showAddVariant)}
             size="sm"
-            className="text-white gap-1.5 rounded-none"
-            style={{ backgroundColor: '#009EE2' }}
+            className="text-white gap-1.5 rounded-card"
+            style={{ backgroundColor: BARVY.mint }}
           >
             <Plus className="w-4 h-4" />
             Pridat variantu
@@ -326,7 +327,7 @@ export default function PlanEditor({
 
         {/* Add variant form */}
         {showAddVariant && (
-          <div className="bg-[#FDFCF8] rounded-none border-2 border-accent/30 p-5 mb-4 space-y-4">
+          <div className="bg-surface rounded-card border-2 border-accent/30 p-5 mb-4 space-y-4">
             <h4 className="font-medium text-navy">Nova varianta</h4>
             <div className="grid sm:grid-cols-3 gap-3">
               <div>
@@ -359,7 +360,7 @@ export default function PlanEditor({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAddVariant(false)}
-                className="rounded-none"
+                className="rounded-card"
               >
                 Zrusit
               </Button>
@@ -367,8 +368,8 @@ export default function PlanEditor({
                 size="sm"
                 onClick={handleAddVariant}
                 disabled={saving || !newCompany.trim() || !newPayment.trim()}
-                className="text-white rounded-none"
-                style={{ backgroundColor: '#162459' }}
+                className="text-white rounded-card"
+                style={{ backgroundColor: BARVY.navy }}
               >
                 {saving ? 'Ukladam...' : 'Ulozit'}
               </Button>
@@ -378,7 +379,7 @@ export default function PlanEditor({
 
         {/* Variant cards */}
         {sectionVariants.length === 0 && !showAddVariant ? (
-          <div className="bg-[#FDFCF8] rounded-none border border-surface p-8 text-center text-muted text-sm">
+          <div className="bg-surface rounded-card border border-surface p-8 text-center text-muted text-sm">
             Zatim zadne varianty pro tuto sekci.
           </div>
         ) : (
@@ -386,12 +387,12 @@ export default function PlanEditor({
             {sectionVariants.map(variant => {
               const variantParams = params.filter(p => p.variant_id === variant.id).sort((a, b) => a.sort_order - b.sort_order)
               return (
-                <div key={variant.id} className="bg-[#FDFCF8] rounded-none border border-surface overflow-hidden">
+                <div key={variant.id} className="bg-surface rounded-card border border-surface overflow-hidden">
                   {/* Variant header */}
                   <div className="flex items-center gap-4 px-5 py-4">
                     <div
-                      className="w-11 h-11 rounded-none flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm"
-                      style={{ backgroundColor: '#162459' }}
+                      className="w-11 h-11 rounded-card flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm"
+                      style={{ backgroundColor: BARVY.navy }}
                     >
                       {variant.logo || variant.company[0]}
                     </div>
@@ -403,7 +404,7 @@ export default function PlanEditor({
                     </div>
                     <button
                       onClick={() => handleDeleteVariant(variant.id)}
-                      className="p-2 text-muted hover:text-red-500 transition-colors rounded-none hover:bg-red-50"
+                      className="p-2 text-muted hover:text-red-500 transition-colors rounded-card hover:bg-red-50"
                       title="Smazat variantu"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -416,11 +417,11 @@ export default function PlanEditor({
                       <Separator className="mb-3" />
                       <div className="space-y-2">
                         {variantParams.map(param => (
-                          <div key={param.id} className="flex items-center gap-2 bg-surface/50 rounded-none px-4 py-2.5 group">
+                          <div key={param.id} className="flex items-center gap-2 bg-surface/50 rounded-card px-4 py-2.5 group">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-navy">{param.param_label}</span>
-                                <span className="text-sm font-bold text-navy bg-[#FDFCF8] px-2.5 py-0.5 rounded-none shadow-sm">
+                                <span className="text-sm font-bold text-navy bg-surface px-2.5 py-0.5 rounded-card shadow-sm">
                                   {param.value}
                                 </span>
                               </div>
@@ -444,7 +445,7 @@ export default function PlanEditor({
                   {/* Add param */}
                   <div className="px-5 pb-4">
                     {addingParamForVariant === variant.id ? (
-                      <div className="border border-accent/20 rounded-none p-4 mt-2 space-y-3 bg-accent/5">
+                      <div className="border border-accent/20 rounded-card p-4 mt-2 space-y-3 bg-accent/5">
                         <div className="grid sm:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-xs font-medium text-muted mb-1">Nazev parametru</label>
@@ -482,7 +483,7 @@ export default function PlanEditor({
                               setAddingParamForVariant(null)
                               setParamForm({ param_label: '', value: '', note: '' })
                             }}
-                            className="rounded-none text-xs"
+                            className="rounded-card text-xs"
                           >
                             Zrusit
                           </Button>
@@ -490,8 +491,8 @@ export default function PlanEditor({
                             size="sm"
                             onClick={() => handleAddParam(variant.id)}
                             disabled={saving || !paramForm.param_label.trim() || !paramForm.value.trim()}
-                            className="text-white rounded-none text-xs"
-                            style={{ backgroundColor: '#009EE2' }}
+                            className="text-white rounded-card text-xs"
+                            style={{ backgroundColor: BARVY.mint }}
                           >
                             Pridat
                           </Button>
@@ -518,14 +519,14 @@ export default function PlanEditor({
       </div>
 
       {/* Recommendation */}
-      <div className="bg-[#FDFCF8] rounded-none border border-surface p-5 space-y-4">
+      <div className="bg-surface rounded-card border border-surface p-5 space-y-4">
         <h3 className="font-semibold text-navy text-lg">Doporuceni</h3>
         <div>
           <label className="block text-sm font-medium text-muted mb-1.5">Status</label>
           <select
             value={recStatus}
             onChange={e => setRecStatus(e.target.value as 'ok' | 'recommendation' | 'action')}
-            className="w-full h-10 rounded-none border border-surface bg-[#FDFCF8] px-3 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full h-10 rounded-card border border-surface bg-surface px-3 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-accent"
           >
             <option value="ok">V poradku</option>
             <option value="recommendation">Doporuceni</option>
@@ -538,7 +539,7 @@ export default function PlanEditor({
             value={recText}
             onChange={e => setRecText(e.target.value)}
             rows={5}
-            className="w-full px-4 py-3 border border-surface rounded-none text-sm text-navy focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+            className="w-full px-4 py-3 border border-surface rounded-card text-sm text-navy focus:outline-none focus:ring-2 focus:ring-accent resize-none"
             placeholder="Doporucujeme sjednat zivotni pojisteni...&#10;Zvazit navyseni krytí invalidni renty...&#10;..."
           />
         </div>
@@ -546,8 +547,8 @@ export default function PlanEditor({
           <Button
             onClick={handleSaveRecommendation}
             disabled={saving}
-            className="text-white gap-2 rounded-none"
-            style={{ backgroundColor: '#162459' }}
+            className="text-white gap-2 rounded-card"
+            style={{ backgroundColor: BARVY.navy }}
           >
             <Save className="w-4 h-4" />
             {saving ? 'Ukladam...' : 'Ulozit doporuceni'}

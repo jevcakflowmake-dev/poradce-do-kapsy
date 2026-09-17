@@ -20,11 +20,11 @@ export default function PageHeader({ eyebrow, numeral, title, subtitle, right }:
     <header className="mb-8 md:mb-12">
       {numeral && <div className="section-numeral text-[3rem] md:text-[4.5rem] mb-2">{numeral}</div>}
       {eyebrow && (
-        <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">{eyebrow}</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">{eyebrow}</p>
       )}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <h1
-          className="font-display text-[#162459]"
+          className="font-display text-navy"
           style={{
             fontSize: 'clamp(1.75rem, 4vw, 3rem)',
             letterSpacing: '-0.02em',
@@ -36,7 +36,7 @@ export default function PageHeader({ eyebrow, numeral, title, subtitle, right }:
         {right}
       </div>
       {subtitle && (
-        <p className="text-[#66708C] max-w-2xl mt-4 text-[15px] leading-relaxed">{subtitle}</p>
+        <p className="text-slate max-w-2xl mt-4 text-base leading-relaxed">{subtitle}</p>
       )}
     </header>
   )

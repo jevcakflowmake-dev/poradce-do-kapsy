@@ -54,7 +54,7 @@ export default function MesicniPlatby({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 + idx * 0.08 }}
-                className="bg-surface rounded-card border border-line p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.08)] transition-all"
+                className="bg-surface rounded-card border border-line p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(15,42,68,0.08)] transition-all"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">

@@ -9,6 +9,7 @@ import StatusControl from '@/components/advisor/StatusControl'
 import PendingSubmission from '@/components/advisor/PendingSubmission'
 import AccessLinkButton from '@/components/advisor/AccessLinkButton'
 import StoredFileLink from '@/components/files/StoredFileLink'
+import { BARVY } from '@/lib/barvy'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = await params
@@ -195,36 +196,36 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   const score = calcHealthScore(profile)
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE]">
+    <div className="min-h-screen bg-cream">
       {/* Navbar */}
-      <nav className="bg-[#FDFCF8] border-b border-[#E4DFD2] px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
+      <nav className="bg-surface border-b border-line px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-8xl mx-auto flex items-center gap-3">
           <Link
             href="/advisor"
-            className="inline-flex items-center gap-2 text-[#66708C] hover:text-[#162459] transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 text-slate hover:text-navy transition-colors text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Zpět na klienty</span>
           </Link>
-          <div className="h-6 w-px bg-[#E4DFD2] mx-1 hidden sm:block" />
-          <div className="w-8 h-8 rounded-none bg-[#162459] flex items-center justify-center hidden sm:flex">
+          <div className="h-6 w-px bg-line mx-1 hidden sm:block" />
+          <div className="w-8 h-8 rounded-card bg-navy flex items-center justify-center hidden sm:flex">
             <Shield className="w-4 h-4 text-white" strokeWidth={1.8} />
           </div>
-          <span className="font-semibold text-[#162459] flex-1 truncate">
+          <span className="font-semibold text-navy flex-1 truncate">
             {profile.full_name || 'Detail klienta'}
           </span>
           <Link
             href={`/advisor/${clientId}/plan`}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-none text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-[#009EE2]/20"
-            style={{ background: '#162459' }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-card text-sm font-semibold text-white transition-shadow hover:shadow-lg hover:shadow-mint/20"
+            style={{ background: BARVY.navy }}
           >
             <FileText className="w-4 h-4" />
             <span className="hidden md:inline">Finanční plán</span>
           </Link>
           <Link
             href={`/advisor/${clientId}/chat`}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-none text-sm font-semibold text-white"
-            style={{ background: '#162459' }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-card text-sm font-semibold text-white"
+            style={{ background: BARVY.navy }}
           >
             <MessageCircle className="w-4 h-4" />
             <span className="hidden md:inline">Chat</span>
@@ -245,10 +246,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
 
         {/* Hero header s jménem + status control */}
         <header>
-          <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-2">Klient · profil a aktivita</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-slate mb-2">Klient · profil a aktivita</p>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <h1
-              className="font-display text-[#162459]"
+              className="font-display text-navy"
               style={{
                 fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
                 letterSpacing: '-0.02em',
@@ -258,7 +259,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               {profile.full_name || 'Bez jména'}
             </h1>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-[#66708C] uppercase tracking-[0.2em]">Stav:</span>
+              <span className="text-xs text-slate uppercase tracking-[0.2em]">Stav:</span>
               <StatusControl clientId={clientId} initial={profile.status ?? 'novy'} />
             </div>
           </div>
@@ -267,11 +268,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         {hasAnalysis && (
           <Link
             href={`/advisor/${clientId}/plan`}
-            className="group block rounded-none p-5 md:p-6 text-white transition-all hover:shadow-[0_20px_50px_-15px_rgba(0,158,226,0.45)] hover:-translate-y-0.5"
-            style={{ background: '#162459' }}
+            className="group block rounded-card p-5 md:p-6 text-white transition-all hover:shadow-[0_20px_50px_-15px_rgba(31,181,143,0.45)] hover:-translate-y-0.5"
+            style={{ background: BARVY.navy }}
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-none bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 md:w-14 md:h-14 rounded-card bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
                 <Sparkles className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.8} />
               </div>
               <div className="flex-1 min-w-0">
@@ -296,10 +297,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
 
         <section className="grid md:grid-cols-2 gap-5">
           {/* Profil */}
-          <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-7">
+          <div className="bg-surface rounded-card border border-line p-6 md:p-7">
             <div className="flex items-center justify-between mb-5">
               <h2
-                className="font-display text-[#162459]"
+                className="font-display text-navy"
                 style={{ fontSize: '1.25rem', letterSpacing: '-0.01em' }}
               >
                 Profil klienta
@@ -307,10 +308,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               <span
                 className={`text-sm font-bold px-3 py-1 rounded-full border ${
                   score >= 70
-                    ? 'bg-[#16a34a]/10 text-[#15803d] border-[#16a34a]/30'
+                    ? 'bg-mint/10 text-navy border-mint/30'
                     : score >= 40
-                      ? 'bg-[#f59e0b]/12 text-[#b45309] border-[#f59e0b]/35'
-                      : 'bg-[#ea580c]/10 text-[#c2410c] border-[#ea580c]/30'
+                      ? 'bg-amber/12 text-navy border-amber/35'
+                      : 'bg-danger/10 text-danger border-danger/30'
                 }`}
               >
                 Skóre: {score}
@@ -318,30 +319,30 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             </div>
             <dl className="space-y-2.5 text-sm">
               <div className="flex justify-between">
-                <dt className="text-[#66708C]">Věk</dt>
-                <dd className="font-medium text-[#162459]">{profile.age ?? '–'} let</dd>
+                <dt className="text-slate">Věk</dt>
+                <dd className="font-medium text-navy">{profile.age ?? '–'} let</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-[#66708C]">Příjem</dt>
-                <dd className="font-medium text-[#162459]">{incomeLabel(profile.income)}</dd>
+                <dt className="text-slate">Příjem</dt>
+                <dd className="font-medium text-navy">{incomeLabel(profile.income)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-[#66708C]">Rodinná situace</dt>
-                <dd className="font-medium text-[#162459]">{familyLabel(profile.family_status)}</dd>
+                <dt className="text-slate">Rodinná situace</dt>
+                <dd className="font-medium text-navy">{familyLabel(profile.family_status)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-[#66708C]">Rizikový profil</dt>
-                <dd className="font-medium text-[#162459]">{riskLabel(profile.risk_profile)}</dd>
+                <dt className="text-slate">Rizikový profil</dt>
+                <dd className="font-medium text-navy">{riskLabel(profile.risk_profile)}</dd>
               </div>
             </dl>
             {(profile.goals ?? []).length > 0 && (
-              <div className="mt-5 pt-5 border-t border-[#E4DFD2]">
-                <p className="text-xs text-[#66708C] mb-2 tracking-[0.15em] uppercase">Oblasti zájmu</p>
+              <div className="mt-5 pt-5 border-t border-line">
+                <p className="text-xs text-slate mb-2 tracking-[0.15em] uppercase">Oblasti zájmu</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(profile.goals ?? []).map((g) => (
                     <span
                       key={g}
-                      className="text-xs bg-[#009EE2]/8 text-[#0079AD] border border-[#009EE2]/25 px-2.5 py-1 rounded-full"
+                      className="text-xs bg-mint/8 text-navy border border-mint/25 px-2.5 py-1 rounded-full"
                     >
                       {goalLabel(g)}
                     </span>
@@ -363,17 +364,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         <section>
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">analýza</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">analýza</p>
               <h2
-                className="font-display text-[#162459]"
+                className="font-display text-navy"
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
               >
                 Odpovědi z{' '}
-                <span style={{ color: '#009EE2' }}>analýzy</span>
+                <span style={{ color: BARVY.mint }}>analýzy</span>
               </h2>
             </div>
             {hasAnalysis && (
-              <span className="text-sm text-[#66708C]">
+              <span className="text-sm text-slate">
                 {Object.keys(analysisResponses).length}{' '}
                 {plural(Object.keys(analysisResponses).length, 'sekce vyplněna', 'sekce vyplněny', 'sekcí vyplněno')}
               </span>
@@ -381,7 +382,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           </div>
 
           {!hasAnalysis ? (
-            <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-10 text-center text-[#66708C] text-sm">
+            <div className="bg-surface rounded-card border border-line p-10 text-center text-slate text-sm">
               Klient zatím nevyplnil analýzu
             </div>
           ) : (
@@ -389,10 +390,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               {Object.entries(analysisResponses).map(([sectionId, answers]) => (
                 <div
                   key={sectionId}
-                  className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6"
+                  className="bg-surface rounded-card border border-line p-6"
                 >
                   <h3
-                    className="font-display text-[#162459] mb-4"
+                    className="font-display text-navy mb-4"
                     style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
                   >
                     {SECTION_LABELS[sectionId] || sectionId}
@@ -400,10 +401,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                   <dl className="space-y-2.5 text-sm">
                     {Object.entries(answers).map(([qId, value]) => (
                       <div key={qId} className="flex justify-between gap-4">
-                        <dt className="text-[#66708C] shrink-0">
+                        <dt className="text-slate shrink-0">
                           {QUESTION_LABELS[sectionId]?.[qId] || qId}
                         </dt>
-                        <dd className="font-medium text-[#162459] text-right">{value}</dd>
+                        <dd className="font-medium text-navy text-right">{value}</dd>
                       </div>
                     ))}
                   </dl>
@@ -414,9 +415,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
 
           {/* Dokumenty od klienta – privátní bucket, odkaz přes signed URL */}
           {analysisFiles.length > 0 && (
-            <div className="mt-4 bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6">
+            <div className="mt-4 bg-surface rounded-card border border-line p-6">
               <h3
-                className="font-display text-[#162459] mb-4"
+                className="font-display text-navy mb-4"
                 style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
               >
                 Dokumenty od klienta
@@ -424,15 +425,15 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               <ul className="space-y-2">
                 {analysisFiles.map(f => (
                   <li key={f.id} className="flex items-center gap-3 text-sm">
-                    <FileText className="w-4 h-4 text-[#66708C] shrink-0" />
+                    <FileText className="w-4 h-4 text-slate shrink-0" />
                     <StoredFileLink
                       bucket="analysis"
                       path={f.file_url}
-                      className="text-[#0079AD] hover:text-[#162459] transition-colors font-medium text-left truncate"
+                      className="text-navy hover:text-navy transition-colors font-medium text-left truncate"
                     >
                       {f.file_name}
                     </StoredFileLink>
-                    <span className="text-xs text-[#66708C] shrink-0">
+                    <span className="text-xs text-slate shrink-0">
                       {SECTION_LABELS[f.section] || f.section} · {(f.file_size / 1024).toFixed(0)} KB
                     </span>
                   </li>
@@ -446,19 +447,19 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         <section>
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">reakce na plán</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">reakce na plán</p>
               <h2
-                className="font-display text-[#162459]"
+                className="font-display text-navy"
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
               >
                 Jak klient{' '}
-                <span style={{ color: '#009EE2' }}>reagoval</span>
+                <span style={{ color: BARVY.mint }}>reagoval</span>
               </h2>
             </div>
             {hasAnyReaction && (
               <Link
                 href={`/advisor/${clientId}/plan`}
-                className="text-sm text-[#0079AD] hover:text-[#162459] inline-flex items-center gap-1"
+                className="text-sm text-navy hover:text-navy inline-flex items-center gap-1"
               >
                 Upravit plán <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
               </Link>
@@ -466,15 +467,15 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
           </div>
 
           {!hasAnyReaction ? (
-            <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-10 text-center text-[#66708C] text-sm">
+            <div className="bg-surface rounded-card border border-line p-10 text-center text-slate text-sm">
               Klient zatím na plán nereagoval
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-4">
               {/* Sekce */}
-              <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-7">
+              <div className="bg-surface rounded-card border border-line p-6 md:p-7">
                 <h3
-                  className="font-display text-[#162459] mb-5"
+                  className="font-display text-navy mb-5"
                   style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
                 >
                   Oblasti
@@ -486,17 +487,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                       const row = interestMap.get(id)
                       const cfg = row
                         ? row.status === 'interested'
-                          ? { icon: CheckCircle2, color: '#15803d', bg: 'rgba(22,163,74,0.10)', border: 'rgba(22,163,74,0.30)', label: 'Mám zájem' }
+                          ? { icon: CheckCircle2, color: BARVY.mintDark, bg: 'rgba(31,181,143,0.10)', border: 'rgba(31,181,143,0.30)', label: 'Mám zájem' }
                           : row.status === 'question'
-                            ? { icon: HelpCircle, color: '#0079AD', bg: 'rgba(0,158,226,0.10)', border: 'rgba(0,158,226,0.30)', label: 'Otázka' }
-                            : { icon: Clock, color: '#66708C', bg: 'rgba(129,142,175,0.10)', border: 'rgba(129,142,175,0.25)', label: 'Zatím ne' }
+                            ? { icon: HelpCircle, color: BARVY.mintDark, bg: 'rgba(31,181,143,0.10)', border: 'rgba(31,181,143,0.30)', label: 'Otázka' }
+                            : { icon: Clock, color: BARVY.slate, bg: 'rgba(100,112,125,0.10)', border: 'rgba(100,112,125,0.25)', label: 'Zatím ne' }
                         : null
                       return (
                         <li
                           key={id}
                           className="flex items-center justify-between gap-3 py-1.5"
                         >
-                          <span className="text-[#162459]/85">{label}</span>
+                          <span className="text-navy/85">{label}</span>
                           {cfg ? (
                             <span
                               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium shrink-0"
@@ -506,15 +507,15 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                               {cfg.label}
                             </span>
                           ) : (
-                            <span className="text-xs text-[#66708C]/70">–</span>
+                            <span className="text-xs text-slate/70">–</span>
                           )}
                         </li>
                       )
                     })}
                 </ul>
                 {interestRows.some((r) => r.note) && (
-                  <div className="mt-5 pt-5 border-t border-[#E4DFD2] space-y-2.5">
-                    <p className="text-xs uppercase tracking-[0.15em] text-[#66708C]">
+                  <div className="mt-5 pt-5 border-t border-line space-y-2.5">
+                    <p className="text-xs uppercase tracking-[0.15em] text-slate">
                       Poznámky ke dotazům
                     </p>
                     {interestRows
@@ -522,9 +523,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                       .map((r) => (
                         <div
                           key={r.section}
-                          className="text-xs text-[#162459]/75 bg-[#F6F4EE] rounded-none p-3 border border-[#E4DFD2]"
+                          className="text-xs text-navy/75 bg-cream rounded-card p-3 border border-line"
                         >
-                          <span className="font-semibold text-[#162459]">
+                          <span className="font-semibold text-navy">
                             {SECTION_LABELS[r.section] || r.section}:
                           </span>{' '}
                           {r.note}
@@ -535,16 +536,16 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               </div>
 
               {/* Vybrané varianty */}
-              <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-7">
+              <div className="bg-surface rounded-card border border-line p-6 md:p-7">
                 <h3
-                  className="font-display text-[#162459] mb-5 flex items-center gap-2"
+                  className="font-display text-navy mb-5 flex items-center gap-2"
                   style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
                 >
-                  <Heart className="w-4 h-4 text-[#009EE2]" strokeWidth={2} />
+                  <Heart className="w-4 h-4 text-navy" strokeWidth={2} />
                   Preferované varianty
                 </h3>
                 {selectionRows.length === 0 ? (
-                  <p className="text-sm text-[#66708C]">
+                  <p className="text-sm text-slate">
                     Klient zatím nevybral konkrétní variantu. Jakmile tak učiní, uvidíte
                     ji zde i jako prioritní akci.
                   </p>
@@ -553,22 +554,22 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                     {selectionRows.map((row) => (
                       <li
                         key={row.variant_id}
-                        className="flex items-center justify-between gap-3 p-3 rounded-none border border-[#009EE2]/25 bg-[#009EE2]/5"
+                        className="flex items-center justify-between gap-3 p-3 rounded-card border border-mint/25 bg-mint/5"
                       >
                         <div className="min-w-0">
-                          <div className="font-semibold text-[#162459] text-sm truncate">
+                          <div className="font-semibold text-navy text-sm truncate">
                             {row.plan_variants?.company || 'Varianta'}
                           </div>
-                          <div className="text-[11px] text-[#66708C] uppercase tracking-[0.15em] mt-0.5">
+                          <div className="text-[11px] text-slate uppercase tracking-[0.15em] mt-0.5">
                             {SECTION_LABELS[row.plan_variants?.section ?? ''] || ''} ·{' '}
                             {formatDate(row.selected_at)}
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className="font-display text-[#162459] text-lg">
+                          <span className="font-display text-navy text-lg">
                             {row.plan_variants?.monthly_payment}
                           </span>
-                          <div className="text-[11px] text-[#66708C] uppercase tracking-[0.1em]">
+                          <div className="text-[11px] text-slate uppercase tracking-[0.1em]">
                             / měsíc
                           </div>
                         </div>
@@ -585,62 +586,62 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         <section>
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#66708C] mb-1">aktivita</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">aktivita</p>
               <h2
-                className="font-display text-[#162459]"
+                className="font-display text-navy"
                 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', letterSpacing: '-0.01em' }}
               >
                 Odeslané{' '}
-                <span style={{ color: '#009EE2' }}>návrhy</span>
+                <span style={{ color: BARVY.mint }}>návrhy</span>
               </h2>
             </div>
             {proposals && proposals.length > 0 && (
-              <span className="text-sm text-[#66708C]">
+              <span className="text-sm text-slate">
                 {proposals.length} {plural(proposals.length, 'záznam', 'záznamy', 'záznamů')}
               </span>
             )}
           </div>
 
           {!proposals || proposals.length === 0 ? (
-            <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-10 text-center text-[#66708C] text-sm">
+            <div className="bg-surface rounded-card border border-line p-10 text-center text-slate text-sm">
               Zatím žádné návrhy
             </div>
           ) : (
-            <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] overflow-hidden">
+            <div className="bg-surface rounded-card border border-line overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#E4DFD2] bg-[#F6F4EE]">
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-5 py-4">
+                  <tr className="border-b border-line bg-cream">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-5 py-4">
                       Název
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-4 py-4">
                       Typ
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-4 py-4">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-4 py-4">
                       Stav
                     </th>
-                    <th className="text-left text-[11px] font-semibold text-[#66708C] tracking-[0.15em] uppercase px-5 py-4">
+                    <th className="text-left text-[11px] font-semibold text-slate tracking-[0.15em] uppercase px-5 py-4">
                       Datum
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E4DFD2]">
+                <tbody className="divide-y divide-line">
                   {proposals.map((p) => (
-                    <tr key={p.id} className="hover:bg-[#F6F4EE] transition-colors">
-                      <td className="px-5 py-3.5 text-sm text-[#162459]">{p.title}</td>
+                    <tr key={p.id} className="hover:bg-cream transition-colors">
+                      <td className="px-5 py-3.5 text-sm text-navy">{p.title}</td>
                       <td className="px-4 py-3.5">
-                        <span className="text-xs bg-[#F6F4EE] text-[#162459]/70 border border-[#E4DFD2] px-2.5 py-1 rounded-full">
+                        <span className="text-xs bg-cream text-navy/70 border border-line px-2.5 py-1 rounded-full">
                           {proposalTypeLabel(p.type)}
                         </span>
                       </td>
                       <td className="px-4 py-3.5">
                         {p.is_read ? (
-                          <span className="text-xs text-[#15803d] font-medium">Přečteno</span>
+                          <span className="text-xs text-navy font-medium">Přečteno</span>
                         ) : (
-                          <span className="text-xs text-[#66708C]">Nepřečteno</span>
+                          <span className="text-xs text-slate">Nepřečteno</span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 text-sm text-[#66708C]">{formatDate(p.created_at)}</td>
+                      <td className="px-5 py-3.5 text-sm text-slate">{formatDate(p.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>

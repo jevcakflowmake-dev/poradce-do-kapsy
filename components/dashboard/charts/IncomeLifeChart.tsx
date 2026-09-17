@@ -205,7 +205,7 @@ export default function IncomeLifeChart({
               onClick={() => onSelect(v.id)}
               className={`text-left rounded-card p-4 border-2 transition-all hover:-translate-y-0.5 ${
                 isSelected
-                  ? 'bg-mint/8 border-mint shadow-[0_8px_24px_-12px_rgba(22,163,74,0.4)]'
+                  ? 'bg-mint/8 border-mint shadow-[0_8px_24px_-12px_rgba(31,181,143,0.4)]'
                   : 'bg-surface border-line hover:border-mint/40 hover:shadow-sm'
               }`}
             >

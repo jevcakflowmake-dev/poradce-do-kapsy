@@ -1,8 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ChatWindow from '@/components/chat/ChatWindow'
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
 import { BARVY } from '@/lib/barvy'
 
 export const dynamic = 'force-dynamic'
@@ -21,7 +19,7 @@ export default async function ClientChatPage() {
         </h1>
       </div>
 
-      <div className="flex flex-col h-[calc(100vh-320px)] min-h-[500px] bg-surface rounded-card border border-line overflow-hidden shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)]">
+      <div className="flex flex-col h-[calc(100vh-320px)] min-h-[500px] bg-surface rounded-card border border-line overflow-hidden shadow-[0_10px_30px_-10px_rgba(15,42,68,0.1)]">
         <div
           className="relative px-6 py-5 border-b border-white/10 flex items-center gap-3 overflow-hidden"
           style={{ background: BARVY.navyDeep }}

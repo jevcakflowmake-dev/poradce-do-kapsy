@@ -6,6 +6,7 @@
  * Group "lump"  – jednorázové pojistné částky (Kč)
  */
 
+import { BARVY } from '@/lib/barvy'
 import {
   Activity, BedDouble, Bandage, Stethoscope,
   ShieldAlert, ShieldX, AlertOctagon, Accessibility, Skull,
@@ -49,7 +50,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'daily',
     unit: 'daily',
     icon: Bandage,
-    color: '#009EE2',
+    color: BARVY.mint,
   },
   {
     key: 'daily_sick_leave',
@@ -59,7 +60,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'daily',
     unit: 'daily',
     icon: Activity,
-    color: '#009EE2',
+    color: BARVY.mint,
   },
   {
     key: 'daily_hospitalization',
@@ -69,7 +70,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'daily',
     unit: 'daily',
     icon: BedDouble,
-    color: '#009EE2',
+    color: BARVY.mint,
   },
 
   // ── Jednorázové zdravotní události ───────────────────────
@@ -81,7 +82,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'health-events',
     unit: 'lump',
     icon: Bandage,
-    color: '#162459',
+    color: BARVY.navySoft,
   },
   {
     key: 'serious_illness',
@@ -91,7 +92,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'health-events',
     unit: 'lump',
     icon: Stethoscope,
-    color: '#162459',
+    color: BARVY.navySoft,
   },
   {
     key: 'self_sufficiency',
@@ -101,7 +102,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'health-events',
     unit: 'lump',
     icon: Accessibility,
-    color: '#162459',
+    color: BARVY.navySoft,
   },
 
   // ── Invalidita ───────────────────────────────────────────
@@ -113,7 +114,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'disability',
     unit: 'lump',
     icon: ShieldAlert,
-    color: '#b45309',
+    color: BARVY.amber,
   },
   {
     key: 'disability_2',
@@ -123,7 +124,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'disability',
     unit: 'lump',
     icon: AlertOctagon,
-    color: '#b45309',
+    color: BARVY.amber,
   },
   {
     key: 'disability_3',
@@ -133,7 +134,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'disability',
     unit: 'lump',
     icon: ShieldX,
-    color: '#b45309',
+    color: BARVY.amber,
   },
 
   // ── Smrt ─────────────────────────────────────────────────
@@ -145,7 +146,7 @@ export const RISK_DEFS: RiskDef[] = [
     group: 'death',
     unit: 'lump',
     icon: Skull,
-    color: '#162459',
+    color: BARVY.navy,
   },
 ]
 

@@ -2,31 +2,22 @@ import { ImageResponse } from 'next/og'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { SITE_NAME } from '@/lib/site'
+import { BARVY } from '@/lib/barvy'
 
-export const alt = `${SITE_NAME} – finanční plán pro celý život`
+export const alt = `${SITE_NAME} – finanční poradce, kterého máte v mobilu`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
-
-// Paleta „inkoust a papír“ – viz app/globals.css
-const INK = '#0B111F'
-const NAVY = '#162459'
-const PAPER = '#F6F4EE'
-const AZUR = '#009EE2'
-const MUTED = 'rgba(246,244,238,0.55)'
 
 /**
  * Náhledový obrázek při sdílení odkazu (Facebook, LinkedIn, Messenger,
  * WhatsApp, Slack…). Stejný soubor obsluhuje i twitter-image.
  *
- * Satori (renderer za ImageResponse) umí jen flexbox a woff/ttf/otf –
- * proto lokální TTF v `assets/` místo next/font, a žádný grid ani noise
- * overlay z globals.css. Kurzíva je na webu zakázaná, akcent nese barva.
+ * Satori (renderer za ImageResponse) umí jen flexbox a woff/ttf/otf, takže
+ * lokální TTF v `assets/` místo next/font. Web sází Inter, tady zatím zůstává
+ * IBM Plex Sans — Inter v assets/ není. TODO: doplnit Inter a přepnout i sem.
  */
 export default async function Image() {
-  const [serif, sans] = await Promise.all([
-    readFile(join(process.cwd(), 'assets/InstrumentSerif-Regular.ttf')),
-    readFile(join(process.cwd(), 'assets/IBMPlexSans-SemiBold.ttf')),
-  ])
+  const sans = await readFile(join(process.cwd(), 'assets/IBMPlexSans-SemiBold.ttf'))
 
   return new ImageResponse(
     (
@@ -38,85 +29,67 @@ export default async function Image() {
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '72px 80px',
-          background: `linear-gradient(135deg, ${NAVY} 0%, ${INK} 100%)`,
+          background: BARVY.navy,
           fontFamily: 'IBM Plex Sans',
         }}
       >
-        {/* Kicker – azurová linka + certifikace, stejně jako na hero */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-          <div style={{ width: 56, height: 2, background: AZUR }} />
-          <div
-            style={{
-              fontSize: 20,
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              color: MUTED,
-            }}
-          >
-            Certifikovaný poradce ProfiFP
-          </div>
-        </div>
-
-        {/* Headline – shodný s landingem, „život.“ kurzívou v azuru */}
+        {/* Titulek shodný s H1 na landingu */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
-            fontFamily: 'Instrument Serif',
-            fontSize: 132,
-            lineHeight: 1.02,
-            letterSpacing: '-0.035em',
-            color: PAPER,
+            fontSize: 84,
+            lineHeight: 1.06,
+            letterSpacing: '-0.02em',
+            color: BARVY.cream,
           }}
         >
-          <div style={{ display: 'flex' }}>Finanční plán</div>
+          <div style={{ display: 'flex' }}>Finanční poradce,</div>
+          <div style={{ display: 'flex' }}>kterého máte</div>
           <div style={{ display: 'flex' }}>
-            pro celý&nbsp;
-            <span style={{ color: AZUR }}>život.</span>
+            v&nbsp;<span style={{ color: BARVY.mint }}>mobilu.</span>
           </div>
         </div>
 
-        {/* Patička – značka vlevo, claim vpravo */}
+        {/* Patička – značka vlevo, věta z hero vpravo */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingTop: 32,
-            borderTop: `1px solid rgba(246,244,238,0.14)`,
+            borderTop: `1px solid rgba(246,245,241,0.16)`,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {/* Logo – papírový čtverec s azurovou tečkou v pravém dolním rohu */}
+            {/* Značka – mátová dlaždice s navy tečkou, stejná jako v hlavičce */}
             <div
               style={{
-                width: 40,
-                height: 40,
-                background: PAPER,
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                background: BARVY.mint,
                 display: 'flex',
                 alignItems: 'flex-end',
                 justifyContent: 'flex-end',
-                padding: 8,
+                padding: 9,
               }}
             >
-              <div style={{ width: 7, height: 7, borderRadius: 4, background: AZUR }} />
+              <div style={{ width: 8, height: 8, borderRadius: 4, background: BARVY.navy }} />
             </div>
-            <div style={{ fontSize: 30, color: PAPER, letterSpacing: '-0.01em' }}>
+            <div style={{ fontSize: 30, color: BARVY.cream, letterSpacing: '-0.01em' }}>
               {SITE_NAME}
             </div>
           </div>
-          <div style={{ fontSize: 24, color: MUTED }}>
-            Bez schůzek · Bez závazků · Zdarma
+          <div style={{ fontSize: 24, color: 'rgba(246,245,241,0.7)' }}>
+            Bez schůzek, bez tlaku.
           </div>
         </div>
       </div>
     ),
     {
       ...size,
-      fonts: [
-        { name: 'Instrument Serif', data: serif, style: 'normal', weight: 400 },
-        { name: 'IBM Plex Sans', data: sans, style: 'normal', weight: 600 },
-      ],
+      fonts: [{ name: 'IBM Plex Sans', data: sans, style: 'normal', weight: 600 }],
     }
   )
 }

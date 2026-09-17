@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTransition } from 'react'
 import { CLIENT_STATUS_VALUES, CLIENT_STATUS_META } from '@/lib/utils'
+import { BARVY } from '@/lib/barvy'
 
 type Props = {
   counts: Record<string, number>
@@ -82,20 +83,20 @@ function Chip({
       disabled={disabled}
       className={`group inline-flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs md:text-sm font-medium transition-all ${
         isActive
-          ? 'shadow-[0_0_0_1px_rgba(0,158,226,0.3)] scale-[1.02]'
+          ? 'ring-1 ring-mint/30 scale-[1.02]'
           : 'hover:scale-[1.02]'
       }`}
       style={
         isActive
           ? {
-              background: style?.background ?? 'rgba(22,36,89,0.06)',
-              borderColor: style?.borderColor ?? '#162459',
-              color: style?.color ?? '#162459',
+              background: style?.background ?? 'rgba(15,42,68,0.06)',
+              borderColor: style?.borderColor ?? BARVY.navy,
+              color: style?.color ?? BARVY.navy,
             }
           : {
               background: 'white',
-              borderColor: '#E4DFD2',
-              color: '#162459',
+              borderColor: BARVY.line,
+              color: BARVY.navy,
             }
       }
     >
@@ -109,8 +110,8 @@ function Chip({
       <span
         className="tabular-nums text-[11px] px-1.5 py-0.5 rounded-full"
         style={{
-          background: isActive ? 'rgba(255,255,255,0.5)' : '#f1f5f9',
-          color: isActive ? (style?.color as string) ?? '#162459' : '#64748b',
+          background: isActive ? 'rgba(255,255,255,0.5)' : BARVY.line,
+          color: isActive ? (style?.color as string) ?? BARVY.navy : BARVY.slate,
         }}
       >
         {count}

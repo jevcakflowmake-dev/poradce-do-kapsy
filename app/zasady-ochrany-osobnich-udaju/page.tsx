@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { BARVY } from '@/lib/barvy'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
@@ -32,37 +33,37 @@ const UCINNOST_OD = '31. srpna 2026'
 
 export default function ZasadyPage() {
   return (
-    <div className="min-h-screen bg-[#F6F4EE]">
+    <div className="min-h-screen bg-cream">
       <div className="px-6 md:px-10 lg:px-16 xl:px-20 py-16 md:py-24">
         <div className="max-w-3xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-[#66708C] hover:text-[#162459] transition-colors mb-12"
+            className="inline-flex items-center gap-2 text-base text-slate hover:text-navy transition-colors mb-12"
           >
             <ArrowLeft className="w-4 h-4" />
             Zpět na úvod
           </Link>
 
-          <p className="flex items-center gap-3 text-xs tracking-[0.3em] uppercase text-[#66708C] mb-6">
-            <span className="inline-block w-10 h-px bg-[#009EE2]" />
+          <p className="flex items-center gap-3 text-xs tracking-[0.3em] uppercase text-slate mb-6">
+            <span className="inline-block w-10 h-px bg-mint" />
             Ochrana soukromí
           </p>
 
           <h1
-            className="font-display text-[#162459] mb-6"
+            className="font-display text-navy mb-6"
             style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', lineHeight: 1, letterSpacing: '-0.03em' }}
           >
             Zásady zpracování
             <br />
-            osobních <span style={{ color: '#009EE2' }}>údajů</span>
+            osobních <span style={{ color: BARVY.mint }}>údajů</span>
           </h1>
 
-          <p className="text-lg text-[#66708C] leading-relaxed mb-4">
+          <p className="text-lead text-slate leading-relaxed mb-4">
             Abychom vám mohli připravit finanční plán na míru, potřebujeme o vás
             vědět docela dost – včetně údajů o zdraví. Tady je přehledně, co
             sbíráme, proč, jak dlouho si to necháváme a co s tím můžete udělat.
           </p>
-          <p className="text-sm text-[#66708C]/80 mb-14">Účinné od {UCINNOST_OD}</p>
+          <p className="text-base text-slate mb-14">Účinné od {UCINNOST_OD}</p>
 
           <Section number="01" title="Kdo je správcem">
             <P>
@@ -74,7 +75,7 @@ export default function ZasadyPage() {
               S čímkoliv ohledně svých údajů se obraťte na{' '}
               <a
                 href={`mailto:${SPRAVCE.email}`}
-                className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors"
+                className="text-navy hover:text-navy font-semibold transition-colors"
               >
                 {SPRAVCE.email}
               </a>
@@ -181,7 +182,7 @@ export default function ZasadyPage() {
                 Souhlas můžete kdykoliv odvolat e-mailem na{' '}
                 <a
                   href={`mailto:${SPRAVCE.email}`}
-                  className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors"
+                  className="text-navy hover:text-navy font-semibold transition-colors"
                 >
                   {SPRAVCE.email}
                 </a>
@@ -312,7 +313,7 @@ export default function ZasadyPage() {
               Stačí napsat na{' '}
               <a
                 href={`mailto:${SPRAVCE.email}`}
-                className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors"
+                className="text-navy hover:text-navy font-semibold transition-colors"
               >
                 {SPRAVCE.email}
               </a>
@@ -323,7 +324,7 @@ export default function ZasadyPage() {
                 href="https://www.uoou.cz"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors"
+                className="text-navy hover:text-navy font-semibold transition-colors"
               >
                 uoou.cz
               </a>
@@ -339,10 +340,10 @@ export default function ZasadyPage() {
             </P>
           </Section>
 
-          <div className="mt-16 pt-8 border-t border-[#E4DFD2]">
+          <div className="mt-16 pt-8 border-t border-line">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-sm text-[#66708C] hover:text-[#162459] transition-colors"
+              className="inline-flex items-center gap-2 text-base text-slate hover:text-navy transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Zpět na úvod
@@ -365,10 +366,10 @@ function Section({
 }) {
   return (
     <section className="mb-14">
-      <div className="flex items-baseline gap-4 mb-5 pb-4 border-b border-[#E4DFD2]">
-        <span className="text-xs tabular-nums tracking-[0.2em] text-[#009EE2]">{number}</span>
+      <div className="flex items-baseline gap-4 mb-5 pb-4 border-b border-line">
+        <span className="text-xs tabular-nums tracking-[0.2em] text-navy">{number}</span>
         <h2
-          className="font-display text-[#162459]"
+          className="font-display text-navy"
           style={{ fontSize: '1.6rem', letterSpacing: '-0.02em' }}
         >
           {title}
@@ -380,19 +381,19 @@ function Section({
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-[15px] text-[#66708C] leading-relaxed">{children}</p>
+  return <p className="text-base text-slate leading-relaxed">{children}</p>
 }
 
 function B({ children }: { children: React.ReactNode }) {
-  return <strong className="font-semibold text-[#162459]">{children}</strong>
+  return <strong className="font-semibold text-navy">{children}</strong>
 }
 
 function List({ items }: { items: React.ReactNode[] }) {
   return (
     <ul className="space-y-3">
       {items.map((item, i) => (
-        <li key={i} className="flex gap-3 text-[15px] text-[#66708C] leading-relaxed">
-          <span className="mt-2.5 w-1 h-1 rounded-full bg-[#009EE2] flex-shrink-0" aria-hidden />
+        <li key={i} className="flex gap-3 text-base text-slate leading-relaxed">
+          <span className="mt-2.5 w-1 h-1 rounded-full bg-mint flex-shrink-0" aria-hidden />
           <span>{item}</span>
         </li>
       ))}
@@ -402,7 +403,7 @@ function List({ items }: { items: React.ReactNode[] }) {
 
 function Callout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-[#FDFCF8] border border-[#E4DFD2] border-l-2 border-l-[#009EE2] p-5 md:p-6 space-y-4">
+    <div className="bg-surface border border-line border-l-2 border-l-mint p-5 md:p-6 space-y-4">
       {children}
     </div>
   )

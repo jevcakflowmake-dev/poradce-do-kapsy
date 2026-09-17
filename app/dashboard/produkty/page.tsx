@@ -2,13 +2,11 @@
 
 import { motion } from 'framer-motion'
 import StoredFileLink from '@/components/files/StoredFileLink'
-import { ArrowLeft, Shield, Clock, TrendingUp, FileText, ExternalLink } from 'lucide-react'
-import Link from 'next/link'
+import { Shield, Clock, TrendingUp, FileText, ExternalLink } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import MesicniPlatby from '@/components/products/MesicniPlatby'
-import { BARVY } from '@/lib/barvy'
 
 interface Product {
   id: string
@@ -181,7 +179,7 @@ export default function ProduktyPage() {
                 {items.map((product) => (
                   <div
                     key={product.id}
-                    className="bg-surface rounded-card border border-line p-5 md:p-6 transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.1)] hover:border-mint/30"
+                    className="bg-surface rounded-card border border-line p-5 md:p-6 transition-all hover:shadow-[0_10px_30px_-10px_rgba(15,42,68,0.1)] hover:border-mint/30"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">

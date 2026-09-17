@@ -1,4 +1,5 @@
 import type { Profile } from '@/lib/types/database'
+import { BARVY } from '@/lib/barvy'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -120,40 +121,42 @@ export const CLIENT_STATUS_META: Record<
   ClientStatusValue,
   { label: string; dot: string; bg: string; border: string; text: string }
 > = {
+  // Stavy se liší jen barvou tečky a podkladu, text je vždy navy – světlé
+  // odstíny palety by jako text na bledém podkladu neprošly kontrastem AA.
   novy: {
     label: 'Nový',
-    dot: '#818EAF',
-    bg: 'rgba(129,142,175,0.10)',
-    border: 'rgba(129,142,175,0.35)',
-    text: '#162459',
+    dot: BARVY.slate,
+    bg: 'rgba(100,112,125,0.10)',
+    border: 'rgba(100,112,125,0.30)',
+    text: BARVY.navy,
   },
   financni_plan: {
     label: 'Finanční plán',
-    dot: '#009EE2',
-    bg: 'rgba(0,158,226,0.10)',
-    border: 'rgba(0,158,226,0.45)',
-    text: '#0088c6',
+    dot: BARVY.navySoft,
+    bg: 'rgba(27,59,90,0.10)',
+    border: 'rgba(27,59,90,0.30)',
+    text: BARVY.navy,
   },
   podepsano: {
     label: 'Podepsáno',
-    dot: '#16a34a',
-    bg: 'rgba(22,163,74,0.10)',
-    border: 'rgba(22,163,74,0.40)',
-    text: '#15803d',
+    dot: BARVY.mint,
+    bg: 'rgba(31,181,143,0.12)',
+    border: 'rgba(31,181,143,0.35)',
+    text: BARVY.navy,
   },
   servis: {
     label: 'Servis',
-    dot: '#f59e0b',
-    bg: 'rgba(245,158,11,0.12)',
-    border: 'rgba(245,158,11,0.45)',
-    text: '#b45309',
+    dot: BARVY.amber,
+    bg: 'rgba(242,180,65,0.16)',
+    border: 'rgba(242,180,65,0.40)',
+    text: BARVY.navy,
   },
   zmena: {
     label: 'Změna',
-    dot: '#ea580c',
-    bg: 'rgba(234,88,12,0.12)',
-    border: 'rgba(234,88,12,0.45)',
-    text: '#c2410c',
+    dot: BARVY.danger,
+    bg: 'rgba(194,65,12,0.10)',
+    border: 'rgba(194,65,12,0.30)',
+    text: BARVY.navy,
   },
 }
 

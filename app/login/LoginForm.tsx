@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { BARVY } from '@/lib/barvy'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -8,6 +9,7 @@ import Link from 'next/link'
 import { Mail, Loader2, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AuthShell from '@/components/auth/AuthShell'
+import Field from '@/components/auth/AuthField'
 
 const schema = z.object({
   email: z.string().email('Zadejte platný e-mail'),
@@ -70,25 +72,25 @@ export default function LoginForm() {
       <AuthShell
         numeral="↗"
         eyebrow="Odkaz odeslán"
-        title={<>Zkontrolujte <span style={{ color: '#009EE2' }}>schránku</span>.</>}
+        title={<>Zkontrolujte <span style={{ color: BARVY.mint }}>schránku</span>.</>}
         subtitle="Poslali jsme vám přihlašovací odkaz. Klikněte na něj pro přihlášení – link je platný 60 minut."
       >
-        <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-8 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-none mb-5 bg-[#009EE2]/10 border border-[#009EE2]/25">
-            <Mail className="w-7 h-7 text-[#0079AD]" strokeWidth={1.8} />
+        <div className="bg-surface rounded-card border border-line p-8 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-card mb-5 bg-mint/10 border border-mint/25">
+            <Mail className="w-7 h-7 text-navy" strokeWidth={1.8} />
           </div>
           <h2
-            className="font-display text-[#162459] mb-2"
+            className="font-display text-navy mb-2"
             style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}
           >
             E-mail je na cestě
           </h2>
-          <p className="text-sm text-[#66708C] mb-6">
+          <p className="text-sm text-slate mb-6">
             Pokud zprávu nevidíte do 2 minut, zkuste to znovu nebo zkontrolujte spam.
           </p>
           <button
             onClick={() => { setMagicLinkSent(false); setMagicLink(false) }}
-            className="text-sm font-semibold text-[#0079AD] hover:text-[#162459] transition-colors inline-flex items-center gap-1 hover:gap-2"
+            className="text-sm font-semibold text-navy hover:text-navy transition-colors inline-flex items-center gap-1 hover:gap-2"
           >
             ← Zpět na přihlášení
           </button>
@@ -100,12 +102,12 @@ export default function LoginForm() {
   return (
     <AuthShell
       eyebrow="Přihlášení · klient nebo poradce"
-      title={<>Vítejte <span style={{ color: '#009EE2' }}>zpět</span>.</>}
+      title={<>Vítejte <span style={{ color: BARVY.mint }}>zpět</span>.</>}
       subtitle="Přihlaste se k účtu, nebo si nechte poslat odkaz bez hesla. Bez schůzek, bez papírování."
     >
-      <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">
+      <div className="bg-surface rounded-card border border-line p-6 md:p-8">
         {error && (
-          <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-sm text-danger">
             {error}
           </div>
         )}
@@ -125,19 +127,19 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-              style={{ background: '#162459' }}
+              className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-pill bg-navy text-cream text-base font-semibold transition-colors hover:bg-navy-deep disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+             
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Přihlásit se <ArrowRight className="w-4 h-4" /></>)}
             </button>
             <div className="flex items-center justify-between mt-1 text-xs">
-              <Link href="/forgot-password" className="text-[#66708C] hover:text-[#162459] transition-colors">
+              <Link href="/forgot-password" className="text-slate hover:text-navy transition-colors">
                 Zapomenuté heslo?
               </Link>
               <button
                 type="button"
                 onClick={() => { setMagicLink(true); setError(null) }}
-                className="text-[#0079AD] hover:text-[#162459] transition-colors font-medium"
+                className="text-navy hover:text-navy transition-colors font-medium"
               >
                 Přihlásit odkazem v e-mailu →
               </button>
@@ -155,8 +157,8 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25"
-              style={{ background: '#162459' }}
+              className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-pill bg-navy text-cream text-base font-semibold transition-colors hover:bg-navy-deep disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+             
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Odeslat přihlašovací odkaz'}
             </button>
@@ -164,7 +166,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => { setMagicLink(false); setError(null) }}
-                className="text-[#66708C] hover:text-[#162459] transition-colors"
+                className="text-slate hover:text-navy transition-colors"
               >
                 ← Přihlásit se heslem
               </button>
@@ -173,9 +175,9 @@ export default function LoginForm() {
         )}
       </div>
 
-      <p className="text-center text-sm text-[#66708C] mt-6">
+      <p className="text-center text-sm text-slate mt-6">
         Ještě u nás nejste?{' '}
-        <Link href="/analyza" className="text-[#0079AD] hover:text-[#162459] font-semibold transition-colors">
+        <Link href="/analyza" className="text-navy hover:text-navy font-semibold transition-colors">
           Vyplňte analýzu zdarma
         </Link>
         {' '}– účet zakládat nemusíte.
@@ -184,25 +186,3 @@ export default function LoginForm() {
   )
 }
 
-function Field({
-  label,
-  error,
-  inputProps,
-}: {
-  label: string
-  error?: string
-  inputProps: React.InputHTMLAttributes<HTMLInputElement>
-}) {
-  return (
-    <div>
-      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
-        {label}
-      </label>
-      <input
-        {...inputProps}
-        className="w-full h-11 px-4 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] placeholder:text-[#66708C] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
-      />
-      {error && <p className="mt-1.5 text-xs text-[#c2410c]">{error}</p>}
-    </div>
-  )
-}

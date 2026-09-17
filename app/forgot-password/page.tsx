@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { BARVY } from '@/lib/barvy'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -41,32 +42,32 @@ export default function ForgotPasswordPage() {
       numeral="–"
       eyebrow="Reset hesla · klidně"
       title={sent
-        ? <>Odkaz <span style={{ color: '#009EE2' }}>odeslán</span>.</>
-        : <>Nové <span style={{ color: '#009EE2' }}>heslo</span> za minutu.</>
+        ? <>Odkaz <span style={{ color: BARVY.mint }}>odeslán</span>.</>
+        : <>Nové <span style={{ color: BARVY.mint }}>heslo</span> za minutu.</>
       }
       subtitle={sent
         ? 'Pokud e-mail existuje, najdete v něm odkaz pro reset hesla. Platí 60 minut.'
         : 'Zadejte e-mail, se kterým jste se registrovali. Pošleme odkaz, přes který si nastavíte nové heslo.'
       }
     >
-      <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-8">
+      <div className="bg-surface rounded-card border border-line p-6 md:p-8">
         {sent ? (
           <div className="text-center py-4">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-none mb-5 bg-[#16a34a]/10 border border-[#16a34a]/25">
-              <CheckCircle2 className="w-7 h-7 text-[#15803d]" strokeWidth={1.8} />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-card mb-5 bg-mint/10 border border-mint/30">
+              <CheckCircle2 className="w-7 h-7 text-navy" strokeWidth={1.8} />
             </div>
             <h2
-              className="font-display text-[#162459] mb-2"
+              className="font-display text-navy mb-2"
               style={{ fontSize: '1.4rem', letterSpacing: '-0.01em' }}
             >
               Zkontrolujte schránku
             </h2>
-            <p className="text-sm text-[#66708C] mb-6">
+            <p className="text-sm text-slate mb-6">
               Odkaz na reset hesla platí 60 minut. Pokud ho nevidíte, zkontrolujte spam.
             </p>
             <Link
               href="/login"
-              className="text-sm font-semibold text-[#0079AD] hover:text-[#162459] transition-colors inline-flex items-center gap-1 hover:gap-2"
+              className="text-sm font-semibold text-navy hover:text-navy transition-colors inline-flex items-center gap-1 hover:gap-2"
             >
               ← Zpět na přihlášení
             </Link>
@@ -74,13 +75,13 @@ export default function ForgotPasswordPage() {
         ) : (
           <>
             {error && (
-              <div className="mb-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
+              <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-sm text-danger">
                 {error}
               </div>
             )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
                   E-mail
                 </label>
                 <input
@@ -88,21 +89,21 @@ export default function ForgotPasswordPage() {
                   type="email"
                   placeholder="vas@email.cz"
                   autoComplete="email"
-                  className="w-full h-11 px-4 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] placeholder:text-[#66708C] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all"
+                  className="w-full h-11 px-4 rounded-card border border-line bg-surface text-navy text-[15px] placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20 transition-all"
                 />
-                {errors.email && <p className="mt-1.5 text-xs text-[#c2410c]">{errors.email.message}</p>}
+                {errors.email && <p className="mt-1.5 text-xs text-danger">{errors.email.message}</p>}
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-                style={{ background: '#162459' }}
+                className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-pill bg-navy text-cream text-base font-semibold transition-colors hover:bg-navy-deep disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+               
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Poslat odkaz pro reset'}
               </button>
             </form>
-            <p className="text-center text-sm text-[#66708C] mt-6">
-              <Link href="/login" className="hover:text-[#162459] transition-colors">
+            <p className="text-center text-sm text-slate mt-6">
+              <Link href="/login" className="hover:text-navy transition-colors">
                 ← Zpět na přihlášení
               </Link>
             </p>

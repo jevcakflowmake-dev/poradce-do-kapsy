@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { ArrowUpRight, CheckCircle2, AlertCircle, Upload, Link2, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { ProposalType } from '@/lib/types/database'
+import { BARVY } from '@/lib/barvy'
 
 const INSURANCE_SECTIONS = [
   { id: 'daily_compensation', label: 'Denní odškodné', unit: 'Kč/den' },
@@ -162,27 +163,27 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
   }
 
   return (
-    <div className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] p-6 md:p-7">
+    <div className="bg-surface rounded-card border border-line p-6 md:p-7">
       <div className="mb-5">
-        <p className="text-xs tracking-[0.25em] uppercase text-[#66708C] mb-1.5">
+        <p className="text-xs tracking-[0.25em] uppercase text-slate mb-1.5">
           Návrh · pro klienta
         </p>
         <h2
-          className="font-display text-[#162459]"
+          className="font-display text-navy"
           style={{ fontSize: 'clamp(1.25rem, 2vw, 1.5rem)', letterSpacing: '-0.01em' }}
         >
-          Odeslat <span style={{ color: '#009EE2' }}>návrh</span>
+          Odeslat <span style={{ color: BARVY.mint }}>návrh</span>
         </h2>
       </div>
 
       {success && (
-        <div className="mb-4 p-3.5 rounded-none bg-[#16a34a]/8 border border-[#16a34a]/25 flex items-center gap-2.5 text-sm text-[#15803d]">
+        <div className="mb-4 p-3.5 rounded-card bg-mint/8 border border-mint/25 flex items-center gap-2.5 text-sm text-navy">
           <CheckCircle2 className="w-4 h-4 shrink-0" strokeWidth={2} />
           Návrh byl úspěšně odeslán
         </div>
       )}
       {error && (
-        <div className="mb-4 p-3.5 rounded-none bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] flex items-start gap-2.5 text-sm text-[#c2410c]">
+        <div className="mb-4 p-3.5 rounded-card bg-[rgba(194,65,12,0.08)] border border-[rgba(194,65,12,0.3)] flex items-start gap-2.5 text-sm text-danger">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" strokeWidth={2} />
           {error}
         </div>
@@ -194,7 +195,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
             {PROPOSAL_TYPES.map(t => (
               <label key={t.value} className="cursor-pointer">
                 <input {...register('type')} type="radio" value={t.value} className="sr-only peer" />
-                <span className="block text-center py-2.5 text-[13px] font-medium border border-[#E4DFD2] rounded-none transition-all hover:border-[#009EE2]/50 text-[#66708C] peer-checked:border-[#009EE2] peer-checked:bg-[#009EE2]/8 peer-checked:text-[#162459] peer-checked:shadow-[inset_0_0_0_1px_#009EE2]">
+                <span className="block text-center py-2.5 text-[13px] font-medium border border-line rounded-card transition-all hover:border-mint/50 text-slate peer-checked:border-mint peer-checked:bg-mint/8 peer-checked:text-navy peer-checked:inset-ring-1 inset-ring-mint">
                   {t.label}
                 </span>
               </label>
@@ -225,14 +226,14 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                     key={company.id}
                     type="button"
                     onClick={() => setSelectedCompany(company.id)}
-                    className={`flex flex-col items-center gap-1.5 p-3 rounded-none border transition-all text-center ${
+                    className={`flex flex-col items-center gap-1.5 p-3 rounded-card border transition-all text-center ${
                       selectedCompany === company.id
-                        ? 'border-[#009EE2] bg-[#009EE2]/8 shadow-[inset_0_0_0_1px_#009EE2]'
-                        : 'border-[#E4DFD2] bg-[#FDFCF8] hover:border-[#66708C]/40'
+                        ? 'border-mint bg-mint/8 inset-ring-1 inset-ring-mint'
+                        : 'border-line bg-surface hover:border-slate/40'
                     }`}
                   >
                     <span className="text-xl">{company.emoji}</span>
-                    <span className="text-[11px] font-medium text-[#162459]">{company.name}</span>
+                    <span className="text-[11px] font-medium text-navy">{company.name}</span>
                   </button>
                 ))}
               </div>
@@ -247,7 +248,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                   className={`${inputClass} pr-24`}
                   placeholder="1 500"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#66708C]">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate">
                   Kč / měs
                 </span>
               </div>
@@ -260,10 +261,10 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                   return (
                     <div
                       key={section.id}
-                      className={`rounded-none border transition-all ${
+                      className={`rounded-card border transition-all ${
                         enabled
-                          ? 'border-[#009EE2] bg-[#009EE2]/5 shadow-[inset_0_0_0_1px_#009EE2]'
-                          : 'border-[#E4DFD2] bg-[#FDFCF8]'
+                          ? 'border-mint bg-mint/5 inset-ring-1 inset-ring-mint'
+                          : 'border-line bg-surface'
                       }`}
                     >
                       <div className="flex items-center gap-3 px-4 py-3">
@@ -271,9 +272,9 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                           type="checkbox"
                           checked={enabled}
                           onChange={() => toggleInsuranceSection(section.id)}
-                          className="w-4 h-4 rounded border-[#E4DFD2] text-[#009EE2] focus:ring-[#009EE2] accent-[#009EE2]"
+                          className="w-4 h-4 rounded border-line text-navy focus:ring-mint accent-mint"
                         />
-                        <span className="text-sm font-medium text-[#162459] flex-1">
+                        <span className="text-sm font-medium text-navy flex-1">
                           {section.label}
                         </span>
                         {enabled && (
@@ -282,10 +283,10 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                               type="number"
                               value={sectionAmounts[section.id] || ''}
                               onChange={e => updateSectionAmount(section.id, e.target.value)}
-                              className="w-28 px-3 py-1.5 border border-[#E4DFD2] rounded-none text-sm text-right text-[#162459] bg-[#FDFCF8] focus:outline-none focus:border-[#009EE2] focus:ring-2 focus:ring-[#009EE2]/15 transition-all"
+                              className="w-28 px-3 py-1.5 border border-line rounded-card text-sm text-right text-navy bg-surface focus:outline-none focus:border-mint focus:ring-2 focus:ring-mint/15 transition-all"
                               placeholder="0"
                             />
-                            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#66708C] whitespace-nowrap w-16">
+                            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-slate whitespace-nowrap w-16">
                               {section.unit}
                             </span>
                           </div>
@@ -309,15 +310,15 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
         </Field>
 
         <Field label="PDF dokument (volitelné)">
-          <label className="relative flex items-center gap-3 px-4 py-3.5 rounded-none border border-dashed border-[#E4DFD2] hover:border-[#009EE2]/50 bg-[#F6F4EE] cursor-pointer transition-all group">
-            <div className="w-10 h-10 rounded-none bg-[#009EE2]/10 flex items-center justify-center shrink-0">
-              <Upload className="w-4 h-4 text-[#0079AD]" strokeWidth={1.8} />
+          <label className="relative flex items-center gap-3 px-4 py-3.5 rounded-card border border-dashed border-line hover:border-mint/50 bg-cream cursor-pointer transition-all group">
+            <div className="w-10 h-10 rounded-card bg-mint/10 flex items-center justify-center shrink-0">
+              <Upload className="w-4 h-4 text-navy" strokeWidth={1.8} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm text-[#162459] font-medium truncate">
+              <div className="text-sm text-navy font-medium truncate">
                 {file ? file.name : 'Vybrat PDF soubor'}
               </div>
-              <div className="text-xs text-[#66708C] mt-0.5">
+              <div className="text-xs text-slate mt-0.5">
                 {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : 'Max. 10 MB'}
               </div>
             </div>
@@ -332,7 +333,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
 
         <Field label="Odkaz (volitelné)" error={errors.link_url?.message}>
           <div className="relative">
-            <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#66708C]" strokeWidth={1.8} />
+            <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate" strokeWidth={1.8} />
             <input
               {...register('link_url')}
               type="url"
@@ -345,8 +346,8 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
         <button
           type="submit"
           disabled={sending}
-          className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-none font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-          style={{ background: '#162459' }}
+          className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-card font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-mint/25 hover:-translate-y-0.5"
+          style={{ background: BARVY.navy }}
         >
           {sending ? (
             <>
@@ -364,7 +365,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
 }
 
 const inputClass =
-  'w-full h-11 px-4 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] placeholder:text-[#66708C] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all'
+  'w-full h-11 px-4 rounded-card border border-line bg-surface text-navy text-[15px] placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all'
 
 function Field({
   label,
@@ -377,11 +378,11 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#66708C] mb-2">
+      <label className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate mb-2">
         {label}
       </label>
       {children}
-      {error && <p className="mt-1.5 text-xs text-[#c2410c]">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
     </div>
   )
 }

@@ -71,7 +71,7 @@ export default function AnalysisAccordion({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: sIdx * 0.05 }}
-            className="bg-surface rounded-card border border-line overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(22,36,89,0.12)]"
+            className="bg-surface rounded-card border border-line overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(15,42,68,0.12)]"
           >
             <button
               type="button"

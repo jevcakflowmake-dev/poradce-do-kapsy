@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { AlertTriangle, Check, Loader2, X } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { SECTIONS } from '@/lib/analysis-sections'
+import { BARVY } from '@/lib/barvy'
 
 interface Props {
   submissionId: string
@@ -59,19 +60,19 @@ export default function PendingSubmission({
   }
 
   return (
-    <div className="mb-8 bg-[#FDFCF8] border border-[#E4DFD2] border-l-2 border-l-[#f59e0b]">
+    <div className="mb-8 bg-surface border border-line border-l-2 border-l-amber">
       <div className="p-5 md:p-6">
         <div className="flex items-start gap-3 mb-4">
-          <AlertTriangle className="w-5 h-5 text-[#f59e0b] shrink-0 mt-0.5" strokeWidth={1.8} />
+          <AlertTriangle className="w-5 h-5 text-navy shrink-0 mt-0.5" strokeWidth={1.8} />
           <div className="min-w-0">
             <h3
-              className="font-display text-[#162459] mb-1"
+              className="font-display text-navy mb-1"
               style={{ fontSize: '1.15rem', letterSpacing: '-0.01em' }}
             >
               Nová analýza z veřejného formuláře
             </h3>
-            <p className="text-sm text-[#66708C] leading-relaxed">
-              {formatDate(createdAt)} přišla analýza na e-mail <strong className="text-[#162459]">{email}</strong>,
+            <p className="text-sm text-slate leading-relaxed">
+              {formatDate(createdAt)} přišla analýza na e-mail <strong className="text-navy">{email}</strong>,
               který už u nás účet má – {answered} vyplněných odpovědí
               {fileCount > 0 && `, ${fileCount} ${fileCount === 1 ? 'příloha' : fileCount < 5 ? 'přílohy' : 'příloh'}`}.
               Odpovědi zatím nikam nezapsané: přijetím přepíšou dosavadní analýzu klienta.
@@ -82,7 +83,7 @@ export default function PendingSubmission({
         <button
           type="button"
           onClick={() => setExpanded(v => !v)}
-          className="text-sm text-[#0079AD] hover:text-[#162459] underline underline-offset-2 transition-colors"
+          className="text-sm text-navy hover:text-navy underline underline-offset-2 transition-colors"
         >
           {expanded ? 'Skrýt odpovědi' : 'Zobrazit, co přišlo'}
         </button>
@@ -94,7 +95,7 @@ export default function PendingSubmission({
               if (!answers || Object.keys(answers).length === 0) return null
               return (
                 <div key={section.id}>
-                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
                     {section.title}
                   </p>
                   <dl className="space-y-1.5">
@@ -103,8 +104,8 @@ export default function PendingSubmission({
                       if (!value) return null
                       return (
                         <div key={q.id} className="flex gap-3 text-sm">
-                          <dt className="text-[#66708C] flex-1 min-w-0">{q.label}</dt>
-                          <dd className="text-[#162459] font-medium text-right shrink-0 max-w-[45%] break-words">
+                          <dt className="text-slate flex-1 min-w-0">{q.label}</dt>
+                          <dd className="text-navy font-medium text-right shrink-0 max-w-[45%] break-words">
                             {value}
                           </dd>
                         </div>
@@ -118,7 +119,7 @@ export default function PendingSubmission({
         )}
 
         {error && (
-          <div className="mt-4 p-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] text-sm text-[#c2410c]">
+          <div className="mt-4 p-3 bg-[rgba(194,65,12,0.08)] border border-[rgba(194,65,12,0.3)] text-sm text-danger">
             {error}
           </div>
         )}
@@ -128,8 +129,8 @@ export default function PendingSubmission({
             type="button"
             onClick={() => decide('apply')}
             disabled={busy !== null}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-none font-semibold text-white text-sm transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25"
-            style={{ background: '#162459' }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-card font-semibold text-white text-sm transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-mint/25"
+            style={{ background: BARVY.navy }}
           >
             {busy === 'apply' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             Přijmout a přepsat analýzu
@@ -138,7 +139,7 @@ export default function PendingSubmission({
             type="button"
             onClick={() => decide('discard')}
             disabled={busy !== null}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-none border border-[#E4DFD2] text-[#162459] text-sm hover:border-[#c2410c] hover:text-[#c2410c] transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-card border border-line text-navy text-sm hover:border-danger hover:text-danger transition-colors disabled:opacity-50"
           >
             {busy === 'discard' ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
             Zahodit

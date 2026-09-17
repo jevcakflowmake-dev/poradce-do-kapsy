@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { Save, ChevronDown, ChevronUp, Check, Loader2, UserCog } from 'lucide-react'
+import { BARVY } from '@/lib/barvy'
 
 export interface ClientFinancials {
   id?: string
@@ -79,29 +80,29 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
   }
 
   return (
-    <section className="bg-[#FDFCF8] rounded-none border border-[#E4DFD2] mb-6 overflow-hidden">
+    <section className="bg-surface rounded-card border border-line mb-6 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-4 p-5 md:p-6 text-left hover:bg-[#F6F4EE] transition-colors"
+        className="w-full flex items-center gap-4 p-5 md:p-6 text-left hover:bg-cream transition-colors"
       >
-        <div className="w-10 h-10 rounded-none flex items-center justify-center text-white shrink-0"
-          style={{ background: '#162459' }}>
+        <div className="w-10 h-10 rounded-card flex items-center justify-center text-white shrink-0"
+          style={{ background: BARVY.navy }}>
           <UserCog className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="text-[#162459] font-display text-lg">Vstupní data klienta</h2>
-          <p className="text-xs text-[#66708C] mt-0.5">
+          <h2 className="text-navy font-display text-lg">Vstupní data klienta</h2>
+          <p className="text-xs text-slate mt-0.5">
             {data.age && data.monthly_income_net
               ? `${data.age} let · příjem ${Math.round(data.monthly_income_net).toLocaleString('cs-CZ')} Kč/měs${data.dependents_count ? ` · ${data.dependents_count} ${data.dependents_count === 1 ? 'dítě' : 'děti'}` : ''}`
               : 'Vyplňte věk, příjem, počet dětí a majetkové údaje z analýzy klienta.'}
           </p>
         </div>
-        {open ? <ChevronUp className="w-5 h-5 text-[#0079AD]" /> : <ChevronDown className="w-5 h-5 text-[#66708C]" />}
+        {open ? <ChevronUp className="w-5 h-5 text-navy" /> : <ChevronDown className="w-5 h-5 text-slate" />}
       </button>
 
       {open && (
-        <div className="border-t border-[#E4DFD2] p-5 md:p-6 space-y-5">
+        <div className="border-t border-line p-5 md:p-6 space-y-5">
           <Group title="Klient">
             <NumField label="Věk" value={data.age} onChange={(v) => update('age', v)} suffix="let" />
             <NumField label="Cíl. věk důchodu" value={data.retirement_age} onChange={(v) => update('retirement_age', v)} suffix="let" />
@@ -128,32 +129,32 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
           </Group>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
               Poznámka
             </label>
             <textarea
               value={data.notes ?? ''}
               onChange={(e) => update('notes', e.target.value || null)}
               rows={2}
-              className="w-full px-4 py-3 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[14px] placeholder:text-[#66708C] focus:outline-none focus:border-[#009EE2] focus:ring-4 focus:ring-[#009EE2]/10 transition-all resize-none"
+              className="w-full px-4 py-3 rounded-card border border-line bg-surface text-navy text-[14px] placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all resize-none"
               placeholder="Cokoliv užitečného z analýzy klienta…"
             />
           </div>
 
           {error && (
-            <div className="px-4 py-3 bg-[rgba(234,88,12,0.08)] border border-[rgba(234,88,12,0.3)] rounded-none text-sm text-[#c2410c]">
+            <div className="px-4 py-3 bg-[rgba(194,65,12,0.08)] border border-[rgba(194,65,12,0.3)] rounded-card text-sm text-danger">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3 pt-2">
-            {saved && <span className="text-sm text-[#15803d] inline-flex items-center gap-1"><Check className="w-4 h-4" /> Uloženo</span>}
+            {saved && <span className="text-sm text-navy inline-flex items-center gap-1"><Check className="w-4 h-4" /> Uloženo</span>}
             <button
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-none font-semibold text-white text-sm transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-[#009EE2]/25 hover:-translate-y-0.5"
-              style={{ background: '#162459' }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-card font-semibold text-white text-sm transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-mint/25 hover:-translate-y-0.5"
+              style={{ background: BARVY.navy }}
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Uložit vstupní data
@@ -168,7 +169,7 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#66708C] mb-3">{title}</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-3">{title}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">{children}</div>
     </div>
   )
@@ -187,7 +188,7 @@ function NumField({
 }) {
   return (
     <div>
-      <label className="block text-xs text-[#162459]/70 mb-1">{label}</label>
+      <label className="block text-xs text-navy/70 mb-1">{label}</label>
       <div className="relative">
         <input
           type="number"
@@ -197,10 +198,10 @@ function NumField({
             const raw = e.target.value
             onChange(raw === '' ? null : Number(raw))
           }}
-          className="w-full h-10 px-3 pr-12 rounded-none border border-[#E4DFD2] bg-[#FDFCF8] text-[#162459] text-[15px] focus:outline-none focus:border-[#009EE2] focus:ring-2 focus:ring-[#009EE2]/10 transition-all"
+          className="w-full h-10 px-3 pr-12 rounded-card border border-line bg-surface text-navy text-[15px] focus:outline-none focus:border-mint focus:ring-2 focus:ring-mint/10 transition-all"
         />
         {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#66708C]">{suffix}</span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate">{suffix}</span>
         )}
       </div>
     </div>
@@ -222,9 +223,9 @@ function CheckField({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="w-4 h-4 rounded border-[#E4DFD2] text-[#009EE2] focus:ring-2 focus:ring-[#009EE2]/30"
+        className="w-4 h-4 rounded border-line text-navy focus:ring-2 focus:ring-mint/30"
       />
-      <span className="text-sm text-[#162459]">{label}</span>
+      <span className="text-sm text-navy">{label}</span>
     </label>
   )
 }
