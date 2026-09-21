@@ -40,5 +40,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.3,
     },
+    {
+      url: absoluteUrl('/obchodni-podminky'),
+      lastModified,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: absoluteUrl('/zasady-cookies'),
+      lastModified,
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
   ]
 }

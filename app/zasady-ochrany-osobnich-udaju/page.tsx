@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { PravniStranka, Section, P, B, List, Callout, Odkaz } from '@/components/legal/PravniStranka'
+import { PORADCE } from '@/lib/poradce'
 
 export const metadata: Metadata = {
   title: 'Zásady ochrany osobních údajů',
@@ -10,21 +10,10 @@ export const metadata: Metadata = {
 }
 
 /**
- * Údaje správce doplněny 31. 8. 2026. IČO a sídlo ověřeny proti ARES
- * (Jakub Jevčák, aktivní OSVČ od 30. 6. 2017) – ne opsány z paměti.
- *
- * Pozor při změnách: `email` je na veřejné stránce viditelný komukoliv včetně
- * sběračů adres a je to kontakt, přes který subjekt údajů uplatňuje svá práva.
- * Doména `ovbmail.cz` patří OVB, ne správci – kdyby spolupráce skončila,
- * schránka zanikne a zásady budou odkazovat naprázdno. Pak sem dát adresu
- * na vlastní doméně.
+ * Údaje správce žijí v `lib/poradce.ts` – stejné IČO, sídlo i e-mail používají
+ * obchodní podmínky, takže se nesmí rozejít.
  */
-const SPRAVCE = {
-  jmeno: 'Jakub Jevčák',
-  ico: '06241557',
-  adresa: 'Čížová 59, 398 31 Čížová',
-  email: 'jakub.jevcak@ovbmail.cz',
-} as const
+const SPRAVCE = PORADCE
 
 // Datum, kdy zásady poprvé skutečně identifikovaly správce. Do 31. 8. 2026
 // byly na jeho místě zástupné texty, takže dokument nebyl úplný.
@@ -32,36 +21,18 @@ const UCINNOST_OD = '31. srpna 2026'
 
 export default function ZasadyPage() {
   return (
-    <div className="min-h-screen bg-cream">
-      <div className="px-6 md:px-10 lg:px-16 xl:px-20 py-16 md:py-24">
-        <div className="max-w-3xl mx-auto">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-base text-slate hover:text-navy transition-colors mb-12"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Zpět na úvod
-          </Link>
-
-          <p className="flex items-center gap-3 text-xs tracking-[0.3em] uppercase text-slate mb-6">
-            <span className="inline-block w-10 h-px bg-mint" />
-            Ochrana soukromí
-          </p>
-
-          <h1
-            className="font-display text-navy mb-6 text-h2"
-          >
-            Zásady zpracování
-            <br />
-            osobních údajů
-          </h1>
-
-          <p className="text-lead text-slate leading-relaxed mb-4">
-            Abychom vám mohli připravit finanční plán na míru, potřebujeme o vás
-            vědět docela dost – včetně údajů o zdraví. Tady je přehledně, co
-            sbíráme, proč, jak dlouho si to necháváme a co s tím můžete udělat.
-          </p>
-          <p className="text-base text-slate mb-14">Účinné od {UCINNOST_OD}</p>
+    <PravniStranka
+      nadrazene="Ochrana soukromí"
+      nadpis={<>Zásady zpracování<br />osobních údajů</>}
+      ucinnostOd={UCINNOST_OD}
+      perex={
+        <p>
+          Abychom vám mohli připravit finanční plán na míru, potřebujeme o vás
+          vědět docela dost – včetně údajů o zdraví. Tady je přehledně, co
+          sbíráme, proč, jak dlouho si to necháváme a co s tím můžete udělat.
+        </p>
+      }
+    >
 
           <Section number="01" title="Kdo je správcem">
             <P>
@@ -271,10 +242,16 @@ export default function ZasadyPage() {
 
           <Section number="08" title="Cookies">
             <P>
-              Používáme výhradně technicky nezbytné cookies, které udržují vaše
-              přihlášení. Bez nich by aplikace nefungovala, a proto k nim není
-              potřeba souhlas ani cookies lišta. Analytické, marketingové ani
-              cookies třetích stran nepoužíváme.
+              Dnes používáme výhradně technicky nezbytné cookies a úložiště
+              prohlížeče – drží vaše přihlášení a rozepsanou analýzu. Bez nich by
+              aplikace nefungovala, a proto k nim není potřeba souhlas. Analytické
+              ani marketingové cookies zatím nepoužíváme; kdyby přibyly, zeptáme se
+              napřed a bez souhlasu se jejich skripty nenačtou.
+            </P>
+            <P>
+              Podrobný seznam najdete v{' '}
+              <Odkaz href="/zasady-cookies">zásadách používání cookies</Odkaz>, kde
+              také kdykoliv změníte svoje rozhodnutí.
             </P>
           </Section>
 
@@ -338,70 +315,11 @@ export default function ZasadyPage() {
             </P>
           </Section>
 
-          <div className="mt-16 pt-8 border-t border-line">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-base text-slate hover:text-navy transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Zpět na úvod
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+    </PravniStranka>
   )
 }
 
-function Section({
-  number,
-  title,
-  children,
-}: {
-  number: string
-  title: string
-  children: React.ReactNode
-}) {
-  return (
-    <section className="mb-14">
-      <div className="flex items-baseline gap-4 mb-5 pb-4 border-b border-line">
-        <span className="text-xs tabular-nums tracking-[0.2em] text-navy">{number}</span>
-        <h2
-          className="font-display text-navy text-h3"
-        >
-          {title}
-        </h2>
-      </div>
-      <div className="space-y-4">{children}</div>
-    </section>
-  )
-}
 
-function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-base text-slate leading-relaxed">{children}</p>
-}
 
-function B({ children }: { children: React.ReactNode }) {
-  return <strong className="font-semibold text-navy">{children}</strong>
-}
 
-function List({ items }: { items: React.ReactNode[] }) {
-  return (
-    <ul className="space-y-3">
-      {items.map((item, i) => (
-        <li key={i} className="flex gap-3 text-base text-slate leading-relaxed">
-          <span className="mt-2.5 w-1 h-1 rounded-full bg-mint flex-shrink-0" aria-hidden />
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
-  )
-}
 
-function Callout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="bg-surface border border-line border-l-2 border-l-mint p-5 md:p-6 space-y-4">
-      {children}
-    </div>
-  )
-}

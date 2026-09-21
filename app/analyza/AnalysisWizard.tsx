@@ -294,6 +294,13 @@ export default function AnalysisWizard() {
             <p className="text-base text-slate mt-6">
               Odesláním berete na vědomí{' '}
               <Link
+                href="/obchodni-podminky"
+                className="text-navy underline underline-offset-4 hover:text-mint-dark"
+              >
+                obchodní podmínky
+              </Link>{' '}
+              a{' '}
+              <Link
                 href="/zasady-ochrany-osobnich-udaju"
                 className="text-navy underline underline-offset-4 hover:text-mint-dark"
               >

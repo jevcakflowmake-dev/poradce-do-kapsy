@@ -23,6 +23,10 @@ export default function SiteFooter() {
           <Link href="/zasady-ochrany-osobnich-udaju" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">
             Ochrana údajů
           </Link>
+          <Link href="/obchodni-podminky" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">
+            Obchodní podmínky
+          </Link>
+          <Link href="/zasady-cookies" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Cookies</Link>
           <Link href="/login" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Přihlášení</Link>
         </nav>
 

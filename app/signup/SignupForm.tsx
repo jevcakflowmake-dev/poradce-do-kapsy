@@ -147,6 +147,13 @@ export default function SignupForm() {
         <p className="text-center text-base text-slate mt-5 leading-relaxed">
           Registrací berete na vědomí{' '}
           <Link
+            href="/obchodni-podminky"
+            className="underline underline-offset-2 hover:text-navy transition-colors"
+          >
+            obchodní podmínky
+          </Link>{' '}
+          a{' '}
+          <Link
             href="/zasady-ochrany-osobnich-udaju"
             className="underline underline-offset-2 hover:text-navy transition-colors"
           >

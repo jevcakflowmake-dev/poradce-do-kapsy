@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import MotionProvider from '@/components/providers/MotionProvider'
+import CookieBar from '@/components/cookies/CookieBar'
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from '@/lib/site'
 
 // Jedna rodina na celý web: nadpisy nese váha, ne jiný řez.
@@ -66,6 +67,7 @@ export default function RootLayout({
             Konverzní událost má své místo na /dekujeme – ta stránka je cíl
             kampaní. Do té doby web nenačítá žádný měřicí skript. */}
         <MotionProvider>{children}</MotionProvider>
+        <CookieBar />
       </body>
     </html>
   )
