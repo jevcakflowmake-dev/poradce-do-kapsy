@@ -523,12 +523,135 @@ export type Database = {
           }
         ]
       }
+      questionnaire_definitions: {
+        Row: {
+          id: string
+          key: string
+          version: number
+          title: string
+          definition: Json
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          version: number
+          title: string
+          definition: Json
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          version?: number
+          title?: string
+          definition?: Json
+          is_active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      questionnaires: {
+        Row: {
+          id: string
+          client_id: string
+          areas: string[]
+          answers: Json
+          status: 'draft' | 'submitted' | 'reviewed'
+          submitted_at: string | null
+          definition_key: string
+          definition_version: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          areas?: string[]
+          answers?: Json
+          status?: 'draft' | 'submitted' | 'reviewed'
+          submitted_at?: string | null
+          definition_key?: string
+          definition_version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          areas?: string[]
+          answers?: Json
+          status?: 'draft' | 'submitted' | 'reviewed'
+          submitted_at?: string | null
+          definition_key?: string
+          definition_version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'questionnaires_client_id_fkey'
+            columns: ['client_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'questionnaires_definition_fk'
+            columns: ['definition_key', 'definition_version']
+            isOneToOne: false
+            referencedRelation: 'questionnaire_definitions'
+            referencedColumns: ['key', 'version']
+          }
+        ]
+      }
+      questionnaire_reviews: {
+        Row: {
+          questionnaire_id: string
+          recommendation: Json | null
+          flags: string[]
+          computed_at: string | null
+          advisor_note: string | null
+          updated_at: string
+        }
+        Insert: {
+          questionnaire_id: string
+          recommendation?: Json | null
+          flags?: string[]
+          computed_at?: string | null
+          advisor_note?: string | null
+          updated_at?: string
+        }
+        Update: {
+          questionnaire_id?: string
+          recommendation?: Json | null
+          flags?: string[]
+          computed_at?: string | null
+          advisor_note?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'questionnaire_reviews_questionnaire_id_fkey'
+            columns: ['questionnaire_id']
+            isOneToOne: true
+            referencedRelation: 'questionnaires'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {
       get_user_role: {
         Args: Record<string, never>
         Returns: string
+      }
+      is_advisor: {
+        Args: Record<string, never>
+        Returns: boolean
       }
     }
     Enums: Record<string, never>

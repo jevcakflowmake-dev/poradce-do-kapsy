@@ -10,7 +10,10 @@ import { MessageCircle } from 'lucide-react'
  */
 export default function ChatFab() {
   const pathname = usePathname()
-  if (pathname.startsWith('/dashboard/chat')) return null
+  // Na chatu je to zbytečné a na formulářích (analýza, dotazník) by plovoucí
+  // tlačítko překrývalo hlavní akci „Pokračovat/Odeslat" vpravo dole.
+  const skryt = ['/dashboard/chat', '/dashboard/analyza', '/dashboard/zajisteni-prijmu']
+  if (skryt.some((p) => pathname.startsWith(p))) return null
 
   return (
     <Link
