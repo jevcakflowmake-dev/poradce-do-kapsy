@@ -4,7 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Loader2, Paperclip, X } from 'lucide-react'
-import { SECTIONS, HEALTH_SECTION_ID, type Question, type SectionData } from '@/lib/analysis-sections'
+import {
+  SECTIONS,
+  HEALTH_SECTION_ID,
+  viditelneOtazky,
+  uklidSkryteOdpovedi,
+  type Question,
+  type SectionData,
+} from '@/lib/analysis-sections'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -92,7 +99,11 @@ export default function AnalysisWizard() {
   }, [data, krok, posledni])
 
   function uprav(questionId: string, hodnota: string) {
-    setData((prev) => ({ ...prev, [sekce.id]: { ...prev[sekce.id], [questionId]: hodnota } }))
+    setData((prev) => {
+      const nove = { ...prev[sekce.id], [questionId]: hodnota }
+      // Odpověď, která se právě schovala, nemá odejít poradci.
+      return { ...prev, [sekce.id]: uklidSkryteOdpovedi(sekce, nove) }
+    })
   }
 
   function prejdi(smer: 1 | -1) {
@@ -210,7 +221,7 @@ export default function AnalysisWizard() {
         )}
 
         <div className="mt-8 md:mt-10 space-y-8">
-          {sekce.questions.map((q) => (
+          {viditelneOtazky(sekce, data[sekce.id]).map((q) => (
             <Otazka
               key={q.id}
               otazka={q}
@@ -378,6 +389,7 @@ function Otazka({
     return (
       <fieldset>
         <legend className="text-lead text-navy">{otazka.label}</legend>
+        {otazka.help && <p className="mt-1 text-base text-slate">{otazka.help}</p>}
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {otazka.options.map((moznost) => (
             <Karta
@@ -399,6 +411,7 @@ function Otazka({
     return (
       <fieldset>
         <legend className="text-lead text-navy">{otazka.label}</legend>
+        {otazka.help && <p className="mt-1 text-base text-slate">{otazka.help}</p>}
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {otazka.options.map((moznost) => (
             <Karta
@@ -428,6 +441,7 @@ function Otazka({
         {otazka.label}
         {povinne && <span className="text-slate"> · povinné</span>}
       </Label>
+      {otazka.help && <p className="mt-1 text-base text-slate">{otazka.help}</p>}
       <Input
         id={otazka.id}
         type={otazka.type === 'number' ? 'number' : 'text'}

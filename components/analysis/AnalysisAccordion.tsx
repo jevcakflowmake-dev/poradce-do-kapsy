@@ -9,6 +9,7 @@ import {
   SECTIONS,
   HEALTH_SECTION_ID,
   sectionProgress,
+  viditelneOtazky,
   type SectionData,
 } from '@/lib/analysis-sections'
 import { BARVY } from '@/lib/barvy'
@@ -122,11 +123,12 @@ export default function AnalysisAccordion({
                   <div className="p-5 md:p-7 space-y-5">
                     {section.id === HEALTH_SECTION_ID && <HealthDataNotice />}
 
-                    {section.questions.map(q => (
+                    {viditelneOtazky(section, data[section.id]).map(q => (
                       <div key={q.id}>
                         <label className="block text-base font-medium text-navy mb-2">
                           {q.label}
                         </label>
+                        {q.help && <p className="text-base text-slate -mt-1 mb-2">{q.help}</p>}
                         {q.type === 'select' ? (
                           <select
                             value={data[section.id]?.[q.id] || ''}

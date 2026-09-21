@@ -10,12 +10,26 @@ import {
 
 export type QuestionType = 'text' | 'number' | 'select' | 'checkbox'
 
+/**
+ * Podmínka zobrazení. Odkazuje se na otázku ve STEJNÉ sekci – napříč sekcemi
+ * schválně ne: průvodce vyplňuje sekce po sobě a otázka by se pak mohla
+ * schovávat podle něčeho, co uživatel ještě neviděl.
+ */
+export interface Podminka {
+  id: string
+  /** Zobraz, když je odpověď některá z těchto hodnot. */
+  value: string[]
+}
+
 export interface Question {
   id: string
   label: string
   type: QuestionType
   placeholder?: string
   options?: string[]
+  /** Krátké „proč se ptáme“ pod otázkou. */
+  help?: string
+  showIf?: Podminka
 }
 
 export interface Section {
@@ -32,22 +46,130 @@ export const HEALTH_SECTION_ID = 'personal'
 /** Odpovědi jedné sekce: { question_id: hodnota }. */
 export type SectionData = Record<string, string>
 
+/**
+ * Má se otázka zobrazit? Checkbox se ukládá jako „a,b“, takže podmínku bereme
+ * jako splněnou, když se hodnoty protnou.
+ */
+export function otazkaViditelna(q: Question, odpovedi: SectionData | undefined): boolean {
+  if (!q.showIf) return true
+  const ulozeno = odpovedi?.[q.showIf.id] ?? ''
+  const casti = ulozeno.split(',').filter(Boolean)
+  return q.showIf.value.some((v) => casti.includes(v))
+}
+
+/** Otázky sekce, které jsou při daných odpovědích vidět. */
+export function viditelneOtazky(section: Section, odpovedi: SectionData | undefined): Question[] {
+  return section.questions.filter((q) => otazkaViditelna(q, odpovedi))
+}
+
+/**
+ * Zahodí odpovědi na otázky, které se mezitím schovaly – jinak by poradci
+ * dorazily třeba OSVČ údaje u člověka, co si mezitím přepnul na zaměstnance.
+ * Běží ve smyčce kvůli zanořeným podmínkám (OSVČ → nemocenská → základ).
+ */
+export function uklidSkryteOdpovedi(section: Section, odpovedi: SectionData): SectionData {
+  let aktualni = odpovedi
+  for (let i = 0; i < 5; i++) {
+    const ocistene: SectionData = {}
+    for (const q of section.questions) {
+      if (otazkaViditelna(q, aktualni) && aktualni[q.id] !== undefined) {
+        ocistene[q.id] = aktualni[q.id]
+      }
+    }
+    if (Object.keys(ocistene).length === Object.keys(aktualni).length) return ocistene
+    aktualni = ocistene
+  }
+  return aktualni
+}
+
 export const SECTIONS: Section[] = [
   {
     id: 'income',
     title: 'Zajištění příjmů',
     icon: Shield,
     color: 'bg-navy',
+    // Sloučeno s dotazníkem „Zajištění příjmu“ (src/questionnaires). Zdravotní
+    // otázky odtamtud sem schválně nešly – souhlas se zpracováním údajů o zdraví
+    // je navázaný na sekci `personal`, viz HEALTH_SECTION_ID. Hypotéka zůstává
+    // v Bydlení, věk a míry v Osobních údajích, děti v sekci Děti.
     questions: [
-      { id: 'employment', label: 'Jaký je váš pracovní poměr?', type: 'select', options: ['Zaměstnanec', 'OSVČ', 'Kombinace', 'Student', 'Důchodce'] },
-      { id: 'monthly_income', label: 'Čistý měsíční příjem (Kč)', type: 'number', placeholder: '35 000' },
+      // — Práce a příjem —
+      { id: 'employment', label: 'Jaký je váš pracovní poměr?', type: 'select', options: ['Zaměstnanec', 'OSVČ', 'Vlastní firma (s.r.o.)', 'Kombinace', 'Student', 'Důchodce'] },
+      { id: 'monthly_income', label: 'Čistý měsíční příjem (Kč)', type: 'number', placeholder: '35 000', help: 'U podnikání berte to, co si reálně vyplácíte pro sebe, ne obrat.' },
+      { id: 'income_variable', label: 'Jak velkou část příjmu tvoří odměny, provize nebo bonusy?', type: 'select', options: ['Skoro žádnou, mám pevný plat', 'Do třetiny', 'Většinu – když nepracuji, nevydělávám'] },
+      {
+        id: 'sick_pay_osvc',
+        label: 'Platíte si dobrovolné nemocenské pojištění?',
+        type: 'select',
+        options: ['Ano', 'Ne', 'Nevím'],
+        help: 'Bez něj vám stát při nemoci neplatí vůbec nic. Většina OSVČ ho nemá.',
+        showIf: { id: 'employment', value: ['OSVČ', 'Vlastní firma (s.r.o.)', 'Kombinace'] },
+      },
+      {
+        id: 'sick_pay_base',
+        label: 'Z jakého měsíčního základu si nemocenské platíte? (Kč)',
+        type: 'number',
+        help: 'Najdete na přehledu pro ČSSZ. Když nevíte, nechte prázdné.',
+        showIf: { id: 'sick_pay_osvc', value: ['Ano'] },
+      },
+      {
+        id: 'social_contributions',
+        label: 'Platíte na sociálním pojištění spíš minimum, nebo víc?',
+        type: 'select',
+        options: ['Minimum / paušální daň', 'Více než minimum', 'Nevím'],
+        help: 'Kdo platí minimum, má od státu při invaliditě jen několik tisíc měsíčně.',
+        showIf: { id: 'employment', value: ['OSVČ', 'Vlastní firma (s.r.o.)', 'Kombinace'] },
+      },
+      {
+        id: 'employer_benefits',
+        label: 'Co vám zaměstnavatel při nemoci dává navíc?',
+        type: 'checkbox',
+        options: ['Sick days', 'Doplatek nemocenské do plné mzdy', 'Příspěvek na životní pojištění', 'Nic z toho / nevím'],
+        showIf: { id: 'employment', value: ['Zaměstnanec', 'Kombinace'] },
+      },
+      { id: 'work_years', label: 'Kolik let celkem pracujete nebo podnikáte?', type: 'select', options: ['Méně než 5 let', '5–15 let', 'Více než 15 let'], help: 'Nárok na invalidní důchod od státu závisí na odpracovaných letech.' },
+      { id: 'work_risk', label: 'Co nejlépe vystihuje vaši práci?', type: 'select', options: ['Převážně u počítače / v kanceláři', 'Hodně na nohou, ale bez fyzické námahy', 'Fyzická práce, řemeslo, výroba', 'Riziková (výšky, těžké stroje, hasiči, policie…)', 'Profesionální řidič / hodně za volantem'], help: 'Určuje, jaké zranění by vás vyřadilo z práce – a jak pojišťovna hodnotí riziko.' },
+
+      // — Výdaje a rezerva —
+      { id: 'essential_expenses', label: 'Kolik měsíčně musí vaše domácnost nutně zaplatit? (Kč)', type: 'number', placeholder: '35 000', help: 'Bydlení, energie, jídlo, děti, auto, splátky, pojistky. Bez dovolených a zábavy.' },
       { id: 'income_drop', label: 'Když vám klesne příjem na 60 %, kolik Kč chcete dostat, aby peníze nebyl problém?', type: 'number', placeholder: '20 000' },
+      { id: 'reserve_months', label: 'Jak dlouho byste vydrželi z úspor, kdyby vám přestal chodit příjem?', type: 'select', options: ['Méně než měsíc', '1–3 měsíce', '3–6 měsíců', 'Více než 6 měsíců'], help: 'Podle toho nastavíme, od kterého dne nemoci má pojistka platit. Delší rezerva = levnější pojistka.' },
+      { id: 'other_loans', label: 'Ostatní úvěry a půjčky – kolik zbývá doplatit celkem? (Kč)', type: 'number', placeholder: '0', help: 'Auto, spotřebitelské úvěry, kreditky. Hypotéku řešíme v sekci Bydlení.' },
+
+      // — Co chcete zajistit —
       { id: 'permanent_consequences', label: 'V případě trvalých následků chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'invalidity', label: 'V případě invalidity chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'serious_illness', label: 'V případě závažné nemoci chcete být zajištěn/a?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'long_term_care', label: 'Chcete být zajištěn/a v případě dlouhodobé péče?', type: 'select', options: ['Ano', 'Ne'] },
       { id: 'death_coverage', label: 'V případě smrti chcete mít zajištěné splacení závazku?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'death_coverage_amount', label: 'Pokud ano, kolik Kč je potřeba na splacení závazků?', type: 'number', placeholder: '1 000 000' },
+      {
+        id: 'death_coverage_amount',
+        label: 'Pokud ano, kolik Kč je potřeba na splacení závazků?',
+        type: 'number',
+        placeholder: '1 000 000',
+        showIf: { id: 'death_coverage', value: ['Ano'] },
+      },
+      { id: 'biggest_fears', label: 'Čeho se v souvislosti s příjmem bojíte nejvíc?', type: 'checkbox', options: ['Být pár měsíců bez příjmu (nemoc, zlomenina)', 'Nikdy už nemoct pracovat (invalidita)', 'Vážná nemoc a náklady na léčbu', 'Že rodina zůstane bez mého příjmu natrvalo'], help: 'Vyberte, co na vás sedí. Podle toho dáme v pojistce největší váhu.' },
+
+      // — Co už máte —
+      { id: 'existing_policy', label: 'Máte už nějaké životní nebo úrazové pojištění?', type: 'select', options: ['Ano', 'Ne', 'Nevím / mám něco z dětství'] },
+      {
+        id: 'existing_policy_payment',
+        label: 'Kolik za něj platíte měsíčně? (Kč)',
+        type: 'number',
+        placeholder: '800',
+        showIf: { id: 'existing_policy', value: ['Ano'] },
+      },
+      {
+        id: 'existing_policy_known',
+        label: 'Víte, co přesně máte pojištěné?',
+        type: 'select',
+        options: ['Ano, vím přesně', 'Zhruba', 'Ne, podepsal/a jsem to a nevím'],
+        showIf: { id: 'existing_policy', value: ['Ano'] },
+      },
+
+      // — Rozsah a rozpočet —
+      { id: 'who_to_insure', label: 'Koho chcete řešit?', type: 'checkbox', options: ['Jen sebe', 'I partnera/ku', 'I děti'] },
       { id: 'monthly_budget', label: 'Kolik Kč jste ochotný/á platit za tento produkt měsíčně?', type: 'number', placeholder: '1 500' },
       { id: 'preferred_companies', label: 'Máte nějaké společnosti, které preferujete?', type: 'checkbox', options: ['ČPP', 'Kooperativa', 'Allianz', 'MetLife', 'Generali', 'NN', 'Uniqa', 'Všechny'] },
     ],
