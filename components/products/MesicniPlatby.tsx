@@ -1,6 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { CreditCard } from 'lucide-react'
 import { mesicniPlatby, type NavrhProPlatbu } from '@/lib/payments'
 
@@ -19,10 +18,7 @@ export default function MesicniPlatby({
   const { platby, celkem } = mesicniPlatby(navrhy)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+    <div
     >
       <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-card bg-navy flex items-center justify-center">
@@ -46,12 +42,9 @@ export default function MesicniPlatby({
       ) : (
         <>
           <div className="space-y-3">
-            {platby.map((platba, idx) => (
-              <motion.div
+            {platby.map((platba) => (
+              <div
                 key={platba.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 + idx * 0.08 }}
                 className="bg-surface rounded-card border border-line p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(15,42,68,0.08)] transition-all"
               >
                 <div className="flex items-center justify-between gap-4">
@@ -75,7 +68,7 @@ export default function MesicniPlatby({
                     <span className="text-sm text-slate"> / měsíc</span>
                   </span>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
 
@@ -97,6 +90,6 @@ export default function MesicniPlatby({
           </p>
         </>
       )}
-    </motion.div>
+    </div>
   )
 }

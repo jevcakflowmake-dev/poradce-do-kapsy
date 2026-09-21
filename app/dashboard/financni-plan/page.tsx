@@ -284,17 +284,14 @@ export default function FinancniPlanPage() {
 
           {/* Plan sections */}
           <div className="space-y-4">
-            {planSections.map((section, idx) => {
+            {planSections.map((section) => {
               const status = statusConfig[section.status]
               const currentInterest = interests[section.id] ?? null
               const interestClass =
                 currentInterest ? interestBorderClass[currentInterest] : 'border-line'
               return (
-                <motion.div
+                <div
                   key={section.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 + idx * 0.07, ease: [0.22, 1, 0.36, 1] }}
                   className={`bg-surface rounded-card border border-l-4 border-l-mint p-5 md:p-6 shadow-card transition-colors ${interestClass}`}
                 >
                   <div className="flex items-center gap-3 mb-4">
@@ -401,7 +398,7 @@ export default function FinancniPlanPage() {
                       }
                     />
                   )}
-                </motion.div>
+                </div>
               )
             })}
           </div>

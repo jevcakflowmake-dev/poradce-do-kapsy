@@ -1,6 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import { Shield, Clock, TrendingUp, FileText, ExternalLink } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
@@ -129,10 +128,7 @@ export default function ProduktyPage() {
 
   return (
     <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      <div
         className="mb-10"
       >
         <h1 className="font-display text-h2 text-navy">
@@ -141,17 +137,14 @@ export default function ProduktyPage() {
         <p className="text-slate mt-3 max-w-xl leading-relaxed">
           Přehled vašich finančních produktů a platebních informací.
         </p>
-      </motion.div>
+      </div>
 
-      {(Object.keys(typeConfig) as Array<keyof typeof typeConfig>).map((type, idx) => {
+      {(Object.keys(typeConfig) as Array<keyof typeof typeConfig>).map((type) => {
         const config = typeConfig[type]
         const items = grouped[type]
         return (
-          <motion.div
+          <div
             key={type}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
             <div className="flex items-center gap-3 mb-4">
@@ -216,7 +209,7 @@ export default function ProduktyPage() {
                 ))}
               </div>
             )}
-          </motion.div>
+          </div>
         )
       })}
 

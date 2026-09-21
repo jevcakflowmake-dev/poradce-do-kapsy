@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import LenisProvider from '@/components/providers/LenisProvider'
+import MotionProvider from '@/components/providers/MotionProvider'
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site'
 
 // Jedna rodina na celý web: nadpisy nese váha, ne jiný řez.
@@ -62,7 +62,7 @@ export default function RootLayout({
   return (
     <html lang="cs" className={`h-full antialiased ${inter.variable}`}>
       <body className="min-h-full">
-        <LenisProvider>{children}</LenisProvider>
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   )

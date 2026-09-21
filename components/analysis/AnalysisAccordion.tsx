@@ -59,18 +59,15 @@ export default function AnalysisAccordion({
 }: Props) {
   return (
     <div className="space-y-4">
-      {SECTIONS.map((section, sIdx) => {
+      {SECTIONS.map((section) => {
         const isExpanded = expanded.includes(section.id)
         const progress = sectionProgress(section, data[section.id])
         const sectionFiles = pendingFiles.filter(f => f.section === section.id)
         const sectionStored = storedFiles.filter(f => f.section === section.id)
 
         return (
-          <motion.div
+          <div
             key={section.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: sIdx * 0.05 }}
             className="bg-surface rounded-card border border-line overflow-hidden transition-all hover:shadow-[0_10px_30px_-10px_rgba(15,42,68,0.12)]"
           >
             <button
@@ -248,7 +245,7 @@ export default function AnalysisAccordion({
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
         )
       })}
     </div>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -152,10 +151,7 @@ export default function AnalyzaPage() {
   if (submitted) {
     return (
       <div className="max-w-3xl mx-auto px-6 md:px-10 py-16 md:py-24 text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+        <div
         >
           <div className="section-numeral text-[4rem] md:text-[6rem] mb-3">✓</div>
           <h1
@@ -173,7 +169,7 @@ export default function AnalyzaPage() {
           >
             <ArrowLeft className="w-4 h-4" /> Zpět na přehled
           </Link>
-        </motion.div>
+        </div>
       </div>
     )
   }
@@ -190,10 +186,7 @@ export default function AnalyzaPage() {
         onChange={handleFileChange}
       />
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      <div
         className="mb-10"
       >
         <div className="flex items-start justify-between gap-4">
@@ -220,7 +213,7 @@ export default function AnalyzaPage() {
         <p className="text-slate mt-3 max-w-xl leading-relaxed">
           Odpovězte na otázky v jednotlivých sekcích. Čím víc vyplníte, tím přesnější plán dostanete. Průběh se ukládá sám.
         </p>
-      </motion.div>
+      </div>
 
       <AnalysisAccordion
         data={data}
@@ -239,11 +232,8 @@ export default function AnalyzaPage() {
         </div>
       )}
 
-      <motion.div
+      <div
         className="mt-10 flex justify-end"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
       >
         <button
           onClick={handleSubmit}
@@ -254,7 +244,7 @@ export default function AnalyzaPage() {
           {loading ? 'Odesílám…' : 'Odeslat analýzu'}
           <ArrowRight className="w-4 h-4" />
         </button>
-      </motion.div>
+      </div>
     </div>
   )
 }

@@ -113,12 +113,6 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* Lenis smooth scroll — root html marker */
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
-.lenis.lenis-stopped { overflow: hidden; }
-
 /* Velký obrysový stavový glyf (✓ hotovo, ✗ chyba, ↻ načítá).
    Pořadová čísla web nepoužívá — hierarchii nese typografie a hairlines. */
 .section-numeral {
