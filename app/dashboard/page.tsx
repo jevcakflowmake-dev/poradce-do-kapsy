@@ -66,6 +66,24 @@ export default async function DashboardPage() {
         </Link>
       )}
 
+      {/* DOČASNÉ: srovnání dvou verzí dotazníku. Až se Jakub rozhodne, tenhle
+          blok i nevybraná verze zmizí. */}
+      <Card className="mt-8 border-l-4 border-l-mint p-6">
+        <p className="text-xs tracking-[0.2em] uppercase text-slate">Interní · k porovnání</p>
+        <h2 className="mt-2 font-display text-h3 text-navy">Dvě verze dotazníku</h2>
+        <p className="mt-2 text-base text-slate max-w-2xl text-pretty">
+          Projděte si obě a vyberte, která dává větší smysl. Odkaz je jen dočasný, návštěvníci ho nevidí.
+        </p>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <Link href="/dashboard/zajisteni-prijmu" className={buttonVariants({ size: 'lg' })}>
+            Nový dotazník <ArrowRight className="w-4 h-4" aria-hidden />
+          </Link>
+          <Link href="/dashboard/analyza" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
+            Původní analýza
+          </Link>
+        </div>
+      </Card>
+
       <div className="mt-10 grid gap-5 sm:grid-cols-3">
         {dlazdice.map((d) => (
           <Card key={d.popisek} className="p-6">
