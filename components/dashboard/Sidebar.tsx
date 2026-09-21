@@ -134,7 +134,7 @@ export default function Sidebar({
                   }`}
                 >
                   <Ikona className="w-5 h-5" aria-hidden strokeWidth={1.8} />
-                  <span className="text-[13px] leading-none">{p.mobil}</span>
+                  <span className="text-base leading-none">{p.mobil}</span>
                   {p.href === '/dashboard/chat' && neprectene > 0 && (
                     <span
                       className="absolute top-1.5 right-1/4 min-w-5 h-5 px-1 rounded-pill bg-mint text-navy text-[12px] font-semibold flex items-center justify-center"

@@ -164,7 +164,7 @@ export default function AnalyzaPage() {
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-card font-semibold text-white text-[15px] transition-all hover:shadow-lg hover:shadow-card hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-card font-semibold text-white text-base transition-all hover:shadow-lg hover:shadow-card hover:-translate-y-0.5"
             style={{ background: BARVY.navy }}
           >
             <ArrowLeft className="w-4 h-4" /> Zpět na přehled
@@ -194,7 +194,7 @@ export default function AnalyzaPage() {
             Finanční analýza
           </h1>
           {saveStatus !== 'idle' && (
-            <div className="flex items-center gap-2 text-xs mt-2 shrink-0">
+            <div className="flex items-center gap-2 text-base mt-2 shrink-0">
               <span
                 className={`w-2 h-2 rounded-full ${
                   saveStatus === 'saving'
@@ -227,7 +227,7 @@ export default function AnalyzaPage() {
       />
 
       {fileError && (
-        <div className="mt-6 p-4 bg-[rgba(194,65,12,0.08)] border border-[rgba(194,65,12,0.3)] rounded-card text-sm text-danger">
+        <div className="mt-6 p-4 bg-[rgba(194,65,12,0.08)] border border-[rgba(194,65,12,0.3)] rounded-card text-base text-danger">
           {fileError}
         </div>
       )}
@@ -238,7 +238,7 @@ export default function AnalyzaPage() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-card font-semibold text-white text-[15px] transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-card hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-card font-semibold text-white text-base transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-card hover:-translate-y-0.5"
           style={{ background: BARVY.navy }}
         >
           {loading ? 'Odesílám…' : 'Odeslat analýzu'}

@@ -71,23 +71,23 @@ function InsuranceDetail({ content }: { content: string | null }) {
   }
 
   if (!parsed?.sections) {
-    return <p className="text-sm text-slate mt-2">{content}</p>
+    return <p className="text-base text-slate mt-2">{content}</p>
   }
 
   return (
     <div className="mt-4 pt-4 border-t border-line">
       <div className="flex items-center gap-2 mb-3">
         {parsed.logo && <span className="text-lg">{parsed.logo}</span>}
-        {parsed.company && <span className="text-sm font-semibold text-navy">{parsed.company}</span>}
+        {parsed.company && <span className="text-base font-semibold text-navy">{parsed.company}</span>}
         {parsed.monthly_price && (
-          <span className="ml-auto text-sm font-bold text-navy">
+          <span className="ml-auto text-base font-bold text-navy">
             {parsed.monthly_price} Kč/měsíc
           </span>
         )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {parsed.sections.map((s) => (
-          <div key={s.id} className="flex items-center gap-2 text-sm">
+          <div key={s.id} className="flex items-center gap-2 text-base">
             <span className="w-1.5 h-1.5 rounded-full bg-mint shrink-0" />
             <span className="text-slate">{SECTION_LABELS[s.id] || s.id}</span>
             <span className="font-medium text-navy ml-auto tabular-nums">
@@ -96,7 +96,7 @@ function InsuranceDetail({ content }: { content: string | null }) {
           </div>
         ))}
       </div>
-      {parsed.description && <p className="text-sm text-slate mt-3">{parsed.description}</p>}
+      {parsed.description && <p className="text-base text-slate mt-3">{parsed.description}</p>}
     </div>
   )
 }
@@ -164,7 +164,7 @@ export default function ProduktyPage() {
             </div>
             {items.length === 0 ? (
               <div className="bg-surface rounded-card border border-line p-8 text-center">
-                <p className="text-sm text-slate">Zatím žádné produkty</p>
+                <p className="text-base text-slate">Zatím žádné produkty</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -178,7 +178,7 @@ export default function ProduktyPage() {
                         <h3 className="font-display text-navy text-lead">
                           {product.title}
                         </h3>
-                        <span className="text-xs text-slate mt-1 block">
+                        <span className="text-base text-slate mt-1 block">
                           {new Date(product.created_at).toLocaleDateString('cs-CZ')}
                         </span>
                       </div>

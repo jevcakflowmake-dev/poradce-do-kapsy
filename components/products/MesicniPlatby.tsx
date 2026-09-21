@@ -33,7 +33,7 @@ export default function MesicniPlatby({
 
       {platby.length === 0 ? (
         <div className="bg-surface rounded-card border border-line p-8 text-center">
-          <p className="text-sm text-slate">
+          <p className="text-base text-slate">
             {pohled === 'klient'
               ? 'Zatím tu nejsou žádné produkty s pravidelnou platbou.'
               : 'Klient zatím nemá žádný návrh s vyplněnou měsíční částkou.'}
@@ -55,7 +55,7 @@ export default function MesicniPlatby({
                       {platba.title}
                     </h3>
                     {platba.company && (
-                      <span className="text-sm text-slate mt-0.5 flex items-center gap-1.5">
+                      <span className="text-base text-slate mt-0.5 flex items-center gap-1.5">
                         {platba.logo && <span>{platba.logo}</span>}
                         {platba.company}
                       </span>
@@ -65,7 +65,7 @@ export default function MesicniPlatby({
                     className="font-display text-navy tabular-nums whitespace-nowrap text-h3"
                   >
                     {platba.monthly.toLocaleString('cs-CZ')} Kč
-                    <span className="text-sm text-slate"> / měsíc</span>
+                    <span className="text-base text-slate"> / měsíc</span>
                   </span>
                 </div>
               </div>
@@ -83,7 +83,7 @@ export default function MesicniPlatby({
             </span>
           </div>
 
-          <p className="text-sm text-slate mt-5 leading-relaxed">
+          <p className="text-base text-slate mt-5 leading-relaxed">
             {pohled === 'klient'
               ? 'Údaje k úhradě — číslo účtu, variabilní symbol a termín splatnosti — najdete ve smlouvě od dané společnosti. Když si nebudete jistí, napište mi a projdeme to spolu.'
               : 'Údaje k úhradě (číslo účtu, VS, splatnost) aplikace neeviduje — klient je má ve smlouvě od společnosti.'}

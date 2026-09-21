@@ -17,13 +17,13 @@ export default function SiteFooter() {
         </div>
 
         <nav aria-label="Patička" className="flex flex-wrap gap-x-6 gap-y-2">
-          <a href="#jak-to-funguje" className="text-base text-slate hover:text-navy transition-colors">Jak to funguje</a>
-          <a href="#kolik-to-stoji" className="text-base text-slate hover:text-navy transition-colors">Kolik to stojí</a>
-          <a href="#caste-dotazy" className="text-base text-slate hover:text-navy transition-colors">Časté dotazy</a>
-          <Link href="/zasady-ochrany-osobnich-udaju" className="text-base text-slate hover:text-navy transition-colors">
+          <a href="#jak-to-funguje" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Jak to funguje</a>
+          <a href="#kolik-to-stoji" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Kolik to stojí</a>
+          <a href="#caste-dotazy" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Časté dotazy</a>
+          <Link href="/zasady-ochrany-osobnich-udaju" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">
             Ochrana údajů
           </Link>
-          <Link href="/login" className="text-base text-slate hover:text-navy transition-colors">Přihlášení</Link>
+          <Link href="/login" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Přihlášení</Link>
         </nav>
 
         <div className="md:text-right space-y-1.5">
@@ -37,7 +37,7 @@ export default function SiteFooter() {
               href="https://www.robology.io/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-navy transition-colors"
+              className="underline underline-offset-4 hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
             >
               &gt;robology
             </a>

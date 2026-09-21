@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import MotionProvider from '@/components/providers/MotionProvider'
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from '@/lib/site'
 
 // Jedna rodina na celý web: nadpisy nese váha, ne jiný řez.
 // latin-ext kvůli české diakritice, variable řez kvůli jedinému stažení.
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   // bez něj Next při buildu varuje a odkazy v náhledech vedou na localhost.
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} – finanční plán pro celý život`,
+    default: `${SITE_NAME} – ${SITE_TAGLINE}`,
     template: `%s · ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -38,12 +38,12 @@ export const metadata: Metadata = {
     locale: 'cs_CZ',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} – finanční plán pro celý život`,
+    title: `${SITE_NAME} – ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${SITE_NAME} – finanční plán pro celý život`,
+    title: `${SITE_NAME} – ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
   },
   robots: {
@@ -62,6 +62,9 @@ export default function RootLayout({
   return (
     <html lang="cs" className={`h-full antialiased ${inter.variable}`}>
       <body className="min-h-full">
+        {/* TODO (až řekne Jakub): sem přijde základní kód Meta Pixelu a GA4.
+            Konverzní událost má své místo na /dekujeme – ta stránka je cíl
+            kampaní. Do té doby web nenačítá žádný měřicí skript. */}
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

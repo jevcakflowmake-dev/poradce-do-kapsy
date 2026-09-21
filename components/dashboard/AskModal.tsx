@@ -136,7 +136,7 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
               >
                 Co vás zajímá?
               </h2>
-              <p className="text-sm text-slate mb-6 leading-relaxed">
+              <p className="text-base text-slate mb-6 leading-relaxed">
                 Napište poradci, čemu u této oblasti nerozumíte nebo co byste chtěli upravit. Zpráva
                 půjde do vašeho chatu – odpověď dostanete obvykle do 24 hodin.
               </p>
@@ -147,7 +147,7 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
                 rows={4}
                 autoFocus
                 placeholder="Např. Proč zrovna 3 miliony? Mám pocit že tolik nepotřebuju."
-                className="w-full px-4 py-3 rounded-card border border-line bg-cream text-navy text-[14px] placeholder:text-slate/70 focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all resize-none leading-relaxed"
+                className="w-full px-4 py-3 rounded-card border border-line bg-cream text-navy text-base placeholder:text-slate/70 focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all resize-none leading-relaxed"
                 maxLength={500}
               />
               <div className="flex items-center justify-between mt-2 text-[11px] text-slate">
@@ -160,14 +160,14 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
                   type="button"
                   onClick={onClose}
                   disabled={sending}
-                  className="px-5 py-2.5 rounded-card text-sm font-medium text-slate hover:text-navy hover:bg-cream transition-all"
+                  className="px-5 py-2.5 rounded-card text-base font-medium text-slate hover:text-navy hover:bg-cream transition-all"
                 >
                   Zrušit
                 </button>
                 <button
                   type="submit"
                   disabled={sending || text.trim().length < 5}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-card text-sm font-semibold text-cream transition-all disabled:opacity-40 hover:opacity-90"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-card text-base font-semibold text-cream transition-all disabled:opacity-40 hover:opacity-90"
                   style={{ background: BARVY.navy }}
                 >
                   {sending ? (

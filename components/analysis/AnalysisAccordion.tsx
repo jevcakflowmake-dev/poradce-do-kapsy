@@ -124,14 +124,14 @@ export default function AnalysisAccordion({
 
                     {section.questions.map(q => (
                       <div key={q.id}>
-                        <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
+                        <label className="block text-base font-medium text-navy mb-2">
                           {q.label}
                         </label>
                         {q.type === 'select' ? (
                           <select
                             value={data[section.id]?.[q.id] || ''}
                             onChange={e => onChange(section.id, q.id, e.target.value)}
-                            className="w-full h-11 rounded-card border border-line bg-surface px-4 text-[15px] text-navy focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all"
+                            className="w-full h-12 rounded-card border border-line bg-surface px-4 text-base text-navy focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all"
                           >
                             <option value="">Vyberte…</option>
                             {q.options?.map(opt => (
@@ -146,7 +146,7 @@ export default function AnalysisAccordion({
                               return (
                                 <label
                                   key={opt}
-                                  className={`flex items-center gap-2 px-3 py-2.5 rounded-card border cursor-pointer transition-all text-sm ${
+                                  className={`flex items-center gap-2 px-3 py-2.5 rounded-card border cursor-pointer transition-all text-base ${
                                     checked
                                       ? 'border-mint bg-mint/8 text-navy ring-2 ring-mint'
                                       : 'border-line bg-surface text-navy hover:border-mint/50'
@@ -182,7 +182,7 @@ export default function AnalysisAccordion({
                     <div className="h-px bg-line" />
 
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
+                      <label className="block text-base font-medium text-navy mb-2">
                         Přílohy (PDF, foto smluv)
                       </label>
                       <button
@@ -191,7 +191,7 @@ export default function AnalysisAccordion({
                         className="w-full border border-dashed border-line rounded-card p-5 text-center hover:border-mint hover:bg-mint/5 transition-all group"
                       >
                         <Upload className="w-5 h-5 text-slate mx-auto mb-1.5 group-hover:text-navy" />
-                        <span className="text-sm text-slate group-hover:text-navy">
+                        <span className="text-base text-slate group-hover:text-navy">
                           Klikněte pro nahrání PDF nebo fotky
                         </span>
                       </button>
@@ -201,7 +201,7 @@ export default function AnalysisAccordion({
                           {sectionFiles.map(f => (
                             <div
                               key={f.name}
-                              className="flex items-center gap-2 bg-cream rounded-card px-3 py-2.5 text-sm border border-line"
+                              className="flex items-center gap-2 bg-cream rounded-card px-3 py-2.5 text-base border border-line"
                             >
                               <FileText className="w-4 h-4 text-slate" />
                               <span className="flex-1 text-navy truncate">{f.name}</span>
@@ -225,7 +225,7 @@ export default function AnalysisAccordion({
                           {sectionStored.map(f => (
                             <div
                               key={f.id}
-                              className="flex items-center gap-2 bg-mint/5 rounded-card px-3 py-2.5 text-sm border border-mint/25"
+                              className="flex items-center gap-2 bg-mint/5 rounded-card px-3 py-2.5 text-base border border-mint/25"
                             >
                               <Check className="w-4 h-4 text-navy shrink-0" />
                               <StoredFileLink
@@ -262,7 +262,7 @@ function HealthDataNotice() {
     <div className="bg-cream border border-line border-l-4 border-l-mint p-4 md:p-5">
       <div className="flex items-start gap-3">
         <Shield className="w-4 h-4 text-navy flex-shrink-0 mt-0.5" strokeWidth={1.8} />
-        <div className="text-[13px] text-slate leading-relaxed space-y-2">
+        <div className="text-base text-slate leading-relaxed space-y-2">
           <p>
             Tahle sekce se ptá i na <strong className="font-semibold text-navy">údaje o zdraví</strong>{' '}
             (výška, váha, nemoci, úrazy). Pojišťovny je vyžadují pro výpočet ceny

@@ -115,9 +115,20 @@ export default function ChatWindow({
   }
 
   if (loading) {
+    // Obrys konverzace místo kolečka: uživatel vidí, kam zprávy dorazí,
+    // a stránka při dočtení neposkočí.
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-8 h-8 border-[3px] border-navy/15 border-t-mint rounded-full animate-spin" />
+      <div className="flex-1 min-h-0 p-5 space-y-3" aria-busy aria-label="Načítám konverzaci">
+        {[
+          'w-3/5 self-start',
+          'w-2/5 ml-auto',
+          'w-1/2 self-start',
+        ].map((tvar) => (
+          <div
+            key={tvar}
+            className={`h-12 rounded-2xl bg-line/70 animate-pulse ${tvar}`}
+          />
+        ))}
       </div>
     )
   }
@@ -139,7 +150,7 @@ export default function ChatWindow({
             >
               Zahajte konverzaci
             </h3>
-            <p className="text-sm text-slate max-w-xs">
+            <p className="text-base text-slate max-w-xs">
               {myRole === 'client'
                 ? 'Máte otázky? Napište poradci – odpovídá zpravidla do 24 hodin.'
                 : 'Napište klientovi zprávu nebo odpovězte na jeho dotazy.'}
@@ -170,7 +181,7 @@ export default function ChatWindow({
                 )}
                 {/* Strop šířky: na kontejneru 1 600 px by 75 % dalo řádky přes 1 000 px */}
                 <div
-                  className={`max-w-[min(75%,40rem)] px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${
+                  className={`max-w-[min(75%,40rem)] px-4 py-2.5 rounded-2xl text-base leading-relaxed ${
                     isMe
                       ? 'rounded-br-sm text-white shadow-sm'
                       : 'rounded-bl-sm bg-surface border border-line text-navy'
@@ -197,7 +208,7 @@ export default function ChatWindow({
             onChange={e => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={myRole === 'client' ? 'Napište poradci…' : 'Odpovědět klientovi…'}
-            className="chat-input flex-1 px-4 py-3 bg-cream border border-line rounded-2xl text-[14px] text-navy placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all"
+            className="chat-input flex-1 px-4 py-3 bg-cream border border-line rounded-2xl text-base text-navy placeholder:text-slate focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all"
             rows={1}
           />
           <button

@@ -33,8 +33,8 @@ export default function HealthScore({ score }: { score: number }) {
       </div>
       <div>
         <div className="text-lg font-bold" style={{ color: textColor }}>{label}</div>
-        <div className="text-sm text-slate mt-0.5">Skóre finančního zdraví</div>
-        <div className="text-xs text-slate mt-1">{sublabel}</div>
+        <div className="text-base text-slate mt-0.5">Skóre finančního zdraví</div>
+        <div className="text-base text-slate mt-1">{sublabel}</div>
       </div>
     </div>
   )

@@ -349,7 +349,7 @@ export default function FinancniPlanPage() {
                     />
                   ) : section.type === 'variants' && section.variants ? (
                     <div className="space-y-3">
-                      <p className="text-sm text-slate mb-1">
+                      <p className="text-base text-slate mb-1">
                         {section.variants.length} varian{section.variants.length === 1 ? 'ta' : 'ty'} k porovnání – rozklikněte detail nebo označte tu, o kterou máte zájem.
                       </p>
                       {section.variants.map((variant, i) => (
@@ -375,7 +375,7 @@ export default function FinancniPlanPage() {
                   ) : (
                     <ul className="space-y-2.5">
                       {section.items?.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-[14px] text-navy/85 leading-relaxed">
+                        <li key={i} className="flex items-start gap-2.5 text-base text-navy/85 leading-relaxed">
                           <div className="w-1.5 h-1.5 rounded-full bg-mint mt-2 flex-shrink-0" />
                           {item}
                         </li>
@@ -428,7 +428,7 @@ export default function FinancniPlanPage() {
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: 50, x: '-50%' }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-6 left-1/2 z-40 bg-navy text-white text-sm px-5 py-3 rounded-full shadow-xl flex items-center gap-3 max-w-[92vw]"
+            className="fixed bottom-6 left-1/2 z-40 bg-navy text-white text-base px-5 py-3 rounded-full shadow-xl flex items-center gap-3 max-w-[92vw]"
           >
             <CheckCircle2 className="w-4 h-4 text-navy shrink-0" />
             <span className="min-w-0">{toast}</span>
@@ -481,14 +481,14 @@ function VariantCardInteractive({
           {variant.logo}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-navy text-[15px]">{variant.company}</h4>
-          <p className="text-[11px] tracking-[0.15em] uppercase text-slate mt-0.5">
+          <h4 className="font-semibold text-navy text-base">{variant.company}</h4>
+          <p className="text-xs tracking-[0.15em] uppercase text-slate mt-0.5">
             Varianta {index + 1}
           </p>
         </div>
         <div className="text-right flex-shrink-0 mr-2 hidden sm:block">
           <span className="font-display text-navy text-xl">{variant.monthlyPayment}</span>
-          <p className="text-[11px] tracking-[0.1em] uppercase text-slate">/ měsíc</p>
+          <p className="text-xs tracking-[0.1em] uppercase text-slate">/ měsíc</p>
         </div>
         {open ? (
           <ChevronUp className="w-5 h-5 text-navy" strokeWidth={1.8} />
@@ -515,13 +515,13 @@ function VariantCardInteractive({
                     className="bg-white/70 backdrop-blur-sm rounded-card px-4 py-3 border border-line"
                   >
                     <div className="flex items-center justify-between mb-1 gap-3">
-                      <span className="text-[13px] font-medium text-navy/80">{key}</span>
-                      <span className="text-sm font-semibold text-navy bg-cream border border-line px-3 py-0.5 rounded-card">
+                      <span className="text-base font-medium text-navy/80">{key}</span>
+                      <span className="text-base font-semibold text-navy bg-cream border border-line px-3 py-0.5 rounded-card">
                         {detail.value}
                       </span>
                     </div>
                     {detail.note && (
-                      <p className="text-xs text-slate leading-relaxed mt-1">{detail.note}</p>
+                      <p className="text-base text-slate leading-relaxed mt-1">{detail.note}</p>
                     )}
                   </div>
                 ))}

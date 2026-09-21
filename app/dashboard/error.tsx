@@ -24,20 +24,20 @@ export default function DashboardError({
         <h2 className="text-lg font-semibold mb-2" style={{ color: BARVY.navy }}>
           Něco se pokazilo
         </h2>
-        <p className="text-sm text-slate mb-5">
+        <p className="text-base text-slate mb-5">
           {error.message || 'Zkuste stránku znovu načíst.'}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={reset}
-            className="px-4 py-2 text-white text-sm font-medium rounded-card hover:opacity-90 transition-opacity"
+            className="px-4 py-2 text-white text-base font-medium rounded-card hover:opacity-90 transition-opacity"
             style={{ backgroundColor: BARVY.mint }}
           >
             Zkusit znovu
           </button>
           <Link
             href="/"
-            className="px-4 py-2 text-sm font-medium rounded-card border border-line hover:bg-cream transition-colors"
+            className="px-4 py-2 text-base font-medium rounded-card border border-line hover:bg-cream transition-colors"
             style={{ color: BARVY.navy }}
           >
             Zpět na úvod

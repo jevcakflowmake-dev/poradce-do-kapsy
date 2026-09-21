@@ -66,7 +66,7 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
             </span>
             <span className="text-xs text-slate">{formatDate(proposal.created_at)}</span>
           </div>
-          <div className="font-semibold text-navy mt-1.5 text-sm">{proposal.title}</div>
+          <div className="font-semibold text-navy mt-1.5 text-base">{proposal.title}</div>
         </div>
         <svg
           className={`w-4 h-4 text-slate-soft shrink-0 mt-1 transition-transform ${expanded ? 'rotate-180' : ''}`}
@@ -79,7 +79,7 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
       {expanded && (
         <div className="px-4 pb-4 border-t border-line pt-3 space-y-3" onClick={e => e.stopPropagation()}>
           {proposal.content && (
-            <p className="text-sm text-navy whitespace-pre-wrap leading-relaxed">{proposal.content}</p>
+            <p className="text-base text-navy whitespace-pre-wrap leading-relaxed">{proposal.content}</p>
           )}
           {proposal.file_url && !fileUrl && (
             <p className="text-xs text-slate">Načítám přílohu…</p>
@@ -89,7 +89,7 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
               <p className="text-xs font-medium text-slate mb-2 uppercase tracking-wide">Příloha PDF</p>
               <iframe src={fileUrl} className="w-full h-64 rounded-card border border-line" title={proposal.title} />
               <a href={fileUrl} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium" style={{ color: BARVY.navy }}>
+                className="inline-flex items-center gap-1.5 mt-2 text-base font-medium" style={{ color: BARVY.navy }}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                 </svg>
@@ -99,7 +99,7 @@ export default function ProposalCard({ proposal, onRead }: { proposal: Proposal;
           )}
           {proposal.link_url && (
             <a href={proposal.link_url} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: BARVY.navy }}>
+              className="inline-flex items-center gap-1.5 text-base font-medium" style={{ color: BARVY.navy }}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>

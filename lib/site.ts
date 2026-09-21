@@ -12,7 +12,10 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_URL).repla
 export const SITE_NAME = 'Poradce do kapsy'
 
 export const SITE_DESCRIPTION =
-  'Vyplňte analýzu bez registrace a do 48 hodin dostanete finanční plán na míru: kde máte díru v zajištění a kolik ji stojí zalepit u tří konkrétních společností. Zdarma a nezávazně.'
+  'Vyplníte analýzu za 15 minut, do 48 hodin dostanete návrh na míru. Bez schůzek, bez tlaku.'
+
+/** Podtitul za názvem webu v <title>. Drží se H1 na úvodní stránce. */
+export const SITE_TAGLINE = 'finanční poradce, kterého máte v mobilu'
 
 /** Absolutní URL k dané cestě, např. absoluteUrl('/login'). */
 export function absoluteUrl(path: string): string {
