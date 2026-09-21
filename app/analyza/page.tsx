@@ -16,7 +16,7 @@ export default async function PublicAnalysisPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
-    const role = user.user_metadata?.role
+    const role = user.app_metadata?.role
     redirect(role === 'advisor' ? '/advisor' : '/dashboard/analyza')
   }
 

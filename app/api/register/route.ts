@@ -51,7 +51,9 @@ export async function POST(request: Request) {
       email,
       password,
       email_confirm: true,
-      user_metadata: { full_name, phone, role: 'client' },
+      user_metadata: { full_name, phone },
+      // role patří do app_metadata – do user_metadata si zapíše uživatel sám
+      app_metadata: { role: 'client' },
     })
 
     if (error) {

@@ -47,7 +47,7 @@ export default function LoginForm() {
       setLoading(false)
       return
     }
-    const role = authData.user?.user_metadata?.role
+    const role = authData.user?.app_metadata?.role
     // Tvrdé přesměrování schválně: přihlášením se mění auth cookie a celé
     // načtení je jistota, že serverové komponenty vykreslí novou session.
     // eslint-disable-next-line react-hooks/immutability

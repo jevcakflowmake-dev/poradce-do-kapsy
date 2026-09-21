@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user || user.user_metadata?.role !== 'advisor') {
+    if (!user || user.app_metadata?.role !== 'advisor') {
       return NextResponse.json({ error: 'Nemáte oprávnění.' }, { status: 401 })
     }
 

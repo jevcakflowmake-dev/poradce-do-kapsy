@@ -19,7 +19,7 @@ async function authorize(clientId: string): Promise<{ ok: true } | { ok: false; 
   if (!user) {
     return { ok: false, status: 401, error: 'Nejste přihlášeni.' }
   }
-  if (user.user_metadata?.role === 'advisor') {
+  if (user.app_metadata?.role === 'advisor') {
     return { ok: true }
   }
   if (user.id !== clientId) {

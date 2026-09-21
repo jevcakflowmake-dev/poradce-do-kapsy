@@ -11,7 +11,7 @@ export default async function AdvisorChatPage({ params }: { params: Promise<{ cl
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user || user.user_metadata?.role !== 'advisor') return redirect('/dashboard')
+  if (!user || user.app_metadata?.role !== 'advisor') return redirect('/dashboard')
 
   const { data: profileData } = await supabase
     .from('profiles')

@@ -24,7 +24,7 @@ type PageProps = {
 export default async function AdvisorPage({ searchParams }: PageProps) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.user_metadata?.role !== 'advisor') redirect('/dashboard')
+  if (!user || user.app_metadata?.role !== 'advisor') redirect('/dashboard')
 
   const sp = await searchParams
   const statusFilter = isClientStatus(sp.status) ? sp.status : null
@@ -38,7 +38,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
   // v auth metadatech. Bez tohoto filtru by se poradci vypsali jako klienti.
   const { data: usersData } = await createAdminClient().auth.admin.listUsers({ perPage: 1000 })
   const advisorIds = new Set(
-    usersData.users.filter((u) => u.user_metadata?.role === 'advisor').map((u) => u.id),
+    usersData.users.filter((u) => u.app_metadata?.role === 'advisor').map((u) => u.id),
   )
   advisorIds.add(user.id)
 

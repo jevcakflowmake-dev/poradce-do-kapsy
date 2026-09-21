@@ -13,7 +13,7 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user || user.user_metadata?.role !== 'advisor') return redirect('/dashboard')
+  if (!user || user.app_metadata?.role !== 'advisor') return redirect('/dashboard')
 
   // Load client profile
   const { data: profile } = await supabase

@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user || user.user_metadata?.role !== 'advisor') {
+  if (!user || user.app_metadata?.role !== 'advisor') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
