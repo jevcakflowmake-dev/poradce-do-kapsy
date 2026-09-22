@@ -58,34 +58,56 @@ export default function ChatWindow({
     load()
   }, [clientId, myRole, supabase])
 
-  // Realtime subscription
+  // Živé doručování zpráv
   useEffect(() => {
-    const channel = supabase
-      .channel(`chat:${clientId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `client_id=eq.${clientId}`,
-        },
-        (payload) => {
-          const newMsg = payload.new as Message
-          setMessages(prev => [...prev, newMsg])
+    let kanal: ReturnType<typeof supabase.channel> | null = null
+    let zruseno = false
 
-          // Automaticky označit jako přečtené
-          if (newMsg.sender_role !== myRole) {
-            supabase
-              .from('messages')
-              .update({ is_read: true })
-              .eq('id', newMsg.id)
-          }
-        }
-      )
-      .subscribe()
+    async function pripojSe() {
+      /**
+       * Realtime posuzuje RLS podle tokenu na socketu, ne podle toho, čím se
+       * posílají běžné dotazy. Bez `setAuth` se odběr tváří jako anonym:
+       * `subscribe()` vrátí SUBSCRIBED, ale žádná událost nedorazí, protože
+       * anonym na cizí řádky nevidí. Chat tím tiše přestal být živý –
+       * zprávy se ukládaly správně a objevily se až po obnovení stránky.
+       */
+      const { data: { session } } = await supabase.auth.getSession()
+      if (zruseno) return
+      await supabase.realtime.setAuth(session?.access_token)
 
-    return () => { supabase.removeChannel(channel) }
+      kanal = supabase
+        .channel(`chat:${clientId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `client_id=eq.${clientId}`,
+          },
+          (payload) => {
+            const newMsg = payload.new as Message
+            // Vlastní odeslanou zprávu už v seznamu máme z odpovědi insertu.
+            setMessages(prev => (prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]))
+
+            // Automaticky označit jako přečtené
+            if (newMsg.sender_role !== myRole) {
+              supabase
+                .from('messages')
+                .update({ is_read: true })
+                .eq('id', newMsg.id)
+            }
+          },
+        )
+        .subscribe()
+    }
+
+    pripojSe()
+
+    return () => {
+      zruseno = true
+      if (kanal) supabase.removeChannel(kanal)
+    }
   }, [clientId, myRole, supabase])
 
   useEffect(() => {
