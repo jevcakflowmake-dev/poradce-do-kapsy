@@ -20,6 +20,27 @@ import { SECTIONS, rozdelHodnoty } from './analysis-sections'
 /** Odpovědi analýzy tak, jak je drží průvodce i poradcovský detail: sekce → otázka → hodnota. */
 export type AnalyzaOdpovedi = Record<string, Record<string, string>>
 
+/**
+ * Otázky, ze kterých výpočet čte. Seznam klientů podle nich filtruje dotaz,
+ * ať netahá celou analýzu všech klientů kvůli osmi flagům.
+ * Když přibude vstup do `naDotaznikoveOdpovedi`, patří i sem.
+ */
+export const POTREBNE_OTAZKY: string[] = [
+  // income
+  'employment', 'monthly_income', 'income_variable', 'sick_pay_osvc',
+  'social_contributions', 'work_years', 'work_risk',
+  'essential_expenses', 'reserve_months', 'other_loans',
+  // income_cover
+  'existing_policy', 'existing_policy_known',
+  // housing
+  'has_mortgage', 'mortgage_balance',
+  // children
+  'children_count', 'children_ages',
+  // personal
+  'age', 'height', 'weight', 'family_status',
+  'treatment', 'family_history', 'sports', 'sports_level',
+]
+
 const TYP_PRACE: Record<string, string> = {
   'Zaměstnanec': 'zamestnanec',
   'OSVČ': 'osvc',

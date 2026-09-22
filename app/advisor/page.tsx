@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { MessageCircle, ArrowUpRight, Sparkles } from 'lucide-react'
+import { MessageCircle, ArrowUpRight, Sparkles, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
@@ -13,6 +13,7 @@ import {
   isClientStatus,
 } from '@/lib/utils'
 import { goalLabel } from '@/lib/analysis-sections'
+import { vyhodnotAnalyzu, POTREBNE_OTAZKY, type AnalyzaOdpovedi } from '@/lib/vyhodnoceni-analyzy'
 import type { Profile } from '@/lib/types/database'
 import StatusBadge from '@/components/advisor/StatusBadge'
 import StatusFilter from '@/components/advisor/StatusFilter'
@@ -70,6 +71,25 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
   }
   for (const v of (planVariantSel as Array<{ client_id: string }> | null) ?? []) {
     reactionCounts[v.client_id] = (reactionCounts[v.client_id] || 0) + 1
+  }
+
+  // Flagy z analýzy pro celý seznam. Taháme jen otázky, ze kterých výpočet
+  // čte – ne celou analýzu všech klientů.
+  const { data: odpovediRaw } = await supabase
+    .from('analysis_responses')
+    .select('client_id, section, question_id, value')
+    .in('question_id', POTREBNE_OTAZKY)
+
+  const odpovediKlientu: Record<string, AnalyzaOdpovedi> = {}
+  for (const r of (odpovediRaw ?? []) as Array<{ client_id: string; section: string; question_id: string; value: string }>) {
+    const klient = (odpovediKlientu[r.client_id] ??= {})
+    ;(klient[r.section] ??= {})[r.question_id] = r.value
+  }
+
+  const flagyKlientu: Record<string, string[]> = {}
+  for (const [id, odpovedi] of Object.entries(odpovediKlientu)) {
+    const vyhodnoceni = vyhodnotAnalyzu(odpovedi)
+    if (vyhodnoceni && vyhodnoceni.flags.length > 0) flagyKlientu[id] = vyhodnoceni.flags
   }
 
   const statusCounts: Record<string, number> = Object.fromEntries(
@@ -190,6 +210,15 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
                               className="bg-danger text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center"
                             >
                               {unreadCounts[client.id]}
+                            </span>
+                          )}
+                          {flagyKlientu[client.id]?.length > 0 && (
+                            <span
+                              title={flagyKlientu[client.id].join('\n')}
+                              className="inline-flex items-center gap-1 bg-amber/25 text-navy text-[10px] font-bold rounded-full border border-amber/50 h-5 px-1.5"
+                            >
+                              <AlertTriangle className="w-2.5 h-2.5" aria-hidden />
+                              {flagyKlientu[client.id].length}
                             </span>
                           )}
                           {reactionCounts[client.id] > 0 && (

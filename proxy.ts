@@ -43,9 +43,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Panel poradce — pouze role advisor
+  // Panel poradce — pouze role advisor.
+  // Role je v app_metadata, ne v user_metadata: do user_metadata si zapíše
+  // kdokoliv sám přes auth.updateUser() a udělal by si tím poradce.
   if (pathname.startsWith('/advisor')) {
-    const role = user?.user_metadata?.role
+    const role = user?.app_metadata?.role
     if (role !== 'advisor') {
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard'
@@ -55,7 +57,7 @@ export async function proxy(request: NextRequest) {
 
   // Přihlášený uživatel na login/signup → přesměruj
   if (user && (pathname === '/login' || pathname === '/signup')) {
-    const role = user.user_metadata?.role
+    const role = user.app_metadata?.role
     const url = request.nextUrl.clone()
     url.pathname = role === 'advisor' ? '/advisor' : '/dashboard'
     return NextResponse.redirect(url)
