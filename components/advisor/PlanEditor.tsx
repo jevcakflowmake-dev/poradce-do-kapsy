@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { BARVY } from '@/lib/barvy'
+import { ctiProdukt, type ProduktVarianty } from '@/lib/produkt-varianty'
 
 const SECTIONS = [
   { id: 'income', title: 'Zajištění příjmů', label: 'Zajištění příjmů', icon: Shield },
@@ -29,6 +30,8 @@ interface Variant {
   logo: string
   monthly_payment: string
   sort_order: number
+  /** jsonb – u zajištění příjmu čísla rizik, pod klíčem `produkt` detail produktu */
+  details?: unknown
 }
 
 interface Param {
@@ -69,6 +72,9 @@ export default function PlanEditor({
   const [recommendations, setRecommendations] = useState<Recommendation[]>(initialRecommendations)
   const [activeSection, setActiveSection] = useState<SectionId>('income')
   const [showAddVariant, setShowAddVariant] = useState(false)
+  // Detail produktu se edituje po jedné variantě, ať je jasné, co se ukládá.
+  const [produktProVariantu, setProduktProVariantu] = useState<string | null>(null)
+  const [produktForm, setProduktForm] = useState<ProduktVarianty>({})
   const [showAnswers, setShowAnswers] = useState(false)
   const [saving, setSaving] = useState(false)
   const [feedback, setFeedback] = useState<string | null>(null)
@@ -131,6 +137,22 @@ export default function PlanEditor({
       return null
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleSaveProdukt(variantId: string) {
+    const result = await apiCall({ action: 'update_variant', variant_id: variantId, produkt: produktForm })
+    if (result) {
+      setVariants(prev =>
+        prev.map(v =>
+          v.id === variantId
+            ? { ...v, details: { ...((v.details as Record<string, unknown>) ?? {}), produkt: produktForm } }
+            : v,
+        ),
+      )
+      setProduktProVariantu(null)
+      setFeedback('Detail produktu uložen')
+      setTimeout(() => setFeedback(null), 2000)
     }
   }
 
@@ -403,6 +425,17 @@ export default function PlanEditor({
                       </p>
                     </div>
                     <button
+                      onClick={() => {
+                        const otevrit = produktProVariantu === variant.id ? null : variant.id
+                        setProduktProVariantu(otevrit)
+                        if (otevrit) setProduktForm(ctiProdukt(variant.details) ?? {})
+                      }}
+                      className="px-3 py-2 text-sm text-slate hover:text-navy transition-colors rounded-card hover:bg-cream"
+                      title="Co to je za produkt a kam volat při pojistné události"
+                    >
+                      {ctiProdukt(variant.details) ? 'Detail produktu ✓' : 'Detail produktu'}
+                    </button>
+                    <button
                       onClick={() => handleDeleteVariant(variant.id)}
                       className="p-2 text-slate hover:text-red-500 transition-colors rounded-card hover:bg-red-50"
                       title="Smazat variantu"
@@ -410,6 +443,51 @@ export default function PlanEditor({
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
+
+                  {produktProVariantu === variant.id && (
+                    <div className="px-5 pb-4 space-y-3 border-t border-line pt-4">
+                      <p className="text-sm text-slate">
+                        Co klient uvidí v rozbaleném detailu varianty a co mu zůstane ve vytištěném
+                        plánu. Prázdná pole se nezobrazí; smazáním všech detail zmizí.
+                      </p>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <PoleProduktu label="Název produktu" value={produktForm.nazev ?? ''} placeholder="BelMondo 20"
+                          onChange={(v) => setProduktForm(f => ({ ...f, nazev: v }))} />
+                        <PoleProduktu label="Běží do" value={produktForm.doVeku ?? ''} placeholder="do 65 let"
+                          onChange={(v) => setProduktForm(f => ({ ...f, doVeku: v }))} />
+                        <PoleProduktu label="Platí se" value={produktForm.frekvence ?? ''} placeholder="Měsíčně"
+                          onChange={(v) => setProduktForm(f => ({ ...f, frekvence: v }))} />
+                        <PoleProduktu label="Hlášení pojistné události" value={produktForm.hlaseni ?? ''} placeholder="800 105 105 nebo odkaz"
+                          onChange={(v) => setProduktForm(f => ({ ...f, hlaseni: v }))} />
+                        <PoleProduktu label="Platby a změny" value={produktForm.kontakt ?? ''} placeholder="telefon, e-mail nebo odkaz"
+                          onChange={(v) => setProduktForm(f => ({ ...f, kontakt: v }))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate mb-1.5">Co produkt dělá</label>
+                        <textarea
+                          value={produktForm.popis ?? ''}
+                          onChange={(e) => setProduktForm(f => ({ ...f, popis: e.target.value }))}
+                          rows={2}
+                          placeholder="Dvě věty, kterým klient rozumí i za tři roky."
+                          className="w-full px-4 py-3 border border-line rounded-card text-sm text-navy focus:outline-none focus:ring-4 focus:ring-mint/20 resize-none"
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button onClick={() => setProduktProVariantu(null)} variant="outline" className="rounded-card">
+                          Zrušit
+                        </Button>
+                        <Button
+                          onClick={() => handleSaveProdukt(variant.id)}
+                          disabled={saving}
+                          className="text-white gap-2 rounded-card"
+                          style={{ backgroundColor: BARVY.navy }}
+                        >
+                          <Save className="w-4 h-4" />
+                          {saving ? 'Ukládám…' : 'Uložit detail'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Params */}
                   {variantParams.length > 0 && (
@@ -555,6 +633,31 @@ export default function PlanEditor({
           </Button>
         </div>
       </div>
+    </div>
+  )
+}
+
+function PoleProduktu({
+  label,
+  value,
+  placeholder,
+  onChange,
+}: {
+  label: string
+  value: string
+  placeholder?: string
+  onChange: (v: string) => void
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-slate mb-1.5">{label}</label>
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full h-10 rounded-card border border-line bg-surface px-3 text-sm text-navy focus:outline-none focus:ring-4 focus:ring-mint/20"
+      />
     </div>
   )
 }

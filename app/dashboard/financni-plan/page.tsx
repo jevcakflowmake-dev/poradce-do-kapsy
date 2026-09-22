@@ -21,6 +21,7 @@ import IncomeLifeChart, { type IncomeVariant } from '@/components/dashboard/char
 import DuchodVCislech from '@/components/dashboard/DuchodVCislech'
 import { TiskovaTitulka, TiskovyZaver } from '@/components/dashboard/TiskovyRamec'
 import { spoctiDuchod, type VysledekDuchod } from '@/lib/duchod'
+import { ctiProdukt, odkazNaKontakt, type ProduktVarianty } from '@/lib/produkt-varianty'
 
 interface ParamDetail { value: string; note: string }
 interface Variant {
@@ -29,6 +30,8 @@ interface Variant {
   logo: string
   monthlyPayment: string
   params: Record<string, ParamDetail>
+  /** Co to je za produkt a kam volat, když nastane událost. Nepovinné. */
+  produkt: ProduktVarianty | null
 }
 interface PlanSection {
   id: string
@@ -174,13 +177,20 @@ export default function FinancniPlanPage() {
       const sectionVariants = variants.filter((v: { section: string }) => v.section === id)
       const rec = recs.find((r: { section: string }) => r.section === id)
       if (sectionVariants.length > 0) {
-        const mapped: Variant[] = sectionVariants.map((v: { id: string; company: string; logo: string; monthly_payment: string }) => {
+        const mapped: Variant[] = sectionVariants.map((v: { id: string; company: string; logo: string; monthly_payment: string; details?: unknown }) => {
           const vp = params.filter((p: { variant_id: string }) => p.variant_id === v.id)
           const paramMap: Record<string, ParamDetail> = {}
           for (const p of vp as Array<{ param_label: string; value: string; note?: string }>) {
             paramMap[p.param_label] = { value: p.value, note: p.note || '' }
           }
-          return { id: v.id, company: v.company, logo: v.logo || v.company[0], monthlyPayment: v.monthly_payment, params: paramMap }
+          return {
+            id: v.id,
+            company: v.company,
+            logo: v.logo || v.company[0],
+            monthlyPayment: v.monthly_payment,
+            params: paramMap,
+            produkt: ctiProdukt(v.details),
+          }
         })
         sections.push({ id, ...cfg, type: 'variants', variants: mapped, status: rec?.status || 'recommendation' })
       } else if (rec) {
@@ -259,6 +269,11 @@ export default function FinancniPlanPage() {
     }
     setBulkLoading(false)
   }
+
+  // Varianty zajištění příjmu, u kterých poradce vyplnil detail produktu.
+  const produktyPrijmu = incomeVariants
+    .map((v) => ({ id: v.id, company: v.company, produkt: ctiProdukt(v.details) }))
+    .filter((v): v is { id: string; company: string; produkt: ProduktVarianty } => v.produkt !== null)
 
   const hasPlan = planSections.length > 0
   const allInterested =
@@ -370,6 +385,7 @@ export default function FinancniPlanPage() {
                   )}
 
                   {section.id === 'income' ? (
+                    <>
                     <IncomeLifeChart
                       monthlyIncomeNet={monthlyIncomeNet}
                       variants={incomeVariants}
@@ -407,6 +423,17 @@ export default function FinancniPlanPage() {
                         }
                       }}
                     />
+                    {/* Graf u zajištění příjmu nemá rozklikávací karty variant,
+                        takže detail produktu – hlavně kontakt na hlášení události –
+                        vypisujeme pod ním. */}
+                    {produktyPrijmu.length > 0 && (
+                      <div className="mt-5 space-y-3">
+                        {produktyPrijmu.map(({ id, company, produkt }) => (
+                          <PopisProduktu key={id} produkt={produkt} firma={company} />
+                        ))}
+                      </div>
+                    )}
+                    </>
                   ) : section.type === 'variants' && section.variants ? (
                     <div className="space-y-3">
                       <p className="text-base text-slate mb-1">
@@ -509,6 +536,69 @@ export default function FinancniPlanPage() {
   )
 }
 
+/**
+ * Co to je za produkt, do kdy běží a kam volat při pojistné události.
+ * Kontakty jsou tu hlavně kvůli vytištěnému plánu — klient, který si za tři
+ * roky zlomí nohu, má číslo po ruce, aniž by hledal smlouvu.
+ */
+function PopisProduktu({ produkt, firma }: { produkt: ProduktVarianty; firma?: string }) {
+  const udaje = [
+    produkt.doVeku && (['Běží do', produkt.doVeku] as const),
+    produkt.frekvence && (['Platí se', produkt.frekvence] as const),
+  ].filter(Boolean) as ReadonlyArray<readonly [string, string]>
+
+  const kontakty = [
+    produkt.hlaseni && (['Hlášení pojistné události', produkt.hlaseni] as const),
+    produkt.kontakt && (['Platby a změny', produkt.kontakt] as const),
+  ].filter(Boolean) as ReadonlyArray<readonly [string, string]>
+
+  return (
+    <div className="mb-3 rounded-card bg-cream border border-line p-4">
+      {firma && <p className="text-base text-slate">{firma}</p>}
+      {produkt.nazev && <h5 className="font-display text-navy">{produkt.nazev}</h5>}
+      {produkt.popis && (
+        <p className="text-base text-slate mt-1.5 text-pretty">{produkt.popis}</p>
+      )}
+
+      {udaje.length > 0 && (
+        <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-1.5">
+          {udaje.map(([popisek, hodnota]) => (
+            <div key={popisek} className="flex items-baseline gap-2">
+              <dt className="text-base text-slate">{popisek}</dt>
+              <dd className="text-base text-navy">{hodnota}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {kontakty.length > 0 && (
+        <ul className="mt-3 pt-3 border-t border-line space-y-1.5">
+          {kontakty.map(([popisek, hodnota]) => {
+            const odkaz = odkazNaKontakt(hodnota)
+            return (
+              <li key={popisek} className="flex flex-wrap items-baseline gap-x-2">
+                <span className="text-base text-slate">{popisek}:</span>
+                {odkaz ? (
+                  <a
+                    href={odkaz.href}
+                    target={odkaz.href.startsWith('http') ? '_blank' : undefined}
+                    rel={odkaz.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    className="text-base text-navy underline underline-offset-4 hover:text-mint-dark rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 break-all"
+                  >
+                    {odkaz.popisek}
+                  </a>
+                ) : (
+                  <span className="text-base text-navy break-all">{hodnota}</span>
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 /** „2 500 000 Kč" → 2500000. Prázdné nebo nečíselné → undefined. */
 function cislo(v: string | undefined): number | undefined {
   if (!v) return undefined
@@ -583,6 +673,9 @@ function VariantCardInteractive({
           >
             <div className="px-4 pb-4">
               <div className="h-px bg-line mb-3" />
+
+              {variant.produkt && <PopisProduktu produkt={variant.produkt} />}
+
               <div className="space-y-2">
                 {Object.entries(variant.params).map(([key, detail]) => (
                   <div

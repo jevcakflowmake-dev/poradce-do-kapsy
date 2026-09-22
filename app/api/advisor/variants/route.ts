@@ -1,5 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { ocistiProdukt } from '@/lib/produkt-varianty'
+import type { Database } from '@/lib/types/database'
+
+type ZmenyVarianty = Database['public']['Tables']['plan_variants']['Update']
 
 export async function POST(request: Request) {
   try {
@@ -30,12 +34,40 @@ export async function POST(request: Request) {
     }
 
     if (action === 'update_variant') {
-      const { variant_id, company, logo, monthly_payment } = data
+      const { variant_id, company, logo, monthly_payment, produkt } = data
       if (!variant_id) {
         return NextResponse.json({ error: 'Pro aktualizaci varianty je povinné: variant_id' }, { status: 400 })
       }
+
+      const zmeny: ZmenyVarianty = {}
+      if (company !== undefined) zmeny.company = company
+      if (logo !== undefined) zmeny.logo = logo
+      if (monthly_payment !== undefined) zmeny.monthly_payment = monthly_payment
+
+      if (produkt !== undefined) {
+        // `details` u zajištění příjmu drží čísla rizik, takže sloupec nepřepisujeme
+        // celý — načteme, co tam je, a doplníme jen klíč `produkt`.
+        const { data: soucasne, error: chybaCteni } = await supabase.from('plan_variants')
+          .select('details')
+          .eq('id', variant_id)
+          .single()
+        if (chybaCteni) return NextResponse.json({ error: chybaCteni.message }, { status: 500 })
+
+        const details = (soucasne?.details ?? {}) as Record<string, unknown>
+        const ocisteny = ocistiProdukt(produkt)
+        if (Object.keys(ocisteny).length > 0) {
+          zmeny.details = { ...details, produkt: ocisteny } as unknown as ZmenyVarianty['details']
+        } else {
+          // Prázdný formulář = poradce detail smazal.
+          const { produkt: _zahozeno, ...zbytek } = details
+          zmeny.details = zbytek as unknown as ZmenyVarianty['details']
+        }
+      }
+
+      if (Object.keys(zmeny).length === 0) return NextResponse.json({ ok: true })
+
       const { error } = await supabase.from('plan_variants')
-        .update({ company, logo, monthly_payment })
+        .update(zmeny)
         .eq('id', variant_id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ ok: true })
