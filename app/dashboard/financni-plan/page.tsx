@@ -22,6 +22,8 @@ import DuchodVCislech from '@/components/dashboard/DuchodVCislech'
 import { TiskovaTitulka, TiskovyZaver } from '@/components/dashboard/TiskovyRamec'
 import { spoctiDuchod, type VysledekDuchod } from '@/lib/duchod'
 import { ctiProdukt, odkazNaKontakt, type ProduktVarianty } from '@/lib/produkt-varianty'
+import { QRCodeSVG } from 'qrcode.react'
+import { BARVY } from '@/lib/barvy'
 
 interface ParamDetail { value: string; note: string }
 interface Variant {
@@ -552,6 +554,12 @@ function PopisProduktu({ produkt, firma }: { produkt: ProduktVarianty; firma?: s
     produkt.kontakt && (['Platby a změny', produkt.kontakt] as const),
   ].filter(Boolean) as ReadonlyArray<readonly [string, string]>
 
+  // Na papíře je odkaz k ničemu, telefon se musí opisovat. QR kódy proto
+  // jen do tisku — na obrazovce stačí odkaz, na který jde kliknout.
+  const kodyDoTisku = kontakty
+    .map(([popisek, hodnota]) => ({ popisek, odkaz: odkazNaKontakt(hodnota) }))
+    .filter((x): x is { popisek: string; odkaz: { href: string; popisek: string } } => x.odkaz !== null)
+
   return (
     <div className="mb-3 rounded-card bg-cream border border-line p-4">
       {firma && <p className="text-base text-slate">{firma}</p>}
@@ -594,6 +602,27 @@ function PopisProduktu({ produkt, firma }: { produkt: ProduktVarianty; firma?: s
             )
           })}
         </ul>
+      )}
+
+      {kodyDoTisku.length > 0 && (
+        <div className="jen-tisk mt-4 pt-3 border-t border-line">
+          <div className="flex flex-wrap gap-6">
+            {kodyDoTisku.map(({ popisek, odkaz }) => (
+              <figure key={popisek}>
+                <QRCodeSVG
+                  value={odkaz.href}
+                  size={84}
+                  level="M"
+                  bgColor={BARVY.surface}
+                  fgColor={BARVY.navy}
+                />
+                <figcaption className="text-base text-slate mt-1.5 max-w-[84px] text-pretty">
+                  {popisek}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   )
