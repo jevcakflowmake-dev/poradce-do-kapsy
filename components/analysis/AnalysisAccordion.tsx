@@ -10,6 +10,8 @@ import {
   HEALTH_SECTION_ID,
   sectionProgress,
   viditelneOtazky,
+  rozdelHodnoty,
+  spojHodnoty,
   type SectionData,
 } from '@/lib/analysis-sections'
 import { BARVY } from '@/lib/barvy'
@@ -143,7 +145,7 @@ export default function AnalysisAccordion({
                         ) : q.type === 'checkbox' ? (
                           <div className="grid grid-cols-2 gap-2 mt-1">
                             {q.options?.map(opt => {
-                              const current = (data[section.id]?.[q.id] || '').split(',').filter(Boolean)
+                              const current = rozdelHodnoty(data[section.id]?.[q.id], q.options)
                               const checked = current.includes(opt)
                               return (
                                 <label
@@ -161,7 +163,7 @@ export default function AnalysisAccordion({
                                       const next = checked
                                         ? current.filter(c => c !== opt)
                                         : [...current, opt]
-                                      onChange(section.id, q.id, next.join(','))
+                                      onChange(section.id, q.id, spojHodnoty(next))
                                     }}
                                     className="accent-mint"
                                   />

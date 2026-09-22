@@ -9,6 +9,8 @@ import {
   HEALTH_SECTION_ID,
   viditelneOtazky,
   uklidSkryteOdpovedi,
+  rozdelHodnoty,
+  spojHodnoty,
   type Question,
   type SectionData,
 } from '@/lib/analysis-sections'
@@ -407,7 +409,7 @@ function Otazka({
   }
 
   if (otazka.type === 'checkbox' && otazka.options) {
-    const vybrane = hodnota.split(',').filter(Boolean)
+    const vybrane = rozdelHodnoty(hodnota, otazka.options)
     return (
       <fieldset>
         <legend className="text-lead text-navy">{otazka.label}</legend>
@@ -422,10 +424,11 @@ function Otazka({
               zaskrtnuto={vybrane.includes(moznost)}
               onChange={() =>
                 onChange(
-                  (vybrane.includes(moznost)
-                    ? vybrane.filter((v) => v !== moznost)
-                    : [...vybrane, moznost]
-                  ).join(','),
+                  spojHodnoty(
+                    vybrane.includes(moznost)
+                      ? vybrane.filter((v) => v !== moznost)
+                      : [...vybrane, moznost],
+                  ),
                 )
               }
             />

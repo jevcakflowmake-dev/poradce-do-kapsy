@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, proposalTypeLabel, formatDate, plural } from '@/lib/utils'
-import { goalLabel } from '@/lib/analysis-sections'
+import { goalLabel, SECTIONS, zobrazHodnotu } from '@/lib/analysis-sections'
 import type { Profile, Proposal } from '@/lib/types/database'
 import ProposalForm from '@/components/advisor/ProposalForm'
 import StatusControl from '@/components/advisor/StatusControl'
@@ -126,6 +126,15 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
     property: 'Pojištění majetku',
     personal: 'Osobní údaje',
   }
+
+  // Popisky analýzy se berou z definice sekcí, aby nová otázka nebyla holé id.
+  // QUESTION_LABELS níž jsou jen zkrácené verze pro hutnější výpis.
+  const popisekSekce = (id: string) =>
+    SECTIONS.find((x) => x.id === id)?.title ?? SECTION_LABELS[id] ?? id
+  const popisekOtazky = (sectionId: string, qId: string) =>
+    QUESTION_LABELS[sectionId]?.[qId]
+    ?? SECTIONS.find((x) => x.id === sectionId)?.questions.find((q) => q.id === qId)?.label
+    ?? qId
 
   const QUESTION_LABELS: Record<string, Record<string, string>> = {
     income: {
@@ -389,15 +398,15 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                   <h3
                     className="font-display text-navy mb-4 text-lead"
                   >
-                    {SECTION_LABELS[sectionId] || sectionId}
+                    {popisekSekce(sectionId)}
                   </h3>
                   <dl className="space-y-2.5 text-sm">
                     {Object.entries(answers).map(([qId, value]) => (
                       <div key={qId} className="flex justify-between gap-4">
                         <dt className="text-slate shrink-0">
-                          {QUESTION_LABELS[sectionId]?.[qId] || qId}
+                          {popisekOtazky(sectionId, qId)}
                         </dt>
-                        <dd className="font-medium text-navy text-right">{value}</dd>
+                        <dd className="font-medium text-navy text-right">{zobrazHodnotu(value)}</dd>
                       </div>
                     ))}
                   </dl>
@@ -426,7 +435,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                       {f.file_name}
                     </StoredFileLink>
                     <span className="text-xs text-slate shrink-0">
-                      {SECTION_LABELS[f.section] || f.section} · {(f.file_size / 1024).toFixed(0)} KB
+                      {popisekSekce(f.section)} · {(f.file_size / 1024).toFixed(0)} KB
                     </span>
                   </li>
                 ))}
