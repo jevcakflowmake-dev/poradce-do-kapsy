@@ -16,6 +16,7 @@ const procento = (n: number) => Math.round(n * 100) + ' %'
 export default function DuchodVCislech({ v }: { v: VysledekDuchod }) {
   const podilStatu = v.budouci.renta > 0 ? v.budouci.stat / v.budouci.renta : 0
   const rozdilOdUlozky = v.mesicneOdkladat - v.odkladaTed
+  const popisekStatu = v.zdrojStatu === 'poradce' ? 'Důchod od státu' : 'Odhad od státu'
 
   return (
     <section className="rounded-card border border-line bg-cream p-5 md:p-6" aria-labelledby="duchod-v-cislech">
@@ -32,7 +33,7 @@ export default function DuchodVCislech({ v }: { v: VysledekDuchod }) {
           titul="V dnešních cenách"
           radky={[
             ['Chcete měsíčně', kc(v.dnes.renta)],
-            ['Odhad od státu', kc(v.dnes.stat)],
+            [popisekStatu, kc(v.dnes.stat)],
             ['Zbývá dorovnat', kc(v.dnes.mezera)],
           ]}
           celkem={['Celkem připravit', kc(v.dnes.celkem)]}
@@ -41,7 +42,7 @@ export default function DuchodVCislech({ v }: { v: VysledekDuchod }) {
           titul="V cenách, které budou"
           radky={[
             ['Chcete měsíčně', kc(v.budouci.renta)],
-            ['Odhad od státu', kc(v.budouci.stat)],
+            [popisekStatu, kc(v.budouci.stat)],
             ['Zbývá dorovnat', kc(v.budouci.mezera)],
           ]}
           celkem={['Celkem připravit', kc(v.budouci.celkem)]}
@@ -82,9 +83,11 @@ export default function DuchodVCislech({ v }: { v: VysledekDuchod }) {
 
       <p className="text-base text-slate mt-4 text-pretty">
         Počítáno s inflací {procento(PREDPOKLADY.inflace)} ročně a zhodnocením{' '}
-        {procento(PREDPOKLADY.zhodnoceni)} ročně. Odhad státního důchodu je{' '}
-        {procento(PREDPOKLADY.nahradovyPomer)} vašeho dnešního čistého příjmu — skutečná výše závisí
-        na odpracovaných letech. Jsou to předpoklady výpočtu, ne zaručený výnos ani příslib státu.
+        {procento(PREDPOKLADY.zhodnoceni)} ročně.{' '}
+        {v.zdrojStatu === 'poradce'
+          ? 'Výši státního důchodu spočítal poradce podle vašich odpracovaných let.'
+          : `Státní důchod je hrubý odhad ve výši ${procento(PREDPOKLADY.nahradovyPomer)} vašeho dnešního čistého příjmu — skutečná výše závisí na odpracovaných letech.`}{' '}
+        Jsou to předpoklady výpočtu, ne zaručený výnos ani příslib státu.
       </p>
     </section>
   )

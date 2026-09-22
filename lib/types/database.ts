@@ -398,6 +398,7 @@ export type Database = {
           notes: string | null
           possible_savings: number | null
           reserve: number | null
+          expected_state_pension: number | null
           updated_at: string
           created_at: string
         }
@@ -416,6 +417,7 @@ export type Database = {
           notes?: string | null
           possible_savings?: number | null
           reserve?: number | null
+          expected_state_pension?: number | null
           updated_at?: string
           created_at?: string
         }
@@ -434,6 +436,7 @@ export type Database = {
           notes?: string | null
           possible_savings?: number | null
           reserve?: number | null
+          expected_state_pension?: number | null
           updated_at?: string
           created_at?: string
         }

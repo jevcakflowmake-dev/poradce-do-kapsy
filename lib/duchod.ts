@@ -38,8 +38,10 @@ export interface VstupDuchod {
   vekOdchodu?: number
   /** Požadovaná měsíční renta v dnešních cenách. */
   pozadovanaRenta?: number
-  /** Čistý měsíční příjem — z něj se odhaduje státní důchod. */
+  /** Čistý měsíční příjem — z něj se odhaduje státní důchod, když ho poradce nezadal. */
   cistyPrijem?: number
+  /** Očekávaný státní důchod v dnešních cenách od poradce. Má přednost před odhadem. */
+  statniDuchod?: number
   /** Kolik už má na důchod odloženo. */
   jizNaspořeno?: number
   /** Kolik odkládá měsíčně teď. */
@@ -60,6 +62,8 @@ export interface VysledekDuchod {
   mesicneOdkladat: number
   /** Kolik odkládá teď – pro porovnání. */
   odkladaTed: number
+  /** Odkud se vzal státní důchod – komponenta podle toho formuluje předpoklady. */
+  zdrojStatu: 'poradce' | 'odhad'
 }
 
 /** Budoucí hodnota pravidelné měsíční úložky při daném ročním zhodnocení. */
@@ -84,7 +88,9 @@ export function spoctiDuchod(v: VstupDuchod): VysledekDuchod | null {
   const { inflace, zhodnoceni, letVDuchodu, nahradovyPomer } = PREDPOKLADY
   const inflacniIndex = (1 + inflace) ** roky
 
-  const statDnes = Math.round((v.cistyPrijem ?? 0) * nahradovyPomer)
+  // Číslo od poradce (kalkulačka ČSSZ) je přesnější než náhradový poměr.
+  const zdrojStatu: 'poradce' | 'odhad' = v.statniDuchod ? 'poradce' : 'odhad'
+  const statDnes = v.statniDuchod ?? Math.round((v.cistyPrijem ?? 0) * nahradovyPomer)
   const mezeraDnes = Math.max(0, pozadovanaRenta - statDnes)
 
   const dnes = {
@@ -114,5 +120,6 @@ export function spoctiDuchod(v: VstupDuchod): VysledekDuchod | null {
     chybi,
     mesicneOdkladat: faktor > 0 ? Math.round(chybi / faktor) : 0,
     odkladaTed: v.odkladaTed ?? 0,
+    zdrojStatu,
   }
 }

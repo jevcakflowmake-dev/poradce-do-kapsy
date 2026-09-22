@@ -14,6 +14,7 @@ interface Payload {
   property_value_movables?: number | null
   possible_savings?: number | null
   reserve?: number | null
+  expected_state_pension?: number | null
   notes?: string | null
 }
 
@@ -49,6 +50,7 @@ export async function POST(request: Request) {
     property_value_movables: toNumberOrNull(body.property_value_movables),
     possible_savings: toNumberOrNull(body.possible_savings),
     reserve: toNumberOrNull(body.reserve),
+    expected_state_pension: toNumberOrNull(body.expected_state_pension),
     notes: body.notes ?? null,
   }
 

@@ -99,12 +99,17 @@ export default function FinancniPlanPage() {
       supabase.from('plan_recommendations').select('*').eq('client_id', user.id),
       supabase.from('plan_section_interest').select('section, status').eq('client_id', user.id),
       supabase.from('plan_variant_selection').select('variant_id').eq('client_id', user.id),
-      supabase.from('client_financials').select('monthly_income_net, age, retirement_age').eq('client_id', user.id).maybeSingle(),
+      supabase.from('client_financials').select('monthly_income_net, age, retirement_age, expected_state_pension').eq('client_id', user.id).maybeSingle(),
       supabase.from('analysis_responses').select('section, question_id, value').eq('client_id', user.id).in('section', ['retirement', 'personal', 'income']),
     ])
 
     const finance = financialsRes.data as
-      | { monthly_income_net: number | null; age: number | null; retirement_age: number | null }
+      | {
+          monthly_income_net: number | null
+          age: number | null
+          retirement_age: number | null
+          expected_state_pension: number | null
+        }
       | null
     setMonthlyIncomeNet(finance?.monthly_income_net ?? null)
 
@@ -121,6 +126,7 @@ export default function FinancniPlanPage() {
         vekOdchodu: finance?.retirement_age ?? cislo(duchodOdpovedi.retirement_age),
         pozadovanaRenta: cislo(duchodOdpovedi.desired_pension),
         cistyPrijem: finance?.monthly_income_net ?? cislo(analyza.income?.monthly_income),
+        statniDuchod: finance?.expected_state_pension ?? undefined,
         jizNaspořeno: cislo(duchodOdpovedi.retirement_saved),
         odkladaTed: cislo(duchodOdpovedi.current_savings),
       }),

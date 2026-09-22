@@ -19,6 +19,7 @@ export interface ClientFinancials {
   /** Čísla do dlaždic na klientském přehledu. Prázdné = klient uvidí pomlčku. */
   possible_savings: number | null
   reserve: number | null
+  expected_state_pension: number | null
   notes: string | null
 }
 
@@ -40,6 +41,7 @@ const DEFAULTS: Omit<ClientFinancials, 'client_id'> = {
   property_value_movables: null,
   possible_savings: null,
   reserve: null,
+  expected_state_pension: null,
   notes: null,
 }
 
@@ -126,6 +128,8 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
             {/* Obě čísla vidí klient na přehledu jako dlaždice. Prázdné pole = pomlčka. */}
             <NumField label="Možná úspora (dlaždice)" value={data.possible_savings} onChange={(v) => update('possible_savings', v)} suffix="Kč/měs" />
             <NumField label="Doporučená rezerva (dlaždice)" value={data.reserve} onChange={(v) => update('reserve', v)} suffix="Kč" />
+            {/* Bez téhle hodnoty plán odhadne státní důchod jako 40 % čistého příjmu. */}
+            <NumField label="Očekávaný státní důchod" value={data.expected_state_pension} onChange={(v) => update('expected_state_pension', v)} suffix="Kč/měs" />
           </Group>
 
           <div>
