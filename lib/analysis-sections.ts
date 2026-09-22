@@ -211,7 +211,21 @@ export const SECTIONS: Section[] = [
     color: 'bg-navy',
     questions: [
       { id: 'has_mortgage', label: 'Máte hypotéku?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'plan_mortgage', label: 'Pokud ne, plánujete ji řešit?', type: 'select', options: ['Ano', 'Ne', 'Možná v budoucnu'] },
+      {
+        id: 'mortgage_balance',
+        label: 'Kolik na hypotéce zbývá doplatit? (Kč)',
+        type: 'number',
+        placeholder: '2 500 000',
+        help: 'Podle zbývajícího dluhu počítáme, kolik je potřeba zajistit pro případ invalidity nebo smrti.',
+        showIf: { id: 'has_mortgage', value: ['Ano'] },
+      },
+      {
+        id: 'plan_mortgage',
+        label: 'Pokud ne, plánujete ji řešit?',
+        type: 'select',
+        options: ['Ano', 'Ne', 'Možná v budoucnu'],
+        showIf: { id: 'has_mortgage', value: ['Ne'] },
+      },
       { id: 'mortgage_amount', label: 'Jakou výši úvěru chcete?', type: 'number', placeholder: '3 000 000' },
       { id: 'property_type', label: 'Jakou nemovitost chcete koupit?', type: 'select', options: ['Byt', 'Dům', 'Pozemek', 'Jiné'] },
       { id: 'mortgage_timeline', label: 'Za jak dlouho plánujete koupi?', type: 'select', options: ['Do 6 měsíců', 'Do 1 roku', 'Do 2 let', 'Do 5 let', 'Nevím'] },
