@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Loader2, Paperclip, X } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Paperclip, Plus, X } from 'lucide-react'
 import {
   SECTIONS,
   HEALTH_SECTION_ID,
@@ -11,6 +11,8 @@ import {
   uklidSkryteOdpovedi,
   rozdelHodnoty,
   spojHodnoty,
+  rozdelSkupinu,
+  spojSkupinu,
   type Question,
   type SectionData,
 } from '@/lib/analysis-sections'
@@ -381,22 +383,88 @@ function Otazka({
   hodnota,
   onChange,
   povinne,
+  idPrefix = '',
+  kompaktni = false,
 }: {
   otazka: Question
   hodnota: string
   onChange: (v: string) => void
   povinne: boolean
+  /** Odlišuje pole uvnitř opakovatelné skupiny – jinak by si přepínače
+   *  u druhé položky přebíraly výběr té první (stejný `name`). */
+  idPrefix?: string
+  kompaktni?: boolean
 }) {
+  const popisTrida = kompaktni ? 'text-base font-medium text-navy' : 'text-lead text-navy'
+
+  if (otazka.type === 'group' && otazka.itemQuestions) {
+    const podotazky = otazka.itemQuestions
+    const polozky = rozdelSkupinu(hodnota)
+    const upravPolozku = (i: number, podId: string, v: string) =>
+      onChange(spojSkupinu(polozky.map((p, idx) => (idx === i ? { ...p, [podId]: v } : p))))
+
+    return (
+      <div>
+        <p className="text-lead text-navy">{otazka.label}</p>
+        {otazka.help && <p className="mt-1 text-base text-slate">{otazka.help}</p>}
+
+        <div className="mt-4 space-y-4">
+          {polozky.map((polozka, i) => (
+            <div key={i} className="rounded-card border border-line bg-surface p-5">
+              <div className="flex items-center justify-between gap-4">
+                <p className="font-display text-navy">
+                  {otazka.itemLabel ?? 'Položka'} {i + 1}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => onChange(spojSkupinu(polozky.filter((_, idx) => idx !== i)))}
+                  aria-label={`Odebrat ${(otazka.itemLabel ?? 'položku').toLowerCase()} ${i + 1}`}
+                  className="rounded-pill p-1 text-slate transition-colors hover:text-navy focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+                >
+                  <X className="w-4 h-4" aria-hidden />
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-5">
+                {podotazky.map((pod) => (
+                  <Otazka
+                    key={pod.id}
+                    otazka={pod}
+                    hodnota={polozka[pod.id] ?? ''}
+                    onChange={(v) => upravPolozku(i, pod.id, v)}
+                    povinne={false}
+                    idPrefix={`${otazka.id}-${i}-`}
+                    kompaktni
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-4"
+          onClick={() => onChange(spojSkupinu([...polozky, {}]))}
+        >
+          <Plus className="w-4 h-4" aria-hidden /> {otazka.addLabel ?? 'Přidat'}
+        </Button>
+      </div>
+    )
+  }
+
   if (otazka.type === 'select' && otazka.options) {
     return (
       <fieldset>
-        <legend className="text-lead text-navy">{otazka.label}</legend>
+        <legend className={popisTrida}>{otazka.label}</legend>
         {otazka.help && <p className="mt-1 text-base text-slate">{otazka.help}</p>}
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {otazka.options.map((moznost) => (
             <Karta
               key={moznost}
-              nazev={otazka.id}
+              nazev={`${idPrefix}${otazka.id}`}
               typ="radio"
               popisek={moznost}
               zaskrtnuto={hodnota === moznost}
@@ -412,13 +480,13 @@ function Otazka({
     const vybrane = rozdelHodnoty(hodnota, otazka.options)
     return (
       <fieldset>
-        <legend className="text-lead text-navy">{otazka.label}</legend>
+        <legend className={popisTrida}>{otazka.label}</legend>
         {otazka.help && <p className="mt-1 text-base text-slate">{otazka.help}</p>}
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {otazka.options.map((moznost) => (
             <Karta
               key={moznost}
-              nazev={otazka.id}
+              nazev={`${idPrefix}${otazka.id}`}
               typ="checkbox"
               popisek={moznost}
               zaskrtnuto={vybrane.includes(moznost)}
@@ -440,13 +508,13 @@ function Otazka({
 
   return (
     <div>
-      <Label htmlFor={otazka.id} className="text-lead">
+      <Label htmlFor={`${idPrefix}${otazka.id}`} className={kompaktni ? undefined : 'text-lead'}>
         {otazka.label}
         {povinne && <span className="text-slate"> · povinné</span>}
       </Label>
       {otazka.help && <p className="mt-1 text-base text-slate">{otazka.help}</p>}
       <Input
-        id={otazka.id}
+        id={`${idPrefix}${otazka.id}`}
         type={otazka.type === 'number' ? 'number' : 'text'}
         inputMode={otazka.type === 'number' ? 'numeric' : undefined}
         value={hodnota}

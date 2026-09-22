@@ -8,7 +8,7 @@ import {
  * objeví se na obou místech a poradce ji uvidí v detailu klienta.
  */
 
-export type QuestionType = 'text' | 'number' | 'select' | 'checkbox'
+export type QuestionType = 'text' | 'number' | 'select' | 'checkbox' | 'group'
 
 /**
  * Podmínka zobrazení. Odkazuje se na otázku ve STEJNÉ sekci – napříč sekcemi
@@ -30,7 +30,18 @@ export interface Question {
   /** Krátké „proč se ptáme“ pod otázkou. */
   help?: string
   showIf?: Podminka
+
+  // — jen pro typ 'group' (opakovatelná skupina, např. děti) —
+  /** Otázky, které se vyplňují u každé položky. Podmínky uvnitř zatím neumíme. */
+  itemQuestions?: Question[]
+  /** Jak se jmenuje jedna položka, např. „Dítě“ → nadpis „Dítě 1“. */
+  itemLabel?: string
+  /** Popisek tlačítka, kterým se přidává další položka. */
+  addLabel?: string
 }
+
+/** Jedna položka opakovatelné skupiny: { id podotázky: hodnota }. */
+export type GroupItem = Record<string, string>
 
 export interface Section {
   id: string
@@ -70,6 +81,26 @@ export function rozdelHodnoty(ulozeno: string | undefined, options?: string[]): 
 
 export function spojHodnoty(hodnoty: string[]): string {
   return hodnoty.join(ODDELOVAC)
+}
+
+/**
+ * Opakovatelná skupina se ukládá jako JSON do jedné odpovědi – tabulka
+ * `analysis_responses` tak zůstává beze změny (jeden řádek na otázku).
+ * Rozbitý nebo cizí obsah radši zahodíme, než aby spadl formulář.
+ */
+export function rozdelSkupinu(ulozeno: string | undefined): GroupItem[] {
+  if (!ulozeno) return []
+  try {
+    const data: unknown = JSON.parse(ulozeno)
+    if (!Array.isArray(data)) return []
+    return data.filter((x): x is GroupItem => Boolean(x) && typeof x === 'object' && !Array.isArray(x))
+  } catch {
+    return []
+  }
+}
+
+export function spojSkupinu(polozky: GroupItem[]): string {
+  return polozky.length > 0 ? JSON.stringify(polozky) : ''
 }
 
 /** Hodnota pro člověka – víc voleb spojených čárkou. Starší zápis projde beze změny. */
@@ -346,13 +377,25 @@ export const SECTIONS: Section[] = [
     title: 'Děti',
     icon: Baby,
     color: 'bg-navy',
+    // Opakovatelná skupina: u každého dítěte se ptáme zvlášť. Dřív tu byl
+    // počet a věky jako text oddělený čárkou – z toho se nedalo počítat.
     questions: [
-      { id: 'children_count', label: 'Kolik máte dětí?', type: 'number', placeholder: '0' },
-      { id: 'children_ages', label: 'Jaký je jejich věk? (oddělte čárkou)', type: 'text', placeholder: '5, 8, 12' },
-      { id: 'children_insurance', label: 'Přejete si je pojistit v případě úrazu/nemoci?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'children_savings', label: 'Přejete si spořit dítěti?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'children_monthly', label: 'Kolik můžete měsíčně spořit? (Kč)', type: 'number', placeholder: '1 000' },
-      { id: 'children_notes', label: 'Poznámky', type: 'text', placeholder: 'Další informace...' },
+      {
+        id: 'children_list',
+        label: 'Vaše děti',
+        type: 'group',
+        itemLabel: 'Dítě',
+        addLabel: 'Přidat dítě',
+        help: 'U každého dítěte se ptáme zvlášť – dvouleté a sedmnáctileté potřebují něco jiného. Když děti nemáte, pokračujte dál.',
+        itemQuestions: [
+          { id: 'name', label: 'Jméno nebo přezdívka', type: 'text', placeholder: 'Adam' },
+          { id: 'age', label: 'Věk', type: 'number', placeholder: '6' },
+          { id: 'insure', label: 'Chcete ho pojistit?', type: 'select', options: ['Ano', 'Ne', 'Už je pojištěné'] },
+          { id: 'saving', label: 'Spoříte mu už?', type: 'select', options: ['Ano', 'Ne'] },
+          { id: 'monthly', label: 'Kolik měsíčně (Kč)', type: 'number', placeholder: '1 000' },
+        ],
+      },
+      { id: 'children_notes', label: 'Chcete k dětem něco doplnit?', type: 'text', placeholder: 'nepovinné' },
     ],
   },
   {

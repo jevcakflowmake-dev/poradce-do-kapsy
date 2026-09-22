@@ -15,7 +15,7 @@ import {
   type Answers,
   type Recommendation,
 } from '@/src/questionnaires/zajisteni-prijmu.questionnaire'
-import { SECTIONS, rozdelHodnoty } from './analysis-sections'
+import { SECTIONS, rozdelHodnoty, rozdelSkupinu } from './analysis-sections'
 
 /** Odpovědi analýzy tak, jak je drží průvodce i poradcovský detail: sekce → otázka → hodnota. */
 export type AnalyzaOdpovedi = Record<string, Record<string, string>>
@@ -35,7 +35,7 @@ export const POTREBNE_OTAZKY: string[] = [
   // housing
   'housing_situation', 'mortgage_balance',
   // children
-  'children_count', 'children_ages',
+  'children_list',
   // personal
   'age', 'height', 'weight', 'family_status',
   'treatment', 'family_history', 'sports', 'sports_level',
@@ -153,11 +153,11 @@ function kody(
     .filter((v): v is string => Boolean(v))
 }
 
-/** Nejmladší dítě z volného textu „5, 8, 12“. */
-function nejmladsiDite(v: string | undefined): number | undefined {
-  if (!v) return undefined
-  const veky = v.split(/[^\d]+/).map(Number).filter((n) => Number.isFinite(n))
-  return veky.length > 0 ? Math.min(...veky) : undefined
+/** Věky dětí z opakovatelné skupiny. Prázdné a nečíselné zápisy se zahodí. */
+function vekyDeti(ulozeno: string | undefined): number[] {
+  return rozdelSkupinu(ulozeno)
+    .map((d) => cislo(d.age))
+    .filter((n): n is number => typeof n === 'number')
 }
 
 export function naDotaznikoveOdpovedi(a: AnalyzaOdpovedi): Answers {
@@ -187,8 +187,9 @@ export function naDotaznikoveOdpovedi(a: AnalyzaOdpovedi): Answers {
 
     // — rodina —
     vek: cislo(personal.age),
-    deti_pocet: cislo(children.children_count),
-    deti_nejmladsi_vek: nejmladsiDite(children.children_ages),
+    // Počet dětí je počet vyplněných karet – nemůže se rozejít s jejich výčtem.
+    deti_pocet: rozdelSkupinu(children.children_list).length,
+    deti_nejmladsi_vek: vekyDeti(children.children_list).sort((a, b) => a - b)[0],
     // Analýza se neptá, jestli by domácnost vyšla z příjmu partnera. Jistě to
     // víme jen u samoživitelů – jinde necháváme prázdné, ať se nic nedomýšlí.
     partner_prijem: personal.family_status === 'Samoživitel/ka' ? 'ne' : undefined,

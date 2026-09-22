@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, proposalTypeLabel, formatDate, plural } from '@/lib/utils'
-import { goalLabel, SECTIONS, zobrazHodnotu } from '@/lib/analysis-sections'
+import { goalLabel, SECTIONS, zobrazHodnotu, rozdelSkupinu } from '@/lib/analysis-sections'
 import { vyhodnotAnalyzu } from '@/lib/vyhodnoceni-analyzy'
 import type { Profile, Proposal } from '@/lib/types/database'
 import ProposalForm from '@/components/advisor/ProposalForm'
@@ -136,6 +136,25 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   // QUESTION_LABELS níž jsou jen zkrácené verze pro hutnější výpis.
   const popisekSekce = (id: string) =>
     SECTIONS.find((x) => x.id === id)?.title ?? SECTION_LABELS[id] ?? id
+  /**
+   * Opakovatelná skupina (děti) je uložená jako JSON. Poradci ji vypíšeme po
+   * položkách – „Adam · 6 · Ano“ – ne jako syrové pole.
+   */
+  const popisSkupiny = (sectionId: string, qId: string, value: string): string | null => {
+    const otazka = SECTIONS.find((x) => x.id === sectionId)?.questions.find((q) => q.id === qId)
+    if (otazka?.type !== 'group') return null
+    const polozky = rozdelSkupinu(value)
+    if (polozky.length === 0) return '—'
+    return polozky
+      .map((p, i) => {
+        const hodnoty = (otazka.itemQuestions ?? [])
+          .map((pod) => p[pod.id])
+          .filter((v) => v && v.trim().length > 0)
+        return `${otazka.itemLabel ?? 'Položka'} ${i + 1}: ${hodnoty.join(' · ')}`
+      })
+      .join('   |   ')
+  }
+
   const popisekOtazky = (sectionId: string, qId: string) =>
     QUESTION_LABELS[sectionId]?.[qId]
     ?? SECTIONS.find((x) => x.id === sectionId)?.questions.find((q) => q.id === qId)?.label
@@ -182,12 +201,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
       retirement_other_income: 'Další příjem v důchodu',
     },
     children: {
-      children_count: 'Počet dětí',
-      children_ages: 'Věk dětí',
-      children_insurance: 'Pojištění dětí',
-      children_savings: 'Spoření dětem',
-      children_monthly: 'Měsíční spoření',
-      children_notes: 'Poznámky',
+      children_list: 'Děti',
+      children_notes: 'Poznámky k dětem',
     },
     investing: {
       investment_goal: 'Cíl investice',
@@ -485,14 +500,24 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                     {popisekSekce(sectionId)}
                   </h3>
                   <dl className="space-y-2.5 text-sm">
-                    {Object.entries(answers).map(([qId, value]) => (
+                    {Object.entries(answers)
+                      // Otázky, které z analýzy zmizely (přejmenování, zrušení),
+                      // mají v databázi osiřelé odpovědi. Bez popisku by se
+                      // poradci vypsaly jako holé id, tak je přeskakujeme –
+                      // v `analysis_responses` zůstávají.
+                      .filter(([qId]) =>
+                        SECTIONS.find((x) => x.id === sectionId)?.questions.some((q) => q.id === qId),
+                      )
+                      .map(([qId, value]) => (
                       <div key={qId} className="flex justify-between gap-4">
                         <dt className="text-slate shrink-0">
                           {popisekOtazky(sectionId, qId)}
                         </dt>
-                        <dd className="font-medium text-navy text-right">{zobrazHodnotu(value)}</dd>
+                        <dd className="font-medium text-navy text-right">
+                          {popisSkupiny(sectionId, qId, value) ?? zobrazHodnotu(value)}
+                        </dd>
                       </div>
-                    ))}
+                      ))}
                   </dl>
                 </div>
               ))}

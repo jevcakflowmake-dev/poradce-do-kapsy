@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { Check, ChevronDown, ChevronUp, FileText, Shield, Upload, X } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, FileText, Plus, Shield, Upload, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import {
@@ -12,6 +12,9 @@ import {
   viditelneOtazky,
   rozdelHodnoty,
   spojHodnoty,
+  rozdelSkupinu,
+  spojSkupinu,
+  type Question,
   type SectionData,
 } from '@/lib/analysis-sections'
 import { BARVY } from '@/lib/barvy'
@@ -125,7 +128,15 @@ export default function AnalysisAccordion({
                   <div className="p-5 md:p-7 space-y-5">
                     {section.id === HEALTH_SECTION_ID && <HealthDataNotice />}
 
-                    {viditelneOtazky(section, data[section.id]).map(q => (
+                    {viditelneOtazky(section, data[section.id]).map(q =>
+                      q.type === 'group' ? (
+                        <SkupinaPolozek
+                          key={q.id}
+                          otazka={q}
+                          hodnota={data[section.id]?.[q.id] ?? ''}
+                          onChange={v => onChange(section.id, q.id, v)}
+                        />
+                      ) : (
                       <div key={q.id}>
                         <label className="block text-base font-medium text-navy mb-2">
                           {q.label}
@@ -181,7 +192,8 @@ export default function AnalysisAccordion({
                           />
                         )}
                       </div>
-                    ))}
+                      ),
+                    )}
 
                     <div className="h-px bg-line" />
 
@@ -286,6 +298,88 @@ function HealthDataNotice() {
           </p>
         </div>
       </div>
+    </div>
+  )
+}
+
+
+/**
+ * Opakovatelná skupina (děti). Podotázky umí select, číslo a text – zaškrtávací
+ * pole ani podmínky uvnitř položky zatím nejsou potřeba.
+ */
+function SkupinaPolozek({
+  otazka,
+  hodnota,
+  onChange,
+}: {
+  otazka: Question
+  hodnota: string
+  onChange: (v: string) => void
+}) {
+  const polozky = rozdelSkupinu(hodnota)
+  const podotazky = otazka.itemQuestions ?? []
+  const uprav = (i: number, podId: string, v: string) =>
+    onChange(spojSkupinu(polozky.map((p, idx) => (idx === i ? { ...p, [podId]: v } : p))))
+
+  return (
+    <div>
+      <label className="block text-base font-medium text-navy mb-2">{otazka.label}</label>
+      {otazka.help && <p className="text-base text-slate -mt-1 mb-2">{otazka.help}</p>}
+
+      <div className="space-y-4">
+        {polozky.map((polozka, i) => (
+          <div key={i} className="rounded-card border border-line bg-cream p-4">
+            <div className="flex items-center justify-between gap-4 mb-3">
+              <span className="text-base font-medium text-navy">
+                {otazka.itemLabel ?? 'Položka'} {i + 1}
+              </span>
+              <button
+                type="button"
+                onClick={() => onChange(spojSkupinu(polozky.filter((_, idx) => idx !== i)))}
+                aria-label={`Odebrat ${(otazka.itemLabel ?? 'položku').toLowerCase()} ${i + 1}`}
+                className="rounded-pill p-1 text-slate transition-colors hover:text-navy focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+              >
+                <X className="w-4 h-4" aria-hidden />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {podotazky.map(pod => (
+                <div key={pod.id}>
+                  <label className="block text-base text-slate mb-1">{pod.label}</label>
+                  {pod.type === 'select' ? (
+                    <select
+                      value={polozka[pod.id] ?? ''}
+                      onChange={e => uprav(i, pod.id, e.target.value)}
+                      className="w-full h-12 rounded-card border border-line bg-surface px-4 text-base text-navy focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all"
+                    >
+                      <option value="">Vyberte…</option>
+                      {pod.options?.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <Input
+                      type={pod.type === 'number' ? 'number' : 'text'}
+                      placeholder={pod.placeholder}
+                      value={polozka[pod.id] ?? ''}
+                      onChange={e => uprav(i, pod.id, e.target.value)}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => onChange(spojSkupinu([...polozky, {}]))}
+        className="mt-3 inline-flex items-center gap-2 rounded-pill border border-line px-4 h-11 text-base font-medium text-navy transition-colors hover:bg-cream-deep focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+      >
+        <Plus className="w-4 h-4" aria-hidden /> {otazka.addLabel ?? 'Přidat'}
+      </button>
     </div>
   )
 }
