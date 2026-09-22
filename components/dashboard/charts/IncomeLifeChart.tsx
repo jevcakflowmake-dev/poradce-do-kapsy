@@ -88,7 +88,7 @@ export default function IncomeLifeChart({
       <div className="rounded-card border border-dashed border-line p-8 text-center">
         <p className="text-sm text-slate">
           {!monthlyIncomeNet
-            ? 'Poradce zatím nenastavil tvůj příjem v plánu.'
+            ? 'Poradce zatím nenastavil váš příjem v plánu.'
             : 'Žádná varianta zatím není k dispozici.'}
         </p>
       </div>
@@ -100,9 +100,9 @@ export default function IncomeLifeChart({
       {/* Header s referencí */}
       <div className="flex flex-wrap items-center gap-3 justify-between">
         <div>
-          <h3 className="text-navy font-display text-base font-semibold">Co se stane, když ti klesne příjem?</h3>
+          <h3 className="text-navy font-display text-base font-semibold">Co se stane, když vám klesne příjem?</h3>
           <p className="text-xs text-slate mt-0.5">
-            Tvůj současný příjem: <strong className="text-navy">{fmtCzk(monthlyIncomeNet)}</strong> / měs · Vespod sloupce vidíš svůj zůstatek, navrch ti pojistka dorovnává.
+            Váš současný příjem: <strong className="text-navy">{fmtCzk(monthlyIncomeNet)}</strong> / měs · Vespod sloupce je váš zůstatek, navrch ho dorovnává pojistka.
           </p>
         </div>
       </div>
@@ -159,7 +159,7 @@ export default function IncomeLifeChart({
                   stackId={`v${idx}`}
                   fill={BARVY.line}
                   fillOpacity={dim}
-                  name={`${v.company} – tvůj zůstatek`}
+                  name={`${v.company} – váš zůstatek`}
                 />,
                 <Bar
                   key={`payout-${v.id}`}
@@ -178,7 +178,7 @@ export default function IncomeLifeChart({
 
         {/* Custom legenda – méně položek než auto-legenda Recharts */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-xs">
-          <LegendDot color={BARVY.line} label="Tvůj zůstatek" />
+          <LegendDot color={BARVY.line} label="Váš zůstatek" />
           <LegendDot color={BARVY.line} label="Bez pojistky" muted />
           {variants.map((v, idx) => (
             <LegendDot
@@ -261,7 +261,7 @@ export default function IncomeLifeChart({
                 Vybraná varianta: {selected.company}
               </p>
               <p className="text-xs text-navy/80 mt-1 leading-relaxed">
-                Při výpadku příjmu na 60 % ti pojistka pošle <strong>{fmtCzk(selected.details?.payout_60 ?? 0)}</strong> měsíčně,
+                Při výpadku příjmu na 60 % vám pojistka pošle <strong>{fmtCzk(selected.details?.payout_60 ?? 0)}</strong> měsíčně,
                 při 50 % až <strong>{fmtCzk(selected.details?.payout_50 ?? 0)}</strong> měsíčně.
                 Měsíční pojistné: <strong>{selected.monthly_payment}</strong>.
               </p>
@@ -270,7 +270,7 @@ export default function IncomeLifeChart({
         </div>
       )}
 
-      {/* Časová osa "Co se ti může v životě stát" */}
+      {/* Časová osa "Co se vám může v životě stát" */}
       <LifeRiskTimeline variants={variants} selectedVariantId={selectedVariantId} />
 
       {/* Pojistné krytí – co která komponenta dělá */}
@@ -303,11 +303,11 @@ function CoveragePanel({
     <div className="rounded-card border border-line bg-surface p-4 md:p-6">
       <div className="flex items-start justify-between mb-5 gap-3">
         <div>
-          <h3 className="text-navy font-display text-base font-semibold">Co tě pojistka chrání</h3>
+          <h3 className="text-navy font-display text-base font-semibold">Proti čemu vás pojistka chrání</h3>
           <p className="text-xs text-slate mt-0.5">
             {selected
               ? <>Krytí ve vybrané variantě <strong className="text-navy">{display.company}</strong>.</>
-              : <>Náhled krytí varianty <strong className="text-navy">{display.company}</strong> – vyber konkrétní variantu výše pro definitivní hodnoty.</>}
+              : <>Náhled krytí varianty <strong className="text-navy">{display.company}</strong> – vyberte konkrétní variantu výše pro definitivní hodnoty.</>}
           </p>
         </div>
       </div>
@@ -420,7 +420,7 @@ function IncomeStackTooltip({
 
   // Spáruj dataKey → human label.
   // zustatek_bez → Bez pojistky
-  // zustatek_<i> → varianty[i].company – tvůj zůstatek
+  // zustatek_<i> → varianty[i].company – váš zůstatek
   // payout_<i>   → varianty[i].company – pojistka pošle
   // Per varianta sečteme zůstatek + payout do celkové sumy.
   const groups = new Map<string, { label: string; remainder: number; payout: number; color: string }>()

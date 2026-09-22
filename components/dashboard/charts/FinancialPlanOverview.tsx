@@ -70,6 +70,40 @@ function parsePayment(s: string | undefined): number {
   return parseFloat(match[1].replace(',', '.'))
 }
 
+/**
+ * Sekce, jejichž měsíční částka je cena produktu, který klient začne platit,
+ * takže se smí sečíst do jednoho čísla.
+ *
+ * Bydlení mezi ně schválně nepatří: splátku hypotéky klient platí i dnes,
+ * plán ji mění, ne přidává. Sečteno s pojistným vzniklo číslo, které
+ * neodpovídá ani tomu, co platí teď, ani tomu, co by platil navíc —
+ * u testovacích dat dělala samotná hypotéka 80 % „nákladů plánu".
+ */
+/**
+ * Popisky os radaru. Plné názvy sekcí se do grafu nevejdou — „Pojištění
+ * majetku" se ořízlo na „ění majetku". Plný název zůstává v tooltipu.
+ */
+const KRATKY_NAZEV: Record<string, string> = {
+  income: 'Příjem',
+  housing: 'Bydlení',
+  retirement: 'Důchod',
+  children: 'Děti',
+  investing: 'Investice',
+  property: 'Majetek',
+}
+
+const PRODUKTOVE_SEKCE = new Set(['income', 'retirement', 'children', 'investing', 'property'])
+
+/**
+ * Nejlevnější varianta v sekci. Dřív se tu bral `sorted[floor(n/2)]` jako
+ * medián – jenže u dvou variant, což je nejběžnější případ, to vybere tu
+ * dražší. Klient tak viděl vyšší částku, než jakou by po výběru zaplatil.
+ */
+function nejlevnejsi(s: PlanSectionLite): number {
+  const ceny = (s.variants ?? []).map((v) => parsePayment(v.monthlyPayment)).filter((p) => p > 0)
+  return ceny.length > 0 ? Math.min(...ceny) : 0
+}
+
 function fmtCzk(n: number): string {
   return n.toLocaleString('cs-CZ', { maximumFractionDigits: 0 }) + ' Kč'
 }
@@ -80,33 +114,35 @@ export default function FinancialPlanOverview({ sections }: Props) {
   const radarData = useMemo(
     () =>
       sections.map((s) => ({
-        section: s.title,
+        section: KRATKY_NAZEV[s.id] ?? s.title,
+        nazev: s.title,
         score: STATUS_SCORE[s.status],
         fullMark: 100,
       })),
     [sections],
   )
 
-  // Donut – měsíční náklady (suma variant per sekce, bere min variantu jako "indikativní")
-  const monthlyData = useMemo(() => {
-    const data = sections
-      .filter((s) => s.type === 'variants' && s.variants && s.variants.length > 0)
-      .map((s) => {
-        const prices = (s.variants ?? []).map((v) => parsePayment(v.monthlyPayment)).filter((p) => p > 0)
-        // bere medián jako indikativní cenu (méně citlivé na outliers)
-        const sorted = [...prices].sort((a, b) => a - b)
-        const indicative = sorted[Math.floor(sorted.length / 2)] ?? 0
-        return {
+  // Donut – měsíční platby za produkty, které klient začne platit.
+  const monthlyData = useMemo(
+    () =>
+      sections
+        .filter((s) => PRODUKTOVE_SEKCE.has(s.id))
+        .map((s) => ({
           section: s.title,
-          value: indicative,
+          value: nejlevnejsi(s),
           fill: SECTION_COLOR[s.id] ?? BARVY.navy,
-        }
-      })
-      .filter((d) => d.value > 0)
-    return data
-  }, [sections])
+        }))
+        .filter((d) => d.value > 0),
+    [sections],
+  )
 
   const totalMonthly = monthlyData.reduce((sum, d) => sum + d.value, 0)
+
+  // Hypotéka stojí stranou součtu – viz PRODUKTOVE_SEKCE.
+  const splatkaBydleni = useMemo(() => {
+    const housing = sections.find((s) => s.id === 'housing')
+    return housing ? nejlevnejsi(housing) : 0
+  }, [sections])
 
   // Status counts
   const statusCounts = useMemo(() => {
@@ -132,7 +168,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
         <ChartCard
           className="lg:col-span-3"
           title="Pokrytí finančních oblastí"
-          subtitle="Profil zajištění napříč 6 sekcemi plánu"
+          subtitle={`Profil zajištění ${sections.length === 1 ? "v jediné sekci" : `napříč ${sections.length} sekcemi`} plánu`}
         >
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 10, left: 30 }}>
@@ -157,8 +193,12 @@ export default function FinancialPlanOverview({ sections }: Props) {
         {/* Donut – Měsíční náklady */}
         <ChartCard
           className="lg:col-span-2"
-          title="Indikativní měsíční náklady"
-          subtitle={`Celkem ${fmtCzk(totalMonthly)} / měs`}
+          title="Měsíční platby podle plánu"
+          subtitle={
+            totalMonthly > 0
+              ? `Od ${fmtCzk(totalMonthly)} / měs podle nejlevnější varianty`
+              : 'Zatím bez nastavených cen'
+          }
         >
           {monthlyData.length > 0 ? (
             <ResponsiveContainer width="100%" height={320}>
@@ -191,6 +231,13 @@ export default function FinancialPlanOverview({ sections }: Props) {
           ) : (
             <EmptyState message="Zatím žádné varianty s nastavenou cenou." />
           )}
+
+          {splatkaBydleni > 0 && (
+            <p className="text-base text-slate mt-3 text-pretty">
+              Splátka hypotéky {fmtCzk(splatkaBydleni)} / měs stojí mimo tenhle součet — platíte ji i dnes,
+              plán ji mění, nepřidává.
+            </p>
+          )}
         </ChartCard>
       </div>
 
@@ -213,14 +260,15 @@ function StatusCard({
       className="rounded-card p-4 border bg-surface"
       style={{ borderColor: color + '33' }}
     >
-      <div className="flex items-baseline gap-2">
+      {/* Na úzkém displeji pod sebe: „Vyžaduje akci" vedle čísla přetékalo z karty. */}
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
         <span
-          className="font-display text-3xl font-semibold"
+          className="font-display text-3xl font-semibold leading-none"
           style={{ color }}
         >
           {count}
         </span>
-        <span className="text-sm text-navy/80">{label}</span>
+        <span className="text-sm text-navy/80 text-pretty">{label}</span>
       </div>
       <div
         className="h-1 rounded-full mt-3"
@@ -271,13 +319,13 @@ function EmptyState({ message }: { message: string }) {
 }
 
 // ── Custom Tooltips ──────────────────────────────────────
-type RadarPayloadItem = { value: number; payload?: { section: string } }
+type RadarPayloadItem = { value: number; payload?: { section: string; nazev?: string } }
 function RadarTooltip({ active, payload }: { active?: boolean; payload?: RadarPayloadItem[] }) {
   if (!active || !payload?.length) return null
   const item = payload[0]
   return (
     <div className="bg-surface border border-line rounded-card px-3 py-2 shadow-sm">
-      <p className="text-xs font-semibold text-navy">{item.payload?.section}</p>
+      <p className="text-xs font-semibold text-navy">{item.payload?.nazev ?? item.payload?.section}</p>
       <p className="text-xs text-slate mt-0.5">Skóre {item.value}/100</p>
     </div>
   )

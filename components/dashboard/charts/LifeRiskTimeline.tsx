@@ -118,12 +118,12 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
     <div className="rounded-card border border-line bg-surface p-4 md:p-6">
       <div className="flex flex-wrap items-baseline justify-between mb-4 gap-3">
         <div>
-          <h3 className="text-navy font-display text-base font-semibold">Co se ti může v životě stát</h3>
+          <h3 className="text-navy font-display text-base font-semibold">Co se vám může v životě stát</h3>
           <p className="text-xs text-slate mt-0.5">
             {selected ? (
               <>Zvýrazněná je <strong className="text-navy">{selected.company}</strong>. Ostatní jsou ztlumené pro porovnání.</>
             ) : (
-              <>Všechny varianty paralelně – vyber jednu výše a zvýrazní se.</>
+              <>Všechny varianty vedle sebe – vyberte jednu výše a zvýrazní se.</>
             )}
           </p>
         </div>
@@ -287,7 +287,7 @@ export default function LifeRiskTimeline({ variants, selectedVariantId }: Props)
           if (!activeRisk) {
             return (
               <div className="absolute bottom-4 right-4 max-w-xs rounded-card bg-white/95 backdrop-blur-sm border border-dashed border-line px-4 py-3 text-xs text-slate leading-relaxed pointer-events-none hidden lg:block">
-                Najeď myší na bod na ose. Pro zafixování klikni.
+                Najeďte myší na bod na ose, klepnutím ho zafixujete.
               </div>
             )
           }

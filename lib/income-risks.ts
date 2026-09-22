@@ -56,7 +56,7 @@ export const RISK_DEFS: RiskDef[] = [
     key: 'daily_sick_leave',
     label: 'Pracovní neschopenka',
     short: 'PN',
-    description: 'Doplňuje příjem při nemoci nebo úrazu, když ti klesne na ~60 %.',
+    description: 'Doplňuje příjem při nemoci nebo úrazu, když vám klesne na ~60 %.',
     group: 'daily',
     unit: 'daily',
     icon: Activity,
