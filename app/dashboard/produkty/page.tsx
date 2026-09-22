@@ -6,6 +6,8 @@ import { Separator } from '@/components/ui/separator'
 import { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import MesicniPlatby from '@/components/products/MesicniPlatby'
+import SmlouvaDetail from '@/components/products/SmlouvaDetail'
+import { ctiSmlouvu } from '@/lib/smlouvy'
 
 interface Product {
   id: string
@@ -204,7 +206,16 @@ export default function ProduktyPage() {
                         )}
                       </div>
                     </div>
-                    <InsuranceDetail content={product.content} />
+                    {/* Nový tvar smlouvy vykreslí SmlouvaDetail, starší řádky
+                        zůstávají na původní, chudší podobě. */}
+                    {ctiSmlouvu(product.content) ? (
+                      <SmlouvaDetail
+                        smlouva={ctiSmlouvu(product.content)!}
+                        fileUrl={product.file_url}
+                      />
+                    ) : (
+                      <InsuranceDetail content={product.content} />
+                    )}
                   </div>
                 ))}
               </div>

@@ -400,6 +400,50 @@ over(
   ).error,
 )
 
+// Uzavřená smlouva v sekci Moje smlouvy. Číslo účtu je schválně neplatné
+// (samé nuly, chybný kontrolní součet) — QR kód se vykreslí, ale žádná
+// banka z něj platbu neodešle. Ukázka nesmí umět poslat peníze.
+over(
+  'smlouva',
+  (
+    await admin.from('proposals').insert({
+      client_id: ID,
+      type: 'insurance',
+      title: 'Životní pojištění ŽIVOT+',
+      content: JSON.stringify({
+        spolecnost: 'Allianz',
+        produkt: 'ŽIVOT+',
+        popis:
+          'Plnění už od 15. dne nemoci a širší seznam závažných diagnóz. Kryje pracovní neschopnost, úraz, závažné onemocnění i invaliditu.',
+        cisloSmlouvy: '8100456789',
+        doVeku: 'do 65 let',
+        frekvence: 'Měsíčně',
+        hlaseni: 'https://www.allianz.cz/hlaseni-skod',
+        kontakt: '241 170 000',
+        kryti: {
+          daily_accident: 350,
+          daily_sick_leave: 600,
+          daily_hospitalization: 500,
+          permanent_consequences: 1200000,
+          serious_illness: 800000,
+          self_sufficiency: 700000,
+          disability_1: 500000,
+          disability_2: 1000000,
+          disability_3: 1800000,
+          death: 2500000,
+        },
+        platba: {
+          ucet: 'CZ0000000000000000000000',
+          castka: 1340,
+          vs: '8100456789',
+          zprava: 'Pojistne ZIVOT+',
+        },
+        souborPopisek: 'Smlouva a podmínky ke stažení zde',
+      }),
+    })
+  ).error,
+)
+
 over(
   'zpráva',
   (

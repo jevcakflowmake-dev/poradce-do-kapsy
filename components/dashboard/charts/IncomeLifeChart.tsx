@@ -11,7 +11,8 @@ import {
   ReferenceLine,
 } from 'recharts'
 import { Shield, CheckCircle2 } from 'lucide-react'
-import { RISK_DEFS, RISK_GROUPS, type RiskKey, type RiskDef } from '@/lib/income-risks'
+import { type RiskKey } from '@/lib/income-risks'
+import KrytiPojistky from '@/components/pojisteni/KrytiPojistky'
 import LifeRiskTimeline from './LifeRiskTimeline'
 import { BARVY } from '@/lib/barvy'
 
@@ -282,6 +283,7 @@ export default function IncomeLifeChart({
   )
 }
 
+/** Blok krytí sdílí s hotovou smlouvou v sekci Moje smlouvy. */
 function CoveragePanel({
   selected,
   variants,
@@ -289,59 +291,27 @@ function CoveragePanel({
   selected: IncomeVariant | null
   variants: IncomeVariant[]
 }) {
-  // Pokud klient nevybral, použij první variantu pro náhled (s indikací).
+  // Když klient nevybral, ukážeme náhled podle první varianty – a řekneme to.
   const display = selected ?? variants[0] ?? null
   if (!display) return null
 
-  const hasAny = RISK_DEFS.some((r) => {
-    const v = display.details?.[r.key]
-    return typeof v === 'number' && v > 0
-  })
-  if (!hasAny) return null
-
   return (
-    <div className="rounded-card border border-line bg-surface p-4 md:p-6">
-      <div className="flex items-start justify-between mb-5 gap-3">
-        <div>
-          <h3 className="text-navy font-display text-base font-semibold">Proti čemu vás pojistka chrání</h3>
-          <p className="text-xs text-slate mt-0.5">
-            {selected
-              ? <>Krytí ve vybrané variantě <strong className="text-navy">{display.company}</strong>.</>
-              : <>Náhled krytí varianty <strong className="text-navy">{display.company}</strong> – vyberte konkrétní variantu výše pro definitivní hodnoty.</>}
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-5">
-        {RISK_GROUPS.map((g) => {
-          const items = RISK_DEFS.filter((r) => r.group === g.id)
-          const populated = items.filter((r) => {
-            const v = display.details?.[r.key]
-            return typeof v === 'number' && v > 0
-          })
-          if (populated.length === 0) return null
-
-          return (
-            <div key={g.id}>
-              <div className="flex items-baseline justify-between mb-2.5">
-                <h4 className="text-xs uppercase tracking-[0.15em] text-slate font-semibold">{g.label}</h4>
-                <span className="text-[11px] text-slate/80">{g.subtitle}</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {populated.map((r) => (
-                  <RiskCard
-                    key={r.key}
-                    def={r}
-                    value={display.details?.[r.key] as number}
-                    highlighted={!!selected}
-                  />
-                ))}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
+    <KrytiPojistky
+      castky={display.details ?? {}}
+      zvyraznit={Boolean(selected)}
+      podtitulek={
+        selected ? (
+          <>
+            Krytí ve vybrané variantě <strong className="text-navy">{display.company}</strong>.
+          </>
+        ) : (
+          <>
+            Náhled krytí varianty <strong className="text-navy">{display.company}</strong> – vyberte
+            konkrétní variantu výše pro definitivní hodnoty.
+          </>
+        )
+      }
+    />
   )
 }
 
@@ -351,47 +321,6 @@ function LegendDot({ color, label, muted }: { color: string; label: string; mute
       <span className="w-3 h-3 rounded-card" style={{ background: color, border: muted ? `1px solid ${BARVY.line}` : 'none' }} />
       <span className="text-navy">{label}</span>
     </span>
-  )
-}
-
-function RiskCard({
-  def,
-  value,
-  highlighted,
-}: {
-  def: RiskDef
-  value: number
-  highlighted: boolean
-}) {
-  const Icon = def.icon
-  const isDaily = def.unit === 'daily'
-  const formatted = isDaily
-    ? `${Math.round(value).toLocaleString('cs-CZ')} Kč/den`
-    : `${Math.round(value).toLocaleString('cs-CZ')} Kč`
-  return (
-    <div
-      className="rounded-card border p-3.5 transition-all"
-      style={{
-        background: highlighted ? `${def.color}0d` : BARVY.surface,
-        borderColor: highlighted ? `${def.color}55` : BARVY.line,
-      }}
-    >
-      <div className="flex items-start gap-3">
-        <div
-          className="w-9 h-9 rounded-card flex items-center justify-center text-white shrink-0"
-          style={{ background: def.color }}
-        >
-          <Icon className="w-4 h-4" strokeWidth={1.8} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline justify-between gap-2 mb-0.5">
-            <span className="text-[13px] font-semibold text-navy leading-tight">{def.short}</span>
-            <span className="text-[13px] font-semibold tabular-nums" style={{ color: def.color }}>{formatted}</span>
-          </div>
-          <p className="text-[11px] text-slate leading-snug">{def.description}</p>
-        </div>
-      </div>
-    </div>
   )
 }
 
