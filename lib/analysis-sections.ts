@@ -329,10 +329,16 @@ export const SECTIONS: Section[] = [
     title: 'Příprava na důchod',
     icon: Clock,
     color: 'bg-navy',
+    // Na DIP a penzijní spoření se ptá sekce Investice (`tax_advantaged`),
+    // tady se schválně neopakují.
     questions: [
-      { id: 'current_savings', label: 'Kolik si aktuálně odkládáte na důchod? (Kč/měsíc)', type: 'number', placeholder: '500' },
-      { id: 'pension_gap', label: 'Když byste od zítra pobírali důchod 9 000 Kč, kolik Kč byste ještě potřebovali k tomu?', type: 'number', placeholder: '15 000' },
-      { id: 'monthly_pension_budget', label: 'Kolik si můžete měsíčně odkládat na důchod? (Kč)', type: 'number', placeholder: '2 000' },
+      { id: 'retirement_age', label: 'V kolika letech byste chtěli přestat pracovat?', type: 'number', placeholder: '65', help: 'Podle toho víme, kolik let na to ještě máte. Řádný důchodový věk dnes vychází kolem 65 let.' },
+      { id: 'desired_pension', label: 'Jakou rentu byste chtěli mít? (Kč měsíčně)', type: 'number', placeholder: '30 000', help: 'V dnešních penězích – přepočet na budoucí hodnotu a srovnání se státním důchodem udělám já.' },
+      { id: 'retirement_saved', label: 'Kolik už máte na důchod odloženo celkem? (Kč)', type: 'number', placeholder: '250 000', help: 'Penzijko, investice, spoření – všechno dohromady. Stačí odhad.' },
+      { id: 'current_savings', label: 'Kolik si na důchod odkládáte teď měsíčně? (Kč)', type: 'number', placeholder: '1 000' },
+      { id: 'monthly_pension_budget', label: 'Kolik byste si na důchod dokázali odkládat? (Kč)', type: 'number', placeholder: '3 000', help: 'Kdyby to šlo víc než dnes – ať víme, s čím se dá počítat.' },
+      { id: 'employer_pension', label: 'Přispívá vám zaměstnavatel na penzijní spoření?', type: 'select', options: ['Ano', 'Ne', 'Nevím', 'Nejsem zaměstnanec'], help: 'Příspěvek od zaměstnavatele je peníze zadarmo a spousta lidí ho nevyužívá.' },
+      { id: 'retirement_other_income', label: 'Počítáte v důchodu s dalším příjmem?', type: 'checkbox', options: ['Pronájem nemovitosti', 'Prodej nemovitosti', 'Dědictví', 'Firma nebo podíl ve firmě', 'Ne, s ničím dalším'] },
     ],
   },
   {

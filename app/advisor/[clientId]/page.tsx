@@ -173,9 +173,13 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
       monthly_saving: 'Měsíčně odloží',
     },
     retirement: {
-      current_savings: 'Aktuální spoření na důchod',
-      pension_gap: 'Potřebná částka k důchodu',
-      monthly_pension_budget: 'Měsíční odkládání na důchod',
+      retirement_age: 'Chce do důchodu v',
+      desired_pension: 'Cílová renta',
+      retirement_saved: 'Odloženo celkem',
+      current_savings: 'Odkládá měsíčně',
+      monthly_pension_budget: 'Zvládl by odkládat',
+      employer_pension: 'Příspěvek zaměstnavatele',
+      retirement_other_income: 'Další příjem v důchodu',
     },
     children: {
       children_count: 'Počet dětí',
