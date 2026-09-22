@@ -33,7 +33,7 @@ export const POTREBNE_OTAZKY: string[] = [
   // income_cover
   'existing_policy', 'existing_policy_known',
   // housing
-  'has_mortgage', 'mortgage_balance',
+  'housing_situation', 'mortgage_balance',
   // children
   'children_count', 'children_ages',
   // personal
@@ -182,7 +182,8 @@ export function naDotaznikoveOdpovedi(a: AnalyzaOdpovedi): Answers {
     rezerva: REZERVA[income.reserve_months],
     jine_uvery: cislo(income.other_loans),
     // Zbývající dluh, ne plánovaný úvěr – `mortgage_amount` je „jakou výši chcete“.
-    hypoteka_zustatek: housing.has_mortgage === 'Ano' ? cislo(housing.mortgage_balance) : 0,
+    hypoteka_zustatek:
+      housing.housing_situation === 'Ve vlastním s hypotékou' ? cislo(housing.mortgage_balance) : 0,
 
     // — rodina —
     vek: cislo(personal.age),
