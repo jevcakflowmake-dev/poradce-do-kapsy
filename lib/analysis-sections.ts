@@ -425,17 +425,85 @@ export const SECTIONS: Section[] = [
     title: 'Pojištění majetku',
     icon: Building2,
     color: 'bg-navy',
+    // Pozor: `property_type` v sekci Bydlení znamená „co chci koupit“, tady
+    // „co vlastním“ – proto se zdejší jmenuje `owned_property_type`.
     questions: [
-      { id: 'has_car', label: 'Vlastníte auto?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'car_insurance', label: 'Jak jej máte pojištěné?', type: 'select', options: ['Povinné ručení', 'Povinné ručení + havarijní', 'Nemám pojištění', 'Nevlastním auto'] },
-      { id: 'car_recalculate', label: 'Chcete přepočítat stávající pojištění?', type: 'select', options: ['Ano', 'Ne'] },
+      // — auto —
+      { id: 'has_car', label: 'Máte auto?', type: 'select', options: ['Ano', 'Ne'] },
+      {
+        id: 'car_insurance',
+        label: 'Jak ho máte pojištěné?',
+        type: 'select',
+        options: ['Jen povinné ručení', 'Povinné ručení + havarijní', 'Nemám žádné'],
+        showIf: { id: 'has_car', value: ['Ano'] },
+      },
+      {
+        id: 'car_recalculate',
+        label: 'Chcete přepočítat, jestli neplatíte zbytečně moc?',
+        type: 'select',
+        options: ['Ano', 'Ne'],
+        showIf: { id: 'has_car', value: ['Ano'] },
+      },
+
+      // — nemovitost —
       { id: 'has_property', label: 'Vlastníte nemovitost?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'property_type', label: 'Jakou nemovitost?', type: 'select', options: ['Byt', 'Dům', 'Chata/chalupa', 'Více nemovitostí', 'Nevlastním'] },
-      { id: 'property_insured', label: 'Máte ji pojištěnou?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'want_property_insurance', label: 'Přejete si ji pojistit?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'property_value', label: 'Pokud ano, jakou má hodnotu? (Kč)', type: 'number', placeholder: '3 000 000' },
-      { id: 'combined_insurance', label: 'Přejete si pojistit nemovitost i domácnost dohromady?', type: 'select', options: ['Ano', 'Ne'] },
-      { id: 'property_notes', label: 'Poznámky', type: 'text', placeholder: 'Další informace...' },
+      {
+        id: 'owned_property_type',
+        label: 'Jakou?',
+        type: 'select',
+        options: ['Byt', 'Dům', 'Chata nebo chalupa', 'Více nemovitostí'],
+        showIf: { id: 'has_property', value: ['Ano'] },
+      },
+      {
+        id: 'property_rented',
+        label: 'Pronajímáte ji?',
+        type: 'select',
+        options: ['Ne, bydlím v ní', 'Ano, celou', 'Ano, část'],
+        help: 'Pro pronajímanou nemovitost platí jiné podmínky než pro tu, ve které bydlíte.',
+        showIf: { id: 'has_property', value: ['Ano'] },
+      },
+      {
+        id: 'property_insured',
+        label: 'Máte pojištěnou samotnou stavbu?',
+        type: 'select',
+        options: ['Ano', 'Ne', 'Nevím'],
+        help: 'Pojištění nemovitosti kryje zdi, střechu a to, co je pevně spojené se stavbou.',
+        showIf: { id: 'has_property', value: ['Ano'] },
+      },
+      {
+        id: 'property_value',
+        label: 'Jakou má přibližnou hodnotu? (Kč)',
+        type: 'number',
+        placeholder: '5 000 000',
+        showIf: { id: 'has_property', value: ['Ano'] },
+      },
+      {
+        id: 'insurance_age',
+        label: 'Kdy jste pojistku naposledy přepočítávali?',
+        type: 'select',
+        options: ['Do 2 let', 'Před 2–5 lety', 'Před více než 5 lety', 'Nevím'],
+        help: 'Ceny nemovitostí vyrostly, ale pojistné částky ve starších smlouvách zůstaly. Pak pojišťovna při škodě plní jen část.',
+        showIf: { id: 'has_property', value: ['Ano'] },
+      },
+
+      // — domácnost a odpovědnost: týká se i nájemníků, proto bez podmínky —
+      {
+        id: 'household_insured',
+        label: 'Máte pojištěné vybavení domácnosti?',
+        type: 'select',
+        options: ['Ano', 'Ne', 'Nevím'],
+        help: 'To je jiná pojistka než na samotnou nemovitost – kryje nábytek, elektroniku, kola nebo nářadí. Má smysl i v nájmu.',
+      },
+      {
+        id: 'liability_insured',
+        label: 'Máte pojištění odpovědnosti?',
+        type: 'select',
+        options: ['Ano', 'Ne', 'Nevím'],
+        help: 'Kryje škodu, kterou způsobíte někomu jinému – vytopený soused, rozbitá výloha. Stojí pár stovek ročně.',
+      },
+
+      { id: 'property_interest', label: 'Co byste chtěli vyřešit?', type: 'checkbox', options: ['Pojistit nemovitost', 'Pojistit domácnost', 'Pojistit odpovědnost', 'Přepočítat auto', 'Zatím nic, chci jen přehled'] },
+      { id: 'property_notes', label: 'Chcete k majetku něco doplnit?', type: 'text', placeholder: 'nepovinné' },
     ],
   },
   {
