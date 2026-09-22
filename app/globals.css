@@ -153,8 +153,15 @@ body {
    `print-color-adjust` by se krémový text vytiskl bíle na bílou. */
 .bez-tisku { }
 
+/* Opak: titulka a závěr dokumentu, které na obrazovce nedávají smysl. */
+.jen-tisk { display: none; }
+
 @media print {
   .bez-tisku { display: none !important; }
+  .jen-tisk { display: block; }
+
+  .tisk-nova-strana-po { break-after: page; page-break-after: always; }
+  .tisk-nova-strana-pred { break-before: page; page-break-before: always; }
 
   /* Odsazení drží místo po levém panelu, který se netiskne. */
   .obsah-dashboardu { padding-left: 0 !important; }

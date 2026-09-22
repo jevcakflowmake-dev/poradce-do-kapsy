@@ -19,6 +19,7 @@ import { PORADCE } from '@/lib/poradce'
 import FinancialPlanOverview from '@/components/dashboard/charts/FinancialPlanOverview'
 import IncomeLifeChart, { type IncomeVariant } from '@/components/dashboard/charts/IncomeLifeChart'
 import DuchodVCislech from '@/components/dashboard/DuchodVCislech'
+import { TiskovaTitulka, TiskovyZaver } from '@/components/dashboard/TiskovyRamec'
 import { spoctiDuchod, type VysledekDuchod } from '@/lib/duchod'
 
 interface ParamDetail { value: string; note: string }
@@ -80,6 +81,7 @@ export default function FinancniPlanPage() {
   const [bulkLoading, setBulkLoading] = useState(false)
   const [planDatum, setPlanDatum] = useState<string | null>(null)
   const [duchod, setDuchod] = useState<VysledekDuchod | null>(null)
+  const [jmenoKlienta, setJmenoKlienta] = useState<string | null>(null)
   // Při tisku rozbalíme všechny varianty – zavřené harmoniky nejsou v DOM
   // a na papíře by z plánu zbyly jen názvy společností a ceny.
   const [tiskovyRezim, setTiskovyRezim] = useState(false)
@@ -93,7 +95,7 @@ export default function FinancniPlanPage() {
     setClientId(user.id)
 
     // Paralelně
-    const [variantsRes, paramsRes, recsRes, interestRes, selectionRes, financialsRes, analyzaRes] = await Promise.all([
+    const [variantsRes, paramsRes, recsRes, interestRes, selectionRes, financialsRes, analyzaRes, profilRes] = await Promise.all([
       supabase.from('plan_variants').select('*').eq('client_id', user.id).order('sort_order'),
       supabase.from('plan_params').select('*').order('sort_order'),
       supabase.from('plan_recommendations').select('*').eq('client_id', user.id),
@@ -101,7 +103,10 @@ export default function FinancniPlanPage() {
       supabase.from('plan_variant_selection').select('variant_id').eq('client_id', user.id),
       supabase.from('client_financials').select('monthly_income_net, age, retirement_age, expected_state_pension').eq('client_id', user.id).maybeSingle(),
       supabase.from('analysis_responses').select('section, question_id, value').eq('client_id', user.id).in('section', ['retirement', 'personal', 'income']),
+      supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle(),
     ])
+
+    setJmenoKlienta((profilRes.data as { full_name: string | null } | null)?.full_name ?? null)
 
     const finance = financialsRes.data as
       | {
@@ -261,7 +266,9 @@ export default function FinancniPlanPage() {
 
   return (
     <div>
-      <header className="mb-10">
+      <TiskovaTitulka jmenoKlienta={jmenoKlienta} datum={planDatum} />
+
+      <header className="bez-tisku mb-10">
         <h1 className="font-display text-h2 text-navy">Váš finanční plán</h1>
         <p className="mt-3 text-base text-slate">
           Připravil {PORADCE.jmeno}
@@ -458,6 +465,8 @@ export default function FinancniPlanPage() {
           </div>
         </>
       )}
+
+      {hasPlan && <TiskovyZaver datum={planDatum} />}
 
       {/* Ask modal */}
       {clientId && (
