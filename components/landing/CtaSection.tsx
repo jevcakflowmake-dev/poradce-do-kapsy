@@ -7,7 +7,7 @@ import { buttonVariants } from '@/components/ui/button'
  */
 export default function CtaSection() {
   return (
-    <section className="bg-navy text-cream py-20 md:py-28">
+    <section className="bg-navy text-cream py-20 md:py-28 textura-navy">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <div className="max-w-3xl">
           <h2 className="font-display text-h2 text-cream text-balance">

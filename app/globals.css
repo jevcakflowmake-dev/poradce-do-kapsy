@@ -123,3 +123,23 @@ body {
   -webkit-text-stroke: 1px rgba(15, 42, 68, 0.28);
 }
 
+
+/* Jemná struktura na tmavých plochách (hero, ceník, závěrečné CTA).
+   Náhrada za generovanou fotku v pozadí — nic se nestahuje a na mobilu
+   to nestojí ani bajt navíc.
+
+   Pravidlo „žádné gradienty" tím neporušujeme: `radial-gradient` tu kreslí
+   jednu 1px tečku a zbytek dlaždice je průhledný, takže plocha zůstává
+   jednobarevná. Žádný barevný přechod přes sekci nevzniká.
+
+   Alfa se píše jako rgba ze stejného důvodu jako u .section-numeral —
+   tokeny v @theme alfa kanál nemají a globals.css je jediné místo,
+   kde barva smí bydlet jako číslo. Krém je rgb(246, 245, 241).
+
+   7 % na navy je záměrně na hraně viditelnosti: na kalibrovaném displeji
+   dá ploše hloubku, na horším prostě zmizí. Víc už dělá mřížku, která
+   přetahuje pozornost z nadpisu. */
+.textura-navy {
+  background-image: radial-gradient(rgba(246, 245, 241, 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+}

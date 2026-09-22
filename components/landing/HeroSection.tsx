@@ -9,7 +9,7 @@ import PhoneMockup from '@/components/landing/PhoneMockup'
  */
 export default function HeroSection() {
   return (
-    <section className="bg-navy text-cream">
+    <section className="bg-navy text-cream textura-navy">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 pt-14 pb-16 md:pt-20 md:pb-24 grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
         <div>
           <h1 className="font-display text-display text-cream text-balance">

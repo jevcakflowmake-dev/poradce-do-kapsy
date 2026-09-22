@@ -7,7 +7,7 @@
  */
 export default function PricingSection() {
   return (
-    <section id="kolik-to-stoji" className="bg-navy text-cream py-20 md:py-28 scroll-mt-28">
+    <section id="kolik-to-stoji" className="bg-navy text-cream py-20 md:py-28 scroll-mt-28 textura-navy">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-start">
           <div>
