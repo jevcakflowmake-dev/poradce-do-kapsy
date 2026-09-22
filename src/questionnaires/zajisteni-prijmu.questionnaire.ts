@@ -1,6 +1,21 @@
 /**
  * Poradce do kapsy – dotazník „Zajištění příjmu“
  *
+ * POZOR, nemazat jako mrtvý kód. Samotné otázky se klientům už neukazují –
+ * 22. 9. 2026 byly sloučené do analýzy (lib/analysis-sections.ts, sekce
+ * `income`, `income_cover` a zdravotní část v `personal`). Tenhle soubor
+ * zůstává kvůli `computeRecommendation()` a `ASSUMPTIONS` níž: ten výpočet
+ * částek a flagů pro poradce se má napojit na odpovědi z analýzy.
+ *
+ * Co k tomu bude potřeba: převodní vrstva z odpovědí analýzy na tvar `Answers`.
+ * Klíče ani hodnoty nesedí 1:1 – analýza má `employment: 'OSVČ'`, tady je
+ * `typ_prace: 'osvc'`; `reserve_months: 'Méně než měsíc'` vs `rezerva: 'do_1m'`.
+ * Část vstupů leží v jiných sekcích (hypotéka v `housing`, věk a míry
+ * v `personal`, děti v `children`).
+ *
+ * Tabulky questionnaire_definitions / questionnaires / questionnaire_reviews
+ * a scripts/seed-questionnaire.ts zůstávají z téhož důvodu.
+ *
  * Klientská (B2C) verze: jednoduché otázky, vykání, bez poradenského žargonu.
  * Každá otázka nese `informs` = která rizika z odpovědi počítáme,
  * aby šlo v UI ukázat „proč se na to ptáme“ a aby výpočet doporučení
