@@ -63,7 +63,11 @@ const { data: novy, error: chybaUctu } = await admin.auth.admin.createUser({
   app_metadata: { role: 'client' },
 })
 over('účet', chybaUctu)
-const ID = novy!.user.id
+if (!novy?.user) {
+  console.error('CHYBA: účet se nevytvořil.')
+  process.exit(1)
+}
+const ID = novy.user.id
 
 over(
   'profil',
