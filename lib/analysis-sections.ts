@@ -267,6 +267,13 @@ export const SECTIONS: Section[] = [
       { id: 'risk_tolerance', label: 'Tolerance k riziku', type: 'select', options: ['Konzervativní', 'Vyvážený', 'Dynamický', 'Agresivní'] },
       { id: 'investment_horizon', label: 'Investiční horizont', type: 'select', options: ['1–3 roky', '3–5 let', '5–10 let', '10+ let'] },
       { id: 'monthly_invest', label: 'Kolik měsíčně chcete investovat (Kč)', type: 'number', placeholder: '3 000' },
+      {
+        id: 'lump_sum_invest',
+        label: 'Kolik chcete investovat jednorázově (Kč)',
+        type: 'number',
+        placeholder: '200 000',
+        help: 'Třeba z úspor, prodeje nebo mimořádného příjmu. Když nic takového nemáte, nechte prázdné.',
+      },
       { id: 'current_investments', label: 'Stávající investice', type: 'select', options: ['Nemám žádné', 'Podílové fondy', 'ETF / akcie', 'Krypto', 'Kombinace'] },
     ],
   },
