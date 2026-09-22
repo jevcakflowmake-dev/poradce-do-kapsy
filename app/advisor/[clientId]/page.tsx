@@ -177,11 +177,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
       children_notes: 'Poznámky',
     },
     investing: {
+      investment_goal: 'Cíl investice',
       investing_experience: 'Zkušenosti s investováním',
       risk_tolerance: 'Tolerance k riziku',
       investment_horizon: 'Investiční horizont',
       monthly_invest: 'Měsíční investice',
+      lump_sum_invest: 'Jednorázová investice',
       current_investments: 'Stávající investice',
+      tax_advantaged: 'DIP / penzijní spoření',
     },
     property: {
       has_car: 'Vlastní auto',
