@@ -65,7 +65,7 @@ export default function SectionInterestToolbar({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-line">
+    <div className="bez-tisku flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-line">
       <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate mr-1">
         Vaše reakce:
       </span>

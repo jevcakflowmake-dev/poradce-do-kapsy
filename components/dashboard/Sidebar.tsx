@@ -30,7 +30,7 @@ export default function Sidebar({
   return (
     <>
       {/* Mobil: horní lišta se značkou a odhlášením */}
-      <header className="lg:hidden sticky top-0 z-30 bg-navy text-cream">
+      <header className="bez-tisku lg:hidden sticky top-0 z-30 bg-navy text-cream">
         <div className="px-6 h-16 flex items-center justify-between">
           <Link
             href="/dashboard"
@@ -54,7 +54,7 @@ export default function Sidebar({
       </header>
 
       {/* Desktop: sidebar */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-64 bg-navy text-cream flex-col">
+      <aside className="bez-tisku hidden lg:flex fixed inset-y-0 left-0 w-64 bg-navy text-cream flex-col">
         <Link
           href="/dashboard"
           aria-label="Poradce do kapsy — přehled"
@@ -118,7 +118,7 @@ export default function Sidebar({
       {/* Mobil: spodní lišta */}
       <nav
         aria-label="Hlavní"
-        className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-navy border-t border-cream/10 pb-[env(safe-area-inset-bottom)]"
+        className="bez-tisku lg:hidden fixed bottom-0 inset-x-0 z-30 bg-navy border-t border-cream/10 pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="grid grid-cols-5">
           {POLOZKY.map((p) => {

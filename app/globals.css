@@ -143,3 +143,38 @@ body {
   background-image: radial-gradient(rgba(246, 245, 241, 0.07) 1px, transparent 1px);
   background-size: 22px 22px;
 }
+
+/* ── Tisk ────────────────────────────────────────────────────────────────
+   Finanční plán si klient ukládá přes „Uložit jako PDF" v tiskovém dialogu.
+   Na papíře nejde nic kliknout, takže z něj mizí navigace, chat i ovládací
+   prvky; obsah zůstává. Prvek, který se nemá tisknout, dostane `bez-tisku`.
+
+   Barvy se tisknou napevno: plán je navržený na navy plochách a bez
+   `print-color-adjust` by se krémový text vytiskl bíle na bílou. */
+.bez-tisku { }
+
+@media print {
+  .bez-tisku { display: none !important; }
+
+  /* Odsazení drží místo po levém panelu, který se netiskne. */
+  .obsah-dashboardu { padding-left: 0 !important; }
+
+  html, body {
+    background: #fff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Kartu sekce nechceme rozseknout přes dvě stránky. */
+  .tisk-pohromade {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  @page { margin: 14mm; }
+}

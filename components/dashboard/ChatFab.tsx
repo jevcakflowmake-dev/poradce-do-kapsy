@@ -18,7 +18,7 @@ export default function ChatFab() {
   return (
     <Link
       href="/dashboard/chat"
-      className="hidden lg:flex fixed bottom-8 right-8 z-30 items-center gap-2 h-14 px-6 rounded-pill bg-mint text-navy font-semibold shadow-card hover:bg-mint-dark transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+      className="bez-tisku hidden lg:flex fixed bottom-8 right-8 z-30 items-center gap-2 h-14 px-6 rounded-pill bg-mint text-navy font-semibold shadow-card hover:bg-mint-dark transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
     >
       <MessageCircle className="w-5 h-5" aria-hidden strokeWidth={2} />
       Napsat poradci

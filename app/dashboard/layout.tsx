@@ -23,7 +23,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="min-h-screen bg-cream">
       <Sidebar firstName={firstName} neprectene={neprectene ?? 0} />
-      <div className="lg:pl-64">
+      <div className="lg:pl-64 obsah-dashboardu">
         {/* Spodní odsazení na mobilu drží obsah nad lištou s navigací */}
         <main className="mx-auto w-full max-w-6xl px-6 py-8 md:py-12 pb-28 lg:pb-12">{children}</main>
       </div>

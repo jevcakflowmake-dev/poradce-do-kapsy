@@ -77,6 +77,9 @@ export default function FinancniPlanPage() {
   const [toast, setToast] = useState<string | null>(null)
   const [bulkLoading, setBulkLoading] = useState(false)
   const [planDatum, setPlanDatum] = useState<string | null>(null)
+  // Při tisku rozbalíme všechny varianty – zavřené harmoniky nejsou v DOM
+  // a na papíře by z plánu zbyly jen názvy společností a ceny.
+  const [tiskovyRezim, setTiskovyRezim] = useState(false)
 
   const loadData = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -175,6 +178,19 @@ export default function FinancniPlanPage() {
   // eslint-disable-next-line react-hooks/set-state-in-effect -- načtení plánu po připojení, stav se plní z odpovědi Supabase
   useEffect(() => { loadData() }, [loadData])
 
+  /**
+   * „Uložit jako PDF" = tiskový dialog prohlížeče. Vlastní generátor PDF by
+   * znamenal další knihovnu a druhou podobu dokumentu, kterou je nutné
+   * udržovat; tisková šablona žije přímo se stránkou.
+   */
+  async function handlePrint() {
+    setTiskovyRezim(true)
+    // Necháme doběhnout rozbalení harmonik, teprve pak otevřeme dialog.
+    await new Promise((r) => setTimeout(r, 400))
+    window.print()
+    setTiskovyRezim(false)
+  }
+
   function showToast(msg: string) {
     setToast(msg)
     setTimeout(() => setToast(null), 3500)
@@ -260,7 +276,7 @@ export default function FinancniPlanPage() {
                   Projděte si je a u každé řekněte, jestli chcete pokračovat.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2.5 shrink-0">
+              <div className="bez-tisku flex flex-col sm:flex-row gap-2.5 shrink-0">
                 <Button type="button" onClick={handleBulkInterest} disabled={bulkLoading || allInterested}>
                   {bulkLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
@@ -271,9 +287,9 @@ export default function FinancniPlanPage() {
                   )}
                   {allInterested ? 'Zájem potvrzen' : 'Mám zájem o celý plán'}
                 </Button>
-                <Button type="button" variant="onDark">
+                <Button type="button" variant="onDark" onClick={handlePrint}>
                   <Download className="w-4 h-4" aria-hidden />
-                  PDF
+                  Uložit jako PDF
                 </Button>
               </div>
             </div>
@@ -292,7 +308,7 @@ export default function FinancniPlanPage() {
               return (
                 <div
                   key={section.id}
-                  className={`bg-surface rounded-card border border-l-4 border-l-mint p-5 md:p-6 shadow-card transition-colors ${interestClass}`}
+                  className={`tisk-pohromade bg-surface rounded-card border border-l-4 border-l-mint p-5 md:p-6 shadow-card transition-colors ${interestClass}`}
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-11 h-11 rounded-input bg-navy flex items-center justify-center">
@@ -357,6 +373,7 @@ export default function FinancniPlanPage() {
                           key={variant.id}
                           variant={variant}
                           index={i}
+                          forceOpen={tiskovyRezim}
                           clientId={clientId ?? ''}
                           section={section.id}
                           isSelected={selectedVariants.has(variant.id)}
@@ -428,13 +445,13 @@ export default function FinancniPlanPage() {
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: 50, x: '-50%' }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-6 left-1/2 z-40 bg-navy text-white text-base px-5 py-3 rounded-full shadow-xl flex items-center gap-3 max-w-[92vw]"
+            className="bez-tisku fixed bottom-6 left-1/2 z-40 bg-navy text-cream text-base px-5 py-3 rounded-pill shadow-card flex items-center gap-3 max-w-[92vw]"
           >
-            <CheckCircle2 className="w-4 h-4 text-navy shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-mint shrink-0" aria-hidden />
             <span className="min-w-0">{toast}</span>
             <button
               onClick={() => setToast(null)}
-              className="text-white/50 hover:text-white transition-colors shrink-0"
+              className="text-cream/60 hover:text-cream transition-colors shrink-0"
               aria-label="Zavřít"
             >
               <X className="w-3.5 h-3.5" />
@@ -454,6 +471,7 @@ function VariantCardInteractive({
   section,
   isSelected,
   onToggleSelect,
+  forceOpen = false,
 }: {
   variant: Variant
   index: number
@@ -461,8 +479,12 @@ function VariantCardInteractive({
   section: string
   isSelected: boolean
   onToggleSelect: (selected: boolean) => void
+  /** Tisk rozbalí všechny varianty, ať je na papíře i to, co je pod detailem. */
+  forceOpen?: boolean
 }) {
-  const [open, setOpen] = useState(false)
+  const [rozbaleno, setRozbaleno] = useState(false)
+  const open = rozbaleno || forceOpen
+  const setOpen = setRozbaleno
   return (
     <div
       className={`rounded-card overflow-hidden transition-all border ${
@@ -512,7 +534,7 @@ function VariantCardInteractive({
                 {Object.entries(variant.params).map(([key, detail]) => (
                   <div
                     key={key}
-                    className="bg-white/70 backdrop-blur-sm rounded-card px-4 py-3 border border-line"
+                    className="bg-cream rounded-card px-4 py-3 border border-line"
                   >
                     <div className="flex items-center justify-between mb-1 gap-3">
                       <span className="text-base font-medium text-navy/80">{key}</span>
