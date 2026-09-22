@@ -18,6 +18,8 @@ import { formatDate, plural } from '@/lib/utils'
 import { PORADCE } from '@/lib/poradce'
 import FinancialPlanOverview from '@/components/dashboard/charts/FinancialPlanOverview'
 import IncomeLifeChart, { type IncomeVariant } from '@/components/dashboard/charts/IncomeLifeChart'
+import DuchodVCislech from '@/components/dashboard/DuchodVCislech'
+import { spoctiDuchod, type VysledekDuchod } from '@/lib/duchod'
 
 interface ParamDetail { value: string; note: string }
 interface Variant {
@@ -77,6 +79,7 @@ export default function FinancniPlanPage() {
   const [toast, setToast] = useState<string | null>(null)
   const [bulkLoading, setBulkLoading] = useState(false)
   const [planDatum, setPlanDatum] = useState<string | null>(null)
+  const [duchod, setDuchod] = useState<VysledekDuchod | null>(null)
   // Při tisku rozbalíme všechny varianty – zavřené harmoniky nejsou v DOM
   // a na papíře by z plánu zbyly jen názvy společností a ceny.
   const [tiskovyRezim, setTiskovyRezim] = useState(false)
@@ -90,16 +93,38 @@ export default function FinancniPlanPage() {
     setClientId(user.id)
 
     // Paralelně
-    const [variantsRes, paramsRes, recsRes, interestRes, selectionRes, financialsRes] = await Promise.all([
+    const [variantsRes, paramsRes, recsRes, interestRes, selectionRes, financialsRes, analyzaRes] = await Promise.all([
       supabase.from('plan_variants').select('*').eq('client_id', user.id).order('sort_order'),
       supabase.from('plan_params').select('*').order('sort_order'),
       supabase.from('plan_recommendations').select('*').eq('client_id', user.id),
       supabase.from('plan_section_interest').select('section, status').eq('client_id', user.id),
       supabase.from('plan_variant_selection').select('variant_id').eq('client_id', user.id),
-      supabase.from('client_financials').select('monthly_income_net').eq('client_id', user.id).maybeSingle(),
+      supabase.from('client_financials').select('monthly_income_net, age, retirement_age').eq('client_id', user.id).maybeSingle(),
+      supabase.from('analysis_responses').select('section, question_id, value').eq('client_id', user.id).in('section', ['retirement', 'personal', 'income']),
     ])
 
-    setMonthlyIncomeNet((financialsRes.data as { monthly_income_net: number | null } | null)?.monthly_income_net ?? null)
+    const finance = financialsRes.data as
+      | { monthly_income_net: number | null; age: number | null; retirement_age: number | null }
+      | null
+    setMonthlyIncomeNet(finance?.monthly_income_net ?? null)
+
+    // Renta v důchodu se počítá z analýzy; co poradce přepsal v kartě klienta,
+    // má přednost — je to novější a ověřené číslo.
+    const analyza: Record<string, Record<string, string>> = {}
+    for (const r of (analyzaRes.data ?? []) as Array<{ section: string; question_id: string; value: string }>) {
+      ;(analyza[r.section] ??= {})[r.question_id] = r.value
+    }
+    const duchodOdpovedi = analyza.retirement ?? {}
+    setDuchod(
+      spoctiDuchod({
+        vek: finance?.age ?? cislo(analyza.personal?.age),
+        vekOdchodu: finance?.retirement_age ?? cislo(duchodOdpovedi.retirement_age),
+        pozadovanaRenta: cislo(duchodOdpovedi.desired_pension),
+        cistyPrijem: finance?.monthly_income_net ?? cislo(analyza.income?.monthly_income),
+        jizNaspořeno: cislo(duchodOdpovedi.retirement_saved),
+        odkladaTed: cislo(duchodOdpovedi.current_savings),
+      }),
+    )
 
     // Income varianty s details (samostatně pro IncomeLifeChart)
     const rawIncomeVariants = (variantsRes.data || []).filter((v: { section: string }) => v.section === 'income') as Array<{
@@ -325,6 +350,12 @@ export default function FinancniPlanPage() {
 
                   <div className="h-px bg-line mb-4" />
 
+                  {section.id === 'retirement' && duchod && (
+                    <div className="mb-5">
+                      <DuchodVCislech v={duchod} />
+                    </div>
+                  )}
+
                   {section.id === 'income' ? (
                     <IncomeLifeChart
                       monthlyIncomeNet={monthlyIncomeNet}
@@ -461,6 +492,13 @@ export default function FinancniPlanPage() {
       </AnimatePresence>
     </div>
   )
+}
+
+/** „2 500 000 Kč" → 2500000. Prázdné nebo nečíselné → undefined. */
+function cislo(v: string | undefined): number | undefined {
+  if (!v) return undefined
+  const n = Number.parseFloat(v.replace(/[^\d,.-]/g, '').replace(',', '.'))
+  return Number.isFinite(n) ? n : undefined
 }
 
 // Interactive variant card – with "Select this variant" CTA
