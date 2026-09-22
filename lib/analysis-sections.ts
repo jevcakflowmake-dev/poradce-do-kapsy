@@ -415,6 +415,8 @@ export const SECTIONS: Section[] = [
         help: 'Třeba z úspor, prodeje nebo mimořádného příjmu. Když nic takového nemáte, nechte prázdné.',
       },
       { id: 'investing_experience', label: 'Jakou máte zkušenost s investováním?', type: 'select', options: ['Žádnou, začínám', 'Něco málo jsem zkusil/a', 'Investuju několik let', 'Investování rozumím dobře'] },
+      // Volby téhle otázky plní `profiles.risk_profile` – při změně uprav
+      // i RISK_PROFILE_MAP v lib/submissions.ts, jinak se profil tiše přestane plnit.
       { id: 'risk_tolerance', label: 'Jak moc vám vadí, když hodnota kolísá?', type: 'select', options: ['Nechci ztrátu, i za cenu nižšího výnosu', 'Menší výkyvy snesu', 'Počítám s výkyvy kvůli vyššímu výnosu', 'Výkyvy mi nevadí, jdu za výnosem'], help: 'Nejde o to, co je správně – jde o to, u čeho budete v klidu spát.' },
       { id: 'current_investments', label: 'Investujete už teď?', type: 'select', options: ['Ne, začínám od nuly', 'Ano, podílové fondy', 'Ano, ETF nebo akcie', 'Ano, krypto', 'Ano, víc věcí dohromady'] },
       { id: 'tax_advantaged', label: 'Máte dlouhodobý investiční produkt (DIP) nebo penzijní spoření?', type: 'select', options: ['Nemám ani jedno', 'Mám penzijní spoření', 'Mám DIP', 'Mám obojí', 'Nevím'], help: 'U obojího jde část vkladů odečíst z daní. Když je nemáte, bývá to první věc, která se vyplatí.' },
@@ -518,6 +520,8 @@ export const SECTIONS: Section[] = [
       { id: 'age', label: 'Věk', type: 'number', placeholder: '35' },
       // Dřív se ptal úvodní wizard na /onboarding; ten je zrušený, ale poradce
       // rodinný stav vidí v panelu a počítá se do skóre – proto je tady.
+      // Volby téhle otázky plní `profiles.family_status` – viz FAMILY_STATUS_MAP
+      // v lib/submissions.ts.
       { id: 'family_status', label: 'Rodinná situace', type: 'select', options: ['Single', 'S partnerem/kou', 'Rodina s dětmi', 'Samoživitel/ka'] },
       { id: 'height', label: 'Výška (cm)', type: 'number', placeholder: '178' },
       { id: 'weight', label: 'Váha (kg)', type: 'number', placeholder: '80' },

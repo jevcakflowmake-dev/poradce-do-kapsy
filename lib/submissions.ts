@@ -74,10 +74,22 @@ const FAMILY_STATUS_MAP: Record<string, string> = {
 
 /**
  * Tolerance k riziku ze sekce Investice → `profiles.risk_profile`.
- * Popisky musí souhlasit s riskLabel() v lib/utils.ts – pozor, „Dynamický“
- * se tam mapuje na `balanced` a „Vyvážený“ na `moderate`.
+ *
+ * POZOR: klíče musí doslova odpovídat volbám otázky `risk_tolerance`
+ * v lib/analysis-sections.ts. Když se tam přepíšou a sem se to nepromítne,
+ * profil se tiše přestane plnit – a `risk_profile` je 20 bodů ze 100
+ * ve skóre finančního zdraví a sloupec v seznamu klientů.
+ *
+ * Stupnice je conservative < moderate < balanced < aggressive; popisky
+ * pro poradce dělá riskLabel() v lib/utils.ts.
  */
 const RISK_PROFILE_MAP: Record<string, string> = {
+  // současné znění voleb
+  'Nechci ztrátu, i za cenu nižšího výnosu': 'conservative',
+  'Menší výkyvy snesu': 'moderate',
+  'Počítám s výkyvy kvůli vyššímu výnosu': 'balanced',
+  'Výkyvy mi nevadí, jdu za výnosem': 'aggressive',
+  // znění do 22. 9. 2026 – kvůli dřív vyplněným analýzám
   'Konzervativní': 'conservative',
   'Vyvážený': 'moderate',
   'Dynamický': 'balanced',
