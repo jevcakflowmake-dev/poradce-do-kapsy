@@ -19,7 +19,7 @@ const KROKY = [
 
 export default function HowItWorksSection() {
   return (
-    <section id="jak-to-funguje" className="bg-cream pb-20 md:pb-28 scroll-mt-8">
+    <section id="jak-to-funguje" className="bg-cream pb-20 md:pb-28 scroll-mt-28">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <h2 className="font-display text-h2 text-navy">Jak to funguje</h2>
 
