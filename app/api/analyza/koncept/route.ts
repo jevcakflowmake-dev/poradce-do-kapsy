@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
 
 /**
  * Rozepsaná veřejná analýza. Ukládá se až od posledního kroku dotazníku,
@@ -13,9 +14,18 @@ const KLIC = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const MAX_ZNAKU = 100_000
 /** Koncepty obsahují zdravotní údaje, nedrží se déle než dva měsíce. */
 const RETENCE_DNI = 60
+/**
+ * Prohlížeč ukládá nejvýš jednou za 1,5 s psaní v posledním kroku; 120 za
+ * deset minut člověk nevyčerpá, skript s novými klíči ano.
+ */
+const prekroceno = vytvorLimit({ oknoMs: 10 * 60 * 1000, max: 120 })
 
 export async function POST(request: Request) {
   try {
+    if (prekroceno(ipPozadavku(request))) {
+      return NextResponse.json({ error: 'Příliš mnoho požadavků.' }, { status: 429 })
+    }
+
     const { draftKey, responses, step, email } = await request.json()
 
     if (typeof draftKey !== 'string' || !KLIC.test(draftKey)) {

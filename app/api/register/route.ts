@@ -1,11 +1,23 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { findUserByEmail } from '@/lib/submissions'
+import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
 import { NextResponse } from 'next/server'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_DIGITS_REGEX = /\d/g
 
+/** Pět registrací za deset minut z jedné adresy. Každá posílá poradci notifikaci. */
+const prekroceno = vytvorLimit({ oknoMs: 10 * 60 * 1000, max: 5 })
+
 export async function POST(request: Request) {
   try {
+    if (prekroceno(ipPozadavku(request))) {
+      return NextResponse.json(
+        { error: 'Příliš mnoho pokusů z jedné adresy. Zkuste to prosím za chvíli.' },
+        { status: 429 },
+      )
+    }
+
     const body = await request.json()
     const full_name = typeof body.full_name === 'string' ? body.full_name.trim() : ''
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
@@ -35,15 +47,14 @@ export async function POST(request: Request) {
 
     const supabase = createAdminClient()
 
-    // Check existing user
-    const { data: { users } } = await supabase.auth.admin.listUsers()
-    const existingUser = users?.find(u => u.email === email)
+    // Stránkovaně: listUsers() bez stránky vrací jen prvních 50 účtů, takže
+    // u dalších klientů kontrola tiše propadla až na chybu z createUser.
+    const existingUser = await findUserByEmail(supabase, email)
 
     if (existingUser) {
-      return NextResponse.json({
-        id: existingUser.id,
-        exists: true,
-      })
+      // Jen příznak. Dřív se vracelo i ID účtu, takže kdokoliv zjistil
+      // interní ID libovolného klienta podle e-mailu.
+      return NextResponse.json({ exists: true })
     }
 
     // Create new user with the password chosen by the user
@@ -56,14 +67,17 @@ export async function POST(request: Request) {
       app_metadata: { role: 'client' },
     })
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error || !data.user) {
+      if (error?.code === 'email_exists') return NextResponse.json({ exists: true })
+      // Hlášku Supabase do prohlížeče neposíláme, jen do logu.
+      console.error('[register] založení účtu selhalo:', error?.message)
+      return NextResponse.json(
+        { error: 'Účet se nepodařilo založit. Zkuste to prosím znovu.' },
+        { status: 500 },
+      )
     }
 
-    // Update profile
-    if (data.user) {
-      await supabase.from('profiles').update({ full_name, phone }).eq('id', data.user.id)
-    }
+    await supabase.from('profiles').update({ full_name, phone }).eq('id', data.user.id)
 
     // Notifikace poradci přes n8n (bez hesla). MUSÍ se awaitovat – v serverless
     // prostředí (Vercel) by fire-and-forget fetch nemusel před ukončením funkce

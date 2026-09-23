@@ -11,6 +11,7 @@ import {
   type SubmissionFile,
 } from '@/lib/submissions'
 import { MAX_FILE_SIZE, sanitizeFileName } from '@/lib/storage'
+import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
 import { SECTIONS } from '@/lib/analysis-sections'
 import type { Json } from '@/lib/types/database'
 
@@ -28,24 +29,8 @@ const MAX_FILES = 10
 /** Povolené dvojice sekce/otázka – vše ostatní z requestu zahodíme. */
 const ALLOWED = new Map(SECTIONS.map(s => [s.id, new Set(s.questions.map(q => q.id))]))
 
-/**
- * Rate limit v paměti instance. Na Vercelu běží víc instancí, takže tohle
- * není tvrdá hranice – spíš brzda proti tomu, aby jeden skript zaplavil
- * databázi. Skutečnou ochranu má dělat WAF/Vercel firewall.
- */
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
-const RATE_LIMIT_MAX = 5
-const hits = new Map<string, number[]>()
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now()
-  const recent = (hits.get(ip) ?? []).filter(t => now - t < RATE_LIMIT_WINDOW_MS)
-  recent.push(now)
-  hits.set(ip, recent)
-
-  if (hits.size > 5000) hits.clear() // pojistka proti růstu paměti
-  return recent.length > RATE_LIMIT_MAX
-}
+/** Pět odeslání za deset minut z jedné adresy – víc člověk nepotřebuje. */
+const rateLimited = vytvorLimit({ oknoMs: 10 * 60 * 1000, max: 5 })
 
 /** Vyhodí neznámé sekce/otázky a ořízne příliš dlouhé hodnoty. */
 function sanitizeResponses(raw: unknown): Responses {
@@ -86,12 +71,7 @@ async function notifyAdvisor(payload: Record<string, unknown>): Promise<void> {
 
 export async function POST(request: Request) {
   try {
-    const ip =
-      request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-      request.headers.get('x-real-ip') ||
-      'unknown'
-
-    if (rateLimited(ip)) {
+    if (rateLimited(ipPozadavku(request))) {
       return NextResponse.json(
         { error: 'Příliš mnoho odeslání z jedné adresy. Zkuste to prosím za chvíli.' },
         { status: 429 },
