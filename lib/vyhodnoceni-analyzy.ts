@@ -32,6 +32,7 @@ export const POTREBNE_OTAZKY: string[] = [
   'essential_expenses', 'reserve_months', 'other_loans',
   // income_cover
   'existing_policy', 'existing_policy_known',
+  'accident_daily', 'accident_hospital', 'death_coverage', 'permanent_consequences',
   // housing
   'housing_situation', 'mortgage_balance',
   // children
@@ -167,15 +168,9 @@ export function naDotaznikoveOdpovedi(a: AnalyzaOdpovedi): Answers {
   const children = a.children ?? {}
   const personal = a.personal ?? {}
 
-  // U „jen úraz“ se na nemocenskou neptáme. Výpočet bere chybějící odpověď
-  // jako „nemá“ (u plné větve opatrný předpoklad – většina OSVČ ji nemá)
-  // a hlásil by „OSVČ bez nemocenského, PN je prioritou“, i když PN vůbec
-  // není předmětem. Typ práce slouží ve výpočtu jen k tomuhle, proto ven.
-  const jenUraz = income.cover_scope === JEN_URAZ
-
   return {
     // — práce a příjem —
-    typ_prace: jenUraz ? undefined : TYP_PRACE[income.employment],
+    typ_prace: TYP_PRACE[income.employment],
     prijem_cisty: cislo(income.monthly_income),
     prijem_variabilni: PRIJEM_VARIABILNI[income.income_variable],
     osvc_nemocenska: ANO_NE_NEVIM[income.sick_pay_osvc],
@@ -226,14 +221,63 @@ export function vyhodnotAnalyzu(a: AnalyzaOdpovedi): Recommendation | null {
   // Klient si vybral jen úrazovou větev – poradce to musí vidět jako první,
   // protože nemoc (hlavní příčina invalidit) mu zůstává nekrytá a podle
   // zákona o distribuci pojištění patří do záznamu, že o tom ví.
-  if (a.income?.cover_scope === JEN_URAZ) {
+  if (jeJenUraz(a)) {
     return {
       ...vysledek,
       flags: [
         'Chce jen úrazové pojištění – nemoc zůstává nekrytá. Probrat a zapsat, že o tom ví.',
-        ...vysledek.flags,
+        // Na nemocenskou se v úrazové větvi neptáme. Výpočet bere chybějící
+        // odpověď jako „nemá“ – pro velikost denního odškodného je to opatrný
+        // předpoklad a nechává se, ale hlásit ho jako zjištěný fakt nejde.
+        ...vysledek.flags.filter((f) => !f.startsWith('OSVČ bez nemocenského')),
       ],
     }
   }
   return vysledek
+}
+
+export function jeJenUraz(a: AnalyzaOdpovedi): boolean {
+  return a.income?.cover_scope === JEN_URAZ
+}
+
+/** Které položky vyhodnocení má poradce vidět. */
+export interface RozsahVyhodnoceni {
+  jenUraz: boolean
+  denniOdskodne: boolean
+  hospitalizace: boolean
+  invalidita: boolean
+  zavaznaOnemocneni: boolean
+  smrt: boolean
+  trvaleNasledky: boolean
+}
+
+/**
+ * U plné větve všechno. U „jen úraz“ zmizí invalidita a závažná onemocnění,
+ * které úrazovka nekryje, a zbytek podle toho, co klient chtěl krýt – položka,
+ * na kterou odpověděl „Ne“, v kartě nemá co dělat. Nezodpovězená zůstává,
+ * ať poradce nepřijde o číslo jen proto, že klient otázku přeskočil.
+ */
+export function rozsahVyhodnoceni(a: AnalyzaOdpovedi): RozsahVyhodnoceni {
+  if (!jeJenUraz(a)) {
+    return {
+      jenUraz: false,
+      denniOdskodne: true,
+      hospitalizace: true,
+      invalidita: true,
+      zavaznaOnemocneni: true,
+      smrt: true,
+      trvaleNasledky: true,
+    }
+  }
+  const kryti = a.income_cover ?? {}
+  const chce = (id: string) => kryti[id] !== 'Ne'
+  return {
+    jenUraz: true,
+    denniOdskodne: chce('accident_daily'),
+    hospitalizace: chce('accident_hospital'),
+    invalidita: false,
+    zavaznaOnemocneni: false,
+    smrt: chce('death_coverage'),
+    trvaleNasledky: chce('permanent_consequences'),
+  }
 }

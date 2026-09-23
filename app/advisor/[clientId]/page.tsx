@@ -4,7 +4,7 @@ import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, C
 import { createClient } from '@/lib/supabase/server'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, proposalTypeLabel, formatDate, plural } from '@/lib/utils'
 import { goalLabel, SECTIONS, zobrazHodnotu, rozdelSkupinu } from '@/lib/analysis-sections'
-import { vyhodnotAnalyzu } from '@/lib/vyhodnoceni-analyzy'
+import { vyhodnotAnalyzu, rozsahVyhodnoceni } from '@/lib/vyhodnoceni-analyzy'
 import type { Profile, Proposal } from '@/lib/types/database'
 import ProposalForm from '@/components/advisor/ProposalForm'
 import StatusControl from '@/components/advisor/StatusControl'
@@ -54,6 +54,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   // Vyhodnocení se počítá při každém načtení – je to čistá funkce nad
   // odpověďmi, takže nemůže zastarat. Bez čistého příjmu vrací null.
   const vyhodnoceni = hasAnalysis ? vyhodnotAnalyzu(analysisResponses) : null
+  // U „jen úraz“ jen úrazové položky – invalidita a závažná onemocnění z nemoci
+  // by v kartě jen mátly, klient je řešit nechtěl.
+  const rozsah = rozsahVyhodnoceni(analysisResponses)
 
   // Dokumenty nahrané klientem v analýze (smlouvy, pojistky)
   const { data: analysisFilesRaw } = await supabase.from('analysis_files')
@@ -412,6 +415,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               <p className="text-base text-slate mt-2 max-w-2xl">
                 Orientační výpočet z odpovědí klienta. Není to nabídka – čísla i konstanty je
                 potřeba doladit podle konkrétní pojišťovny.
+                {rozsah.jenUraz && ' Klient chce jen úrazové pojištění, proto jsou tu jen úrazové položky.'}
               </p>
             </div>
 
@@ -429,40 +433,64 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               </ul>
             )}
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Castka
-                popisek="Denní odškodné"
-                hodnota={`${vyhodnoceni.denniOdskodne.castkaDenne.toLocaleString('cs-CZ')} Kč/den`}
-                poznamka={`od ${vyhodnoceni.denniOdskodne.odKarencnihoDne}. dne, nemoc i úraz`}
-              />
-              <Castka
-                popisek="Hospitalizace"
-                hodnota={`${vyhodnoceni.hospitalizace.castkaDenne.toLocaleString('cs-CZ')} Kč/den`}
-              />
-              <Castka
-                popisek="Invalidita I. / II. / III."
-                hodnota={[vyhodnoceni.invalidita.id1, vyhodnoceni.invalidita.id2, vyhodnoceni.invalidita.id3]
-                  .map((x) => (x / 1_000_000).toLocaleString('cs-CZ'))
-                  .join(' / ') + ' mil.'}
-                poznamka={vyhodnoceni.invalidita.typ === 'klesajici' ? 'klesající' : 'konstantní'}
-              />
-              <Castka
-                popisek="Závažná onemocnění"
-                hodnota={`${vyhodnoceni.zavaznaOnemocneni.castka.toLocaleString('cs-CZ')} Kč`}
-              />
-              <Castka
-                popisek="Smrt"
-                hodnota={`${vyhodnoceni.smrt.konstantni.toLocaleString('cs-CZ')} Kč`}
-                poznamka={`klesající ${vyhodnoceni.smrt.klesajici.toLocaleString('cs-CZ')} Kč`}
-              />
-              <Castka
-                popisek="Trvalé následky"
-                hodnota={`${vyhodnoceni.trvaleNasledky.castka.toLocaleString('cs-CZ')} Kč`}
-                poznamka={`progresivní, od ${vyhodnoceni.trvaleNasledky.odProcent} %`}
-              />
-            </div>
+            {Object.entries(rozsah).some(([k, v]) => k !== 'jenUraz' && v) ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {rozsah.denniOdskodne && (
+                  <Castka
+                    popisek={rozsah.jenUraz ? 'Denní odškodné za úraz' : 'Denní odškodné'}
+                    hodnota={`${vyhodnoceni.denniOdskodne.castkaDenne.toLocaleString('cs-CZ')} Kč/den`}
+                    poznamka={
+                      rozsah.jenUraz
+                        ? 'podle výpadku příjmu při léčení'
+                        : `od ${vyhodnoceni.denniOdskodne.odKarencnihoDne}. dne, nemoc i úraz`
+                    }
+                  />
+                )}
+                {rozsah.hospitalizace && (
+                  <Castka
+                    popisek="Hospitalizace"
+                    hodnota={`${vyhodnoceni.hospitalizace.castkaDenne.toLocaleString('cs-CZ')} Kč/den`}
+                    poznamka={rozsah.jenUraz ? 'při úrazu' : undefined}
+                  />
+                )}
+                {rozsah.invalidita && (
+                  <Castka
+                    popisek="Invalidita I. / II. / III."
+                    hodnota={[vyhodnoceni.invalidita.id1, vyhodnoceni.invalidita.id2, vyhodnoceni.invalidita.id3]
+                      .map((x) => (x / 1_000_000).toLocaleString('cs-CZ'))
+                      .join(' / ') + ' mil.'}
+                    poznamka={vyhodnoceni.invalidita.typ === 'klesajici' ? 'klesající' : 'konstantní'}
+                  />
+                )}
+                {rozsah.zavaznaOnemocneni && (
+                  <Castka
+                    popisek="Závažná onemocnění"
+                    hodnota={`${vyhodnoceni.zavaznaOnemocneni.castka.toLocaleString('cs-CZ')} Kč`}
+                  />
+                )}
+                {rozsah.smrt && (
+                  <Castka
+                    popisek={rozsah.jenUraz ? 'Smrt úrazem' : 'Smrt'}
+                    hodnota={`${vyhodnoceni.smrt.konstantni.toLocaleString('cs-CZ')} Kč`}
+                    poznamka={`klesající ${vyhodnoceni.smrt.klesajici.toLocaleString('cs-CZ')} Kč`}
+                  />
+                )}
+                {rozsah.trvaleNasledky && (
+                  <Castka
+                    popisek="Trvalé následky"
+                    hodnota={`${vyhodnoceni.trvaleNasledky.castka.toLocaleString('cs-CZ')} Kč`}
+                    poznamka={`progresivní, od ${vyhodnoceni.trvaleNasledky.odProcent.toLocaleString('cs-CZ')} %`}
+                  />
+                )}
+              </div>
+            ) : (
+              <p className="text-base text-slate">Klient nechtěl krýt žádnou z úrazových položek.</p>
+            )}
 
-            <p className="mt-4 text-base text-slate">{vyhodnoceni.invalidita.poznamka}</p>
+            {/* Poznámka se týká invalidity z nemoci i úrazu – u úrazovky nesedí. */}
+            {rozsah.invalidita && (
+              <p className="mt-4 text-base text-slate">{vyhodnoceni.invalidita.poznamka}</p>
+            )}
           </section>
         )}
 
