@@ -54,7 +54,7 @@ export default function ProduktyPage() {
 
 
   return (
-    <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14">
+    <div>
       <div
         className="mb-10"
       >
