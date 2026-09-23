@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 import { isClientStatus } from '@/lib/utils'
 
@@ -21,13 +22,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Neplatný status.' }, { status: 400 })
     }
 
-    const { error } = await supabase
+    // Zápis až po ověření role a přes service role, stejně jako ostatní
+    // routy poradce: přihlášený klient pak nemusí mít k `status` přístup
+    // vůbec a vlastní stav si nepřepíše.
+    const { error } = await createAdminClient()
       .from('profiles')
       .update({ status })
       .eq('id', clientId)
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('[client-status]', error.message)
+      return NextResponse.json({ error: 'Stav se nepodařilo uložit.' }, { status: 500 })
     }
 
     return NextResponse.json({ ok: true, status })
