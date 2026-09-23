@@ -1,21 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
+import { bezpecnyCil } from '@/lib/presmerovani'
 import { NextResponse } from 'next/server'
 
 /**
- * Kam po přihlášení z odkazu pustit. Jen cesta v rámci webu.
- *
- * Dřív se `next` lepil za origin bez kontroly a `?next=@cizi.cz` z toho
- * udělal `https://poradcedokapsy.cz@cizi.cz` – prohlížeč bere část před
- * zavináčem jako jméno a odejde na cizí web, čerstvě přihlášený klient
- * tak mohl skončit na podvržené stránce.
+ * Starší cesta z e-mailových odkazů přes `?code=` (PKCE). Funguje jen ve
+ * stejném prohlížeči, kde si člověk o odkaz řekl. Nové šablony vedou na
+ * /auth/potvrzeni, tahle routa zůstává kvůli odkazům, které už odešly.
  */
-function cilPresmerovani(next: string | null, origin: string): URL {
-  const vychozi = new URL('/dashboard', origin)
-  if (!next || !next.startsWith('/') || next.startsWith('//') || next.startsWith('/\\')) return vychozi
-  const cil = new URL(next, origin)
-  return cil.origin === origin ? cil : vychozi
-}
-
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
@@ -24,7 +15,7 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(cilPresmerovani(searchParams.get('next'), origin))
+      return NextResponse.redirect(bezpecnyCil(searchParams.get('next'), origin))
     }
   }
 
