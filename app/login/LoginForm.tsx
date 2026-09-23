@@ -60,9 +60,14 @@ export default function LoginForm() {
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOtp({
       email: data.email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      // Přihlášení účty nezakládá. Bez tohohle Supabase neznámému e-mailu
+      // účet rovnou vytvořil a formulář fungoval jako skrytá registrace.
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback`, shouldCreateUser: false },
     })
-    if (error) setError(error.message)
+    // Neznámý e-mail (chyba 4xx) se tváří stejně jako známý, jinak by formulář
+    // prozradil, kdo je klientem. Přiznáme jen limit pokusů a výpadek odesílání.
+    if (error?.status === 429) setError('Příliš mnoho pokusů. Zkuste to prosím za chvíli.')
+    else if (error && (error.status ?? 500) >= 500) setError('Odkaz se teď nepodařilo odeslat. Zkuste to později, nebo se přihlaste heslem.')
     else setMagicLinkSent(true)
     setLoading(false)
   }
@@ -73,7 +78,7 @@ export default function LoginForm() {
         numeral="↗"
         eyebrow="Odkaz odeslán"
         title={<>Zkontrolujte <span style={{ color: BARVY.mint }}>schránku</span>.</>}
-        subtitle="Poslali jsme vám přihlašovací odkaz. Klikněte na něj pro přihlášení – link je platný 60 minut."
+        subtitle="Pokud u nás máte účet, poslali jsme vám přihlašovací odkaz. Platí 60 minut."
       >
         <div className="bg-surface rounded-card border border-line p-8 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-card mb-5 bg-mint/10 border border-mint/25">
