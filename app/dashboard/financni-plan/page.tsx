@@ -87,6 +87,7 @@ export default function FinancniPlanPage() {
   const [planDatum, setPlanDatum] = useState<string | null>(null)
   const [duchod, setDuchod] = useState<VysledekDuchod | null>(null)
   const [jmenoKlienta, setJmenoKlienta] = useState<string | null>(null)
+  const [zbytekHypoteky, setZbytekHypoteky] = useState<number | null>(null)
   // Při tisku rozbalíme všechny varianty – zavřené harmoniky nejsou v DOM
   // a na papíře by z plánu zbyly jen názvy společností a ceny.
   const [tiskovyRezim, setTiskovyRezim] = useState(false)
@@ -106,8 +107,8 @@ export default function FinancniPlanPage() {
       supabase.from('plan_recommendations').select('*').eq('client_id', user.id),
       supabase.from('plan_section_interest').select('section, status').eq('client_id', user.id),
       supabase.from('plan_variant_selection').select('variant_id').eq('client_id', user.id),
-      supabase.from('client_financials').select('monthly_income_net, age, retirement_age, expected_state_pension').eq('client_id', user.id).maybeSingle(),
-      supabase.from('analysis_responses').select('section, question_id, value').eq('client_id', user.id).in('section', ['retirement', 'personal', 'income']),
+      supabase.from('client_financials').select('monthly_income_net, age, retirement_age, expected_state_pension, has_mortgage, mortgage_remaining_amount').eq('client_id', user.id).maybeSingle(),
+      supabase.from('analysis_responses').select('section, question_id, value').eq('client_id', user.id).in('section', ['retirement', 'personal', 'income', 'housing']),
       supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle(),
     ])
 
@@ -119,6 +120,8 @@ export default function FinancniPlanPage() {
           age: number | null
           retirement_age: number | null
           expected_state_pension: number | null
+          has_mortgage: boolean | null
+          mortgage_remaining_amount: number | null
         }
       | null
     setMonthlyIncomeNet(finance?.monthly_income_net ?? null)
@@ -129,6 +132,15 @@ export default function FinancniPlanPage() {
     for (const r of (analyzaRes.data ?? []) as Array<{ section: string; question_id: string; value: string }>) {
       ;(analyza[r.section] ??= {})[r.question_id] = r.value
     }
+    // Zbytek hypotéky je kotva u plnění při úmrtí. Číslo od poradce má
+    // přednost; bez něj bereme, co klient uvedl v analýze.
+    setZbytekHypoteky(
+      finance?.has_mortgage && finance.mortgage_remaining_amount
+        ? finance.mortgage_remaining_amount
+        : analyza.housing?.housing_situation === 'Ve vlastním s hypotékou'
+          ? cislo(analyza.housing.mortgage_balance) ?? null
+          : null,
+    )
     const duchodOdpovedi = analyza.retirement ?? {}
     setDuchod(
       spoctiDuchod({
@@ -390,6 +402,7 @@ export default function FinancniPlanPage() {
                     <>
                     <IncomeLifeChart
                       monthlyIncomeNet={monthlyIncomeNet}
+                      zbytekHypoteky={zbytekHypoteky}
                       variants={incomeVariants}
                       selectedVariantId={selectedIncomeVariantId}
                       onSelect={async (variantId) => {

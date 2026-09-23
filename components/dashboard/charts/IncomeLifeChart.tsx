@@ -3,9 +3,8 @@
 import { useMemo } from 'react'
 import { Shield } from 'lucide-react'
 import { type RiskKey } from '@/lib/income-risks'
-import KrytiPojistky from '@/components/pojisteni/KrytiPojistky'
 import SrovnaniVariant, { VyberVarianty } from './SrovnaniVariant'
-import LifeRiskTimeline from './LifeRiskTimeline'
+import ScenarePojistky from './ScenarePojistky'
 import { BARVY } from '@/lib/barvy'
 
 type IncomeDetails = {
@@ -29,6 +28,8 @@ interface Props {
   variants: IncomeVariant[]
   selectedVariantId: string | null
   onSelect: (variantId: string) => void
+  /** Zbývá doplatit na hypotéce – kotva u plnění při úmrtí. */
+  zbytekHypoteky: number | null
 }
 
 const VARIANT_COLORS = [BARVY.mint, BARVY.navy, BARVY.mintDark]
@@ -42,6 +43,7 @@ export default function IncomeLifeChart({
   variants,
   selectedVariantId,
   onSelect,
+  zbytekHypoteky,
 }: Props) {
 
   // Selected variant payout summary
@@ -109,46 +111,14 @@ export default function IncomeLifeChart({
         </div>
       )}
 
-      {/* Časová osa "Co se vám může v životě stát" */}
-      <LifeRiskTimeline variants={variants} selectedVariantId={selectedVariantId} />
-
-      {/* Pojistné krytí – co která komponenta dělá */}
-      <CoveragePanel
-        selected={selected ?? null}
-        variants={variants}
+      {/* Místo osy rizik a bloku krytí: co vybraná varianta znamená v penězích.
+          Dokud klient nevybral, ukáže se první varianta jako náhled. */}
+      <ScenarePojistky
+        variant={selected ?? variants[0]}
+        jeNahled={!selected}
+        zbytekHypoteky={zbytekHypoteky}
+        cistyPrijem={monthlyIncomeNet}
       />
     </div>
-  )
-}
-
-/** Blok krytí sdílí s hotovou smlouvou v sekci Moje smlouvy. */
-function CoveragePanel({
-  selected,
-  variants,
-}: {
-  selected: IncomeVariant | null
-  variants: IncomeVariant[]
-}) {
-  // Když klient nevybral, ukážeme náhled podle první varianty – a řekneme to.
-  const display = selected ?? variants[0] ?? null
-  if (!display) return null
-
-  return (
-    <KrytiPojistky
-      castky={display.details ?? {}}
-      zvyraznit={Boolean(selected)}
-      podtitulek={
-        selected ? (
-          <>
-            Krytí ve vybrané variantě <strong className="text-navy">{display.company}</strong>.
-          </>
-        ) : (
-          <>
-            Náhled krytí varianty <strong className="text-navy">{display.company}</strong> – vyberte
-            konkrétní variantu výše pro definitivní hodnoty.
-          </>
-        )
-      }
-    />
   )
 }
