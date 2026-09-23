@@ -43,6 +43,14 @@ export interface ObsahSmlouvy {
   souborPopisek?: string
 }
 
+/**
+ * Kotva smlouvy v sekci Moje smlouvy. Přehled přes ni odkazuje rovnou na
+ * konkrétní smlouvu (`/dashboard/produkty#smlouva-…`) a ta se sama otevře.
+ */
+export function kotvaSmlouvy(id: string): string {
+  return `smlouva-${id}`
+}
+
 /** Vrátí null, když jde o starší tvar nebo nečitelný JSON — stránka pak vypíše, co umí. */
 export function ctiSmlouvu(content: string | null): ObsahSmlouvy | null {
   if (!content) return null

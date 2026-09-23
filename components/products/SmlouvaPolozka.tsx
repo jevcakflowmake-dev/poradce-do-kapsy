@@ -1,11 +1,12 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, FileText, ExternalLink } from 'lucide-react'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import SmlouvaDetail from '@/components/products/SmlouvaDetail'
-import { ctiSmlouvu } from '@/lib/smlouvy'
+import { ctiSmlouvu, kotvaSmlouvy } from '@/lib/smlouvy'
+import { createClient } from '@/lib/supabase/client'
 
 /**
  * Jedna smlouva v sekci Moje smlouvy: zavřená ukazuje jen název a datum,
@@ -25,14 +26,57 @@ export interface Product {
   file_url: string | null
   link_url: string | null
   created_at: string
+  /** Klient smlouvu otevřel. Přehled do té doby ukazuje „Ke kontrole“, poradce „Nepřečteno“. */
+  is_read: boolean | null
+}
+
+function sledujKotvu(zmena: () => void) {
+  window.addEventListener('hashchange', zmena)
+  return () => window.removeEventListener('hashchange', zmena)
 }
 
 export default function SmlouvaPolozka({ product }: { product: Product }) {
-  const [otevreno, setOtevreno] = useState(false)
+  const kotva = kotvaSmlouvy(product.id)
+  /**
+   * Přehled odkazuje na konkrétní smlouvu přes #kotvu. Seznam se načítá až
+   * v prohlížeči, takže Next při navigaci cíl ještě nenajde a neposune se –
+   * otevření i posun proto obstará smlouva sama, jakmile se vykreslí.
+   */
+  const zKotvy = useSyncExternalStore(
+    sledujKotvu,
+    () => window.location.hash === `#${kotva}`,
+    () => false,
+  )
+  // Dokud klient sám neklikne, řídí se otevření kotvou.
+  const [rucne, setRucne] = useState<boolean | null>(null)
+  const otevreno = rucne ?? zKotvy
+
   const idDetailu = useId()
   const smlouva = ctiSmlouvu(product.content)
   // Starší řádek bez obsahu i přílohy nemá co rozbalit – šipka by nic neslibovala.
   const maDetail = Boolean(product.content || product.file_url || product.link_url)
+
+  useEffect(() => {
+    if (!zKotvy) return
+    const plynule = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    document.getElementById(kotva)?.scrollIntoView({ block: 'start', behavior: plynule ? 'smooth' : 'auto' })
+  }, [zKotvy, kotva])
+
+  // Otevřená smlouva je přečtená: zmizí „Ke kontrole“ na přehledu a poradce
+  // u klienta vidí, že si ji prošel. Jednou stačí, i když ji klient zavře.
+  const oznaceno = useRef(Boolean(product.is_read))
+  useEffect(() => {
+    if (!otevreno || oznaceno.current) return
+    oznaceno.current = true
+    createClient()
+      .from('proposals')
+      .update({ is_read: true })
+      .eq('id', product.id)
+      .then(({ error }) => {
+        // Nepovedlo se – zkusí se to při dalším otevření.
+        if (error) oznaceno.current = false
+      })
+  }, [otevreno, product.id])
 
   const hlavicka = (
     <>
@@ -54,14 +98,16 @@ export default function SmlouvaPolozka({ product }: { product: Product }) {
 
   return (
     <div
-      className={`bg-surface rounded-card border transition-colors ${
+      id={kotva}
+      // Na mobilu je nahoře lepkavá lišta (64 px), posun ji nesmí podjet.
+      className={`scroll-mt-24 lg:scroll-mt-8 bg-surface rounded-card border transition-colors ${
         otevreno ? 'border-mint/40' : 'border-line hover:border-mint/30'
       }`}
     >
       {maDetail ? (
         <button
           type="button"
-          onClick={() => setOtevreno((o) => !o)}
+          onClick={() => setRucne(!otevreno)}
           aria-expanded={otevreno}
           aria-controls={idDetailu}
           className="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left rounded-card focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
@@ -73,7 +119,7 @@ export default function SmlouvaPolozka({ product }: { product: Product }) {
       )}
 
       <AnimatePresence initial={false}>
-        {otevreno && (
+        {otevreno && maDetail && (
           <motion.div
             id={idDetailu}
             initial={{ height: 0, opacity: 0 }}

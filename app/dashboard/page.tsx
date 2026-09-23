@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { mesicniPlatby } from '@/lib/payments'
 import { proposalTypeLabel, osloveni } from '@/lib/utils'
+import { kotvaSmlouvy } from '@/lib/smlouvy'
 import type { Proposal } from '@/lib/types/database'
 
 /** Číslo v korunách. Bez desetinných míst — v přehledu jde o řád, ne o haléře. */
@@ -89,26 +90,39 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <Card className="mt-5 divide-y divide-line">
+        <Card className="mt-5 divide-y divide-line overflow-hidden">
           {smlouvy.length === 0 ? (
             <p className="p-6 text-base text-slate">
               Zatím tu nic není. Jakmile pro vás něco sjednám, najdete to tady i s platbami.
             </p>
           ) : (
             smlouvy.slice(0, 5).map((s) => (
-              <div key={s.id} className="p-5 flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-base font-medium text-navy truncate">{s.title}</p>
-                  <p className="text-base text-slate mt-0.5">{proposalTypeLabel(s.type)}</p>
-                </div>
-                <span
-                  className={`shrink-0 rounded-pill px-3 py-1 text-base whitespace-nowrap ${
-                    s.is_read ? 'bg-mint/15 text-navy' : 'bg-amber/25 text-navy'
-                  }`}
-                >
-                  {s.is_read ? 'Aktivní' : 'Ke kontrole'}
+              // Celý řádek vede na detail té smlouvy, ne jen na seznam – tam se rovnou otevře.
+              <Link
+                key={s.id}
+                href={`/dashboard/produkty#${kotvaSmlouvy(s.id)}`}
+                className="group p-5 flex items-center justify-between gap-4 transition-colors hover:bg-cream/60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-mint/40"
+              >
+                <span className="min-w-0">
+                  {/* Zalomit, ne uříznout: vedle štítku a šipky by na telefonu zbylo „Životní poj…“. */}
+                  <span className="block text-base font-medium text-navy text-pretty">{s.title}</span>
+                  <span className="block text-base text-slate mt-0.5">{proposalTypeLabel(s.type)}</span>
                 </span>
-              </div>
+                <span className="shrink-0 flex items-center gap-3">
+                  <span
+                    className={`rounded-pill px-3 py-1 text-base whitespace-nowrap ${
+                      s.is_read ? 'bg-mint/15 text-navy' : 'bg-amber/25 text-navy'
+                    }`}
+                  >
+                    {s.is_read ? 'Aktivní' : 'Ke kontrole'}
+                  </span>
+                  <ChevronRight
+                    aria-hidden
+                    strokeWidth={1.8}
+                    className="w-5 h-5 text-slate transition-transform group-hover:translate-x-0.5 group-hover:text-navy"
+                  />
+                </span>
+              </Link>
             ))
           )}
         </Card>
