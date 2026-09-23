@@ -8,7 +8,7 @@ import {
   SECTIONS,
   HEALTH_SECTION_ID,
   viditelneOtazky,
-  uklidSkryteOdpovedi,
+  uklidVsechnySekce,
   rozdelHodnoty,
   spojHodnoty,
   rozdelSkupinu,
@@ -104,9 +104,10 @@ export default function AnalysisWizard() {
 
   function uprav(questionId: string, hodnota: string) {
     setData((prev) => {
-      const nove = { ...prev[sekce.id], [questionId]: hodnota }
-      // Odpověď, která se právě schovala, nemá odejít poradci.
-      return { ...prev, [sekce.id]: uklidSkryteOdpovedi(sekce, nove) }
+      // Odpověď, která se právě schovala, nemá odejít poradci. Úklid jde přes
+      // celou analýzu: volba „jen úraz“ v prvním kroku schovává otázky
+      // i v dalších sekcích.
+      return uklidVsechnySekce({ ...prev, [sekce.id]: { ...prev[sekce.id], [questionId]: hodnota } })
     })
   }
 
@@ -225,7 +226,7 @@ export default function AnalysisWizard() {
         )}
 
         <div className="mt-8 md:mt-10 space-y-8">
-          {viditelneOtazky(sekce, data[sekce.id]).map((q) => (
+          {viditelneOtazky(sekce, data[sekce.id], data).map((q) => (
             <Otazka
               key={q.id}
               otazka={q}

@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import {
   applyResponses,
   attachFilesToClient,
+  odstranNeplatneOdpovedi,
   syncProfileFromResponses,
   type Responses,
   type SubmissionFile,
@@ -78,6 +79,9 @@ export async function POST(request: Request) {
     const files = (submission.files ?? []) as unknown as SubmissionFile[]
 
     await applyResponses(admin, clientId, responses)
+    // Nové odeslání se slévá se staršími odpověďmi klienta – co už podle
+    // nové verze nemá existovat (třeba přepnul na „jen úraz“), jde pryč.
+    await odstranNeplatneOdpovedi(admin, clientId, responses)
     await syncProfileFromResponses(admin, clientId, responses, true)
 
     const failed = await attachFilesToClient(admin, clientId, files)

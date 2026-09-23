@@ -128,7 +128,7 @@ export default function AnalysisAccordion({
                   <div className="p-5 md:p-7 space-y-5">
                     {section.id === HEALTH_SECTION_ID && <HealthDataNotice />}
 
-                    {viditelneOtazky(section, data[section.id]).map(q =>
+                    {viditelneOtazky(section, data[section.id], data).map(q =>
                       q.type === 'group' ? (
                         <SkupinaPolozek
                           key={q.id}

@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { SECTIONS, uklidVsechnySekce, type VsechnyOdpovedi } from './analysis-sections'
 
 /**
  * Práce s odesláními z veřejného formuláře (/analyza).
@@ -59,6 +60,60 @@ export async function applyResponses(
     .upsert(rows, { onConflict: 'client_id,section,question_id' })
 
   if (error) throw new Error(`Uložení odpovědí selhalo: ${error.message}`)
+}
+
+/**
+ * Smaže odpovědi, které podle definice analýzy nemají existovat: schované
+ * podmínkou (OSVČ → zaměstnanec, „jen úraz“) a vymazané klientem.
+ *
+ * `applyResponses` jen přepisuje a prázdné hodnoty přeskakuje, takže se
+ * z databáze dřív nikdy nic nesmazalo. Úklid v prohlížeči odpověď vyhodil
+ * jen ze stavu formuláře – kdo po uložení přepnul větev, tomu stará odpověď
+ * v databázi zůstala a poradce z ní dál viděl flagy.
+ *
+ * Odpovědi na otázky, které definice nezná (starší verze analýzy), nechává
+ * být: panel poradce je schválně neukazuje, ale mazat je není důvod.
+ */
+export async function odstranNeplatneOdpovedi(
+  admin: SupabaseClient,
+  clientId: string,
+  odeslane?: Responses,
+): Promise<number> {
+  const { data, error } = await admin
+    .from('analysis_responses')
+    .select('section, question_id, value')
+    .eq('client_id', clientId)
+  if (error) throw new Error(`Načtení odpovědí selhalo: ${error.message}`)
+
+  const vsechny: VsechnyOdpovedi = {}
+  for (const r of (data ?? []) as Array<{ section: string; question_id: string; value: string }>) {
+    ;(vsechny[r.section] ??= {})[r.question_id] = r.value
+  }
+  const platne = uklidVsechnySekce(vsechny)
+
+  const kSmazani: Record<string, string[]> = {}
+  for (const sekce of SECTIONS) {
+    const definovane = new Set(sekce.questions.map((q) => q.id))
+    for (const qid of Object.keys(vsechny[sekce.id] ?? {})) {
+      if (!definovane.has(qid)) continue
+      const skryta = platne[sekce.id]?.[qid] === undefined
+      const vymazana = odeslane?.[sekce.id]?.[qid] !== undefined && !odeslane[sekce.id][qid].trim()
+      if (skryta || vymazana) (kSmazani[sekce.id] ??= []).push(qid)
+    }
+  }
+
+  let pocet = 0
+  for (const [sekce, otazky] of Object.entries(kSmazani)) {
+    const { error: chyba } = await admin
+      .from('analysis_responses')
+      .delete()
+      .eq('client_id', clientId)
+      .eq('section', sekce)
+      .in('question_id', otazky)
+    if (chyba) throw new Error(`Úklid odpovědí selhal: ${chyba.message}`)
+    pocet += otazky.length
+  }
+  return pocet
 }
 
 /**

@@ -15,7 +15,7 @@ import {
   type Answers,
   type Recommendation,
 } from '@/src/questionnaires/zajisteni-prijmu.questionnaire'
-import { SECTIONS, rozdelHodnoty, rozdelSkupinu } from './analysis-sections'
+import { JEN_URAZ, SECTIONS, rozdelHodnoty, rozdelSkupinu } from './analysis-sections'
 
 /** Odpovědi analýzy tak, jak je drží průvodce i poradcovský detail: sekce → otázka → hodnota. */
 export type AnalyzaOdpovedi = Record<string, Record<string, string>>
@@ -27,7 +27,7 @@ export type AnalyzaOdpovedi = Record<string, Record<string, string>>
  */
 export const POTREBNE_OTAZKY: string[] = [
   // income
-  'employment', 'monthly_income', 'income_variable', 'sick_pay_osvc',
+  'cover_scope', 'employment', 'monthly_income', 'income_variable', 'sick_pay_osvc',
   'social_contributions', 'work_years', 'work_risk',
   'essential_expenses', 'reserve_months', 'other_loans',
   // income_cover
@@ -167,9 +167,15 @@ export function naDotaznikoveOdpovedi(a: AnalyzaOdpovedi): Answers {
   const children = a.children ?? {}
   const personal = a.personal ?? {}
 
+  // U „jen úraz“ se na nemocenskou neptáme. Výpočet bere chybějící odpověď
+  // jako „nemá“ (u plné větve opatrný předpoklad – většina OSVČ ji nemá)
+  // a hlásil by „OSVČ bez nemocenského, PN je prioritou“, i když PN vůbec
+  // není předmětem. Typ práce slouží ve výpočtu jen k tomuhle, proto ven.
+  const jenUraz = income.cover_scope === JEN_URAZ
+
   return {
     // — práce a příjem —
-    typ_prace: TYP_PRACE[income.employment],
+    typ_prace: jenUraz ? undefined : TYP_PRACE[income.employment],
     prijem_cisty: cislo(income.monthly_income),
     prijem_variabilni: PRIJEM_VARIABILNI[income.income_variable],
     osvc_nemocenska: ANO_NE_NEVIM[income.sick_pay_osvc],
@@ -215,5 +221,19 @@ export function naDotaznikoveOdpovedi(a: AnalyzaOdpovedi): Answers {
 export function vyhodnotAnalyzu(a: AnalyzaOdpovedi): Recommendation | null {
   const odpovedi = naDotaznikoveOdpovedi(a)
   if (!odpovedi.prijem_cisty) return null
-  return computeRecommendation(odpovedi)
+  const vysledek = computeRecommendation(odpovedi)
+
+  // Klient si vybral jen úrazovou větev – poradce to musí vidět jako první,
+  // protože nemoc (hlavní příčina invalidit) mu zůstává nekrytá a podle
+  // zákona o distribuci pojištění patří do záznamu, že o tom ví.
+  if (a.income?.cover_scope === JEN_URAZ) {
+    return {
+      ...vysledek,
+      flags: [
+        'Chce jen úrazové pojištění – nemoc zůstává nekrytá. Probrat a zapsat, že o tom ví.',
+        ...vysledek.flags,
+      ],
+    }
+  }
+  return vysledek
 }

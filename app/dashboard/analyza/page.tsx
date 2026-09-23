@@ -9,7 +9,7 @@ import AnalysisAccordion, {
   type PendingFile,
   type StoredAnalysisFile,
 } from '@/components/analysis/AnalysisAccordion'
-import { SECTIONS, type SectionData } from '@/lib/analysis-sections'
+import { uklidVsechnySekce, SECTIONS, type SectionData } from '@/lib/analysis-sections'
 import { BARVY } from '@/lib/barvy'
 
 export default function AnalyzaPage() {
@@ -29,10 +29,11 @@ export default function AnalyzaPage() {
   const supabase = useMemo(() => createClient(), [])
 
   function updateField(sectionId: string, questionId: string, value: string) {
-    setData(prev => ({
-      ...prev,
-      [sectionId]: { ...prev[sectionId], [questionId]: value },
-    }))
+    // Úklid přes celou analýzu, stejně jako ve veřejném průvodci – jinak by
+    // tu po přepnutí na „jen úraz“ zůstaly vidět i otázky na nemocenskou.
+    setData(prev =>
+      uklidVsechnySekce({ ...prev, [sectionId]: { ...prev[sectionId], [questionId]: value } }),
+    )
   }
 
   function toggleSection(id: string) {

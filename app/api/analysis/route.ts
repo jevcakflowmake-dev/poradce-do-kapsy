@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
-import { applyResponses, syncProfileFromResponses, type Responses } from '@/lib/submissions'
+import { applyResponses, odstranNeplatneOdpovedi, syncProfileFromResponses, type Responses } from '@/lib/submissions'
 import { NextResponse } from 'next/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -53,6 +53,8 @@ export async function POST(request: Request) {
     // v databázi nic nebylo.
     try {
       await applyResponses(supabase, clientId, responses as Responses)
+      // Skryté a vymazané odpovědi pryč – upsert je sám nikdy nesmaže.
+      await odstranNeplatneOdpovedi(supabase, clientId, responses as Responses)
     } catch (err) {
       console.error('[analysis]', err instanceof Error ? err.message : err)
       return NextResponse.json({ error: 'Odpovědi se nepodařilo uložit.' }, { status: 500 })
