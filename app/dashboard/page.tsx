@@ -7,6 +7,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { mesicniPlatby } from '@/lib/payments'
 import { proposalTypeLabel, osloveni } from '@/lib/utils'
 import { kotvaSmlouvy } from '@/lib/smlouvy'
+import PotrebujuVyresit from '@/components/dashboard/PotrebujuVyresit'
 import type { Proposal } from '@/lib/types/database'
 
 /** Číslo v korunách. Bez desetinných míst — v přehledu jde o řád, ne o haléře. */
@@ -132,6 +133,10 @@ export default async function DashboardPage() {
           )}
         </Card>
       </section>
+
+      <div className="mt-10">
+        <PotrebujuVyresit clientId={user.id} />
+      </div>
     </div>
   )
 }
