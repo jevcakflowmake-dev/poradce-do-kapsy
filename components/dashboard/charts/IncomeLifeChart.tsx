@@ -10,9 +10,10 @@ import {
   Tooltip,
   ReferenceLine,
 } from 'recharts'
-import { Shield, CheckCircle2 } from 'lucide-react'
+import { Shield } from 'lucide-react'
 import { type RiskKey } from '@/lib/income-risks'
 import KrytiPojistky from '@/components/pojisteni/KrytiPojistky'
+import SrovnaniVariant, { VyberVarianty } from './SrovnaniVariant'
 import LifeRiskTimeline from './LifeRiskTimeline'
 import { BARVY } from '@/lib/barvy'
 
@@ -191,66 +192,15 @@ export default function IncomeLifeChart({
         </div>
       </div>
 
-      {/* Variant cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {variants.map((v, idx) => {
-          const color = VARIANT_COLORS[idx] ?? BARVY.navy
-          const isSelected = selectedVariantId === v.id
-          const payout60 = v.details?.payout_60 ?? 0
-          const payout50 = v.details?.payout_50 ?? 0
-
-          return (
-            <button
-              key={v.id}
-              type="button"
-              onClick={() => onSelect(v.id)}
-              className={`text-left rounded-card p-4 border-2 transition-all hover:-translate-y-0.5 ${
-                isSelected
-                  ? 'bg-mint/8 border-mint shadow-[0_8px_24px_-12px_rgba(31,181,143,0.4)]'
-                  : 'bg-surface border-line hover:border-mint/40 hover:shadow-sm'
-              }`}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className="w-10 h-10 rounded-card flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm"
-                  style={{ background: color }}
-                >
-                  {v.logo}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className={`font-semibold ${isSelected ? 'text-navy' : 'text-navy'}`}>
-                    {v.company}
-                  </h4>
-                  <p className="text-[11px] uppercase tracking-[0.1em] text-slate">Varianta {idx + 1}</p>
-                </div>
-                {isSelected && <CheckCircle2 className="w-5 h-5 text-navy shrink-0" />}
-              </div>
-
-              <div className="space-y-1.5 text-xs">
-                <Row label="Měsíční pojistné" value={v.monthly_payment} />
-                <Row label="Výplata 60 %" value={payout60 ? `+${fmtCzk(payout60)}/měs` : '–'} />
-                <Row label="Výplata 50 %" value={payout50 ? `+${fmtCzk(payout50)}/měs` : '–'} />
-                {v.details?.waiting_period_days != null && (
-                  <Row label="Karence" value={`${v.details.waiting_period_days} dní`} muted />
-                )}
-                {v.details?.max_payout_years != null && (
-                  <Row label="Max. délka" value={`${v.details.max_payout_years} let`} muted />
-                )}
-              </div>
-
-              <div
-                className={`mt-4 text-center text-xs font-semibold py-2 rounded-card ${
-                  isSelected
-                    ? 'bg-mint text-navy'
-                    : 'bg-navy/5 text-navy'
-                }`}
-              >
-                {isSelected ? '✓ Vybráno' : 'Vybrat tuto variantu'}
-              </div>
-            </button>
-          )
-        })}
-      </div>
+      {/* Srovnání parametr po parametru a pod ním volba. Dřív měla každá
+          varianta vlastní kartu s pěti údaji a porovnávat se muselo očima. */}
+      <SrovnaniVariant variants={variants} barvy={VARIANT_COLORS} selectedId={selectedVariantId} />
+      <VyberVarianty
+        variants={variants}
+        barvy={VARIANT_COLORS}
+        selectedId={selectedVariantId}
+        onSelect={onSelect}
+      />
 
       {/* Vybraná varianta – sumář */}
       {selected && (
@@ -324,14 +274,6 @@ function LegendDot({ color, label, muted }: { color: string; label: string; mute
   )
 }
 
-function Row({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
-  return (
-    <div className={`flex items-baseline justify-between gap-2 ${muted ? 'opacity-60' : ''}`}>
-      <span className="text-slate">{label}</span>
-      <span className="font-semibold text-navy text-right">{value}</span>
-    </div>
-  )
-}
 
 type IncomeTooltipPayloadItem = { name: string; value: number; color: string; dataKey: string }
 function IncomeStackTooltip({
