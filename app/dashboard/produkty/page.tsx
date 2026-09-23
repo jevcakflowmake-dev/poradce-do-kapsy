@@ -1,23 +1,11 @@
 'use client'
 
-import StoredFileLink from '@/components/files/StoredFileLink'
-import { Shield, Clock, TrendingUp, FileText, ExternalLink } from 'lucide-react'
+import { Shield, Clock, TrendingUp } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import MesicniPlatby from '@/components/products/MesicniPlatby'
-import SmlouvaDetail from '@/components/products/SmlouvaDetail'
-import { ctiSmlouvu } from '@/lib/smlouvy'
-
-interface Product {
-  id: string
-  type: 'insurance' | 'pension' | 'invest'
-  title: string
-  content: string | null
-  file_url: string | null
-  link_url: string | null
-  created_at: string
-}
+import SmlouvaPolozka, { type Product } from '@/components/products/SmlouvaPolozka'
 
 const typeConfig = {
   insurance: {
@@ -38,69 +26,6 @@ const typeConfig = {
     plocha: 'bg-navy-soft',
     numeral: '03',
   },
-}
-
-const SECTION_LABELS: Record<string, string> = {
-  daily_compensation: 'Denní odškodné',
-  hospitalization: 'Hospitalizace',
-  disability: 'Invalidita',
-  permanent_consequences: 'Trvalé následky',
-  serious_illness: 'Závažná onemocnění',
-  work_incapacity: 'Pracovní neschopnost',
-  death: 'Smrt',
-  death_accident: 'Smrt úrazem',
-  long_term_care: 'Dlouhodobá péče',
-}
-
-type InsuranceContent = {
-  logo?: string
-  company?: string
-  monthly_price?: number | string
-  sections?: Array<{ id: string; amount: number }>
-  description?: string
-}
-
-function InsuranceDetail({ content }: { content: string | null }) {
-  if (!content) return null
-
-  // V try/catch je jen parsování. React JSX nevyhodnocuje hned při vytvoření,
-  // takže chyba při renderu by tímhle catch stejně jen propadla dál.
-  let parsed: InsuranceContent | null = null
-  try {
-    parsed = JSON.parse(content) as InsuranceContent
-  } catch {
-    parsed = null
-  }
-
-  if (!parsed?.sections) {
-    return <p className="text-base text-slate mt-2">{content}</p>
-  }
-
-  return (
-    <div className="mt-4 pt-4 border-t border-line">
-      <div className="flex items-center gap-2 mb-3">
-        {parsed.logo && <span className="text-lg">{parsed.logo}</span>}
-        {parsed.company && <span className="text-base font-semibold text-navy">{parsed.company}</span>}
-        {parsed.monthly_price && (
-          <span className="ml-auto text-base font-bold text-navy">
-            {parsed.monthly_price} Kč/měsíc
-          </span>
-        )}
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-        {parsed.sections.map((s) => (
-          <div key={s.id} className="flex items-center gap-2 text-base">
-            <span className="w-1.5 h-1.5 rounded-full bg-mint shrink-0" />
-            <span className="text-slate">{SECTION_LABELS[s.id] || s.id}</span>
-            <span className="font-medium text-navy ml-auto tabular-nums">
-              {s.amount?.toLocaleString('cs-CZ')} Kč
-            </span>
-          </div>
-        ))}
-      </div>
-      {parsed.description && <p className="text-base text-slate mt-3">{parsed.description}</p>}
-    </div>
-  )
 }
 
 export default function ProduktyPage() {
@@ -171,52 +96,7 @@ export default function ProduktyPage() {
             ) : (
               <div className="space-y-3">
                 {items.map((product) => (
-                  <div
-                    key={product.id}
-                    className="bg-surface rounded-card border border-line p-5 md:p-6 transition-all hover:shadow-[0_10px_30px_-10px_rgba(15,42,68,0.1)] hover:border-mint/30"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-display text-navy text-lead">
-                          {product.title}
-                        </h3>
-                        <span className="text-base text-slate mt-1 block">
-                          {new Date(product.created_at).toLocaleDateString('cs-CZ')}
-                        </span>
-                      </div>
-                      <div className="flex gap-2 flex-shrink-0">
-                        {product.file_url && (
-                          <StoredFileLink
-                            bucket="proposals"
-                            path={product.file_url}
-                            className="w-9 h-9 bg-cream border border-line rounded-card flex items-center justify-center hover:bg-navy hover:text-white hover:border-navy transition-colors group"
-                          >
-                            <FileText className="w-4 h-4" />
-                          </StoredFileLink>
-                        )}
-                        {product.link_url && (
-                          <a
-                            href={product.link_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="w-9 h-9 bg-cream border border-line rounded-card flex items-center justify-center hover:bg-navy hover:text-white hover:border-navy transition-colors"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                    {/* Nový tvar smlouvy vykreslí SmlouvaDetail, starší řádky
-                        zůstávají na původní, chudší podobě. */}
-                    {ctiSmlouvu(product.content) ? (
-                      <SmlouvaDetail
-                        smlouva={ctiSmlouvu(product.content)!}
-                        fileUrl={product.file_url}
-                      />
-                    ) : (
-                      <InsuranceDetail content={product.content} />
-                    )}
-                  </div>
+                  <SmlouvaPolozka key={product.id} product={product} />
                 ))}
               </div>
             )}
