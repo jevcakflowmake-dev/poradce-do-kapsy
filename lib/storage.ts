@@ -6,6 +6,24 @@ export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 /** Přílohy analýzy: smlouvy a výpisy v PDF, fotky dokladů. Totéž jako `accept` u pole. */
 export const PRIJIMANE_PRILOHY = '.pdf,.jpg,.jpeg,.png'
 const POVOLENE_TYPY = ['application/pdf', 'image/jpeg', 'image/png']
+const TYP_PODLE_PRIPONY: Record<string, string> = {
+  '.pdf': 'application/pdf',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+}
+
+/**
+ * Buckety přijímají jen PDF/JPG/PNG podle typu souboru (migrace 016).
+ * Když prohlížeč typ nepošle – stává se u rozbitých asociací ve Windows –,
+ * odešel by soubor jako application/octet-stream a storage by ho odmítl,
+ * i když má správnou příponu. Typ proto doplníme podle přípony.
+ */
+export function sTypem(file: File): File {
+  if (file.type) return file
+  const pripona = Object.keys(TYP_PODLE_PRIPONY).find((p) => file.name.toLowerCase().endsWith(p))
+  return pripona ? new File([file], file.name, { type: TYP_PODLE_PRIPONY[pripona] }) : file
+}
 
 /**
  * `accept` u pole hlídá jen prohlížeč, obejít ho jde jedním požadavkem.
@@ -52,7 +70,7 @@ export async function uploadAnalysisFile(
 
   const path = `${clientId}/${section}/${Date.now()}_${sanitizeFileName(file.name)}`
 
-  const { error: uploadError } = await supabase.storage.from('analysis').upload(path, file)
+  const { error: uploadError } = await supabase.storage.from('analysis').upload(path, sTypem(file))
   if (uploadError) {
     return { ok: false, error: `${file.name}: ${uploadError.message}` }
   }

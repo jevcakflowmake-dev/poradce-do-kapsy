@@ -8,6 +8,7 @@ import { ArrowUpRight, CheckCircle2, AlertCircle, Upload, Link2, Loader2 } from 
 import { createClient } from '@/lib/supabase/client'
 import type { ProposalType } from '@/lib/types/database'
 import { BARVY } from '@/lib/barvy'
+import { sTypem } from '@/lib/storage'
 
 const INSURANCE_SECTIONS = [
   { id: 'daily_compensation', label: 'Denní odškodné', unit: 'Kč/den' },
@@ -89,7 +90,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
       const path = `${clientId}/${Date.now()}_${file.name}`
       const { error: uploadError } = await supabase.storage
         .from('proposals')
-        .upload(path, file)
+        .upload(path, sTypem(file))
 
       if (uploadError) {
         setError('Chyba při nahrávání souboru: ' + uploadError.message)

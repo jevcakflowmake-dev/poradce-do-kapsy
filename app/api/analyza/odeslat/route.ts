@@ -11,7 +11,7 @@ import {
   STORAGE_BUCKET,
   type SubmissionFile,
 } from '@/lib/submissions'
-import { MAX_FILE_SIZE, jePovolenaPriloha, sanitizeFileName } from '@/lib/storage'
+import { MAX_FILE_SIZE, jePovolenaPriloha, sanitizeFileName, sTypem } from '@/lib/storage'
 import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
 import type { Json } from '@/lib/types/database'
 
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
       // přesune. Z formuláře přijde cokoliv, třeba „../cizi-id“ – bereme jen známé.
       const section = SEKCE_ANALYZY.has(fileSections[i]) ? fileSections[i] : 'personal'
       const path = `${PARKED_PREFIX}/${submissionId}/${section}/${Date.now()}_${sanitizeFileName(file.name)}`
-      const { error } = await admin.storage.from(STORAGE_BUCKET).upload(path, file)
+      const { error } = await admin.storage.from(STORAGE_BUCKET).upload(path, sTypem(file))
       if (error) {
         console.error(`[analyza] upload ${file.name} selhal: ${error.message}`)
         continue
