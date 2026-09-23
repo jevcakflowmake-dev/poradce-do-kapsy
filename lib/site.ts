@@ -1,11 +1,13 @@
 /**
- * Kanonická adresa webu – jedno místo pro metadata, sitemap i robots.
+ * Kanonická adresa webu – jedno místo pro metadata, sitemap, robots
+ * i odkazy v e-mailech.
  *
- * Po koupi vlastní domény stačí nastavit `NEXT_PUBLIC_SITE_URL` ve Vercelu
- * (Settings → Environment Variables) a znovu nasadit; nic v kódu se nemění.
- * Bez proměnné se použije současná adresa na vercel.app.
+ * Výchozí je vlastní doména (od září 2026, vercel.app na ni přesměrovává).
+ * `NEXT_PUBLIC_SITE_URL` ve Vercelu ji umí přebít, třeba pro testovací
+ * nasazení. Dřív tu byla adresa na vercel.app a proměnná nastavená nebyla,
+ * takže sitemap i odkazy pro klienty ukazovaly na vercel.app.
  */
-const FALLBACK_URL = 'https://poradce-do-kapsy.vercel.app'
+const FALLBACK_URL = 'https://poradcedokapsy.cz'
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_URL).replace(/\/+$/, '')
 

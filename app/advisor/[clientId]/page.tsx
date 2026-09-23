@@ -86,15 +86,16 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
     created_at: string
   } | null
 
-  // Zvolil si klient někdy heslo? Když ne, přihlásit se zatím nemůže.
-  const { data: appliedRaw } = await supabase
+  // Přišel klient přes veřejnou analýzu a zvolil si v ní heslo? Dřív se tu
+  // braly jen odeslání s heslem, takže klient bez hesla – ten, kdo přístup
+  // od poradce potřebuje nejvíc – tlačítko pro poslání přístupu neměl.
+  const { data: odeslaniRaw } = await supabase
     .from('public_submissions')
     .select('has_password')
     .eq('matched_client_id', clientId)
-    .eq('has_password', true)
-    .limit(1)
-  const cameFromPublicForm = pendingSubmission !== null || (appliedRaw?.length ?? 0) > 0
-  const clientHasPassword = (appliedRaw?.length ?? 0) > 0
+  const odeslani = (odeslaniRaw as Array<{ has_password: boolean | null }> | null) ?? []
+  const cameFromPublicForm = pendingSubmission !== null || odeslani.length > 0
+  const clientHasPassword = odeslani.some((o) => o.has_password)
 
   // Existuje už nějaký plán pro klienta?
   // S head: true dotaz nevrací řádky – počet je v `count` vedle `data`, ne uvnitř.

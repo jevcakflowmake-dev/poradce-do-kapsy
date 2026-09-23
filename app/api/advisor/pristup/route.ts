@@ -1,20 +1,24 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createPublicClient } from '@/lib/supabase/verejny'
 import { absoluteUrl } from '@/lib/site'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /**
- * Vygeneruje klientovi odkaz, kterým si nastaví heslo a dostane se k plánu.
+ * Přístup pro klienta: odkaz, kterým si nastaví heslo a dostane se k plánu.
+ * Typicky pro člověka, který vyplnil veřejnou analýzu bez hesla.
  *
- * Typicky pro člověka, který vyplnil veřejnou analýzu a heslo si nezvolil –
- * účet má, ale přihlásit se s ním zatím nedá.
+ * Dvě cesty:
+ * - `poslat: true` – e-mail pošle Supabase přes vlastní SMTP (šablona
+ *   Reset password, v repu supabase/templates/nastaveni-hesla.html)
+ * - jinak odkaz vrátíme poradci ke zkopírování (WhatsApp, vlastní e-mail)
  *
- * Odkaz VRACÍME poradci, aby ho mohl poslat sám (e-mailem, WhatsApp).
- * Supabase se ho zároveň pokusí odeslat, ale dokud není nastavené vlastní
- * SMTP, výchozí brána zvládne ~2 e-maily/hod a jen na členy týmu – proto se
- * na její doručení nespoléháme.
+ * Odkaz ke zkopírování skládáme sami z hashed_token přes /auth/potvrzeni,
+ * ne z action_linku Supabase: ten po ověření vracel session v #hash, se
+ * kterým serverová routa nic nenadělá, a skenery pošty by ho spotřebovaly.
+ * Platí vždy jen nejnovější odkaz – každý další ten předchozí zneplatní.
  */
 export async function POST(request: Request) {
   try {
@@ -26,6 +30,7 @@ export async function POST(request: Request) {
 
     const body = await request.json().catch(() => null)
     const clientId = body?.client_id
+    const poslat = body?.poslat === true
 
     if (typeof clientId !== 'string' || !UUID_REGEX.test(clientId)) {
       return NextResponse.json({ error: 'Neplatné client_id.' }, { status: 400 })
@@ -38,15 +43,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Klient nenalezen.' }, { status: 404 })
     }
 
+    if (poslat) {
+      const { error } = await createPublicClient().auth.resetPasswordForEmail(target.user.email, {
+        redirectTo: absoluteUrl('/update-password'),
+      })
+      if (error) {
+        console.error('[pristup] e-mail neodešel:', error.message)
+        const limit = error.status === 429
+        return NextResponse.json(
+          { error: limit ? 'Odkaz pro tohoto klienta jste vyžádali před chvílí. Zkuste to prosím za minutu.' : 'E-mail se nepodařilo odeslat.' },
+          { status: limit ? 429 : 500 },
+        )
+      }
+      return NextResponse.json({ ok: true, email: target.user.email, odeslano: true })
+    }
+
     const { data, error } = await admin.auth.admin.generateLink({
       type: 'recovery',
       email: target.user.email,
-      options: {
-        redirectTo: absoluteUrl('/auth/callback?next=/update-password'),
-      },
     })
+    const hash = data?.properties?.hashed_token
 
-    if (error || !data.properties?.action_link) {
+    if (error || !hash) {
       return NextResponse.json(
         { error: error?.message || 'Odkaz se nepodařilo vygenerovat.' },
         { status: 500 },
@@ -56,7 +74,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       email: target.user.email,
-      link: data.properties.action_link,
+      link: absoluteUrl(`/auth/potvrzeni?token_hash=${encodeURIComponent(hash)}&type=recovery&next=/update-password`),
     })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Neočekávaná chyba'
