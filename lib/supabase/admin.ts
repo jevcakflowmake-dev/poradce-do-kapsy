@@ -1,3 +1,6 @@
+// Service role obchází RLS. Import z klientské komponenty skončí chybou buildu,
+// ne tichým pokusem v prohlížeči.
+import 'server-only'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/lib/types/database'
 
