@@ -26,6 +26,42 @@ export const STORAGE_BUCKET = 'analysis'
 /** Složka, kde parkují přílohy odeslání, které ještě nemá klienta. */
 export const PARKED_PREFIX = 'submissions'
 
+/** Nejdelší hodnota jedné odpovědi. Víc nenapíše ani poznámka. */
+export const MAX_DELKA_ODPOVEDI = 2000
+
+/** Povolené dvojice sekce/otázka – vše ostatní ze vstupu zahodíme. */
+const POVOLENE_OTAZKY = new Map(SECTIONS.map((s) => [s.id, new Set(s.questions.map((q) => q.id))]))
+
+/** Sekce analýzy – jen tyhle smějí být i ve jménu složky s přílohou. */
+export const SEKCE_ANALYZY = new Set(SECTIONS.map((s) => s.id))
+
+/**
+ * Nechá jen otázky, které analýza opravdu má, jen textové hodnoty a ty
+ * zkrátí na MAX_DELKA_ODPOVEDI. Vstup z prohlížeče je cizí data – veřejná
+ * analýza i přihlášený klient mohou poslat cokoliv, třeba číslo místo
+ * textu nebo megabajt do jedné odpovědi.
+ *
+ * `prazdne` ponechá vymazané odpovědi jako '' – podle nich
+ * `odstranNeplatneOdpovedi` pozná, že je klient smazal.
+ */
+export function ocistiOdpovedi(raw: unknown, { prazdne = false }: { prazdne?: boolean } = {}): Responses {
+  const cisto: Responses = {}
+  if (!raw || typeof raw !== 'object') return cisto
+
+  for (const [sekceId, otazky] of Object.entries(raw as Record<string, unknown>)) {
+    const povolene = POVOLENE_OTAZKY.get(sekceId)
+    if (!povolene || !otazky || typeof otazky !== 'object') continue
+
+    for (const [otazkaId, hodnota] of Object.entries(otazky as Record<string, unknown>)) {
+      if (!povolene.has(otazkaId) || typeof hodnota !== 'string') continue
+      const text = hodnota.trim()
+      if (!text && !prazdne) continue
+      ;(cisto[sekceId] ??= {})[otazkaId] = text.slice(0, MAX_DELKA_ODPOVEDI)
+    }
+  }
+  return cisto
+}
+
 /**
  * Zapíše odpovědi k danému klientovi. Existující hodnotu přepisuje –
  * volá se buď u čerstvě založeného klienta (kde není co přepsat), nebo

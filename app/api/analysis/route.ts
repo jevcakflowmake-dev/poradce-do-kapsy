@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
-import { applyResponses, odstranNeplatneOdpovedi, syncProfileFromResponses, type Responses } from '@/lib/submissions'
+import { applyResponses, ocistiOdpovedi, odstranNeplatneOdpovedi, syncProfileFromResponses } from '@/lib/submissions'
 import { NextResponse } from 'next/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -45,6 +45,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
+    // Jen známé otázky a text s rozumnou délkou; vymazané odpovědi ('') zůstávají,
+    // podle nich se níž mažou z databáze.
+    const ciste = ocistiOdpovedi(responses, { prazdne: true })
     const supabase = createAdminClient()
 
     // Stejná funkce jako u veřejného formuláře: jeden upsert a hlavně kontrola
@@ -52,9 +55,9 @@ export async function POST(request: Request) {
     // endpoint vrátil úspěch a autosave v UI hlásil „Uloženo“, i když
     // v databázi nic nebylo.
     try {
-      await applyResponses(supabase, clientId, responses as Responses)
+      await applyResponses(supabase, clientId, ciste)
       // Skryté a vymazané odpovědi pryč – upsert je sám nikdy nesmaže.
-      await odstranNeplatneOdpovedi(supabase, clientId, responses as Responses)
+      await odstranNeplatneOdpovedi(supabase, clientId, ciste)
     } catch (err) {
       console.error('[analysis]', err instanceof Error ? err.message : err)
       return NextResponse.json({ error: 'Odpovědi se nepodařilo uložit.' }, { status: 500 })
@@ -63,7 +66,7 @@ export async function POST(request: Request) {
     // Promítnout klíčová pole do profilu. Sdílíme tu samou funkci jako veřejný
     // formulář – jinak by se přihlášená a anonymní cesta rozešly v tom, co
     // poradce v panelu uvidí (rodinný stav, rizikový profil).
-    await syncProfileFromResponses(supabase, clientId, responses as Responses)
+    await syncProfileFromResponses(supabase, clientId, ciste)
 
     return NextResponse.json({ success: true })
   } catch {

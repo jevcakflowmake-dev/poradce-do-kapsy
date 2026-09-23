@@ -4,15 +4,15 @@ import {
   applyResponses,
   attachFilesToClient,
   findUserByEmail,
+  ocistiOdpovedi,
   syncProfileFromResponses,
   PARKED_PREFIX,
+  SEKCE_ANALYZY,
   STORAGE_BUCKET,
-  type Responses,
   type SubmissionFile,
 } from '@/lib/submissions'
-import { MAX_FILE_SIZE, sanitizeFileName } from '@/lib/storage'
+import { MAX_FILE_SIZE, jePovolenaPriloha, sanitizeFileName } from '@/lib/storage'
 import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
-import { SECTIONS } from '@/lib/analysis-sections'
 import type { Json } from '@/lib/types/database'
 
 /**
@@ -23,33 +23,10 @@ import type { Json } from '@/lib/types/database'
  */
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const MAX_VALUE_LENGTH = 2000
 const MAX_FILES = 10
-
-/** Povolené dvojice sekce/otázka – vše ostatní z requestu zahodíme. */
-const ALLOWED = new Map(SECTIONS.map(s => [s.id, new Set(s.questions.map(q => q.id))]))
 
 /** Pět odeslání za deset minut z jedné adresy – víc člověk nepotřebuje. */
 const rateLimited = vytvorLimit({ oknoMs: 10 * 60 * 1000, max: 5 })
-
-/** Vyhodí neznámé sekce/otázky a ořízne příliš dlouhé hodnoty. */
-function sanitizeResponses(raw: unknown): Responses {
-  const clean: Responses = {}
-  if (!raw || typeof raw !== 'object') return clean
-
-  for (const [sectionId, questions] of Object.entries(raw as Record<string, unknown>)) {
-    const allowedQuestions = ALLOWED.get(sectionId)
-    if (!allowedQuestions || !questions || typeof questions !== 'object') continue
-
-    for (const [questionId, value] of Object.entries(questions as Record<string, unknown>)) {
-      if (!allowedQuestions.has(questionId)) continue
-      if (typeof value !== 'string' || !value.trim()) continue
-      clean[sectionId] ??= {}
-      clean[sectionId][questionId] = value.trim().slice(0, MAX_VALUE_LENGTH)
-    }
-  }
-  return clean
-}
 
 async function notifyAdvisor(payload: Record<string, unknown>): Promise<void> {
   // Awaitujeme – fire-and-forget fetch se v serverless funkci nemusí stihnout
@@ -86,7 +63,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ status: 'created' })
     }
 
-    const responses = sanitizeResponses(JSON.parse((form.get('responses') as string) || '{}'))
+    const responses = ocistiOdpovedi(JSON.parse((form.get('responses') as string) || '{}'))
     const personal = responses.personal ?? {}
 
     const email = (personal.email || '').trim().toLowerCase()
@@ -124,6 +101,12 @@ export async function POST(request: Request) {
           { status: 400 },
         )
       }
+      if (!jePovolenaPriloha(file)) {
+        return NextResponse.json(
+          { error: `${file.name}: nahrát jde jen PDF, JPG nebo PNG.` },
+          { status: 400 },
+        )
+      }
     }
     // Ke každé příloze patří sekce, do které ji návštěvník nahrál.
     const fileSections = form.getAll('fileSections').map(String)
@@ -157,7 +140,9 @@ export async function POST(request: Request) {
     // 2) Přílohy nahrajeme do parkoviště – klienta ještě nemusíme mít.
     const storedFiles: SubmissionFile[] = []
     for (const [i, file] of uploads.entries()) {
-      const section = fileSections[i] || 'personal'
+      // Sekce jde do cesty ve storage a u klienta i do složky, kam se příloha
+      // přesune. Z formuláře přijde cokoliv, třeba „../cizi-id“ – bereme jen známé.
+      const section = SEKCE_ANALYZY.has(fileSections[i]) ? fileSections[i] : 'personal'
       const path = `${PARKED_PREFIX}/${submissionId}/${section}/${Date.now()}_${sanitizeFileName(file.name)}`
       const { error } = await admin.storage.from(STORAGE_BUCKET).upload(path, file)
       if (error) {

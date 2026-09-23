@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { uploadAnalysisFile } from '@/lib/storage'
+import { PRIJIMANE_PRILOHY, uploadAnalysisFile } from '@/lib/storage'
 import AnalysisAccordion, {
   type PendingFile,
   type StoredAnalysisFile,
@@ -181,7 +181,7 @@ export default function AnalyzaPage() {
       <input
         ref={fileRef}
         type="file"
-        accept=".pdf,.jpg,.jpeg,.png"
+        accept={PRIJIMANE_PRILOHY}
         multiple
         className="hidden"
         onChange={handleFileChange}

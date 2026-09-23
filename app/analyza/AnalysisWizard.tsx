@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PRIJIMANE_PRILOHY } from '@/lib/storage'
 
 /** Rozepsaná analýza přežije zavření karty – čtvrt hodiny práce se nesmí ztratit. */
 const DRAFT_KEY = 'pdk-analyza-draft'
@@ -245,7 +246,7 @@ export default function AnalysisWizard() {
           <input
             ref={fileRef}
             type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
+            accept={PRIJIMANE_PRILOHY}
             multiple
             className="hidden"
             onChange={vyberSoubory}
