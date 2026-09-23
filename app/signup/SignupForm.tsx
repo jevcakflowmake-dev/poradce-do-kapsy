@@ -6,8 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
-import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { Loader2, ArrowRight, Eye, EyeOff, Mail } from 'lucide-react'
 import AuthShell from '@/components/auth/AuthShell'
 import Field from '@/components/auth/AuthField'
 
@@ -27,6 +26,8 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
+  // Kam odešel potvrzovací e-mail. Přihlásit se jde až po kliknutí na odkaz.
+  const [odeslanoNa, setOdeslanoNa] = useState<string | null>(null)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -57,33 +58,50 @@ export default function SignupForm() {
         return
       }
 
-      const supabase = createClient()
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email: data.email.trim().toLowerCase(),
-        password: data.password,
-      })
-
-      if (loginError) {
-        setError('Registrace proběhla, ale automatické přihlášení selhalo. Zkuste se přihlásit ručně.')
-        setLoading(false)
-        return
-      }
-
-      // Tvrdé přesměrování schválně: registrace i přihlášení mění auth cookie
-      // a celé načtení je jistota, že server vykreslí stránku s novou session.
-      // eslint-disable-next-line react-hooks/immutability, @next/next/no-location-assign-relative-destination
-      window.location.href = '/dashboard'
+      // Účet je založený, ale nepotvrzený – bez kliknutí na odkaz v e-mailu se do
+      // něj nikdo nepřihlásí. Dřív se přihlásil rovnou, takže kdokoliv mohl
+      // založit účet na cizí e-mail se svým heslem.
+      setOdeslanoNa(result.email ?? data.email.trim().toLowerCase())
+      setLoading(false)
     } catch {
       setError('Chyba připojení. Zkuste to prosím znovu.')
       setLoading(false)
     }
   }
 
+  if (odeslanoNa) {
+    return (
+      <AuthShell
+        numeral="↗"
+        eyebrow="Ještě potvrdit e-mail"
+        title={<>Zkontrolujte <span style={{ color: BARVY.mint }}>schránku</span>.</>}
+        subtitle={`Poslali jsme potvrzovací odkaz na ${odeslanoNa}. Po kliknutí na něj se rovnou přihlásíte.`}
+      >
+        <div className="bg-surface rounded-card border border-line p-8 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-card mb-5 bg-mint/10 border border-mint/25">
+            <Mail className="w-7 h-7 text-navy" strokeWidth={1.8} aria-hidden />
+          </div>
+          <h2 className="font-display text-navy mb-2 text-h3">E-mail je na cestě</h2>
+          <p className="text-base text-slate mb-6 text-pretty">
+            Když nepřijde do pár minut, zkontrolujte spam. Nebo se zkuste přihlásit – nabídneme vám
+            poslat ho znovu.
+          </p>
+          <Link
+            href="/login"
+            className="text-base font-semibold text-navy hover:text-navy transition-colors inline-flex items-center gap-1 hover:gap-2"
+          >
+            Přejít na přihlášení →
+          </Link>
+        </div>
+      </AuthShell>
+    )
+  }
+
   return (
     <AuthShell
       eyebrow="Registrace · 60 sekund"
       title={<>Začněme <span style={{ color: BARVY.mint }}>bez</span> závazků.</>}
-      subtitle="Vyplňte jméno, e-mail, telefon a zvolte si heslo. Přihlášení proběhne automaticky a rovnou uvidíte svůj prostor."
+      subtitle="Vyplňte jméno, e-mail, telefon a zvolte si heslo. Pak jen potvrdíte e-mail a jste ve svém prostoru."
     >
       <div className="bg-surface rounded-card border border-line p-6 md:p-8">
         {error && (

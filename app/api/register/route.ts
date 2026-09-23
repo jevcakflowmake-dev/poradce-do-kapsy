@@ -1,6 +1,8 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { findUserByEmail } from '@/lib/submissions'
 import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
+import { createPublicClient } from '@/lib/supabase/verejny'
+import { absoluteUrl } from '@/lib/site'
 import { NextResponse } from 'next/server'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -57,11 +59,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ exists: true })
     }
 
-    // Create new user with the password chosen by the user
+    // Nepotvrzený účet: přihlásit se půjde až po kliknutí na odkaz v e-mailu.
+    // S email_confirm: true se kdokoliv mohl zaregistrovat na cizí e-mail se
+    // svým heslem a rovnou se do účtu přihlásit.
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: true,
+      email_confirm: false,
       user_metadata: { full_name, phone },
       // role patří do app_metadata – do user_metadata si zapíše uživatel sám
       app_metadata: { role: 'client' },
@@ -97,11 +101,18 @@ export async function POST(request: Request) {
       console.error('[register] n8n webhook novy-klient nedostupný:', err instanceof Error ? err.message : err)
     }
 
-    // Heslo NEvracíme – klient ho zadal, použije ho v signInWithPassword sám.
-    return NextResponse.json({
-      id: data.user.id,
+    // Admin API potvrzovací e-mail samo nepošle, resend ano (šablona Confirm sign up).
+    const { error: odeslani } = await createPublicClient().auth.resend({
+      type: 'signup',
       email,
+      options: { emailRedirectTo: absoluteUrl('/login?potvrzeno=1') },
     })
+    if (odeslani) {
+      // Účet stojí, odkaz si klient nechá poslat znovu z přihlášení.
+      console.error('[register] potvrzovací e-mail neodešel:', odeslani.message)
+    }
+
+    return NextResponse.json({ email, potvrdit: true })
   } catch {
     return NextResponse.json(
       { error: 'Nastala neočekávaná chyba. Zkuste to prosím znovu.' },

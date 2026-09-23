@@ -280,7 +280,7 @@ export default function AnalysisWizard() {
           <div className="mt-8 rounded-card border border-line bg-surface p-6">
             <h2 className="font-display text-h3 text-navy">Chcete plán sledovat online?</h2>
             <p className="text-base text-slate mt-2">
-              Nepovinné. Zvolte si heslo a hned po odeslání se budete moct přihlásit do svého
+              Nepovinné. Zvolte si heslo a po potvrzení e-mailu se budete moct přihlásit do svého
               prostoru. Když heslo nevyplníte, přístup vám pošlu, jakmile bude plán hotový.
             </p>
             <div className="mt-4 max-w-sm">

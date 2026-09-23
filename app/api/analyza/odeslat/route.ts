@@ -13,6 +13,8 @@ import {
 } from '@/lib/submissions'
 import { MAX_FILE_SIZE, jePovolenaPriloha, sanitizeFileName, sTypem } from '@/lib/storage'
 import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
+import { createPublicClient } from '@/lib/supabase/verejny'
+import { absoluteUrl } from '@/lib/site'
 import type { Json } from '@/lib/types/database'
 
 /**
@@ -193,7 +195,11 @@ export async function POST(request: Request) {
     const { data: created, error: createError } = await admin.auth.admin.createUser({
       email,
       ...(password ? { password } : {}),
-      email_confirm: true,
+      // S heslem nepotvrzený: přihlásit se půjde až po kliknutí na odkaz
+      // v e-mailu, jinak by kdokoliv vyplnil analýzu za cizí e-mail se svým
+      // heslem a do účtu se přihlásil. Bez hesla se přihlásit nedá tak jako
+      // tak – přístup pošle poradce.
+      email_confirm: !password,
       user_metadata: { full_name: fullName, phone },
       // role patří do app_metadata – do user_metadata si zapíše uživatel sám
       app_metadata: { role: 'client' },
@@ -207,6 +213,16 @@ export async function POST(request: Request) {
     }
 
     const clientId = created.user.id
+
+    if (password) {
+      // Admin API potvrzovací e-mail samo nepošle, resend ano (šablona Confirm sign up).
+      const { error: odeslani } = await createPublicClient().auth.resend({
+        type: 'signup',
+        email,
+        options: { emailRedirectTo: absoluteUrl('/login?potvrzeno=1') },
+      })
+      if (odeslani) console.error('[analyza] potvrzovací e-mail neodešel:', odeslani.message)
+    }
 
     await applyResponses(admin, clientId, responses)
     await syncProfileFromResponses(admin, clientId, responses, true)

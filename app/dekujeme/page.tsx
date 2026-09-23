@@ -37,7 +37,7 @@ export default async function DekujemePage({
           {existujici
             ? 'S tímhle e-mailem už účet existuje, takže odpovědi zatím nikam nepřepisuju. Projdu je a ozvu se vám. Pokud jste to vy a heslo si pamatujete, můžete se rovnou přihlásit.'
             : maHeslo
-              ? 'Účet už máte založený. Přihlaste se e-mailem a heslem, které jste si zvolili, a plán uvidíte hned, jak bude hotový.'
+              ? 'Účet máte založený. Poslal jsem vám e-mail s potvrzovacím odkazem – po kliknutí na něj se přihlásíte a plán uvidíte hned, jak bude hotový.'
               : 'Jakmile bude plán hotový, pošlu vám na e-mail odkaz, kterým si nastavíte heslo a prohlédnete si ho online.'}
         </p>
 
