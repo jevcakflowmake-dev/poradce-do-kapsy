@@ -1,15 +1,17 @@
 /**
- * Měsíční platby odvozené z návrhů, které poradce klientovi vystavil.
+ * Měsíční platby odvozené z návrhů a smluv, které poradce klientovi vystavil.
  *
- * Bere se výhradně `monthly_price` z JSON obsahu návrhu – tedy číslo, které
- * poradce skutečně vyplnil. Nic se nedopočítává ani nedomýšlí.
+ * Bere se jen číslo, které poradce skutečně vyplnil: u staršího návrhu
+ * `monthly_price`, u uzavřené smlouvy (`lib/smlouvy.ts`) předpis z platby
+ * přepočtený podle frekvence. Nic se nedomýšlí – smlouva bez frekvence do
+ * součtu nejde, protože nevíme, za jaké období částka je.
  *
- * Číslo účtu, variabilní symbol ani termín splatnosti tu schválně nejsou:
- * aplikace je nikde nesbírá. Do 31. 8. 2026 byla na obou stránkách s produkty
- * konstanta `mockPayments` s vymyšlenými IBANy a VS, které se zobrazovaly
- * každému klientovi jako by šlo o jeho platební pokyny. Kdyby tyhle údaje
- * měly přibýt, potřebují vlastní tabulku a poradcovo zadání – ne výplň.
+ * Do 31. 8. 2026 byla na obou stránkách s produkty konstanta `mockPayments`
+ * s vymyšlenými IBANy a VS, které se zobrazovaly každému klientovi jako by šlo
+ * o jeho platební pokyny. Účet a VS dnes zadává poradce ke konkrétní smlouvě
+ * a ukazuje je detail smlouvy; tady se jen sčítají částky.
  */
+import { ctiSmlouvu } from './smlouvy'
 
 export interface NavrhProPlatbu {
   id: string
@@ -25,8 +27,31 @@ export interface Platba {
   monthly: number
 }
 
+/** Kolik plateb je za rok – podle toho se předpis smlouvy přepočte na měsíc. */
+const PLATEB_ZA_ROK: Record<string, number> = {
+  měsíčně: 12,
+  čtvrtletně: 4,
+  pololetně: 2,
+  ročně: 1,
+}
+
 function platbaZNavrhu(p: NavrhProPlatbu): Platba | null {
   if (!p.content) return null
+
+  const smlouva = ctiSmlouvu(p.content)
+  if (smlouva) {
+    const castka = smlouva.platba?.castka
+    const zaRok = PLATEB_ZA_ROK[smlouva.frekvence?.trim().toLocaleLowerCase('cs') ?? '']
+    if (!castka || castka <= 0 || !zaRok) return null
+    return {
+      id: p.id,
+      title: p.title,
+      company: smlouva.spolecnost ?? null,
+      logo: null,
+      monthly: Math.round((castka * zaRok) / 12),
+    }
+  }
+
   try {
     const parsed = JSON.parse(p.content)
     const monthly = Number(parsed?.monthly_price)

@@ -51,7 +51,12 @@ export default async function DashboardPage() {
       : 'Analýzu mám. Připravuju vám návrh a ozvu se do 48 hodin.'
 
   const dlazdice = [
-    { popisek: 'Měsíčně platíte', hodnota: celkem > 0 ? czk(celkem) : '—', poznamka: celkem > 0 ? 'Součet za všechny smlouvy' : 'Zatím žádná smlouva' },
+    {
+      popisek: 'Měsíčně platíte',
+      hodnota: celkem > 0 ? czk(celkem) : '—',
+      // Smlouva bez zapsané platby není „žádná smlouva“ – pod dlaždicí je přece vypsaná.
+      poznamka: celkem > 0 ? 'Součet za všechny smlouvy' : smlouvy.length > 0 ? 'Platby doplním ke smlouvám' : 'Zatím žádná smlouva',
+    },
     { popisek: 'Možná úspora', hodnota: uspora ? czk(uspora) : '—', poznamka: uspora ? 'Měsíčně, podle návrhu' : 'Doplním po analýze' },
     { popisek: 'Rezerva', hodnota: rezerva ? czk(rezerva) : '—', poznamka: rezerva ? 'Doporučená výše' : 'Doplním po analýze' },
   ]
