@@ -6,8 +6,10 @@ import { Card } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { mesicniPlatby } from '@/lib/payments'
 import { proposalTypeLabel, osloveni } from '@/lib/utils'
-import { kotvaSmlouvy } from '@/lib/smlouvy'
+import { kotvaSmlouvy, spolecnostSmlouvy } from '@/lib/smlouvy'
 import PotrebujuVyresit from '@/components/dashboard/PotrebujuVyresit'
+import LogoFirmy from '@/components/partneri/LogoFirmy'
+import { IKONA_DRUHU } from '@/components/products/ikony'
 import type { Proposal } from '@/lib/types/database'
 
 /** Číslo v korunách. Bez desetinných míst — v přehledu jde o řád, ne o haléře. */
@@ -102,34 +104,49 @@ export default async function DashboardPage() {
               Zatím tu nic není. Jakmile pro vás něco sjednám, najdete to tady i s platbami.
             </p>
           ) : (
-            smlouvy.slice(0, 5).map((s) => (
-              // Celý řádek vede na detail té smlouvy, ne jen na seznam – tam se rovnou otevře.
-              <Link
-                key={s.id}
-                href={`/dashboard/produkty#${kotvaSmlouvy(s.id)}`}
-                className="group p-5 flex items-center justify-between gap-4 transition-colors hover:bg-cream/60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-mint/40"
-              >
-                <span className="min-w-0">
-                  {/* Zalomit, ne uříznout: vedle štítku a šipky by na telefonu zbylo „Životní poj…“. */}
-                  <span className="block text-base font-medium text-navy text-pretty">{s.title}</span>
-                  <span className="block text-base text-slate mt-0.5">{proposalTypeLabel(s.type)}</span>
-                </span>
-                <span className="shrink-0 flex items-center gap-3">
-                  <span
-                    className={`rounded-pill px-3 py-1 text-base whitespace-nowrap ${
-                      s.is_read ? 'bg-mint/15 text-navy' : 'bg-amber/25 text-navy'
-                    }`}
-                  >
-                    {s.is_read ? 'Aktivní' : 'Ke kontrole'}
+            smlouvy.slice(0, 5).map((s) => {
+              const spolecnost = spolecnostSmlouvy(s.content)
+              const Ikona = IKONA_DRUHU[s.type] ?? IKONA_DRUHU.insurance
+              return (
+                // Celý řádek vede na detail té smlouvy, ne jen na seznam – tam se rovnou otevře.
+                <Link
+                  key={s.id}
+                  href={`/dashboard/produkty#${kotvaSmlouvy(s.id)}`}
+                  className="group p-5 flex items-center justify-between gap-4 transition-colors hover:bg-cream/60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-mint/40"
+                >
+                  <span className="flex items-center gap-4 min-w-0">
+                    {/* Na telefonu bez loga: vedle štítku a šipky by na název zbylo pár slov na řádek. */}
+                    <LogoFirmy
+                      firma={[spolecnost, s.title]}
+                      nahrada={<Ikona className="w-5 h-5 text-slate" strokeWidth={1.8} />}
+                      className="hidden sm:flex"
+                    />
+                    <span className="min-w-0">
+                      {/* Zalomit, ne uříznout: vedle štítku a šipky by na telefonu zbylo „Životní poj…“. */}
+                      <span className="block text-base font-medium text-navy text-pretty">{s.title}</span>
+                      <span className="block text-base text-slate mt-0.5">
+                        {proposalTypeLabel(s.type)}
+                        {spolecnost && ` · ${spolecnost}`}
+                      </span>
+                    </span>
                   </span>
-                  <ChevronRight
-                    aria-hidden
-                    strokeWidth={1.8}
-                    className="w-5 h-5 text-slate transition-transform group-hover:translate-x-0.5 group-hover:text-navy"
-                  />
-                </span>
-              </Link>
-            ))
+                  <span className="shrink-0 flex items-center gap-3">
+                    <span
+                      className={`rounded-pill px-3 py-1 text-base whitespace-nowrap ${
+                        s.is_read ? 'bg-mint/15 text-navy' : 'bg-amber/25 text-navy'
+                      }`}
+                    >
+                      {s.is_read ? 'Aktivní' : 'Ke kontrole'}
+                    </span>
+                    <ChevronRight
+                      aria-hidden
+                      strokeWidth={1.8}
+                      className="w-5 h-5 text-slate transition-transform group-hover:translate-x-0.5 group-hover:text-navy"
+                    />
+                  </span>
+                </Link>
+              )
+            })
           )}
         </Card>
       </section>

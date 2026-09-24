@@ -2,6 +2,7 @@
 
 import { CreditCard } from 'lucide-react'
 import { mesicniPlatby, type NavrhProPlatbu } from '@/lib/payments'
+import LogoFirmy from '@/components/partneri/LogoFirmy'
 
 /**
  * Přehled pravidelných plateb. Sdílený klientským dashboardem i poradcovým
@@ -48,18 +49,23 @@ export default function MesicniPlatby({
                 className="bg-surface rounded-card border border-line p-5 md:p-6 hover:shadow-[0_10px_30px_-10px_rgba(15,42,68,0.08)] transition-all"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <h3
-                      className="font-display text-navy truncate text-lead"
-                    >
-                      {platba.title}
-                    </h3>
-                    {platba.company && (
-                      <span className="text-base text-slate mt-0.5 flex items-center gap-1.5">
-                        {platba.logo && <span>{platba.logo}</span>}
-                        {platba.company}
-                      </span>
-                    )}
+                  <div className="flex items-center gap-4 min-w-0">
+                    {/* Na telefonu bez loga – vedle částky by na název nezbylo místo. */}
+                    <LogoFirmy
+                      firma={[platba.company, platba.title]}
+                      nahrada={platba.logo}
+                      className="hidden sm:flex"
+                    />
+                    <div className="min-w-0">
+                      <h3
+                        className="font-display text-navy truncate text-lead"
+                      >
+                        {platba.title}
+                      </h3>
+                      {platba.company && (
+                        <span className="block text-base text-slate mt-0.5">{platba.company}</span>
+                      )}
+                    </div>
                   </div>
                   <span
                     className="font-display text-navy tabular-nums whitespace-nowrap text-h3"

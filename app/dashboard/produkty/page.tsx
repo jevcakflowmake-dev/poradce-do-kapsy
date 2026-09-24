@@ -1,28 +1,28 @@
 'use client'
 
-import { Shield, Clock, TrendingUp } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { useEffect, useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import MesicniPlatby from '@/components/products/MesicniPlatby'
 import SmlouvaPolozka, { type Product } from '@/components/products/SmlouvaPolozka'
+import { IKONA_DRUHU } from '@/components/products/ikony'
 
 const typeConfig = {
   insurance: {
     label: 'Pojištění',
-    icon: Shield,
+    icon: IKONA_DRUHU.insurance,
     plocha: 'bg-navy',
     numeral: '01',
   },
   pension: {
     label: 'Penzijní produkty',
-    icon: Clock,
+    icon: IKONA_DRUHU.pension,
     plocha: 'bg-mint',
     numeral: '02',
   },
   invest: {
     label: 'Investice',
-    icon: TrendingUp,
+    icon: IKONA_DRUHU.invest,
     plocha: 'bg-navy-soft',
     numeral: '03',
   },

@@ -139,6 +139,23 @@ export function ctiSmlouvu(content: string | null): ObsahSmlouvy | null {
 }
 
 /**
+ * Společnost u smlouvy, jak ji zadal poradce: nová smlouva ji má v obsahu,
+ * starší návrh v `company`. Bez ní null.
+ */
+export function spolecnostSmlouvy(content: string | null): string | null {
+  const nova = ctiSmlouvu(content)?.spolecnost
+  if (nova) return nova
+  if (!content) return null
+  try {
+    const stary = JSON.parse(content) as { company?: unknown } | null
+    return typeof stary?.company === 'string' && stary.company.trim() ? stary.company : null
+  } catch {
+    // volný text bez společnosti
+    return null
+  }
+}
+
+/**
  * Řetězec pro QR platbu podle standardu SPAYD (Short Payment Descriptor,
  * ČBA). Bankovní aplikace z něj předvyplní příkaz.
  *

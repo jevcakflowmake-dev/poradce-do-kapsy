@@ -5,7 +5,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, FileText, ExternalLink } from 'lucide-react'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import SmlouvaDetail from '@/components/products/SmlouvaDetail'
-import { ctiSmlouvu, kotvaSmlouvy } from '@/lib/smlouvy'
+import LogoFirmy from '@/components/partneri/LogoFirmy'
+import { IKONA_DRUHU } from '@/components/products/ikony'
+import { ctiSmlouvu, kotvaSmlouvy, spolecnostSmlouvy } from '@/lib/smlouvy'
 import { createClient } from '@/lib/supabase/client'
 
 /**
@@ -53,6 +55,8 @@ export default function SmlouvaPolozka({ product }: { product: Product }) {
 
   const idDetailu = useId()
   const smlouva = ctiSmlouvu(product.content)
+  const spolecnost = spolecnostSmlouvy(product.content)
+  const Ikona = IKONA_DRUHU[product.type] ?? IKONA_DRUHU.insurance
   // Starší řádek bez obsahu i přílohy nemá co rozbalit – šipka by nic neslibovala.
   const maDetail = Boolean(product.content || product.file_url || product.link_url)
 
@@ -80,10 +84,19 @@ export default function SmlouvaPolozka({ product }: { product: Product }) {
 
   const hlavicka = (
     <>
-      <span className="min-w-0">
-        <span className="block font-display text-navy text-lead">{product.title}</span>
-        <span className="block text-base text-slate mt-1">
-          {new Date(product.created_at).toLocaleDateString('cs-CZ')}
+      <span className="flex items-center gap-4 min-w-0">
+        {/* Logo podle společnosti, případně podle názvu smlouvy („Allianz ŽIVOT+“);
+            bez něj ikona druhu, ať názvy v seznamu začínají pod sebou. */}
+        <LogoFirmy
+          firma={[spolecnost, product.title]}
+          nahrada={<Ikona className="w-5 h-5 text-slate" strokeWidth={1.8} />}
+        />
+        <span className="min-w-0">
+          <span className="block font-display text-navy text-lead">{product.title}</span>
+          <span className="block text-base text-slate mt-1">
+            {spolecnost && `${spolecnost} · `}
+            {new Date(product.created_at).toLocaleDateString('cs-CZ')}
+          </span>
         </span>
       </span>
       {maDetail && (
