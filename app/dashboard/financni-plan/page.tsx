@@ -18,6 +18,8 @@ import { formatDate, plural } from '@/lib/utils'
 import { PORADCE } from '@/lib/poradce'
 import FinancialPlanOverview from '@/components/dashboard/charts/FinancialPlanOverview'
 import IncomeLifeChart, { type IncomeVariant } from '@/components/dashboard/charts/IncomeLifeChart'
+import SrovnaniNabidek, { type SoucasnaHypoteka } from '@/components/dashboard/charts/SrovnaniNabidek'
+import { VyberVarianty } from '@/components/dashboard/charts/SrovnaniVariant'
 import DuchodVCislech from '@/components/dashboard/DuchodVCislech'
 import { TiskovaTitulka, TiskovyZaver } from '@/components/dashboard/TiskovyRamec'
 import { spoctiDuchod, type VysledekDuchod } from '@/lib/duchod'
@@ -54,6 +56,9 @@ const sectionConfig: Record<string, { title: string; icon: typeof Shield }> = {
   property:   { title: 'Pojištění majetku',  icon: Building2 },
 }
 
+/** Barvy značek nabídek ve srovnání – stejné jako u zajištění příjmu. */
+const BARVY_NABIDEK = [BARVY.mint, BARVY.navy, BARVY.mintDark]
+
 const statusConfig = {
   ok:             { label: 'V pořádku',     icon: CheckCircle2, trida: 'bg-mint/15 text-navy' },
   recommendation: { label: 'Doporučení',    icon: Target,       trida: 'bg-navy/8 text-navy' },
@@ -88,6 +93,8 @@ export default function FinancniPlanPage() {
   const [duchod, setDuchod] = useState<VysledekDuchod | null>(null)
   const [jmenoKlienta, setJmenoKlienta] = useState<string | null>(null)
   const [zbytekHypoteky, setZbytekHypoteky] = useState<number | null>(null)
+  // Současná hypotéka z analýzy – sloupec „Teď“ ve srovnání nabídek bydlení.
+  const [soucasnaHypoteka, setSoucasnaHypoteka] = useState<SoucasnaHypoteka | null>(null)
   // Při tisku rozbalíme všechny varianty – zavřené harmoniky nejsou v DOM
   // a na papíře by z plánu zbyly jen názvy společností a ceny.
   const [tiskovyRezim, setTiskovyRezim] = useState(false)
@@ -140,6 +147,12 @@ export default function FinancniPlanPage() {
         : analyza.housing?.housing_situation === 'Ve vlastním s hypotékou'
           ? cislo(analyza.housing.mortgage_balance) ?? null
           : null,
+    )
+    const bydleni = analyza.housing ?? {}
+    setSoucasnaHypoteka(
+      bydleni.housing_situation === 'Ve vlastním s hypotékou'
+        ? { banka: bydleni.mortgage_bank || undefined, splatka: cislo(bydleni.mortgage_payment), sazba: cislo(bydleni.mortgage_rate) }
+        : null,
     )
     const duchodOdpovedi = analyza.retirement ?? {}
     setDuchod(
@@ -254,6 +267,38 @@ export default function FinancniPlanPage() {
   function showToast(msg: string) {
     setToast(msg)
     setTimeout(() => setToast(null), 3500)
+  }
+
+  /**
+   * Volba jediné varianty v sekci (u bydlení: hypotéka je jedna). Kliknutí na
+   * už vybranou výběr zruší – tak to posílá „Zrušit výběr“ ve VyberVarianty.
+   * Poradce dostane notifikaci jako dřív u tlačítka v kartě varianty.
+   */
+  async function vyberJedinou(section: PlanSection, variantId: string) {
+    if (!clientId || !section.variants) return
+    const ids = section.variants.map((v) => v.id)
+    const predchozi = ids.find((id) => selectedVariants.has(id)) ?? null
+    const { error: chybaMazani } = await supabase
+      .from('plan_variant_selection')
+      .delete()
+      .eq('client_id', clientId)
+      .in('variant_id', ids)
+    if (chybaMazani) return showToast('Výběr se nepodařilo uložit. Zkuste to prosím znovu.')
+
+    const dalsi = new Set(selectedVariants)
+    ids.forEach((id) => dalsi.delete(id))
+    if (predchozi !== variantId) {
+      const { error } = await supabase.from('plan_variant_selection').insert({ client_id: clientId, variant_id: variantId })
+      if (error) {
+        setSelectedVariants(dalsi)
+        return showToast('Výběr se nepodařilo uložit. Zkuste to prosím znovu.')
+      }
+      dalsi.add(variantId)
+      const zvolena = section.variants.find((v) => v.id === variantId)
+      notifyAdvisor({ event: 'variant_selected', client_id: clientId, variant_id: variantId, company: zvolena?.company, section: section.id })
+      if (zvolena) showToast(`${zvolena.company} označena jako preferovaná. Poradce vás zkontaktuje.`)
+    }
+    setSelectedVariants(dalsi)
   }
 
   async function handleBulkInterest() {
@@ -449,6 +494,44 @@ export default function FinancniPlanPage() {
                       </div>
                     )}
                     </>
+                  ) : section.id === 'housing' && section.variants ? (
+                    (() => {
+                      const vybrana = section.variants.find((v) => selectedVariants.has(v.id))?.id ?? null
+                      return (
+                        <div className="space-y-5">
+                          <SrovnaniNabidek
+                            nabidky={section.variants.map((v) => ({
+                              id: v.id,
+                              company: v.company,
+                              logo: v.logo,
+                              monthlyPayment: v.monthlyPayment,
+                              params: v.params,
+                              produkt: v.produkt?.nazev,
+                            }))}
+                            ted={soucasnaHypoteka}
+                            barvy={BARVY_NABIDEK}
+                            selectedId={vybrana}
+                          />
+                          <VyberVarianty
+                            variants={section.variants.map((v) => ({
+                              id: v.id,
+                              company: v.company,
+                              logo: v.logo,
+                              monthly_payment: v.monthlyPayment,
+                              produkt: v.produkt?.nazev,
+                            }))}
+                            barvy={BARVY_NABIDEK}
+                            selectedId={vybrana}
+                            onSelect={(id) => vyberJedinou(section, id)}
+                            nadpis="Kterou nabídku chcete?"
+                          />
+                          {/* Karty variant tu nejsou, detail produktu (hlavně kontakt) jde pod výběr. */}
+                          {section.variants.map((v) =>
+                            v.produkt ? <PopisProduktu key={v.id} produkt={v.produkt} firma={v.company} /> : null,
+                          )}
+                        </div>
+                      )
+                    })()
                   ) : section.type === 'variants' && section.variants ? (
                     <div className="space-y-3">
                       <p className="text-base text-slate mb-1">
