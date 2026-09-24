@@ -300,7 +300,12 @@ export function VyberVarianty({
         )}
       </div>
 
-      <div role="radiogroup" aria-labelledby={idNadpisu} className="mt-3 grid gap-3 sm:grid-cols-2">
+      {/* Jediná nabídka přes celou šířku – v polovině by se jí uřízla cena. */}
+      <div
+        role="radiogroup"
+        aria-labelledby={idNadpisu}
+        className={`mt-3 grid gap-3 ${variants.length > 1 ? 'sm:grid-cols-2' : ''}`}
+      >
         {variants.map((v, i) => {
           const vybrana = v.id === selectedId
           const produkt = v.produkt
@@ -314,7 +319,7 @@ export function VyberVarianty({
               onClick={() => {
                 if (!vybrana) onSelect(v.id)
               }}
-              // min-w-0: položka mřížky se jinak nezmenší pod šířku nezkráceného
+              // min-w-0: položka mřížky se jinak nezmenší pod nejdelší slovo
               // podtitulku a karta přeteče – u delšího názvu produktu mimo obrazovku.
               className={`min-w-0 flex items-center gap-3 text-left rounded-card border-2 p-4 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 ${
                 vybrana ? 'border-mint bg-mint/8' : 'border-line hover:border-mint/50'
@@ -338,9 +343,10 @@ export function VyberVarianty({
               </span>
               <span className="flex-1 min-w-0">
                 <span className="block font-semibold text-navy">{v.company}</span>
-                <span className="block text-sm text-slate truncate">
+                {/* Zalomit, ne zkrátit: na telefonu by ze zkráceného řádku zmizela cena. */}
+                <span className="block text-sm text-slate text-pretty">
                   {produkt ? `${produkt} · ` : ''}
-                  {v.monthly_payment} měsíčně
+                  <span className="whitespace-nowrap">{v.monthly_payment}</span> měsíčně
                 </span>
               </span>
             </button>
