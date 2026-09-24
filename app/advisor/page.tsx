@@ -9,6 +9,7 @@ import {
   riskLabel,
   formatDate,
   plural,
+  statusLabel,
   CLIENT_STATUS_VALUES,
   isClientStatus,
 } from '@/lib/utils'
@@ -143,7 +144,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
               <div className="text-sm text-slate">
                 Filtr:{' '}
                 <span className="text-navy font-medium">
-                  {statusFilter ? `${statusFilter.replace('_', ' ')} · ${filtered.length}` : `vše · ${filtered.length}`}
+                  {statusFilter ? `${statusLabel(statusFilter).toLowerCase()} · ${filtered.length}` : `vše · ${filtered.length}`}
                 </span>
               </div>
             </div>

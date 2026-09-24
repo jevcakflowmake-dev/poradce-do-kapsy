@@ -157,7 +157,7 @@ export default function SmlouvaZVariantyForm({
     return (
       <div role="status" className="rounded-card border border-mint/30 bg-mint/10 p-6">
         <p className="flex items-center gap-2 font-display text-lead text-navy">
-          <CheckCircle2 className="w-5 h-5 text-mint-dark" aria-hidden /> Smlouva je v Moje smlouvy
+          <CheckCircle2 className="w-5 h-5 text-mint-dark" aria-hidden /> Smlouva je v sekci Moje smlouvy
         </p>
         <p className="mt-2 text-base text-slate text-pretty">
           Klient ji uvidí na přehledu se štítkem „Ke kontrole“ – s krytím, platbou a QR kódem. Až si ji
@@ -177,7 +177,7 @@ export default function SmlouvaZVariantyForm({
       </Pole>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Pole id={`${id}-typ`} popisek="V Moje smlouvy mezi">
+        <Pole id={`${id}-typ`} popisek="V sekci Moje smlouvy mezi">
           <select id={`${id}-typ`} aria-describedby={`${id}-typ-popis`} {...register('typ')} className={poleTridy}>
             {TYPY.map((t) => (
               <option key={t.id} value={t.id}>
@@ -258,10 +258,10 @@ export default function SmlouvaZVariantyForm({
       <Button type="submit" disabled={isSubmitting} size="lg">
         {isSubmitting ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> Ukládám
+            <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> Ukládám…
           </>
         ) : (
-          'Uložit do Moje smlouvy'
+          'Uložit do sekce Moje smlouvy'
         )}
       </Button>
     </form>

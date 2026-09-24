@@ -150,8 +150,8 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
           <h2 className="text-navy font-display text-lg">Zajištění příjmu – graf života</h2>
           <p className="text-xs text-slate mt-0.5">
             {variants.filter((v) => v.company.trim()).length === 0
-              ? 'Přidejte až 3 varianty pojistky – klient uvidí graf "kolik mu zůstane při poklesu na 60% a 50%".'
-              : `${variants.filter((v) => v.company.trim()).length}/3 variant nahrato`}
+              ? 'Přidejte až 3 varianty pojistky – klient uvidí graf „kolik mu zůstane při poklesu na 60 % a 50 %“.'
+              : `${variants.filter((v) => v.company.trim()).length}/3 variant nahráno`}
           </p>
         </div>
         {open ? <ChevronUp className="w-5 h-5 text-navy" /> : <ChevronDown className="w-5 h-5 text-slate" />}
@@ -161,13 +161,13 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
         <div className="border-t border-line p-5 md:p-6 space-y-5">
           {monthlyIncomeNet === null && (
             <div className="px-4 py-3 bg-[rgba(242,180,65,0.08)] border border-[rgba(242,180,65,0.3)] rounded-card text-sm text-navy">
-              ⚠ Pro graf života je třeba nejdřív vyplnit <strong>Měsíční čistý příjem</strong> ve vstupních datech klienta výše.
+              ⚠ Pro graf života je třeba nejdřív vyplnit <strong>Čistý měsíční příjem</strong> ve vstupních datech klienta výše.
             </div>
           )}
 
           {monthlyIncomeNet !== null && (
             <div className="rounded-card bg-cream border border-line px-4 py-3 text-sm text-navy/80">
-              Klient má příjem <strong className="text-navy">{Math.round(monthlyIncomeNet).toLocaleString('cs-CZ')} Kč/měs</strong>.
+              Klient má příjem <strong className="text-navy">{Math.round(monthlyIncomeNet).toLocaleString('cs-CZ')} Kč</strong> měsíčně.
               Při poklesu na 60 % mu bude chybět ~<strong>{Math.round(monthlyIncomeNet * 0.4).toLocaleString('cs-CZ')} Kč</strong>, při 50 % ~<strong>{Math.round(monthlyIncomeNet * 0.5).toLocaleString('cs-CZ')} Kč</strong> měsíčně.
             </div>
           )}
@@ -271,7 +271,7 @@ function VariantCard({
             <span className="block text-xs text-navy/70 mb-1">Logo</span>
             <div className="flex items-center gap-3">
               <LogoFirmy firma={variant.company} />
-              <span className="text-xs text-slate text-pretty">Klient uvidí logo {partner.nazev}.</span>
+              <span className="text-xs text-slate text-pretty">Klient uvidí logo společnosti {partner.nazev}.</span>
             </div>
           </div>
         ) : (
@@ -306,7 +306,7 @@ function VariantCard({
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <span className="text-slate">Pokles 60 % (úraz):</span>{' '}
-                <strong className="text-navy">{payout60.toLocaleString('cs-CZ')} Kč/měs</strong>
+                <strong className="text-navy">{payout60.toLocaleString('cs-CZ')} Kč/měs.</strong>
                 <div className="text-[10px] text-slate/80 mt-0.5">
                   úrazové × {DAYS_IN_MONTH}
                   {variant.accident_pn_combine && (
@@ -316,7 +316,7 @@ function VariantCard({
               </div>
               <div>
                 <span className="text-slate">Pokles 50 % (nemoc):</span>{' '}
-                <strong className="text-navy">{payout50.toLocaleString('cs-CZ')} Kč/měs</strong>
+                <strong className="text-navy">{payout50.toLocaleString('cs-CZ')} Kč/měs.</strong>
                 <div className="text-[10px] text-slate/80 mt-0.5">PN × ({DAYS_IN_MONTH} − {karence}) dnů</div>
               </div>
             </div>

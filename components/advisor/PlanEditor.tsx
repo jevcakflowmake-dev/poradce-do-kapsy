@@ -9,8 +9,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { BARVY } from '@/lib/barvy'
+import { plural } from '@/lib/utils'
 import { ctiProdukt, type ProduktVarianty } from '@/lib/produkt-varianty'
 import { partnerPodleNazvu } from '@/lib/partneri'
+import { SECTIONS as OTAZKY_ANALYZY, popisOdpovedi } from '@/lib/analysis-sections'
 import LogoFirmy from '@/components/partneri/LogoFirmy'
 import SeznamPartneru from '@/components/partneri/SeznamPartneru'
 
@@ -273,7 +275,12 @@ export default function PlanEditor({
     }
   }
 
-  const sectionAnswers = analysisResponses[activeSection] || {}
+  // Jen odpovědi na otázky, které analýza pořád má – osiřelé (přejmenované,
+  // zrušené) by se vypsaly jako holé id. Stejně jako v detailu klienta.
+  const otazkySekce = OTAZKY_ANALYZY.find((s) => s.id === activeSection)?.questions ?? []
+  const sectionAnswers = Object.fromEntries(
+    Object.entries(analysisResponses[activeSection] || {}).filter(([qId]) => otazkySekce.some((q) => q.id === qId)),
+  )
 
   return (
     <div className="space-y-6">
@@ -315,7 +322,7 @@ export default function PlanEditor({
         >
           <span className="font-semibold text-navy">Odpovědi klienta</span>
           <span className="flex items-center gap-2 text-slate text-sm">
-            {Object.keys(sectionAnswers).length} odpovedi
+            {Object.keys(sectionAnswers).length} {plural(Object.keys(sectionAnswers).length, 'odpověď', 'odpovědi', 'odpovědí')}
             {showAnswers ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </span>
         </button>
@@ -323,13 +330,13 @@ export default function PlanEditor({
           <div className="px-5 pb-5">
             <Separator className="mb-4" />
             {Object.keys(sectionAnswers).length === 0 ? (
-              <p className="text-sm text-slate">Klient zatim nevyplnil tuto sekci.</p>
+              <p className="text-sm text-slate">Klient zatím nevyplnil tuto sekci.</p>
             ) : (
               <dl className="space-y-3">
                 {Object.entries(sectionAnswers).map(([key, value]) => (
                   <div key={key} className="flex flex-col sm:flex-row sm:justify-between gap-1 text-sm">
-                    <dt className="text-slate font-medium">{key}</dt>
-                    <dd className="text-navy font-semibold sm:text-right">{value}</dd>
+                    <dt className="text-slate font-medium">{otazkySekce.find((q) => q.id === key)?.label ?? key}</dt>
+                    <dd className="text-navy font-semibold sm:text-right">{popisOdpovedi(activeSection, key, value)}</dd>
                   </div>
                 ))}
               </dl>
@@ -373,7 +380,7 @@ export default function PlanEditor({
                   <span className="block text-sm font-medium text-slate mb-1">Logo</span>
                   <div className="flex items-center gap-3">
                     <LogoFirmy firma={newCompany} />
-                    <span className="text-sm text-slate text-pretty">Klient uvidí logo {novyPartner.nazev}.</span>
+                    <span className="text-sm text-slate text-pretty">Klient uvidí logo společnosti {novyPartner.nazev}.</span>
                   </div>
                 </div>
               ) : (
@@ -544,7 +551,7 @@ export default function PlanEditor({
                             <Input
                               value={paramForm.param_label}
                               onChange={e => setParamForm(prev => ({ ...prev, param_label: e.target.value }))}
-                              placeholder="Denni odskodne"
+                              placeholder="Denní odškodné"
                               className="text-sm"
                             />
                           </div>
@@ -553,7 +560,7 @@ export default function PlanEditor({
                             <Input
                               value={paramForm.value}
                               onChange={e => setParamForm(prev => ({ ...prev, value: e.target.value }))}
-                              placeholder="300 Kc/den"
+                              placeholder="300 Kč/den"
                               className="text-sm"
                             />
                           </div>
@@ -626,13 +633,13 @@ export default function PlanEditor({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate mb-1.5">Body doporuceni (kazdy radek = 1 bod)</label>
+          <label className="block text-sm font-medium text-slate mb-1.5">Body doporučení (každý řádek = 1 bod)</label>
           <textarea
             value={recText}
             onChange={e => setRecText(e.target.value)}
             rows={5}
             className="w-full px-4 py-3 border border-line rounded-card text-sm text-navy focus:outline-none focus:ring-4 focus:ring-mint/20 resize-none"
-            placeholder="Doporucujeme sjednat zivotni pojisteni...&#10;Zvazit navyseni krytí invalidni renty...&#10;..."
+            placeholder="Doporučujeme sjednat životní pojištění…&#10;Zvážit navýšení krytí invalidní renty…&#10;…"
           />
         </div>
         <div className="flex justify-end">

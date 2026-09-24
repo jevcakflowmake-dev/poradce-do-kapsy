@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight, AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, proposalTypeLabel, formatDate, plural } from '@/lib/utils'
-import { goalLabel, SECTIONS, zobrazHodnotu, rozdelSkupinu } from '@/lib/analysis-sections'
+import { goalLabel, SECTIONS, popisOdpovedi } from '@/lib/analysis-sections'
 import { vyhodnotAnalyzu, rozsahVyhodnoceni } from '@/lib/vyhodnoceni-analyzy'
 import type { Profile, Proposal } from '@/lib/types/database'
 import ProposalForm from '@/components/advisor/ProposalForm'
@@ -145,25 +145,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   // QUESTION_LABELS níž jsou jen zkrácené verze pro hutnější výpis.
   const popisekSekce = (id: string) =>
     SECTIONS.find((x) => x.id === id)?.title ?? SECTION_LABELS[id] ?? id
-  /**
-   * Opakovatelná skupina (děti) je uložená jako JSON. Poradci ji vypíšeme po
-   * položkách – „Adam · 6 · Ano“ – ne jako syrové pole.
-   */
-  const popisSkupiny = (sectionId: string, qId: string, value: string): string | null => {
-    const otazka = SECTIONS.find((x) => x.id === sectionId)?.questions.find((q) => q.id === qId)
-    if (otazka?.type !== 'group') return null
-    const polozky = rozdelSkupinu(value)
-    if (polozky.length === 0) return '—'
-    return polozky
-      .map((p, i) => {
-        const hodnoty = (otazka.itemQuestions ?? [])
-          .map((pod) => p[pod.id])
-          .filter((v) => v && v.trim().length > 0)
-        return `${otazka.itemLabel ?? 'Položka'} ${i + 1}: ${hodnoty.join(' · ')}`
-      })
-      .join('   |   ')
-  }
-
   const popisekOtazky = (sectionId: string, qId: string) =>
     QUESTION_LABELS[sectionId]?.[qId]
     ?? SECTIONS.find((x) => x.id === sectionId)?.questions.find((q) => q.id === qId)?.label
@@ -372,7 +353,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             <dl className="space-y-2.5 text-sm">
               <div className="flex justify-between">
                 <dt className="text-slate">Věk</dt>
-                <dd className="font-medium text-navy">{profile.age ?? '–'} let</dd>
+                <dd className="font-medium text-navy">{profile.age != null ? `${profile.age} let` : '–'}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-slate">Příjem</dt>
@@ -551,7 +532,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                           {popisekOtazky(sectionId, qId)}
                         </dt>
                         <dd className="font-medium text-navy text-right">
-                          {popisSkupiny(sectionId, qId, value) ?? zobrazHodnotu(value)}
+                          {popisOdpovedi(sectionId, qId, value)}
                         </dd>
                       </div>
                       ))}
@@ -581,7 +562,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                       {f.file_name}
                     </StoredFileLink>
                     <span className="text-xs text-slate shrink-0">
-                      {popisekSekce(f.section)} · {(f.file_size / 1024).toFixed(0)} KB
+                      {popisekSekce(f.section)} · {(f.file_size / 1024).toFixed(0)} kB
                     </span>
                   </li>
                 ))}
@@ -661,7 +642,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                 {interestRows.some((r) => r.note) && (
                   <div className="mt-5 pt-5 border-t border-line space-y-2.5">
                     <p className="text-xs uppercase tracking-[0.15em] text-slate">
-                      Poznámky ke dotazům
+                      Poznámky k dotazům
                     </p>
                     {interestRows
                       .filter((r) => r.note)
@@ -722,7 +703,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                         {/* Klient vybral – po podpisu ji poradce převede do Moje smlouvy. */}
                         {prevedeneVarianty.has(row.variant_id) ? (
                           <p className="mt-2.5 pt-2.5 border-t border-mint/20 flex items-center gap-1.5 text-sm text-navy">
-                            <CheckCircle2 className="w-4 h-4 text-mint-dark" aria-hidden /> Smlouva založena v Moje smlouvy
+                            <CheckCircle2 className="w-4 h-4 text-mint-dark" aria-hidden /> Smlouva založena v sekci Moje smlouvy
                           </p>
                         ) : (
                           TYP_SMLOUVY_PODLE_SEKCE[row.plan_variants?.section ?? ''] && (

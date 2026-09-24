@@ -256,7 +256,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                   placeholder="1 500"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate">
-                  Kč / měs
+                  Kč/měs.
                 </span>
               </div>
             </Field>

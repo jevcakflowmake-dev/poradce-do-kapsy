@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AlertTriangle, Check, Loader2, X } from 'lucide-react'
-import { formatDate } from '@/lib/utils'
+import { formatDate, plural } from '@/lib/utils'
 import { SECTIONS } from '@/lib/analysis-sections'
 import { BARVY } from '@/lib/barvy'
 
@@ -72,7 +72,7 @@ export default function PendingSubmission({
             </h3>
             <p className="text-sm text-slate leading-relaxed">
               {formatDate(createdAt)} přišla analýza na e-mail <strong className="text-navy">{email}</strong>,
-              který už u nás účet má – {answered} vyplněných odpovědí
+              který už u nás účet má – {answered} {plural(answered, 'vyplněná odpověď', 'vyplněné odpovědi', 'vyplněných odpovědí')}
               {fileCount > 0 && `, ${fileCount} ${fileCount === 1 ? 'příloha' : fileCount < 5 ? 'přílohy' : 'příloh'}`}.
               Odpovědi zatím nikam nezapsané: přijetím přepíšou dosavadní analýzu klienta.
             </p>

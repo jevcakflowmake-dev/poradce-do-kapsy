@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { Save, ChevronDown, ChevronUp, Check, Loader2, UserCog } from 'lucide-react'
 import { BARVY } from '@/lib/barvy'
+import { plural } from '@/lib/utils'
 
 export interface ClientFinancials {
   id?: string
@@ -96,7 +97,7 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
           <h2 className="text-navy font-display text-lg">Vstupní data klienta</h2>
           <p className="text-xs text-slate mt-0.5">
             {data.age && data.monthly_income_net
-              ? `${data.age} let · příjem ${Math.round(data.monthly_income_net).toLocaleString('cs-CZ')} Kč/měs${data.dependents_count ? ` · ${data.dependents_count} ${data.dependents_count === 1 ? 'dítě' : 'děti'}` : ''}`
+              ? `${data.age} let · příjem ${Math.round(data.monthly_income_net).toLocaleString('cs-CZ')} Kč/měs.${data.dependents_count ? ` · ${data.dependents_count} ${plural(data.dependents_count, 'dítě', 'děti', 'dětí')}` : ''}`
               : 'Vyplňte věk, příjem, počet dětí a majetkové údaje z analýzy klienta.'}
           </p>
         </div>
@@ -107,8 +108,8 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
         <div className="border-t border-line p-5 md:p-6 space-y-5">
           <Group title="Klient">
             <NumField label="Věk" value={data.age} onChange={(v) => update('age', v)} suffix="let" />
-            <NumField label="Cíl. věk důchodu" value={data.retirement_age} onChange={(v) => update('retirement_age', v)} suffix="let" />
-            <NumField label="Měsíční čistý příjem" value={data.monthly_income_net} onChange={(v) => update('monthly_income_net', v)} suffix="Kč" />
+            <NumField label="Věk odchodu do důchodu" value={data.retirement_age} onChange={(v) => update('retirement_age', v)} suffix="let" />
+            <NumField label="Čistý měsíční příjem" value={data.monthly_income_net} onChange={(v) => update('monthly_income_net', v)} suffix="Kč" />
             <NumField label="Počet dětí" value={data.dependents_count} onChange={(v) => update('dependents_count', v)} />
           </Group>
 
@@ -117,7 +118,7 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
             {data.has_mortgage && (
               <>
                 <NumField label="Zbývá doplatit" value={data.mortgage_remaining_amount} onChange={(v) => update('mortgage_remaining_amount', v)} suffix="Kč" />
-                <NumField label="Zbývá doba" value={data.mortgage_remaining_years} onChange={(v) => update('mortgage_remaining_years', v)} suffix="let" />
+                <NumField label="Zbývá splácet" value={data.mortgage_remaining_years} onChange={(v) => update('mortgage_remaining_years', v)} suffix="let" />
               </>
             )}
           </Group>
@@ -126,10 +127,10 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
             <NumField label="Hodnota nemovitosti" value={data.property_value_real_estate} onChange={(v) => update('property_value_real_estate', v)} suffix="Kč" />
             <NumField label="Hodnota movitého majetku" value={data.property_value_movables} onChange={(v) => update('property_value_movables', v)} suffix="Kč" />
             {/* Obě čísla vidí klient na přehledu jako dlaždice. Prázdné pole = pomlčka. */}
-            <NumField label="Možná úspora (dlaždice)" value={data.possible_savings} onChange={(v) => update('possible_savings', v)} suffix="Kč/měs" />
+            <NumField label="Možná úspora (dlaždice)" value={data.possible_savings} onChange={(v) => update('possible_savings', v)} suffix="Kč/měs." />
             <NumField label="Doporučená rezerva (dlaždice)" value={data.reserve} onChange={(v) => update('reserve', v)} suffix="Kč" />
             {/* Bez téhle hodnoty plán odhadne státní důchod jako 40 % čistého příjmu. */}
-            <NumField label="Očekávaný státní důchod" value={data.expected_state_pension} onChange={(v) => update('expected_state_pension', v)} suffix="Kč/měs" />
+            <NumField label="Očekávaný státní důchod" value={data.expected_state_pension} onChange={(v) => update('expected_state_pension', v)} suffix="Kč/měs." />
           </Group>
 
           <div>

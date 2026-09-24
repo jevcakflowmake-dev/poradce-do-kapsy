@@ -52,7 +52,7 @@ export default async function SmlouvaZVariantyPage({
   const vychoziNazev = varianta.section === 'income' ? `Životní pojištění ${nazevProduktu}` : nazevProduktu
 
   const prevzate = [
-    ['Pojišťovna / společnost', varianta.company],
+    ['Pojišťovna/společnost', varianta.company],
     ['Produkt', produkt?.nazev],
     ['Běží do', produkt?.doVeku],
     ['Hlášení pojistné události', produkt?.hlaseni],
@@ -81,13 +81,13 @@ export default async function SmlouvaZVariantyPage({
           <h1 className="font-display text-navy text-h2">Převést na smlouvu</h1>
           <p className="text-slate mt-3 max-w-2xl leading-relaxed text-pretty">
             Doplňte, co vzniklo podpisem – číslo smlouvy a platbu. Zbytek se vezme z varianty a klient
-            smlouvu uvidí v Moje smlouvy popsanou stejně, jako ji znal z plánu.
+            smlouvu uvidí v sekci Moje smlouvy popsanou stejně, jako ji znal z plánu.
           </p>
         </header>
 
         {!typ ? (
           <p className="rounded-card border border-line bg-surface p-6 text-base text-slate max-w-2xl">
-            Z oblasti Bydlení smlouvu převést nejde – hypotéka v Moje smlouvy zatím nemá své místo.
+            Z oblasti Bydlení smlouvu převést nejde – hypotéka v sekci Moje smlouvy zatím nemá své místo.
           </p>
         ) : (
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start">
