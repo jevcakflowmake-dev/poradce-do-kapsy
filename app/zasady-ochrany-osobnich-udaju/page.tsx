@@ -23,7 +23,7 @@ export default function ZasadyPage() {
   return (
     <PravniStranka
       nadrazene="Ochrana soukromí"
-      nadpis={<>Zásady zpracování<br />osobních údajů</>}
+      nadpis={<>Zásady ochrany<br />osobních údajů</>}
       ucinnostOd={UCINNOST_OD}
       perex={
         <p>

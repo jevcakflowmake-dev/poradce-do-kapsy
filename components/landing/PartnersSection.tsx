@@ -2,7 +2,7 @@ import { PARTNERI } from '@/lib/partneri'
 import { ZnakPartnera } from '@/components/partneri/LogoFirmy'
 
 /**
- * Se kým spolupracuji – banky, pojišťovny a investiční společnosti. Hned pod
+ * S kým spolupracuji – banky, pojišťovny a investiční společnosti. Hned pod
  * Kdo jsem, kde stojí, že nejsem vázaný na jednu pojišťovnu: loga jsou k té
  * větě doklad.
  *
@@ -15,7 +15,7 @@ export default function PartnersSection() {
   return (
     <section id="partneri" className="bg-cream pb-20 md:pb-28 scroll-mt-28">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
-        <h2 className="font-display text-h2 text-navy">Se kým spolupracuji</h2>
+        <h2 className="font-display text-h2 text-navy">S kým spolupracuji</h2>
         <p className="text-lead text-slate mt-4 max-w-2xl text-pretty">
           Banky, pojišťovny a investiční společnosti, jejichž produkty vám můžu sjednat.
         </p>

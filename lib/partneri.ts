@@ -1,6 +1,6 @@
 /**
  * Banky, pojišťovny a investiční společnosti, se kterými Jakub spolupracuje.
- * Loga se ukazují v sekci „Se kým spolupracuji“ na hlavní stránce a u variant
+ * Loga se ukazují v sekci „S kým spolupracuji“ na hlavní stránce a u variant
  * plánu i smluv klienta. Abecedně, ať pořadí nic nenaznačuje.
  *
  * Loga připravuje `scripts/partneri-loga.mts` (jednobarevný tvar na

@@ -1,16 +1,21 @@
 'use client'
 
-import { BARVY } from '@/lib/barvy'
-
+import { useEffect } from 'react'
 import Link from 'next/link'
+import { BARVY } from '@/lib/barvy'
 
 export default function GlobalError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string }
-  reset: () => void
+  retry: () => void
 }) {
+  // Detail chyby jen do konzole – na obrazovku jde český text níž.
+  useEffect(() => {
+    console.error(error)
+  }, [error])
+
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-4">
       <div className="bg-surface rounded-card border border-line shadow-sm p-8 text-center max-w-md">
@@ -25,12 +30,13 @@ export default function GlobalError({
         <h2 className="text-xl font-semibold mb-2" style={{ color: BARVY.navy }}>
           Něco se pokazilo
         </h2>
-        <p className="text-base text-slate mb-6">
-          {error.message || 'Nastala neočekávaná chyba. Zkuste to prosím znovu.'}
-        </p>
+        {/* Vlastní text, ne error.message: v produkci je to obecná anglická
+            hláška Next.js nebo prohlížeče, klientovi by nic neřekla. */}
+        <p className="text-base text-slate mb-6">Nastala neočekávaná chyba. Zkuste to prosím znovu.</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          {/* retry (Next 16.3) data znovu načte; reset by jen překreslil totéž. */}
           <button
-            onClick={reset}
+            onClick={() => retry()}
             className="px-5 py-2.5 text-white text-base font-medium rounded-card hover:opacity-90 transition-opacity"
             style={{ backgroundColor: BARVY.mint }}
           >

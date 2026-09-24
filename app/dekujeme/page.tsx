@@ -42,7 +42,7 @@ export default async function DekujemePage({
               ? 'Účet máte založený. Poslal jsem vám e-mail s potvrzovacím odkazem – po kliknutí na něj se přihlásíte a plán uvidíte hned, jak bude hotový.'
               : slabeHeslo
                 ? 'Zvolené heslo jsem nepoužil – objevilo se v únicích dat z jiných webů, takže by nebylo bezpečné. Jakmile bude plán hotový, pošlu vám odkaz, kterým si nastavíte jiné.'
-                : 'Jakmile bude plán hotový, pošlu vám na e-mail odkaz, kterým si nastavíte heslo a prohlédnete si ho online.'}
+                : 'Jakmile bude plán hotový, pošlu vám na e-mail odkaz, kterým si nastavíte heslo a plán si prohlédnete online.'}
         </p>
 
         <section className="mt-12">

@@ -32,7 +32,7 @@ export default function SiteHeader() {
         <Link
           href="/"
           // Pod sm je vidět jen dlaždice, takže odkaz potřebuje vlastní název
-          aria-label="Poradce do kapsy — úvodní stránka"
+          aria-label="Poradce do kapsy – úvodní stránka"
           className="shrink-0 flex items-center gap-2.5 rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
         >
           <span aria-hidden className="w-9 h-9 rounded-input bg-mint flex items-end justify-end p-2">

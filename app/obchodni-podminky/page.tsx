@@ -55,15 +55,15 @@ export default function ObchodniPodminkyPage() {
         <List
           items={[
             <>
-              <B>Analýza</B> — online dotazník o vaší situaci, cílech a smlouvách.
+              <B>Analýza</B> – online dotazník o vaší situaci, cílech a smlouvách.
               Vyplníte ho bez registrace.
             </>,
             <>
-              <B>Návrh na míru</B> — z vašich odpovědí připravím finanční plán:
+              <B>Návrh na míru</B> – z vašich odpovědí připravím finanční plán:
               co vám chybí, co máte zbytečně draho a jaké jsou konkrétní možnosti.
             </>,
             <>
-              <B>Klientská zóna</B> — místo, kde máte plán, přehled smluv, dokumenty
+              <B>Klientská zóna</B> – místo, kde máte plán, přehled smluv, dokumenty
               a chat se mnou.
             </>,
           ]}
@@ -82,13 +82,13 @@ export default function ObchodniPodminkyPage() {
           Podmínky platí od chvíle, kdy odešlete analýzu nebo si založíte účet v
           klientské zóně. Tím berete na vědomí jejich znění a{' '}
           <Odkaz href="/zasady-ochrany-osobnich-udaju">
-            zásady zpracování osobních údajů
+            zásady ochrany osobních údajů
           </Odkaz>
           .
         </P>
         <P>
           Službu používáte dobrovolně a můžete ji kdykoliv přestat používat. Stačí
-          napsat a účet i údaje smažu, pokud mi je nemusí zákon nechat déle.
+          napsat a účet i údaje smažu, pokud je podle zákona nemusím uchovávat déle.
         </P>
       </Section>
 
@@ -99,7 +99,7 @@ export default function ObchodniPodminkyPage() {
         </P>
         <P>
           Odměnu dostávám od finančních institucí, se kterými nakonec smlouvu
-          uzavřete — formou provize z uzavřené smlouvy. Když neuzavřete nic,
+          uzavřete – formou provize z uzavřené smlouvy. Když neuzavřete nic,
           nedostanu nic. Na konkrétní výši provize se můžete kdykoliv zeptat a
           u sjednávaného produktu vám ji sdělím.
         </P>
@@ -166,7 +166,7 @@ export default function ObchodniPodminkyPage() {
 
       <Section number="08" title="Dostupnost a odpovědnost">
         <P>
-          Aplikaci se snažím držet v provozu nepřetržitě, ale nemůžu to zaručit —
+          Aplikaci se snažím držet v provozu nepřetržitě, ale nemůžu to zaručit –
           občas je potřeba údržba a občas vypadne služba, na které aplikace stojí.
           Za dočasnou nedostupnost neodpovídám.
         </P>
@@ -190,16 +190,16 @@ export default function ObchodniPodminkyPage() {
         <List
           items={[
             <>
-              <Odkaz href="https://www.finarbitr.cz">Finanční arbitr</Odkaz> — u sporů,
+              <Odkaz href="https://www.finarbitr.cz">Finanční arbitr</Odkaz> – u sporů,
               které spadají do jeho působnosti (například životní pojištění,
               spotřebitelský úvěr nebo platební služby).
             </>,
             <>
-              <Odkaz href="https://adr.coi.cz">Česká obchodní inspekce</Odkaz> —
+              <Odkaz href="https://adr.coi.cz">Česká obchodní inspekce</Odkaz> –
               u ostatních spotřebitelských sporů.
             </>,
             <>
-              <Odkaz href="https://www.cnb.cz">Česká národní banka</Odkaz> — dohledový
+              <Odkaz href="https://www.cnb.cz">Česká národní banka</Odkaz> – dohledový
               orgán nad finančním zprostředkováním; sem patří podněty k mé činnosti
               jako vázaného zástupce.
             </>,

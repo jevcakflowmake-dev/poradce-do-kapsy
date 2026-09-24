@@ -9,7 +9,7 @@ const KROKY = [
   },
   {
     titul: 'Připravím návrh na míru.',
-    popis: 'Do 48 hodin, s vysvětlením proč zrovna takhle.',
+    popis: 'Do 48 hodin, s vysvětlením, proč zrovna takhle.',
   },
   {
     titul: 'Vše máte v aplikaci.',

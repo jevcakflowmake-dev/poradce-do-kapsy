@@ -1,5 +1,5 @@
 /**
- * Loga partnerů pro sekci „Se kým spolupracuji“ na hlavní stránce.
+ * Loga partnerů pro sekci „S kým spolupracuji“ na hlavní stránce.
  *
  * Zdrojová loga jsou malé rastry, každé jiné: většina na bílém, Raiffeisen
  * na žlutém, Česká spořitelna na světle modrém přechodu a mBank má bílá

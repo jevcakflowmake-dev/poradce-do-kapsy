@@ -23,7 +23,7 @@ export default function PricingSection() {
             </p>
             <p>
               Jsem placený provizí od finanční instituce, se kterou nakonec smlouvu uzavřete.
-              Provize je součástí ceny produktu — vyjde vás stejně, ať smlouvu sjednáte přese
+              Provize je součástí ceny produktu – vyjde vás stejně, ať smlouvu sjednáte přese
               mě, nebo přímo na pobočce.
             </p>
             <p>

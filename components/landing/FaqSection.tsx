@@ -10,7 +10,7 @@ const DOTAZY = [
     odpoved: (
       <>
         Ano. Za analýzu ani za návrh neplatíte nic. Jsem placený provizí od instituce, se
-        kterou nakonec smlouvu uzavřete, a ta je součástí ceny produktu — vyjde vás stejně,
+        kterou nakonec smlouvu uzavřete, a provize je součástí ceny produktu – vyjde vás stejně,
         ať smlouvu sjednáte přese mě, nebo přímo na pobočce.
       </>
     ),
@@ -53,7 +53,7 @@ const DOTAZY = [
     otazka: 'Jak dlouho to trvá?',
     odpoved: (
       <>
-        Analýza zabere kolem patnácti minut a nemusíte ji vyplnit najednou — rozepsané
+        Analýza zabere kolem patnácti minut a nemusíte ji vyplnit najednou – rozepsané
         odpovědi se průběžně ukládají a můžete se k nim vrátit. Návrh připravím do 48 hodin.
       </>
     ),
