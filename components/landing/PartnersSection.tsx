@@ -1,5 +1,5 @@
-import type { CSSProperties } from 'react'
 import { PARTNERI } from '@/lib/partneri'
+import { ZnakPartnera } from '@/components/partneri/LogoFirmy'
 
 /**
  * Se kým spolupracuji – banky, pojišťovny a investiční společnosti. Hned pod
@@ -7,16 +7,9 @@ import { PARTNERI } from '@/lib/partneri'
  * větě doklad.
  *
  * Jednobarevně v navy. Barevná loga by se s paletou stránky tloukla a osmnáct
- * značek vedle sebe by působilo jako reklamní plocha. Soubory nesou jen tvar
- * (alfa kanál, viz scripts/partneri-loga.mts), barvu dává maska.
- *
- * Velikost podle plochy, ne podle šířky: široký nápis i čtvercový znak dostanou
- * stejnou plochu (--k na druhou), takže ani jeden nepřebíjí druhý.
+ * značek vedle sebe by působilo jako reklamní plocha. Stejné značky jsou
+ * u variant plánu a u smluv klienta (ZnakPartnera).
  */
-const maska = (url: string): CSSProperties => ({
-  WebkitMask: `url(${url}) center / contain no-repeat`,
-  mask: `url(${url}) center / contain no-repeat`,
-})
 
 export default function PartnersSection() {
   return (
@@ -33,20 +26,7 @@ export default function PartnersSection() {
               key={p.nazev}
               className="flex h-16 md:h-24 items-center justify-center rounded-card border border-line bg-surface px-2 md:px-3"
             >
-              {/* V režimu vysokého kontrastu by systém navy přebarvil na pozadí
-                  a logo zmizelo – proto barva textu systému. */}
-              <span
-                role="img"
-                aria-label={p.nazev}
-                className="block w-[min(100%,calc(var(--s)*var(--k)))] bg-navy forced-color-adjust-none forced-colors:bg-[CanvasText]"
-                style={
-                  {
-                    ...maska(p.logo),
-                    aspectRatio: `${p.sirka} / ${p.vyska}`,
-                    '--s': Math.sqrt(p.sirka / p.vyska).toFixed(3),
-                  } as CSSProperties
-                }
-              />
+              <ZnakPartnera partner={p} popisek />
             </li>
           ))}
         </ul>
