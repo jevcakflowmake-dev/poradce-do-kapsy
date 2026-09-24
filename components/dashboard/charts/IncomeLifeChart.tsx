@@ -6,6 +6,7 @@ import { type RiskKey } from '@/lib/income-risks'
 import SrovnaniVariant, { VyberVarianty } from './SrovnaniVariant'
 import ScenarePojistky from './ScenarePojistky'
 import { BARVY } from '@/lib/barvy'
+import { ctiProdukt } from '@/lib/produkt-varianty'
 
 type IncomeDetails = {
   payout_60?: number | null
@@ -86,7 +87,7 @@ export default function IncomeLifeChart({
           varianta vlastní kartu s pěti údaji a porovnávat se muselo očima. */}
       <SrovnaniVariant variants={variants} barvy={VARIANT_COLORS} selectedId={selectedVariantId} />
       <VyberVarianty
-        variants={variants}
+        variants={variants.map((v) => ({ ...v, produkt: ctiProdukt(v.details)?.nazev }))}
         barvy={VARIANT_COLORS}
         selectedId={selectedVariantId}
         onSelect={onSelect}

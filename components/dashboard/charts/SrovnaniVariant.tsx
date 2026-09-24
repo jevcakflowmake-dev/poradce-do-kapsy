@@ -252,27 +252,42 @@ export default function SrovnaniVariant({
   )
 }
 
+/** Co volba varianty potřebuje vědět – zajištění příjmu i hypotéky. */
+export interface VolbaVarianty {
+  id: string
+  company: string
+  logo: string
+  monthly_payment: string
+  /** Název produktu, když ho poradce vyplnil. */
+  produkt?: string
+}
+
 /**
  * Volba varianty pod srovnáním. Radio skupina: vybrat jde jen jednu, protože
- * dvě pojistky na totéž riziko nedávají smysl. Kliknutí na už vybranou nic
- * nedělá — zrušení výběru má vlastní tlačítko, ať se nedá odkliknout omylem.
+ * dvě pojistky na totéž riziko ani dvě hypotéky na jeden byt nedávají smysl.
+ * Kliknutí na už vybranou nic nedělá — zrušení výběru má vlastní tlačítko,
+ * ať se nedá odkliknout omylem.
  */
 export function VyberVarianty({
   variants,
   barvy,
   selectedId,
   onSelect,
+  nadpis = 'Kterou variantu chcete?',
 }: {
-  variants: IncomeVariant[]
+  variants: VolbaVarianty[]
   barvy: string[]
   selectedId: string | null
   onSelect: (id: string) => void
+  nadpis?: string
 }) {
+  // Na stránce plánu jsou volby dvě (příjem, bydlení) – pevné id by se opakovalo.
+  const idNadpisu = useId()
   return (
     <div className="rounded-card border border-line bg-surface p-4 md:p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h3 id="vyber-varianty" className="text-navy font-display text-base font-semibold">
-          Kterou variantu chcete?
+        <h3 id={idNadpisu} className="text-navy font-display text-base font-semibold">
+          {nadpis}
         </h3>
         {selectedId && (
           <button
@@ -285,10 +300,10 @@ export function VyberVarianty({
         )}
       </div>
 
-      <div role="radiogroup" aria-labelledby="vyber-varianty" className="mt-3 grid gap-3 sm:grid-cols-2">
+      <div role="radiogroup" aria-labelledby={idNadpisu} className="mt-3 grid gap-3 sm:grid-cols-2">
         {variants.map((v, i) => {
           const vybrana = v.id === selectedId
-          const produkt = ctiProdukt(v.details)?.nazev
+          const produkt = v.produkt
           return (
             <button
               key={v.id}
@@ -299,7 +314,9 @@ export function VyberVarianty({
               onClick={() => {
                 if (!vybrana) onSelect(v.id)
               }}
-              className={`flex items-center gap-3 text-left rounded-card border-2 p-4 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 ${
+              // min-w-0: položka mřížky se jinak nezmenší pod šířku nezkráceného
+              // podtitulku a karta přeteče – u delšího názvu produktu mimo obrazovku.
+              className={`min-w-0 flex items-center gap-3 text-left rounded-card border-2 p-4 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 ${
                 vybrana ? 'border-mint bg-mint/8' : 'border-line hover:border-mint/50'
               }`}
             >
