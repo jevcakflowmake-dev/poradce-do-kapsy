@@ -281,7 +281,7 @@ export function VyberVarianty({
   onSelect: (id: string) => void
   nadpis?: string
 }) {
-  // Na stránce plánu jsou volby dvě (příjem, bydlení) – pevné id by se opakovalo.
+  // Na stránce plánu má volbu každá oblast s nabídkami – pevné id by se opakovalo.
   const idNadpisu = useId()
   return (
     <div className="rounded-card border border-line bg-surface p-4 md:p-6">
@@ -332,7 +332,7 @@ export function VyberVarianty({
               <span
                 aria-hidden
                 className="w-9 h-9 rounded-card flex items-center justify-center text-white text-sm font-bold shrink-0"
-                style={{ background: barvy[i] }}
+                style={{ background: barvy[i % barvy.length] }}
               >
                 {v.logo}
               </span>

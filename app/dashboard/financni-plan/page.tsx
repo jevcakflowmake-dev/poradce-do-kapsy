@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   FileText, Download, Clock, Shield, TrendingUp,
-  Home as HomeIcon, Baby, Building2, ChevronDown, ChevronUp,
+  Home as HomeIcon, Baby, Building2,
   CheckCircle2, AlertCircle, Target, Sparkles, Loader2, X,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -12,13 +12,12 @@ import { createClient } from '@/lib/supabase/client'
 import { notifyAdvisor } from '@/lib/notify'
 import SectionInterestToolbar, { type InterestStatus } from '@/components/dashboard/SectionInterestToolbar'
 import AskModal from '@/components/dashboard/AskModal'
-import SelectVariantButton from '@/components/dashboard/SelectVariantButton'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { formatDate, plural } from '@/lib/utils'
 import { PORADCE } from '@/lib/poradce'
 import FinancialPlanOverview from '@/components/dashboard/charts/FinancialPlanOverview'
 import IncomeLifeChart, { type IncomeVariant } from '@/components/dashboard/charts/IncomeLifeChart'
-import SrovnaniNabidek, { type SoucasnaHypoteka } from '@/components/dashboard/charts/SrovnaniNabidek'
+import SrovnaniNabidek, { SROVNANI_SEKCI, type SoucasnaHypoteka } from '@/components/dashboard/charts/SrovnaniNabidek'
 import { VyberVarianty } from '@/components/dashboard/charts/SrovnaniVariant'
 import DuchodVCislech from '@/components/dashboard/DuchodVCislech'
 import { TiskovaTitulka, TiskovyZaver } from '@/components/dashboard/TiskovyRamec'
@@ -95,9 +94,6 @@ export default function FinancniPlanPage() {
   const [zbytekHypoteky, setZbytekHypoteky] = useState<number | null>(null)
   // Současná hypotéka z analýzy – sloupec „Teď“ ve srovnání nabídek bydlení.
   const [soucasnaHypoteka, setSoucasnaHypoteka] = useState<SoucasnaHypoteka | null>(null)
-  // Při tisku rozbalíme všechny varianty – zavřené harmoniky nejsou v DOM
-  // a na papíře by z plánu zbyly jen názvy společností a ceny.
-  const [tiskovyRezim, setTiskovyRezim] = useState(false)
 
   const loadData = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -254,14 +250,11 @@ export default function FinancniPlanPage() {
   /**
    * „Uložit jako PDF" = tiskový dialog prohlížeče. Vlastní generátor PDF by
    * znamenal další knihovnu a druhou podobu dokumentu, kterou je nutné
-   * udržovat; tisková šablona žije přímo se stránkou.
+   * udržovat; tisková šablona žije přímo se stránkou. Nabídky jsou v tabulce
+   * celé, na papír se nemusí nic rozbalovat.
    */
-  async function handlePrint() {
-    setTiskovyRezim(true)
-    // Necháme doběhnout rozbalení harmonik, teprve pak otevřeme dialog.
-    await new Promise((r) => setTimeout(r, 400))
+  function handlePrint() {
     window.print()
-    setTiskovyRezim(false)
   }
 
   function showToast(msg: string) {
@@ -270,8 +263,9 @@ export default function FinancniPlanPage() {
   }
 
   /**
-   * Volba jediné varianty v sekci (u bydlení: hypotéka je jedna). Kliknutí na
-   * už vybranou výběr zruší – tak to posílá „Zrušit výběr“ ve VyberVarianty.
+   * Volba jediné varianty v oblasti – z nabídek se vybírá jedna, stejně jako
+   * u zajištění příjmu. Starší dvojí výběr z doby karet se tím srovná. Kliknutí
+   * na už vybranou výběr zruší – tak to posílá „Zrušit výběr“ ve VyberVarianty.
    * Poradce dostane notifikaci jako dřív u tlačítka v kartě varianty.
    */
   async function vyberJedinou(section: PlanSection, variantId: string) {
@@ -494,7 +488,9 @@ export default function FinancniPlanPage() {
                       </div>
                     )}
                     </>
-                  ) : section.id === 'housing' && section.variants ? (
+                  ) : section.type === 'variants' && section.variants ? (
+                    // Tabulka u každé oblasti s aspoň jednou nabídkou; oblast bez
+                    // nabídek má dál jen seznam doporučení níž.
                     (() => {
                       const vybrana = section.variants.find((v) => selectedVariants.has(v.id))?.id ?? null
                       return (
@@ -508,9 +504,10 @@ export default function FinancniPlanPage() {
                               params: v.params,
                               produkt: v.produkt?.nazev,
                             }))}
-                            ted={soucasnaHypoteka}
+                            ted={section.id === 'housing' ? soucasnaHypoteka : null}
                             barvy={BARVY_NABIDEK}
                             selectedId={vybrana}
+                            nastaveni={SROVNANI_SEKCI[section.id]}
                           />
                           <VyberVarianty
                             variants={section.variants.map((v) => ({
@@ -523,7 +520,7 @@ export default function FinancniPlanPage() {
                             barvy={BARVY_NABIDEK}
                             selectedId={vybrana}
                             onSelect={(id) => vyberJedinou(section, id)}
-                            nadpis="Kterou nabídku chcete?"
+                            nadpis={section.variants.length > 1 ? 'Kterou nabídku chcete?' : 'Chcete tuto nabídku?'}
                           />
                           {/* Karty variant tu nejsou, detail produktu (hlavně kontakt) jde pod výběr. */}
                           {section.variants.map((v) =>
@@ -532,32 +529,6 @@ export default function FinancniPlanPage() {
                         </div>
                       )
                     })()
-                  ) : section.type === 'variants' && section.variants ? (
-                    <div className="space-y-3">
-                      <p className="text-base text-slate mb-1">
-                        {section.variants.length} varian{section.variants.length === 1 ? 'ta' : 'ty'} k porovnání – rozklikněte detail nebo označte tu, o kterou máte zájem.
-                      </p>
-                      {section.variants.map((variant, i) => (
-                        <VariantCardInteractive
-                          key={variant.id}
-                          variant={variant}
-                          index={i}
-                          forceOpen={tiskovyRezim}
-                          clientId={clientId ?? ''}
-                          section={section.id}
-                          isSelected={selectedVariants.has(variant.id)}
-                          onToggleSelect={(sel) => {
-                            setSelectedVariants(prev => {
-                              const next = new Set(prev)
-                              if (sel) next.add(variant.id)
-                              else next.delete(variant.id)
-                              return next
-                            })
-                            if (sel) showToast(`${variant.company} označena jako preferovaná. Poradce vás zkontaktuje.`)
-                          }}
-                        />
-                      ))}
-                    </div>
                   ) : (
                     <ul className="space-y-2.5">
                       {section.items?.map((item, i) => (
@@ -732,112 +703,4 @@ function cislo(v: string | undefined): number | undefined {
   if (!v) return undefined
   const n = Number.parseFloat(v.replace(/[^\d,.-]/g, '').replace(',', '.'))
   return Number.isFinite(n) ? n : undefined
-}
-
-// Interactive variant card – with "Select this variant" CTA
-function VariantCardInteractive({
-  variant,
-  index,
-  clientId,
-  section,
-  isSelected,
-  onToggleSelect,
-  forceOpen = false,
-}: {
-  variant: Variant
-  index: number
-  clientId: string
-  section: string
-  isSelected: boolean
-  onToggleSelect: (selected: boolean) => void
-  /** Tisk rozbalí všechny varianty, ať je na papíře i to, co je pod detailem. */
-  forceOpen?: boolean
-}) {
-  const [rozbaleno, setRozbaleno] = useState(false)
-  const open = rozbaleno || forceOpen
-  const setOpen = setRozbaleno
-  return (
-    <div
-      className={`rounded-card overflow-hidden transition-all border ${
-        isSelected
-          ? 'border-mint bg-mint/5 ring-2 ring-mint'
-          : open
-          ? 'border-mint/40 bg-surface'
-          : 'border-line bg-surface hover:border-mint/40 hover:shadow-sm'
-      }`}
-    >
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-4 p-4 text-left transition-colors"
-      >
-        <div className="w-11 h-11 rounded-input bg-navy flex items-center justify-center text-cream font-semibold text-lg shrink-0">
-          {variant.logo}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-navy text-base">{variant.company}</h4>
-          <p className="text-xs tracking-[0.15em] uppercase text-slate mt-0.5">
-            Varianta {index + 1}
-          </p>
-        </div>
-        <div className="text-right flex-shrink-0 mr-2 hidden sm:block">
-          <span className="font-display text-navy text-xl">{variant.monthlyPayment}</span>
-          <p className="text-xs tracking-[0.1em] uppercase text-slate">/ měsíc</p>
-        </div>
-        {open ? (
-          <ChevronUp className="w-5 h-5 text-navy" strokeWidth={1.8} />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-slate" strokeWidth={1.8} />
-        )}
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="px-4 pb-4">
-              <div className="h-px bg-line mb-3" />
-
-              {variant.produkt && <PopisProduktu produkt={variant.produkt} />}
-
-              <div className="space-y-2">
-                {Object.entries(variant.params).map(([key, detail]) => (
-                  <div
-                    key={key}
-                    className="bg-cream rounded-card px-4 py-3 border border-line"
-                  >
-                    <div className="flex items-center justify-between mb-1 gap-3">
-                      <span className="text-base font-medium text-navy/80">{key}</span>
-                      <span className="text-base font-semibold text-navy bg-cream border border-line px-3 py-0.5 rounded-card">
-                        {detail.value}
-                      </span>
-                    </div>
-                    {detail.note && (
-                      <p className="text-base text-slate leading-relaxed mt-1">{detail.note}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Select CTA – always visible when detail is open */}
-              <div className="flex items-center justify-end mt-4 pt-3 border-t border-line">
-                <SelectVariantButton
-                  clientId={clientId}
-                  variantId={variant.id}
-                  company={variant.company}
-                  section={section}
-                  isSelected={isSelected}
-                  onToggle={onToggleSelect}
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
 }
