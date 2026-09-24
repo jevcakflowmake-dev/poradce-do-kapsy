@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || user.app_metadata?.role !== 'advisor') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Nemáte oprávnění.' }, { status: 401 })
     }
 
     const body = await request.json().catch(() => null)
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Neplatné client_id (UUID).' }, { status: 400 })
     }
     if (!isClientStatus(status)) {
-      return NextResponse.json({ error: 'Neplatný status.' }, { status: 400 })
+      return NextResponse.json({ error: 'Neplatný stav.' }, { status: 400 })
     }
 
     // Zápis až po ověření role a přes service role, stejně jako ostatní
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, status })
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Internal error'
-    return NextResponse.json({ error: msg }, { status: 500 })
+    console.error('[client-status] chyba:', e instanceof Error ? e.message : e)
+    return NextResponse.json({ error: 'Neočekávaná chyba.' }, { status: 500 })
   }
 }

@@ -75,7 +75,7 @@ export async function POST(request: Request) {
 
     if (!EMAIL_REGEX.test(email)) {
       return NextResponse.json(
-        { error: 'V sekci „Osobní údaje“ vyplňte platný e-mail – bez něj vám nemáme kam poslat návrh.' },
+        { error: 'V sekci „Osobní údaje“ vyplňte platný e-mail – bez něj vám nemám kam poslat návrh.' },
         { status: 400 },
       )
     }

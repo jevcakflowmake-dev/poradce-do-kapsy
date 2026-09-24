@@ -29,12 +29,12 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user || user.app_metadata?.role !== 'advisor') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Nemáte oprávnění.' }, { status: 401 })
   }
 
   const body = (await request.json()) as Payload
   if (!body.client_id) {
-    return NextResponse.json({ error: 'Missing client_id' }, { status: 400 })
+    return NextResponse.json({ error: 'Chybí client_id.' }, { status: 400 })
   }
 
   const upsertData = {
@@ -60,7 +60,8 @@ export async function POST(request: Request) {
     .single()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('[client-financials]', error.message)
+    return NextResponse.json({ error: 'Údaje se nepodařilo uložit. Zkuste to prosím znovu.' }, { status: 500 })
   }
 
   return NextResponse.json({ data })

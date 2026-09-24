@@ -32,15 +32,15 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user || user.app_metadata?.role !== 'advisor') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Nemáte oprávnění.' }, { status: 401 })
   }
 
   const body = (await request.json()) as Payload
   if (!body.client_id || !Array.isArray(body.variants)) {
-    return NextResponse.json({ error: 'Missing client_id or variants[]' }, { status: 400 })
+    return NextResponse.json({ error: 'Chybí client_id nebo variants[].' }, { status: 400 })
   }
   if (body.variants.length > 3) {
-    return NextResponse.json({ error: 'Maximálně 3 varianty' }, { status: 400 })
+    return NextResponse.json({ error: 'Maximálně 3 varianty.' }, { status: 400 })
   }
 
   // Smaž existující income varianty (i s params přes ON DELETE CASCADE)
@@ -49,7 +49,8 @@ export async function POST(request: Request) {
     .eq('client_id', body.client_id)
     .eq('section', 'income')
   if (delErr) {
-    return NextResponse.json({ error: delErr.message }, { status: 500 })
+    console.error('[plan/income] mazání:', delErr.message)
+    return NextResponse.json({ error: 'Varianty se nepodařilo uložit. Zkuste to prosím znovu.' }, { status: 500 })
   }
 
   if (body.variants.length === 0) {
@@ -98,7 +99,8 @@ export async function POST(request: Request) {
     .select()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('[plan/income] zápis:', error.message)
+    return NextResponse.json({ error: 'Varianty se nepodařilo uložit. Zkuste to prosím znovu.' }, { status: 500 })
   }
 
   return NextResponse.json({ data })

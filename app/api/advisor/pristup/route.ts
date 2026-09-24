@@ -65,10 +65,8 @@ export async function POST(request: Request) {
     const hash = data?.properties?.hashed_token
 
     if (error || !hash) {
-      return NextResponse.json(
-        { error: error?.message || 'Odkaz se nepodařilo vygenerovat.' },
-        { status: 500 },
-      )
+      if (error) console.error('[pristup] generateLink:', error.message)
+      return NextResponse.json({ error: 'Odkaz se nepodařilo vygenerovat.' }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -77,8 +75,7 @@ export async function POST(request: Request) {
       link: absoluteUrl(`/auth/potvrzeni?token_hash=${encodeURIComponent(hash)}&type=recovery&next=/update-password`),
     })
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Neočekávaná chyba'
-    console.error('[pristup] chyba:', msg)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    console.error('[pristup] chyba:', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: 'Neočekávaná chyba.' }, { status: 500 })
   }
 }

@@ -33,11 +33,11 @@ export async function POST(request: Request) {
     const { clientId, responses } = await request.json()
 
     if (!clientId || !responses) {
-      return NextResponse.json({ error: 'Missing data' }, { status: 400 })
+      return NextResponse.json({ error: 'Chybí data.' }, { status: 400 })
     }
 
     if (!UUID_REGEX.test(clientId)) {
-      return NextResponse.json({ error: 'Neplatný formát clientId' }, { status: 400 })
+      return NextResponse.json({ error: 'Neplatný formát clientId.' }, { status: 400 })
     }
 
     const auth = await authorize(clientId)
@@ -83,11 +83,11 @@ export async function GET(request: Request) {
     const clientId = searchParams.get('clientId')
 
     if (!clientId) {
-      return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+      return NextResponse.json({ error: 'Chybí clientId.' }, { status: 400 })
     }
 
     if (!UUID_REGEX.test(clientId)) {
-      return NextResponse.json({ error: 'Neplatný formát clientId' }, { status: 400 })
+      return NextResponse.json({ error: 'Neplatný formát clientId.' }, { status: 400 })
     }
 
     const auth = await authorize(clientId)

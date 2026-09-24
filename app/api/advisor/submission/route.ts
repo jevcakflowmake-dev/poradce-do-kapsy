@@ -102,8 +102,8 @@ export async function POST(request: Request) {
       failedFiles: failed.length,
     })
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Neočekávaná chyba'
-    console.error('[submission] chyba:', msg)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    // Chyby z lib/submissions nesou anglický detail z databáze – ten jen do logu.
+    console.error('[submission] chyba:', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: 'Odpovědi se nepodařilo uložit. Zkuste to prosím znovu.' }, { status: 500 })
   }
 }
