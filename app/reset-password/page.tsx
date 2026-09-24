@@ -68,8 +68,9 @@ export default function ResetPasswordPage() {
         // 3) Nic – link je expirovaný / neplatný
         setPhase('invalid')
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Neplatný odkaz'
-        setError(msg)
+        // Proč odkaz neplatí, říká stránka česky sama; anglický detail ze
+        // Supabase („invalid flow state…“) jen do konzole.
+        console.error('[reset-password]', err)
         setPhase('invalid')
       }
     }
@@ -111,7 +112,7 @@ export default function ResetPasswordPage() {
         numeral="✗"
         eyebrow="Odkaz neplatí"
         title={<>Odkaz je <span style={{ color: BARVY.mint }}>neplatný</span>.</>}
-        subtitle="Reset odkazy platí 60 minut a každý lze použít jen jednou. Pošlu vám nový."
+        subtitle="Odkazy pro reset hesla platí 60 minut a každý lze použít jen jednou. Pošlu vám nový."
       >
         <div className="bg-surface rounded-card border border-line p-8 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-card mb-5 bg-danger/10 border border-[rgba(194,65,12,0.25)]">
@@ -135,7 +136,7 @@ export default function ResetPasswordPage() {
       numeral="↻"
       eyebrow="Nové heslo · poslední krok"
       title={<>Nastavte si <span style={{ color: BARVY.mint }}>nové</span> heslo.</>}
-      subtitle="Zadejte heslo aspoň 8 znaků. Po uložení vás přesměrujeme do vašeho prostoru."
+      subtitle="Zadejte heslo dlouhé aspoň 8 znaků. Po uložení vás přesměrujeme do vašeho prostoru."
     >
       <div className="bg-surface rounded-card border border-line p-6 md:p-8">
         {error && phase === 'ready' && (

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { CheckCircle2, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AuthShell from '@/components/auth/AuthShell'
+import { hlaskaAuth } from '@/lib/hesla'
 
 const schema = z.object({
   email: z.string().email('Zadejte platný e-mail'),
@@ -32,7 +33,7 @@ export default function ForgotPasswordPage() {
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
       redirectTo: `${window.location.origin}/reset-password`,
     })
-    if (error) setError(error.message)
+    if (error) setError(hlaskaAuth(error))
     else setSent(true)
     setLoading(false)
   }

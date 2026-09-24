@@ -78,7 +78,7 @@ export default function UpdatePasswordPage() {
       numeral="↻"
       eyebrow="Nové heslo · poslední krok"
       title={<>Nastavte si <span style={{ color: BARVY.mint }}>nové</span> heslo.</>}
-      subtitle="Zadejte heslo aspoň 8 znaků. Po uložení vás přesměrujeme do vašeho prostoru."
+      subtitle="Zadejte heslo dlouhé aspoň 8 znaků. Po uložení vás přesměrujeme do vašeho prostoru."
     >
       <div className="bg-surface rounded-card border border-line p-6 md:p-8">
         {error && (

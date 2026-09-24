@@ -21,7 +21,7 @@ export default function AuthShell({ eyebrow, numeral, title, subtitle, children,
         <div className="flex flex-col justify-between h-full p-6 md:p-10 lg:p-14 gap-10">
           <Link
             href="/"
-            aria-label="Poradce do kapsy — úvodní stránka"
+            aria-label="Poradce do kapsy – úvodní stránka"
             className="inline-flex items-center gap-2.5 w-fit rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
           >
             <span aria-hidden className="w-9 h-9 rounded-input bg-mint flex items-end justify-end p-2">

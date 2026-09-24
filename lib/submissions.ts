@@ -157,9 +157,13 @@ export async function odstranNeplatneOdpovedi(
  * Popisky musí souhlasit s familyLabel() v lib/utils.ts.
  */
 const FAMILY_STATUS_MAP: Record<string, string> = {
+  'Bez partnera a dětí': 'single',
+  'S partnerem/partnerkou': 'partner',
+  'Rodina s dětmi': 'family',
+  'Samoživitel/samoživitelka': 'single_parent',
+  // Znění do 24. 9. 2026 – tak jsou uložené starší odpovědi a rozepsané analýzy.
   'Single': 'single',
   'S partnerem/kou': 'partner',
-  'Rodina s dětmi': 'family',
   'Samoživitel/ka': 'single_parent',
 }
 

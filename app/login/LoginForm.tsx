@@ -29,7 +29,7 @@ export type Upozorneni = 'potvrzeno' | 'odkaz' | null
 const UPOZORNENI: Record<Exclude<Upozorneni, null>, { text: string; dobre: boolean }> = {
   potvrzeno: { text: 'E-mail je potvrzený. Přihlaste se heslem, které jste si zvolili.', dobre: true },
   odkaz: {
-    text: 'Odkaz už neplatí nebo byl použitý. Nechte si poslat nový – přihlašovacím odkazem, nebo přes Zapomenuté heslo.',
+    text: 'Odkaz už neplatí nebo byl použitý. Nechte si poslat nový – přihlašovacím odkazem, nebo přes „Zapomenuté heslo“.',
     dobre: false,
   },
 }
@@ -214,7 +214,7 @@ export default function LoginForm({ upozorneni = null }: { upozorneni?: Upozorne
                 onClick={() => { setMagicLink(true); setError(null) }}
                 className="text-navy hover:text-navy transition-colors font-medium"
               >
-                Přihlásit odkazem v e-mailu →
+                Přihlásit se odkazem v e-mailu →
               </button>
             </div>
           </form>

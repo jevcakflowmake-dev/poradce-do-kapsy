@@ -47,10 +47,10 @@ export function incomeLabel(income: string | null): string {
 
 export function familyLabel(fs: string | null): string {
   const map: Record<string, string> = {
-    single: 'Single',
-    partner: 'S partnerem/kou',
+    single: 'Bez partnera a dětí',
+    partner: 'S partnerem/partnerkou',
     family: 'Rodina s dětmi',
-    single_parent: 'Samoživitel/ka',
+    single_parent: 'Samoživitel/samoživitelka',
   }
   return fs ? (map[fs] ?? fs) : '–'
 }

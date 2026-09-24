@@ -16,3 +16,18 @@ export function hlaskaKHeslu(chyba: { code?: string } | null | undefined): strin
       return null
   }
 }
+
+/**
+ * Česká hláška k jakékoli chybě ze Supabase Auth. Anglický originál
+ * („For security purposes, you can only request this after 49 seconds“)
+ * by klientovi nic neřekl; co neznáme, nahradí obecná věta.
+ */
+export function hlaskaAuth(chyba: { code?: string; status?: number } | null | undefined): string {
+  const kHeslu = hlaskaKHeslu(chyba)
+  if (kHeslu) return kHeslu
+  if (chyba?.status === 429 || chyba?.code?.startsWith('over_')) {
+    return 'Odkaz jste si nechali poslat před chvílí. Zkuste to prosím znovu za minutu.'
+  }
+  if (chyba?.code === 'email_address_invalid') return 'Zadejte platný e-mail.'
+  return 'Něco se nepovedlo. Zkuste to prosím znovu.'
+}

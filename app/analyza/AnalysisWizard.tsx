@@ -193,7 +193,7 @@ export default function AnalysisWizard() {
         <div className="mx-auto w-full max-w-4xl px-6 h-16 flex items-center justify-between gap-4">
           <Link
             href="/"
-            aria-label="Poradce do kapsy — úvodní stránka"
+            aria-label="Poradce do kapsy – úvodní stránka"
             className="flex items-center gap-2.5 rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
           >
             <span aria-hidden className="w-8 h-8 rounded-input bg-navy flex items-end justify-end p-1.5">
@@ -202,7 +202,7 @@ export default function AnalysisWizard() {
             <span className="font-display text-navy hidden sm:block">Poradce do kapsy</span>
           </Link>
           <p className="text-base text-slate tabular-nums" aria-live="polite">
-            Krok {krok + 1} ze {SECTIONS.length}
+            Krok {krok + 1} z {SECTIONS.length}
           </p>
         </div>
         <div className="h-1 bg-line" role="presentation">
@@ -321,7 +321,7 @@ export default function AnalysisWizard() {
                 href="/zasady-ochrany-osobnich-udaju"
                 className="text-navy underline underline-offset-4 hover:text-mint-dark"
               >
-                zásady zpracování osobních údajů
+                zásady ochrany osobních údajů
               </Link>
               . Vyplněním údajů o zdraví zároveň udělujete výslovný souhlas s jejich zpracováním.
             </p>

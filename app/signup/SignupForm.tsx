@@ -175,7 +175,7 @@ export default function SignupForm() {
             href="/zasady-ochrany-osobnich-udaju"
             className="underline underline-offset-2 hover:text-navy transition-colors"
           >
-            zásady zpracování osobních údajů
+            zásady ochrany osobních údajů
           </Link>
           .
         </p>

@@ -193,7 +193,8 @@ export function naDotaznikoveOdpovedi(a: AnalyzaOdpovedi): Answers {
     deti_nejmladsi_vek: vekyDeti(children.children_list).sort((a, b) => a - b)[0],
     // Analýza se neptá, jestli by domácnost vyšla z příjmu partnera. Jistě to
     // víme jen u samoživitelů – jinde necháváme prázdné, ať se nic nedomýšlí.
-    partner_prijem: personal.family_status === 'Samoživitel/ka' ? 'ne' : undefined,
+    // „Samoživitel/ka“ je znění do 24. 9. 2026, tak jsou uložené starší odpovědi.
+    partner_prijem: ['Samoživitel/samoživitelka', 'Samoživitel/ka'].includes(personal.family_status ?? '') ? 'ne' : undefined,
 
     // — zdraví a životní styl —
     vyska: cislo(personal.height),

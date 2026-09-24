@@ -130,7 +130,7 @@ export const zajisteniPrijmuQuestionnaire: Questionnaire = {
         {
           key: 'partner',
           type: 'single',
-          label: 'Žijete s partnerem / partnerkou?',
+          label: 'Žijete s partnerem/partnerkou?',
           options: [
             { value: 'ano_spolecne', label: 'Ano, máme společnou domácnost' },
             { value: 'ano_oddelene', label: 'Ano, ale finance máme oddělené' },
@@ -579,7 +579,7 @@ export const zajisteniPrijmuQuestionnaire: Questionnaire = {
           key: 'zp_smlouva',
           type: 'upload',
           label: 'Nahrajte stávající smlouvu (nepovinné)',
-          help: 'Stačí fotka nebo PDF. Poradce zkontroluje, co v ní opravdu je, a jestli ji zrušit, upravit nebo nechat.',
+          help: 'Stačí fotka nebo PDF. Poradce zkontroluje, co v ní opravdu je a jestli ji zrušit, upravit nebo nechat.',
           showIf: [{ key: 'ma_zp', op: 'in', value: ['ano', 'nevim'] }],
           informs: ['obecne'],
         },

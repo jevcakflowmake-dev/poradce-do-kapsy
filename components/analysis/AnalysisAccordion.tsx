@@ -100,7 +100,7 @@ export default function AnalysisAccordion({
                       style={{ width: `${progress}%`, background: BARVY.mint }}
                     />
                   </div>
-                  <span className="text-xs text-slate tabular-nums">{progress}%</span>
+                  <span className="text-xs text-slate tabular-nums">{progress} %</span>
                 </div>
               </div>
               {progress === 100 && (
@@ -221,7 +221,7 @@ export default function AnalysisAccordion({
                             >
                               <FileText className="w-4 h-4 text-slate" />
                               <span className="flex-1 text-navy truncate">{f.name}</span>
-                              <span className="text-xs text-slate">{(f.size / 1024).toFixed(0)} KB</span>
+                              <span className="text-xs text-slate">{(f.size / 1024).toFixed(0)} kB</span>
                               <button
                                 type="button"
                                 onClick={() => onRemoveFile(f.name)}
