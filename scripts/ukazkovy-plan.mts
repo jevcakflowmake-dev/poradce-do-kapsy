@@ -325,6 +325,8 @@ const varianty: Varianta[] = [
         popis: 'Pravidelné investování do smíšeného portfolia. Peníze lze kdykoliv vybrat bez sankce.',
         kontakt: 'https://www.amundi.cz',
       },
+      // Graf růstu v plánu (lib/projekce.ts).
+      projekce: { vynos: 6, roky: 15, mesicne: 3000, jednorazove: 0 },
     },
     params: [
       ['Měsíční investice', '3 000 Kč', 'Lze kdykoliv změnit nebo pozastavit.'],

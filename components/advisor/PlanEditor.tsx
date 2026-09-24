@@ -13,6 +13,8 @@ import { plural } from '@/lib/utils'
 import { ctiProdukt, type ProduktVarianty } from '@/lib/produkt-varianty'
 import { partnerPodleNazvu } from '@/lib/partneri'
 import { SECTIONS as OTAZKY_ANALYZY, popisOdpovedi } from '@/lib/analysis-sections'
+import { ctiProjekci, ocistiProjekci, spoctiProjekci, SEKCE_S_PROJEKCI } from '@/lib/projekce'
+import { castkaZTextu } from '@/lib/smlouvy'
 import LogoFirmy from '@/components/partneri/LogoFirmy'
 import SeznamPartneru from '@/components/partneri/SeznamPartneru'
 
@@ -35,7 +37,8 @@ interface Variant {
   logo: string
   monthly_payment: string
   sort_order: number
-  /** jsonb – u zajištění příjmu čísla rizik, pod klíčem `produkt` detail produktu */
+  /** jsonb – u zajištění příjmu čísla rizik, pod klíčem `produkt` detail produktu,
+   *  u investic pod `projekce` výnos, doba a vklady pro graf */
   details?: unknown
 }
 
@@ -80,6 +83,9 @@ export default function PlanEditor({
   // Detail produktu se edituje po jedné variantě, ať je jasné, co se ukládá.
   const [produktProVariantu, setProduktProVariantu] = useState<string | null>(null)
   const [produktForm, setProduktForm] = useState<ProduktVarianty>({})
+  // Graf výnosu u investic – pole jako text, ať jde psát „6,5“ i „3 000“.
+  const [projekceProVariantu, setProjekceProVariantu] = useState<string | null>(null)
+  const [projekceForm, setProjekceForm] = useState({ vynos: '', roky: '', mesicne: '', jednorazove: '' })
   const [showAnswers, setShowAnswers] = useState(false)
   const [saving, setSaving] = useState(false)
   const [feedback, setFeedback] = useState<string | null>(null)
@@ -160,6 +166,39 @@ export default function PlanEditor({
       )
       setProduktProVariantu(null)
       setFeedback('Detail produktu uložen')
+      setTimeout(() => setFeedback(null), 2000)
+    }
+  }
+
+  function otevriProjekci(variant: Variant) {
+    const otevrit = projekceProVariantu === variant.id ? null : variant.id
+    setProjekceProVariantu(otevrit)
+    if (!otevrit) return
+    const ulozena = ctiProjekci(variant.details)
+    const cislo = (n: number | undefined) => (n ? n.toLocaleString('cs-CZ') : '')
+    setProjekceForm({
+      vynos: ulozena ? ulozena.vynos.toLocaleString('cs-CZ') : '',
+      roky: ulozena ? String(ulozena.roky) : '',
+      // Nová projekce začíná měsíční platbou varianty – většinou je to právě vklad.
+      mesicne: ulozena ? cislo(ulozena.mesicne) : cislo(castkaZTextu(variant.monthly_payment) ?? undefined),
+      jednorazove: ulozena ? cislo(ulozena.jednorazove) : '',
+    })
+  }
+
+  async function handleSaveProjekce(variantId: string, odebrat = false) {
+    const projekce = odebrat ? null : ocistiProjekci(projekceForm)
+    if (!odebrat && !projekce) return
+    const result = await apiCall({ action: 'update_variant', variant_id: variantId, projekce })
+    if (result) {
+      setVariants(prev =>
+        prev.map(v => {
+          if (v.id !== variantId) return v
+          const { projekce: _stara, ...zbytek } = (v.details as Record<string, unknown>) ?? {}
+          return { ...v, details: projekce ? { ...zbytek, projekce } : zbytek }
+        }),
+      )
+      setProjekceProVariantu(null)
+      setFeedback(odebrat ? 'Graf výnosu odebrán' : 'Graf výnosu uložen')
       setTimeout(() => setFeedback(null), 2000)
     }
   }
@@ -456,6 +495,15 @@ export default function PlanEditor({
                     >
                       {ctiProdukt(variant.details) ? 'Detail produktu ✓' : 'Detail produktu'}
                     </button>
+                    {SEKCE_S_PROJEKCI.includes(variant.section) && (
+                      <button
+                        onClick={() => otevriProjekci(variant)}
+                        className="px-3 py-2 text-sm text-slate hover:text-navy transition-colors rounded-card hover:bg-cream"
+                        title="Výnos, doba a vklady – klient uvidí graf, jak by investice mohla růst"
+                      >
+                        {ctiProjekci(variant.details) ? 'Graf výnosu ✓' : 'Graf výnosu'}
+                      </button>
+                    )}
                     <button
                       onClick={() => handleDeleteVariant(variant.id)}
                       className="p-2 text-slate hover:text-red-500 transition-colors rounded-card hover:bg-red-50"
@@ -509,6 +557,60 @@ export default function PlanEditor({
                       </div>
                     </div>
                   )}
+
+                  {projekceProVariantu === variant.id && (() => {
+                    const nahled = ocistiProjekci(projekceForm)
+                    const vysledek = nahled ? spoctiProjekci(nahled) : null
+                    const kc = (n: number) => `${n.toLocaleString('cs-CZ')} Kč`
+                    return (
+                      <div className="px-5 pb-4 space-y-3 border-t border-line pt-4">
+                        <p className="text-sm text-slate text-pretty">
+                          Klient pod srovnáním uvidí graf, jak by investice mohla růst, a tři čísla:
+                          kolik vloží, předpokládanou hodnotu a výnos. Počítá se s pevným výnosem,
+                          pod grafem stojí, že zaručený není.
+                        </p>
+                        <div className="grid gap-3 sm:grid-cols-4">
+                          <PoleProduktu label="Výnos (% ročně)" value={projekceForm.vynos} placeholder="8"
+                            onChange={(v) => setProjekceForm(f => ({ ...f, vynos: v }))} />
+                          <PoleProduktu label="Doba (let)" value={projekceForm.roky} placeholder="10"
+                            onChange={(v) => setProjekceForm(f => ({ ...f, roky: v }))} />
+                          <PoleProduktu label="Měsíční vklad (Kč)" value={projekceForm.mesicne} placeholder="3 000"
+                            onChange={(v) => setProjekceForm(f => ({ ...f, mesicne: v }))} />
+                          <PoleProduktu label="Jednorázový vklad (Kč)" value={projekceForm.jednorazove} placeholder="nepovinné"
+                            onChange={(v) => setProjekceForm(f => ({ ...f, jednorazove: v }))} />
+                        </div>
+                        <p aria-live="polite" className="text-sm text-navy text-pretty">
+                          {vysledek && nahled
+                            ? `Za ${nahled.roky} ${plural(nahled.roky, 'rok', 'roky', 'let')} klient vloží ${kc(vysledek.vlozeno)}, předpokládaná hodnota kolem ${kc(vysledek.hodnota)}.`
+                            : 'Vyplňte výnos (0–30 %), dobu v celých letech a aspoň jeden vklad.'}
+                        </p>
+                        <div className="flex flex-wrap justify-end gap-2">
+                          {ctiProjekci(variant.details) && (
+                            <Button
+                              onClick={() => handleSaveProjekce(variant.id, true)}
+                              disabled={saving}
+                              variant="outline"
+                              className="rounded-card mr-auto"
+                            >
+                              Odebrat graf
+                            </Button>
+                          )}
+                          <Button onClick={() => setProjekceProVariantu(null)} variant="outline" className="rounded-card">
+                            Zrušit
+                          </Button>
+                          <Button
+                            onClick={() => handleSaveProjekce(variant.id)}
+                            disabled={saving || !nahled}
+                            className="text-white gap-2 rounded-card"
+                            style={{ backgroundColor: BARVY.navy }}
+                          >
+                            <Save className="w-4 h-4" />
+                            {saving ? 'Ukládám…' : 'Uložit graf'}
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                  })()}
 
                   {/* Params */}
                   {variantParams.length > 0 && (

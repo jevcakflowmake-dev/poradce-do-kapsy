@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { ocistiProdukt } from '@/lib/produkt-varianty'
+import { ocistiProjekci } from '@/lib/projekce'
 import type { Database } from '@/lib/types/database'
 
 type ZmenyVarianty = Database['public']['Tables']['plan_variants']['Update']
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     if (action === 'update_variant') {
-      const { variant_id, company, logo, monthly_payment, produkt } = data
+      const { variant_id, company, logo, monthly_payment, produkt, projekce } = data
       if (!variant_id) {
         return NextResponse.json({ error: 'Pro aktualizaci varianty je povinné: variant_id.' }, { status: 400 })
       }
@@ -50,24 +51,37 @@ export async function POST(request: Request) {
       if (logo !== undefined) zmeny.logo = logo
       if (monthly_payment !== undefined) zmeny.monthly_payment = monthly_payment
 
-      if (produkt !== undefined) {
+      // Projekce null = poradce graf odebral; nesmyslná čísla odmítneme hned,
+      // ať se neuloží graf, který by klientovi nic neřekl.
+      const novaProjekce = projekce === undefined || projekce === null ? null : ocistiProjekci(projekce)
+      if (projekce !== undefined && projekce !== null && !novaProjekce) {
+        return NextResponse.json(
+          { error: 'Vyplňte výnos (0–30 %), dobu v celých letech (1–50) a aspoň jeden vklad.' },
+          { status: 400 },
+        )
+      }
+
+      if (produkt !== undefined || projekce !== undefined) {
         // `details` u zajištění příjmu drží čísla rizik, takže sloupec nepřepisujeme
-        // celý — načteme, co tam je, a doplníme jen klíč `produkt`.
+        // celý — načteme, co tam je, a změníme jen klíče `produkt` a `projekce`.
         const { data: soucasne, error: chybaCteni } = await supabase.from('plan_variants')
           .select('details')
           .eq('id', variant_id)
           .single()
         if (chybaCteni) return chybaUlozeni(chybaCteni)
 
-        const details = (soucasne?.details ?? {}) as Record<string, unknown>
-        const ocisteny = ocistiProdukt(produkt)
-        if (Object.keys(ocisteny).length > 0) {
-          zmeny.details = { ...details, produkt: ocisteny } as unknown as ZmenyVarianty['details']
-        } else {
+        const details = { ...((soucasne?.details ?? {}) as Record<string, unknown>) }
+        if (produkt !== undefined) {
+          const ocisteny = ocistiProdukt(produkt)
           // Prázdný formulář = poradce detail smazal.
-          const { produkt: _zahozeno, ...zbytek } = details
-          zmeny.details = zbytek as unknown as ZmenyVarianty['details']
+          if (Object.keys(ocisteny).length > 0) details.produkt = ocisteny
+          else delete details.produkt
         }
+        if (projekce !== undefined) {
+          if (novaProjekce) details.projekce = novaProjekce
+          else delete details.projekce
+        }
+        zmeny.details = details as unknown as ZmenyVarianty['details']
       }
 
       if (Object.keys(zmeny).length === 0) return NextResponse.json({ ok: true })
