@@ -39,7 +39,8 @@ export default async function DashboardPage() {
         .eq('client_id', user.id),
     ])
 
-  const osloveniKlienta = profile?.full_name ? osloveni(profile.full_name) : 'Klient'
+  // Bez jména jen „Dobrý den.“ – „Dobrý den, Klient.“ by nebylo ani oslovení.
+  const osloveniKlienta = profile?.full_name ? osloveni(profile.full_name) : null
   const smlouvy = (navrhy ?? []) as Proposal[]
   const { celkem } = mesicniPlatby(smlouvy)
   const maPlan = (pocetVariant ?? 0) > 0
@@ -56,17 +57,17 @@ export default async function DashboardPage() {
   const dlazdice = [
     {
       popisek: 'Měsíčně platíte',
-      hodnota: celkem > 0 ? czk(celkem) : '—',
+      hodnota: celkem > 0 ? czk(celkem) : '–',
       // Smlouva bez zapsané platby není „žádná smlouva“ – pod dlaždicí je přece vypsaná.
       poznamka: celkem > 0 ? 'Součet za všechny smlouvy' : smlouvy.length > 0 ? 'Platby doplním ke smlouvám' : 'Zatím žádná smlouva',
     },
-    { popisek: 'Možná úspora', hodnota: uspora ? czk(uspora) : '—', poznamka: uspora ? 'Měsíčně, podle návrhu' : 'Doplním po analýze' },
-    { popisek: 'Rezerva', hodnota: rezerva ? czk(rezerva) : '—', poznamka: rezerva ? 'Doporučená výše' : 'Doplním po analýze' },
+    { popisek: 'Možná úspora', hodnota: uspora ? czk(uspora) : '–', poznamka: uspora ? 'Měsíčně, podle návrhu' : 'Doplním po analýze' },
+    { popisek: 'Rezerva', hodnota: rezerva ? czk(rezerva) : '–', poznamka: rezerva ? 'Doporučená výše' : 'Doplním po analýze' },
   ]
 
   return (
     <div>
-      <h1 className="font-display text-h2 text-navy">Dobrý den, {osloveniKlienta}.</h1>
+      <h1 className="font-display text-h2 text-navy">Dobrý den{osloveniKlienta ? `, ${osloveniKlienta}` : ''}.</h1>
       <p className="mt-3 text-lead text-slate max-w-2xl text-pretty">{stav}</p>
 
       {!profile?.onboarding_completed && (

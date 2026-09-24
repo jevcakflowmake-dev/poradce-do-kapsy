@@ -287,7 +287,8 @@ export default function FinancniPlanPage() {
       dalsi.add(variantId)
       const zvolena = section.variants.find((v) => v.id === variantId)
       notifyAdvisor({ event: 'variant_selected', client_id: clientId, variant_id: variantId, company: zvolena?.company, section: section.id })
-      if (zvolena) showToast(`${zvolena.company} označena jako preferovaná. Poradce vás zkontaktuje.`)
+      // „Vybráno: …“ místo „… označena“: shoda by nesedla u mužských názvů (Conseq).
+      if (zvolena) showToast(`Vybráno: ${zvolena.company}. Poradce se vám ozve.`)
     }
     setSelectedVariants(dalsi)
   }
@@ -462,7 +463,7 @@ export default function FinancniPlanPage() {
                             return next
                           })
                           const chosen = incomeVariants.find(v => v.id === variantId)
-                          if (chosen) showToast(`${chosen.company} označena jako preferovaná. Poradce vás zkontaktuje.`)
+                          if (chosen) showToast(`Vybráno: ${chosen.company}. Poradce se vám ozve.`)
                         } else {
                           // Odznačení
                           setSelectedIncomeVariantId(null)

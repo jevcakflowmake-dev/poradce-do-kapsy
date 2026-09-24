@@ -129,8 +129,8 @@ export default function SrovnaniVariant({
       <div className="px-4 md:px-6 pt-4 md:pt-5">
         <h3 className="text-navy font-display text-base font-semibold">Srovnání variant</h3>
         <p className="text-xs text-slate mt-0.5">
-          V každém řádku je zvýrazněná výhodnější hodnota. Která varianta je pro vás lepší celkově,
-          záleží na tom, na čem vám nejvíc záleží.
+          V každém řádku je zvýrazněná výhodnější hodnota. Která varianta je pro vás celkově lepší,
+          záleží na tom, co upřednostníte.
         </p>
       </div>
 

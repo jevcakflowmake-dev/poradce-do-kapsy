@@ -146,7 +146,7 @@ export default function AskModal({ open, onClose, clientId, section, sectionLabe
                 onChange={(e) => setText(e.target.value)}
                 rows={4}
                 autoFocus
-                placeholder="Např. Proč zrovna 3 miliony? Mám pocit že tolik nepotřebuju."
+                placeholder="Např. Proč zrovna 3 miliony? Mám pocit, že tolik nepotřebuju."
                 className="w-full px-4 py-3 rounded-card border border-line bg-cream text-navy text-base placeholder:text-slate/70 focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/10 transition-all resize-none leading-relaxed"
                 maxLength={500}
               />

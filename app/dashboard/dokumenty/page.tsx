@@ -44,7 +44,7 @@ export default async function DokumentyPage() {
       {prazdno && (
         <Card className="mt-8 p-6">
           <p className="text-base text-slate">
-            Zatím tu nic není. Přílohy můžete přidat v analýze, návrhy sem přibydou ode mě.
+            Zatím tu nic není. Přílohy můžete přidat v analýze, návrhy sem přibudou ode mě.
           </p>
         </Card>
       )}

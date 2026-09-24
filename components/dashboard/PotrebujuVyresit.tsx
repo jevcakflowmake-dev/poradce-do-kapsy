@@ -226,7 +226,7 @@ export default function PotrebujuVyresit({ clientId }: { clientId: string }) {
                     <Button type="submit" disabled={isSubmitting} className="mt-5">
                       {isSubmitting ? (
                         <>
-                          <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> Odesílám
+                          <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> Odesílám…
                         </>
                       ) : (
                         'Poslat poradci'

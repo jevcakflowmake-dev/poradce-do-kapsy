@@ -1,4 +1,5 @@
 import { PREDPOKLADY, type VysledekDuchod } from '@/lib/duchod'
+import { plural } from '@/lib/utils'
 
 /**
  * „Důchod v číslech" — převzato ze starého papírového plánu (ProfiFP/OVB):
@@ -24,7 +25,7 @@ export default function DuchodVCislech({ v }: { v: VysledekDuchod }) {
         Kolik na to potřebujete
       </h4>
       <p className="text-base text-slate mt-2 text-pretty">
-        Za {v.roky} let přestáváte pracovat a renta má vydržet {PREDPOKLADY.letVDuchodu} let.
+        Za {v.roky} {plural(v.roky, 'rok', 'roky', 'let')} přestáváte pracovat a renta má vydržet {PREDPOKLADY.letVDuchodu} let.
       </p>
 
       {/* Dva sloupce až od md – na 640 px byly tak úzké, že se „30 000 Kč“ lámalo na dva řádky. */}
@@ -86,7 +87,7 @@ export default function DuchodVCislech({ v }: { v: VysledekDuchod }) {
         {procento(PREDPOKLADY.zhodnoceni)} ročně.{' '}
         {v.zdrojStatu === 'poradce'
           ? 'Výši státního důchodu spočítal poradce podle vašich odpracovaných let.'
-          : `Státní důchod je hrubý odhad ve výši ${procento(PREDPOKLADY.nahradovyPomer)} vašeho dnešního čistého příjmu — skutečná výše závisí na odpracovaných letech.`}{' '}
+          : `Státní důchod je hrubý odhad ve výši ${procento(PREDPOKLADY.nahradovyPomer)} vašeho dnešního čistého příjmu – skutečná výše závisí na odpracovaných letech.`}{' '}
         Jsou to předpoklady výpočtu, ne zaručený výnos ani příslib státu.
       </p>
     </section>

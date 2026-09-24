@@ -168,7 +168,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
         <ChartCard
           className="lg:col-span-3"
           title="Pokrytí finančních oblastí"
-          subtitle={`Profil zajištění ${sections.length === 1 ? "v jediné sekci" : `napříč ${sections.length} sekcemi`} plánu`}
+          subtitle={`Profil zajištění ${sections.length === 1 ? "v jediné oblasti" : `napříč ${sections.length} oblastmi`} plánu`}
         >
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 10, left: 30 }}>
@@ -196,7 +196,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
           title="Měsíční platby podle plánu"
           subtitle={
             totalMonthly > 0
-              ? `Od ${fmtCzk(totalMonthly)} / měs podle nejlevnější varianty`
+              ? `Od ${fmtCzk(totalMonthly)} / měs. podle nejlevnější varianty`
               : 'Zatím bez nastavených cen'
           }
         >
@@ -234,7 +234,7 @@ export default function FinancialPlanOverview({ sections }: Props) {
 
           {splatkaBydleni > 0 && (
             <p className="text-base text-slate mt-3 text-pretty">
-              Splátka hypotéky {fmtCzk(splatkaBydleni)} / měs stojí mimo tenhle součet — platíte ji i dnes,
+              Splátka hypotéky {fmtCzk(splatkaBydleni)} / měs. stojí mimo tenhle součet – platíte ji i dnes,
               plán ji mění, nepřidává.
             </p>
           )}
@@ -354,7 +354,7 @@ function DonutTooltip({
         <p className="text-xs font-semibold text-navy">{item.name}</p>
       </div>
       <p className="text-xs text-slate mt-1">
-        {fmtCzk(item.value)} · {pct.toFixed(0)}%
+        {fmtCzk(item.value)} · {pct.toFixed(0)} %
       </p>
     </div>
   )

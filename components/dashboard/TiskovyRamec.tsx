@@ -42,17 +42,17 @@ export function TiskovyZaver({ datum }: { datum: string | null }) {
         <div className="mt-6 space-y-4 text-lead text-navy max-w-2xl text-pretty">
           <p>
             Je to shrnutí návrhu, který jsem pro vás připravil
-            {datum ? ` k ${formatDate(datum)}` : ''}. Není to smlouva ani závazná nabídka —
+            {datum ? ` k ${formatDate(datum)}` : ''}. Není to smlouva ani závazná nabídka –
             konečné podmínky, ceny a rozsah krytí určuje vybraná finanční instituce ve smluvní
             dokumentaci, kterou dostanete před podpisem.
           </p>
           <p>
             Měsíční částky jsou orientační podle sazeb platných v době přípravy návrhu. Výpočty
-            pracují s předpoklady, které jsou vypsané přímo u nich — nejsou to zaručené výnosy
+            pracují s předpoklady, které jsou vypsané přímo u nich – nejsou to zaručené výnosy
             ani přísliby státu.
           </p>
           <p>
-            Kdykoliv se na cokoliv z plánu zeptejte. Odpovím v aplikaci nebo na e-mailu.
+            Kdykoliv se na cokoliv z plánu zeptejte. Odpovím v aplikaci nebo e-mailem.
           </p>
         </div>
 

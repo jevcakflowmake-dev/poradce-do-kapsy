@@ -258,7 +258,7 @@ export default function SrovnaniNabidek({
         {(srovnava || sTed) && (
           <p className="text-xs text-slate mt-0.5 text-pretty">
             {srovnava && 'V každém řádku je zvýrazněná výhodnější hodnota.'}
-            {sTed && <span className="hidden sm:inline"> Sloupec Teď je vaše současná hypotéka podle analýzy.</span>}
+            {sTed && <span className="hidden sm:inline"> Sloupec „Teď“ je vaše současná hypotéka podle analýzy.</span>}
           </p>
         )}
         {/* Na telefonu by se sloupec Teď s dvěma nabídkami nevešel – úsporu oproti

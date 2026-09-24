@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutGrid, FileText, Target, FolderOpen, MessageCircle, LogOut } from 'lucide-react'
+import { plural } from '@/lib/utils'
 
 /**
  * Navigace klientské zóny. Na desktopu navy sidebar vlevo, na mobilu spodní
@@ -34,7 +35,7 @@ export default function Sidebar({
         <div className="px-6 h-16 flex items-center justify-between">
           <Link
             href="/dashboard"
-            aria-label="Poradce do kapsy — přehled"
+            aria-label="Poradce do kapsy – přehled"
             className="flex items-center gap-2.5 rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
           >
             <span aria-hidden className="w-8 h-8 rounded-input bg-mint flex items-end justify-end p-1.5">
@@ -57,7 +58,7 @@ export default function Sidebar({
       <aside className="bez-tisku hidden lg:flex fixed inset-y-0 left-0 w-64 bg-navy text-cream flex-col">
         <Link
           href="/dashboard"
-          aria-label="Poradce do kapsy — přehled"
+          aria-label="Poradce do kapsy – přehled"
           className="flex items-center gap-2.5 px-6 h-20 rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
         >
           <span aria-hidden className="w-9 h-9 rounded-input bg-mint flex items-end justify-end p-2">
@@ -84,7 +85,7 @@ export default function Sidebar({
                 {p.href === '/dashboard/chat' && neprectene > 0 && (
                   <span
                     className="min-w-6 h-6 px-1.5 rounded-pill bg-mint text-navy text-base font-semibold flex items-center justify-center"
-                    aria-label={`${neprectene} nepřečtených zpráv`}
+                    aria-label={`${neprectene} ${plural(neprectene, 'nepřečtená zpráva', 'nepřečtené zprávy', 'nepřečtených zpráv')}`}
                   >
                     {neprectene}
                   </span>
@@ -138,7 +139,7 @@ export default function Sidebar({
                   {p.href === '/dashboard/chat' && neprectene > 0 && (
                     <span
                       className="absolute top-1.5 right-1/4 min-w-5 h-5 px-1 rounded-pill bg-mint text-navy text-[12px] font-semibold flex items-center justify-center"
-                      aria-label={`${neprectene} nepřečtených zpráv`}
+                      aria-label={`${neprectene} ${plural(neprectene, 'nepřečtená zpráva', 'nepřečtené zprávy', 'nepřečtených zpráv')}`}
                     >
                       {neprectene}
                     </span>

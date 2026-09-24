@@ -91,8 +91,8 @@ export default function MesicniPlatby({
 
           <p className="text-base text-slate mt-5 leading-relaxed">
             {pohled === 'klient'
-              ? 'Údaje k úhradě — číslo účtu, variabilní symbol a termín splatnosti — najdete ve smlouvě od dané společnosti. Když si nebudete jistí, napište mi a projdeme to spolu.'
-              : 'Údaje k úhradě (číslo účtu, VS, splatnost) aplikace neeviduje — klient je má ve smlouvě od společnosti.'}
+              ? 'Údaje k úhradě – číslo účtu, variabilní symbol a termín splatnosti – najdete ve smlouvě od dané společnosti. Když si nebudete jistí, napište mi a projdeme to spolu.'
+              : 'Údaje k úhradě (číslo účtu, VS, splatnost) aplikace neeviduje – klient je má ve smlouvě od společnosti.'}
           </p>
         </>
       )}

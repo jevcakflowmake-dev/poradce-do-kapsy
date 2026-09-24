@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Proposal } from '@/lib/types/database'
+import { plural } from '@/lib/utils'
 import ProposalCard from './ProposalCard'
 
 export default function ProposalList({ proposals }: { proposals: Proposal[] }) {
@@ -22,7 +23,9 @@ export default function ProposalList({ proposals }: { proposals: Proposal[] }) {
   return (
     <div className="space-y-2">
       {unread > 0 && (
-        <p className="text-sm text-navy font-medium">{unread} nepřečtených návrhů</p>
+        <p className="text-sm text-navy font-medium">
+          {unread} {plural(unread, 'nepřečtený návrh', 'nepřečtené návrhy', 'nepřečtených návrhů')}
+        </p>
       )}
       {list.map(p => (
         <ProposalCard
