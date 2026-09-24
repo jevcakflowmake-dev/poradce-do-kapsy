@@ -115,6 +115,9 @@ export default function SmlouvaDetail({
         </ul>
       )}
 
+      {/* Bez souboru jen tehdy, když poradce popisek zadal výslovně – samotné
+          „ke stažení zde“ bez odkazu by klienta mátlo. */}
+      {(fileUrl || smlouva.souborPopisek) && (
       <div className="pt-4 border-t border-line">
         {fileUrl ? (
           <StoredFileLink
@@ -128,10 +131,11 @@ export default function SmlouvaDetail({
         ) : (
           <p className="inline-flex items-center gap-2 text-base text-slate">
             <FileText className="w-4 h-4" aria-hidden />
-            {smlouva.souborPopisek ?? 'Smlouva a podmínky ke stažení zde'}
+            {smlouva.souborPopisek}
           </p>
         )}
       </div>
+      )}
     </div>
   )
 }
