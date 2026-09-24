@@ -3,6 +3,7 @@ import { findUserByEmail } from '@/lib/submissions'
 import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
 import { createPublicClient } from '@/lib/supabase/verejny'
 import { absoluteUrl } from '@/lib/site'
+import { hlaskaKHeslu } from '@/lib/hesla'
 import { NextResponse } from 'next/server'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -73,6 +74,8 @@ export async function POST(request: Request) {
 
     if (error || !data.user) {
       if (error?.code === 'email_exists') return NextResponse.json({ exists: true })
+      const hlaska = hlaskaKHeslu(error)
+      if (hlaska) return NextResponse.json({ error: hlaska }, { status: 400 })
       // Hlášku Supabase do prohlížeče neposíláme, jen do logu.
       console.error('[register] založení účtu selhalo:', error?.message)
       return NextResponse.json(

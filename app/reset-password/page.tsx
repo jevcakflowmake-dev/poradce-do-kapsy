@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import { Loader2, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AuthShell from '@/components/auth/AuthShell'
+import { hlaskaKHeslu } from '@/lib/hesla'
 
 const schema = z
   .object({
@@ -81,7 +82,7 @@ export default function ResetPasswordPage() {
     const supabase = createClient()
     const { error } = await supabase.auth.updateUser({ password: data.password })
     if (error) {
-      setError(error.message)
+      setError(hlaskaKHeslu(error) ?? 'Heslo se nepodařilo uložit. Zkuste to prosím znovu.')
       setPhase('ready')
       return
     }

@@ -24,6 +24,8 @@ export default async function DekujemePage({
   const { stav, heslo } = await searchParams
   const existujici = stav === 'existujici'
   const maHeslo = heslo === '1'
+  // Heslo, které Supabase odmítl jako uniklé nebo slabé – účet vznikl bez něj.
+  const slabeHeslo = heslo === 'slabe'
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
@@ -38,7 +40,9 @@ export default async function DekujemePage({
             ? 'S tímhle e-mailem už účet existuje, takže odpovědi zatím nikam nepřepisuju. Projdu je a ozvu se vám. Pokud jste to vy a heslo si pamatujete, můžete se rovnou přihlásit.'
             : maHeslo
               ? 'Účet máte založený. Poslal jsem vám e-mail s potvrzovacím odkazem – po kliknutí na něj se přihlásíte a plán uvidíte hned, jak bude hotový.'
-              : 'Jakmile bude plán hotový, pošlu vám na e-mail odkaz, kterým si nastavíte heslo a prohlédnete si ho online.'}
+              : slabeHeslo
+                ? 'Zvolené heslo jsem nepoužil – objevilo se v únicích dat z jiných webů, takže by nebylo bezpečné. Jakmile bude plán hotový, pošlu vám odkaz, kterým si nastavíte jiné.'
+                : 'Jakmile bude plán hotový, pošlu vám na e-mail odkaz, kterým si nastavíte heslo a prohlédnete si ho online.'}
         </p>
 
         <section className="mt-12">

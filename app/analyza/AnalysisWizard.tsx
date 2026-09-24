@@ -177,7 +177,7 @@ export default function AnalysisWizard() {
       }).catch(() => {})
 
       const stav = payload.status === 'existing' ? 'existujici' : 'novy'
-      const heslo = payload.hasPassword ? '&heslo=1' : ''
+      const heslo = payload.hasPassword ? '&heslo=1' : payload.slabeHeslo ? '&heslo=slabe' : ''
       router.push(`/dekujeme?stav=${stav}${heslo}`)
     } catch {
       setError('Chyba připojení. Zkontrolujte internet a zkuste to prosím znovu.')

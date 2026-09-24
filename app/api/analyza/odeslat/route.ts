@@ -192,18 +192,29 @@ export async function POST(request: Request) {
 
     // 4) Nový člověk → založíme účet. Bez hesla se přihlásit nedá; přístup
     //    pošle poradce z detailu klienta, až bude finanční plán hotový.
-    const { data: created, error: createError } = await admin.auth.admin.createUser({
-      email,
-      ...(password ? { password } : {}),
-      // S heslem nepotvrzený: přihlásit se půjde až po kliknutí na odkaz
-      // v e-mailu, jinak by kdokoliv vyplnil analýzu za cizí e-mail se svým
-      // heslem a do účtu se přihlásil. Bez hesla se přihlásit nedá tak jako
-      // tak – přístup pošle poradce.
-      email_confirm: !password,
-      user_metadata: { full_name: fullName, phone },
-      // role patří do app_metadata – do user_metadata si zapíše uživatel sám
-      app_metadata: { role: 'client' },
-    })
+    const zalozUcet = (heslo: string) =>
+      admin.auth.admin.createUser({
+        email,
+        ...(heslo ? { password: heslo } : {}),
+        // S heslem nepotvrzený: přihlásit se půjde až po kliknutí na odkaz
+        // v e-mailu, jinak by kdokoliv vyplnil analýzu za cizí e-mail se svým
+        // heslem a do účtu se přihlásil. Bez hesla se přihlásit nedá tak jako
+        // tak – přístup pošle poradce.
+        email_confirm: !heslo,
+        user_metadata: { full_name: fullName, phone },
+        // role patří do app_metadata – do user_metadata si zapíše uživatel sám
+        app_metadata: { role: 'client' },
+      })
+
+    let { data: created, error: createError } = await zalozUcet(password)
+    // Heslo, které Supabase odmítl (uniklé, slabé), analýzu nezahodí: účet
+    // vznikne bez hesla a přístup pošle poradce, jako by heslo nevyplnil.
+    const slabeHeslo = Boolean(password) && createError?.code === 'weak_password'
+    if (slabeHeslo) {
+      ;({ data: created, error: createError } = await zalozUcet(''))
+      await admin.from('public_submissions').update({ has_password: false }).eq('id', submissionId)
+    }
+    const maHeslo = Boolean(password) && !slabeHeslo
 
     if (createError || !created.user) {
       console.error('[analyza] založení klienta selhalo:', createError?.message)
@@ -214,7 +225,7 @@ export async function POST(request: Request) {
 
     const clientId = created.user.id
 
-    if (password) {
+    if (maHeslo) {
       // Admin API potvrzovací e-mail samo nepošle, resend ano (šablona Confirm sign up).
       const { error: odeslani } = await createPublicClient().auth.resend({
         type: 'signup',
@@ -250,10 +261,10 @@ export async function POST(request: Request) {
       phone,
       submission_id: submissionId,
       client_id: clientId,
-      ma_heslo: Boolean(password),
+      ma_heslo: maHeslo,
     })
 
-    return NextResponse.json({ status: 'created', hasPassword: Boolean(password) })
+    return NextResponse.json({ status: 'created', hasPassword: maHeslo, slabeHeslo })
   } catch (err) {
     console.error('[analyza] neočekávaná chyba:', err instanceof Error ? err.message : err)
     return NextResponse.json(
