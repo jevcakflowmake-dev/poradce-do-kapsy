@@ -18,6 +18,8 @@ import { PORADCE } from '@/lib/poradce'
 import FinancialPlanOverview from '@/components/dashboard/charts/FinancialPlanOverview'
 import IncomeLifeChart, { type IncomeVariant } from '@/components/dashboard/charts/IncomeLifeChart'
 import SrovnaniNabidek, { SROVNANI_SEKCI, type SoucasnaHypoteka } from '@/components/dashboard/charts/SrovnaniNabidek'
+import ProjekceInvestice from '@/components/dashboard/charts/ProjekceInvestice'
+import { ctiProjekci, SEKCE_S_PROJEKCI, type ProjekceInvestice as Projekce } from '@/lib/projekce'
 import { VyberVarianty } from '@/components/dashboard/charts/SrovnaniVariant'
 import DuchodVCislech from '@/components/dashboard/DuchodVCislech'
 import { TiskovaTitulka, TiskovyZaver } from '@/components/dashboard/TiskovyRamec'
@@ -35,6 +37,8 @@ interface Variant {
   params: Record<string, ParamDetail>
   /** Co to je za produkt a kam volat, když nastane událost. Nepovinné. */
   produkt: ProduktVarianty | null
+  /** Výnos, doba a vklady pro graf růstu – jen u investic, když je poradce zadal. */
+  projekce: Projekce | null
 }
 interface PlanSection {
   id: string
@@ -210,6 +214,7 @@ export default function FinancniPlanPage() {
             monthlyPayment: v.monthly_payment,
             params: paramMap,
             produkt: ctiProdukt(v.details),
+            projekce: SEKCE_S_PROJEKCI.includes(id) ? ctiProjekci(v.details) : null,
           }
         })
         sections.push({ id, ...cfg, type: 'variants', variants: mapped, status: rec?.status || 'recommendation' })
@@ -506,6 +511,18 @@ export default function FinancniPlanPage() {
                             selectedId={vybrana}
                             nastaveni={SROVNANI_SEKCI[section.id]}
                           />
+                          {/* Graf růstu u každé nabídky, ke které poradce zadal výnos a dobu. */}
+                          {section.variants.map((v) =>
+                            v.projekce ? (
+                              <ProjekceInvestice
+                                key={`projekce-${v.id}`}
+                                firma={v.company}
+                                produkt={v.produkt?.nazev}
+                                projekce={v.projekce}
+                                rokZacatku={planDatum ? new Date(planDatum).getFullYear() : null}
+                              />
+                            ) : null,
+                          )}
                           <VyberVarianty
                             variants={section.variants.map((v) => ({
                               id: v.id,
