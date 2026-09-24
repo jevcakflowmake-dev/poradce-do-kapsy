@@ -611,12 +611,15 @@ export default function FinancniPlanPage() {
       {/* Toast */}
       <AnimatePresence>
         {toast && (
+          // Na střed přes inset-x-0 a mx-auto, ne left-1/2 s posunem: prvek s pevnou
+          // pozicí od poloviny obrazovky smí být široký jen polovinu a zpráva se
+          // na telefonu lámala do šesti řádků. Nad spodní lištou navigace.
           <motion.div
-            initial={{ opacity: 0, y: 50, x: '-50%' }}
-            animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="bez-tisku fixed bottom-6 left-1/2 z-40 bg-navy text-cream text-base px-5 py-3 rounded-pill shadow-card flex items-center gap-3 max-w-[92vw]"
+            className="bez-tisku fixed bottom-24 lg:bottom-6 inset-x-0 mx-auto w-fit z-40 bg-navy text-cream text-base px-5 py-3 rounded-pill shadow-card flex items-center gap-3 max-w-[92vw]"
           >
             <CheckCircle2 className="w-4 h-4 text-mint shrink-0" aria-hidden />
             <span className="min-w-0">{toast}</span>
