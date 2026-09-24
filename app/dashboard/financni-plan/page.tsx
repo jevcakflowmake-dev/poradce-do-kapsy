@@ -55,9 +55,6 @@ const sectionConfig: Record<string, { title: string; icon: typeof Shield }> = {
   property:   { title: 'Pojištění majetku',  icon: Building2 },
 }
 
-/** Barvy značek nabídek ve srovnání – stejné jako u zajištění příjmu. */
-const BARVY_NABIDEK = [BARVY.mint, BARVY.navy, BARVY.mintDark]
-
 const statusConfig = {
   ok:             { label: 'V pořádku',     icon: CheckCircle2, trida: 'bg-mint/15 text-navy' },
   recommendation: { label: 'Doporučení',    icon: Target,       trida: 'bg-navy/8 text-navy' },
@@ -505,7 +502,6 @@ export default function FinancniPlanPage() {
                               produkt: v.produkt?.nazev,
                             }))}
                             ted={section.id === 'housing' ? soucasnaHypoteka : null}
-                            barvy={BARVY_NABIDEK}
                             selectedId={vybrana}
                             nastaveni={SROVNANI_SEKCI[section.id]}
                           />
@@ -517,7 +513,6 @@ export default function FinancniPlanPage() {
                               monthly_payment: v.monthlyPayment,
                               produkt: v.produkt?.nazev,
                             }))}
-                            barvy={BARVY_NABIDEK}
                             selectedId={vybrana}
                             onSelect={(id) => vyberJedinou(section, id)}
                             nadpis={section.variants.length > 1 ? 'Kterou nabídku chcete?' : 'Chcete tuto nabídku?'}

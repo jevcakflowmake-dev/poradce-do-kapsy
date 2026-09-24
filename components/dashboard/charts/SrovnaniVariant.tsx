@@ -5,6 +5,7 @@ import { Check } from 'lucide-react'
 import { RISK_DEFS, RISK_GROUPS } from '@/lib/income-risks'
 import { ctiProdukt } from '@/lib/produkt-varianty'
 import { plural } from '@/lib/utils'
+import LogoFirmy from '@/components/partneri/LogoFirmy'
 import type { IncomeVariant } from './IncomeLifeChart'
 
 /**
@@ -109,11 +110,9 @@ function nejlepsi(radek: Radek, varianty: IncomeVariant[]): number | null {
 
 export default function SrovnaniVariant({
   variants,
-  barvy,
   selectedId,
 }: {
   variants: IncomeVariant[]
-  barvy: string[]
   selectedId: string | null
 }) {
   const uid = useId()
@@ -151,15 +150,11 @@ export default function SrovnaniVariant({
                 const vybrana = v.id === selectedId
                 return (
                   <th key={v.id} id={`${uid}-v-${v.id}`} scope="col" className={`text-left font-normal px-2 sm:px-3 ${i === 0 ? 'pl-4 sm:pl-3' : ''} py-3 align-bottom ${vybrana ? 'bg-mint/8' : ''}`}>
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        aria-hidden
-                        className="w-8 h-8 rounded-card flex items-center justify-center text-white text-sm font-bold shrink-0"
-                        style={{ background: barvy[i] }}
-                      >
-                        {v.logo}
-                      </span>
-                      <span className="min-w-0">
+                    {/* Logo nad názvem, ne vedle: se třemi variantami by vedle loga na
+                        název zbylo pár pixelů. Na telefonu bez loga – sloupce jsou úzké. */}
+                    <div className="flex flex-col items-start gap-2">
+                      <LogoFirmy firma={v.company} nahrada={v.logo} className="hidden sm:flex" />
+                      <span className="min-w-0 max-w-full">
                         <span className="block font-semibold text-navy leading-tight">{v.company}</span>
                         <span className="block text-xs text-slate truncate">{produkt ?? `Varianta ${i + 1}`}</span>
                       </span>
@@ -270,13 +265,11 @@ export interface VolbaVarianty {
  */
 export function VyberVarianty({
   variants,
-  barvy,
   selectedId,
   onSelect,
   nadpis = 'Kterou variantu chcete?',
 }: {
   variants: VolbaVarianty[]
-  barvy: string[]
   selectedId: string | null
   onSelect: (id: string) => void
   nadpis?: string
@@ -306,7 +299,7 @@ export function VyberVarianty({
         aria-labelledby={idNadpisu}
         className={`mt-3 grid gap-3 ${variants.length > 1 ? 'sm:grid-cols-2' : ''}`}
       >
-        {variants.map((v, i) => {
+        {variants.map((v) => {
           const vybrana = v.id === selectedId
           const produkt = v.produkt
           return (
@@ -321,7 +314,7 @@ export function VyberVarianty({
               }}
               // min-w-0: položka mřížky se jinak nezmenší pod nejdelší slovo
               // podtitulku a karta přeteče – u delšího názvu produktu mimo obrazovku.
-              className={`min-w-0 flex items-center gap-3 text-left rounded-card border-2 p-4 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 ${
+              className={`@container min-w-0 flex items-center gap-3 text-left rounded-card border-2 p-4 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 ${
                 vybrana ? 'border-mint bg-mint/8' : 'border-line hover:border-mint/50'
               }`}
             >
@@ -334,19 +327,18 @@ export function VyberVarianty({
               >
                 {vybrana && <span className="w-2.5 h-2.5 rounded-pill bg-mint" />}
               </span>
-              <span
-                aria-hidden
-                className="w-9 h-9 rounded-card flex items-center justify-center text-white text-sm font-bold shrink-0"
-                style={{ background: barvy[i % barvy.length] }}
-              >
-                {v.logo}
-              </span>
-              <span className="flex-1 min-w-0">
-                <span className="block font-semibold text-navy">{v.company}</span>
-                {/* Zalomit, ne zkrátit: na telefonu by ze zkráceného řádku zmizela cena. */}
-                <span className="block text-sm text-slate text-pretty">
-                  {produkt ? `${produkt} · ` : ''}
-                  <span className="whitespace-nowrap">{v.monthly_payment}</span> měsíčně
+              {/* Logo vedle textu, jen když se tam název vejde (kontejnerový dotaz
+                  na šířku karty); v úzké kartě jde nad text – „Raiffeisenbank“
+                  by vedle dlaždice přetekla. */}
+              <span className="flex-1 min-w-0 flex flex-col items-start gap-2 @3xs:flex-row @3xs:items-center @3xs:gap-3">
+                <LogoFirmy firma={v.company} nahrada={v.logo} />
+                <span className="min-w-0 max-w-full">
+                  <span className="block font-semibold text-navy">{v.company}</span>
+                  {/* Zalomit, ne zkrátit: na telefonu by ze zkráceného řádku zmizela cena. */}
+                  <span className="block text-sm text-slate text-pretty">
+                    {produkt ? `${produkt} · ` : ''}
+                    <span className="whitespace-nowrap">{v.monthly_payment}</span> měsíčně
+                  </span>
                 </span>
               </span>
             </button>

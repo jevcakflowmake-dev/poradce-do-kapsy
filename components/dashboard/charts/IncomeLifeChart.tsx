@@ -5,7 +5,6 @@ import { Shield } from 'lucide-react'
 import { type RiskKey } from '@/lib/income-risks'
 import SrovnaniVariant, { VyberVarianty } from './SrovnaniVariant'
 import ScenarePojistky from './ScenarePojistky'
-import { BARVY } from '@/lib/barvy'
 import { ctiProdukt } from '@/lib/produkt-varianty'
 
 type IncomeDetails = {
@@ -33,7 +32,6 @@ interface Props {
   zbytekHypoteky: number | null
 }
 
-const VARIANT_COLORS = [BARVY.mint, BARVY.navy, BARVY.mintDark]
 
 function fmtCzk(n: number): string {
   return Math.round(n).toLocaleString('cs-CZ') + ' Kč'
@@ -85,10 +83,9 @@ export default function IncomeLifeChart({
 
       {/* Srovnání parametr po parametru a pod ním volba. Dřív měla každá
           varianta vlastní kartu s pěti údaji a porovnávat se muselo očima. */}
-      <SrovnaniVariant variants={variants} barvy={VARIANT_COLORS} selectedId={selectedVariantId} />
+      <SrovnaniVariant variants={variants} selectedId={selectedVariantId} />
       <VyberVarianty
         variants={variants.map((v) => ({ ...v, produkt: ctiProdukt(v.details)?.nazev }))}
-        barvy={VARIANT_COLORS}
         selectedId={selectedVariantId}
         onSelect={onSelect}
       />

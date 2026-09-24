@@ -2,6 +2,7 @@
 
 import { Fragment, useId } from 'react'
 import { Check } from 'lucide-react'
+import LogoFirmy from '@/components/partneri/LogoFirmy'
 
 /**
  * Srovnání nabídek vedle sebe z volně zadaných parametrů varianty – u všech
@@ -224,14 +225,12 @@ function nejlepsi(radek: Radek): number | null {
 export default function SrovnaniNabidek({
   nabidky,
   ted = null,
-  barvy,
   selectedId,
   nastaveni = SROVNANI_VYCHOZI,
 }: {
   nabidky: Nabidka[]
   /** Současná hypotéka z analýzy (jen u Bydlení); bez ní sloupec Teď chybí. */
   ted?: SoucasnaHypoteka | null
-  barvy: string[]
   selectedId: string | null
   nastaveni?: NastaveniSrovnani
 }) {
@@ -298,16 +297,12 @@ export default function SrovnaniNabidek({
                     scope="col"
                     className={`text-left font-normal px-2 sm:px-3 ${i === 0 ? 'pl-4 sm:pl-3' : ''} py-3 align-bottom ${vybrana ? 'bg-mint/8' : ''}`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      {/* Na telefonu bez loga: se sloupcem Teď by se tři nabídky vedle sebe nevešly. */}
-                      <span
-                        aria-hidden
-                        className="hidden sm:flex w-8 h-8 rounded-card items-center justify-center text-white text-sm font-bold shrink-0"
-                        style={{ background: barvy[i % barvy.length] }}
-                      >
-                        {n.logo}
-                      </span>
-                      <span className="min-w-0">
+                    {/* Logo nad názvem: se třemi nabídkami by vedle loga na název zbylo
+                        pár pixelů. Na telefonu bez loga – se sloupcem Teď by se tři
+                        nabídky vedle sebe nevešly. */}
+                    <div className="flex flex-col items-start gap-2">
+                      <LogoFirmy firma={n.company} nahrada={n.logo} className="hidden sm:flex" />
+                      <span className="min-w-0 max-w-full">
                         <span className="block font-semibold text-navy leading-tight">{n.company}</span>
                         <span className="block text-xs text-slate sm:truncate">{n.produkt ?? `Nabídka ${i + 1}`}</span>
                       </span>
