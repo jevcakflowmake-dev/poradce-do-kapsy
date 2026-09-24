@@ -176,9 +176,14 @@ export default function PlanEditor({
     if (!otevrit) return
     const ulozena = ctiProjekci(variant.details)
     const cislo = (n: number | undefined) => (n ? n.toLocaleString('cs-CZ') : '')
+    // U důchodu nabídneme dobu do důchodu z analýzy (věk odchodu minus dnešní věk).
+    const doDuchodu =
+      variant.section === 'retirement'
+        ? Number(analysisResponses.retirement?.retirement_age) - Number(analysisResponses.personal?.age)
+        : NaN
     setProjekceForm({
       vynos: ulozena ? ulozena.vynos.toLocaleString('cs-CZ') : '',
-      roky: ulozena ? String(ulozena.roky) : '',
+      roky: ulozena ? String(ulozena.roky) : Number.isInteger(doDuchodu) && doDuchodu > 0 ? String(doDuchodu) : '',
       // Nová projekce začíná měsíční platbou varianty – většinou je to právě vklad.
       mesicne: ulozena ? cislo(ulozena.mesicne) : cislo(castkaZTextu(variant.monthly_payment) ?? undefined),
       jednorazove: ulozena ? cislo(ulozena.jednorazove) : '',
@@ -499,7 +504,7 @@ export default function PlanEditor({
                       <button
                         onClick={() => otevriProjekci(variant)}
                         className="px-3 py-2 text-sm text-slate hover:text-navy transition-colors rounded-card hover:bg-cream"
-                        title="Výnos, doba a vklady – klient uvidí graf, jak by investice mohla růst"
+                        title="Výnos, doba a vklady – klient uvidí graf, jak by peníze mohly růst"
                       >
                         {ctiProjekci(variant.details) ? 'Graf výnosu ✓' : 'Graf výnosu'}
                       </button>
@@ -565,9 +570,11 @@ export default function PlanEditor({
                     return (
                       <div className="px-5 pb-4 space-y-3 border-t border-line pt-4">
                         <p className="text-sm text-slate text-pretty">
-                          Klient pod srovnáním uvidí graf, jak by investice mohla růst, a tři čísla:
-                          kolik vloží, předpokládanou hodnotu a výnos. Počítá se s pevným výnosem,
+                          Klient pod srovnáním uvidí graf, jak by peníze mohly růst, a tři čísla:
+                          vklady, předpokládanou hodnotu a výnos. Počítá se s pevným výnosem,
                           pod grafem stojí, že zaručený není.
+                          {variant.section === 'retirement' &&
+                            ' Příspěvek státu a zaměstnavatele započítejte do měsíčního vkladu, pokud s ním počítáte. Doba se předvyplní do důchodu podle analýzy.'}
                         </p>
                         <div className="grid gap-3 sm:grid-cols-4">
                           <PoleProduktu label="Výnos (% ročně)" value={projekceForm.vynos} placeholder="8"

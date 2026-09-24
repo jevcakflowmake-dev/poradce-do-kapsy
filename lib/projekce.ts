@@ -21,8 +21,8 @@ export interface ProjekceInvestice {
   jednorazove: number
 }
 
-/** Oblasti plánu, kde poradce může graf zadat. Důchod a děti jdou přidat sem. */
-export const SEKCE_S_PROJEKCI: readonly string[] = ['investing']
+/** Oblasti plánu, kde poradce může graf zadat. Děti jdou přidat sem. */
+export const SEKCE_S_PROJEKCI: readonly string[] = ['investing', 'retirement']
 
 const LIMITY = {
   vynos: [0, 30],

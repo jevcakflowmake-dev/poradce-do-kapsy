@@ -520,6 +520,7 @@ export default function FinancniPlanPage() {
                                 produkt={v.produkt?.nazev}
                                 projekce={v.projekce}
                                 rokZacatku={planDatum ? new Date(planDatum).getFullYear() : null}
+                                oblast={section.id}
                               />
                             ) : null,
                           )}

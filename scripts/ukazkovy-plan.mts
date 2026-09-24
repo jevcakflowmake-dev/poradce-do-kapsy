@@ -298,13 +298,15 @@ const varianty: Varianta[] = [
     monthly_payment: '3 000 Kč',
     details: {
       produkt: {
-        nazev: 'Horizont Invest — DIP',
+        nazev: 'Horizont Invest – DIP',
         doVeku: 'do 65 let',
         frekvence: 'Měsíčně',
         popis:
           'Dlouhodobý investiční produkt. Vklady lze odečíst z daní a portfolio se před koncem samo zkonzervativňuje.',
         kontakt: 'https://www.conseq.cz/kontakty',
       },
+      // Graf růstu v plánu (lib/projekce.ts) – do důchodu zbývá 27 let.
+      projekce: { vynos: 5, roky: 27, mesicne: 3000, jednorazove: 0 },
     },
     params: [
       ['Typ produktu', 'DIP', 'Odečet z daní až 48 000 Kč ročně.'],

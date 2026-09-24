@@ -53,15 +53,19 @@ export default function ProjekceInvestice({
   produkt,
   projekce,
   rokZacatku = null,
+  oblast = 'investing',
 }: {
   firma: string
   produkt?: string
   projekce: Projekce
   /** Rok, kdy plán vznikl – osa pak ukazuje letopočty; bez něj roky od začátku. */
   rokZacatku?: number | null
+  /** Oblast plánu: u důchodu jiný nadpis a vklady bez „vložíte“ (můžou v nich být příspěvky státu a zaměstnavatele). */
+  oblast?: string
 }) {
   const { body, vlozeno, hodnota, vynosKc } = spoctiProjekci(projekce)
   const doba = `${projekce.roky} ${plural(projekce.roky, 'rok', 'roky', 'let')}`
+  const naDuchod = oblast === 'retirement'
   const vklady = [
     projekce.jednorazove > 0 && `jednorázově ${kc(projekce.jednorazove)}`,
     projekce.mesicne > 0 && `${kc(projekce.mesicne)} měsíčně`,
@@ -71,7 +75,9 @@ export default function ProjekceInvestice({
 
   return (
     <figure className="tisk-pohromade rounded-card border border-line bg-surface p-4 md:p-6">
-      <h3 className="text-navy font-display text-base font-semibold">Jak by investice mohla růst</h3>
+      <h3 className="text-navy font-display text-base font-semibold">
+        {naDuchod ? 'Jak by mohly růst peníze na důchod' : 'Jak by investice mohla růst'}
+      </h3>
       <p className="text-xs text-slate mt-0.5 text-pretty">
         {firma}
         {produkt ? ` · ${produkt}` : ''} · {vklady}, předpokládaný výnos {procento(projekce.vynos)} ročně
@@ -79,7 +85,7 @@ export default function ProjekceInvestice({
 
       <dl className="mt-4 grid gap-3 sm:grid-cols-3">
         <div className="rounded-input bg-cream px-4 py-3">
-          <dt className="text-sm text-slate">Za {doba} vložíte</dt>
+          <dt className="text-sm text-slate">{naDuchod ? `Vklady za ${doba}` : `Za ${doba} vložíte`}</dt>
           <dd className="font-display text-navy text-xl tabular-nums mt-0.5">{kc(vlozeno)}</dd>
         </div>
         <div className="rounded-input bg-cream px-4 py-3">
