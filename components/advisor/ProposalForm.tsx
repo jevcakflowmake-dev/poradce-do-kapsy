@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import type { ProposalType } from '@/lib/types/database'
 import { BARVY } from '@/lib/barvy'
 import { sTypem } from '@/lib/storage'
+import LogoFirmy from '@/components/partneri/LogoFirmy'
 
 const INSURANCE_SECTIONS = [
   { id: 'daily_compensation', label: 'Denní odškodné', unit: 'Kč/den' },
@@ -22,15 +23,20 @@ const INSURANCE_SECTIONS = [
   { id: 'long_term_care', label: 'Dlouhodobá péče', unit: 'Kč/měsíc' },
 ]
 
+// Pojišťovny mezi partnery (lib/partneri.ts) – klient u smlouvy uvidí logo
+// podle uloženého názvu, proto názvy stejné jako tam.
 const INSURANCE_LOGOS = [
-  { id: 'cpp', name: 'ČPP', emoji: '🔵' },
-  { id: 'kooperativa', name: 'Kooperativa', emoji: '🟢' },
-  { id: 'allianz', name: 'Allianz', emoji: '🔷' },
-  { id: 'metlife', name: 'MetLife', emoji: '🟣' },
-  { id: 'generali', name: 'Generali', emoji: '🔴' },
-  { id: 'nn', name: 'NN', emoji: '🟠' },
-  { id: 'uniqa', name: 'UNIQA', emoji: '🟡' },
-  { id: 'other', name: 'Jiná', emoji: '⚪' },
+  { id: 'allianz', name: 'Allianz' },
+  { id: 'axa', name: 'AXA' },
+  { id: 'cpp', name: 'ČPP' },
+  { id: 'csob', name: 'ČSOB' },
+  { id: 'flexi', name: 'Flexi' },
+  { id: 'generali', name: 'Generali' },
+  { id: 'kooperativa', name: 'Kooperativa' },
+  { id: 'metlife', name: 'MetLife' },
+  { id: 'nn', name: 'NN' },
+  { id: 'uniqa', name: 'UNIQA' },
+  { id: 'other', name: 'Jiná' },
 ]
 
 const schema = z.object({
@@ -115,7 +121,8 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
         // Ukládáme název, ne id z výběru – klient by jinak v produktech
         // viděl „kooperativa“ místo „Kooperativa“.
         company: company?.name || null,
-        logo: company?.emoji || null,
+        // Emoji místo loga už ne – logo se bere podle názvu společnosti.
+        logo: null,
         monthly_price: Number(monthlyPrice) || 0,
         description: data.content || null,
       }
@@ -232,7 +239,7 @@ export default function ProposalForm({ clientId }: { clientId: string }) {
                         : 'border-line bg-surface hover:border-slate/40'
                     }`}
                   >
-                    <span className="text-xl">{company.emoji}</span>
+                    <LogoFirmy firma={company.name} nahrada="?" className="w-full max-w-20" />
                     <span className="text-[11px] font-medium text-navy">{company.name}</span>
                   </button>
                 ))}

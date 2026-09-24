@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useId } from 'react'
 import {
   Plus, Trash2, Save, ChevronDown, ChevronUp, X,
   Shield, Home, Clock, Baby, TrendingUp, Building2
@@ -10,6 +10,9 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { BARVY } from '@/lib/barvy'
 import { ctiProdukt, type ProduktVarianty } from '@/lib/produkt-varianty'
+import { partnerPodleNazvu } from '@/lib/partneri'
+import LogoFirmy from '@/components/partneri/LogoFirmy'
+import SeznamPartneru from '@/components/partneri/SeznamPartneru'
 
 const SECTIONS = [
   { id: 'income', title: 'Zajištění příjmů', label: 'Zajištění příjmů', icon: Shield },
@@ -83,6 +86,9 @@ export default function PlanEditor({
   const [newCompany, setNewCompany] = useState('')
   const [newLogo, setNewLogo] = useState('')
   const [newPayment, setNewPayment] = useState('')
+  const idPartneru = useId()
+  // Partnera klient uvidí s logem; zkratka se pak vyplňovat nemusí.
+  const novyPartner = partnerPodleNazvu(newCompany)
 
   // Editing param state – čte se jen setter, hodnota nikde potřeba není
   const [, setEditingParam] = useState<string | null>(null)
@@ -352,30 +358,42 @@ export default function PlanEditor({
           <div className="bg-surface rounded-card border-2 border-mint/40 p-5 mb-4 space-y-4">
             <h4 className="font-medium text-navy">Nová varianta</h4>
             <div className="grid sm:grid-cols-3 gap-3">
-              <div>
-                <label className="block text-sm font-medium text-slate mb-1">Společnost</label>
+              <label className="block">
+                <span className="block text-sm font-medium text-slate mb-1">Společnost</span>
                 <Input
+                  list={idPartneru}
                   value={newCompany}
                   onChange={e => setNewCompany(e.target.value)}
-                  placeholder="Kooperativa"
+                  placeholder="Začněte psát, třeba Allianz"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate mb-1">Logo (emoji)</label>
-                <Input
-                  value={newLogo}
-                  onChange={e => setNewLogo(e.target.value)}
-                  placeholder="K"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate mb-1">Měsíční platba</label>
+                <SeznamPartneru id={idPartneru} />
+              </label>
+              {novyPartner ? (
+                <div>
+                  <span className="block text-sm font-medium text-slate mb-1">Logo</span>
+                  <div className="flex items-center gap-3">
+                    <LogoFirmy firma={newCompany} />
+                    <span className="text-sm text-slate text-pretty">Klient uvidí logo {novyPartner.nazev}.</span>
+                  </div>
+                </div>
+              ) : (
+                <label className="block">
+                  <span className="block text-sm font-medium text-slate mb-1">Zkratka místo loga</span>
+                  <Input
+                    value={newLogo}
+                    onChange={e => setNewLogo(e.target.value)}
+                    placeholder="K"
+                  />
+                </label>
+              )}
+              <label className="block">
+                <span className="block text-sm font-medium text-slate mb-1">Měsíční platba</span>
                 <Input
                   value={newPayment}
                   onChange={e => setNewPayment(e.target.value)}
-                  placeholder="1 500 Kc"
+                  placeholder="1 500 Kč"
                 />
-              </div>
+              </label>
             </div>
             <div className="flex gap-2 justify-end">
               <Button
@@ -384,7 +402,7 @@ export default function PlanEditor({
                 onClick={() => setShowAddVariant(false)}
                 className="rounded-card"
               >
-                Zrusit
+                Zrušit
               </Button>
               <Button
                 size="sm"
@@ -402,7 +420,7 @@ export default function PlanEditor({
         {/* Variant cards */}
         {sectionVariants.length === 0 && !showAddVariant ? (
           <div className="bg-surface rounded-card border border-surface p-8 text-center text-slate text-sm">
-            Zatim zadne varianty pro tuto sekci.
+            Zatím žádné varianty pro tuto sekci.
           </div>
         ) : (
           <div className="space-y-4">
@@ -412,16 +430,12 @@ export default function PlanEditor({
                 <div key={variant.id} className="bg-surface rounded-card border border-surface overflow-hidden">
                   {/* Variant header */}
                   <div className="flex items-center gap-4 px-5 py-4">
-                    <div
-                      className="w-11 h-11 rounded-card flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm"
-                      style={{ backgroundColor: BARVY.navy }}
-                    >
-                      {variant.logo || variant.company[0]}
-                    </div>
+                    {/* Stejná dlaždice, jakou uvidí klient v plánu. */}
+                    <LogoFirmy firma={variant.company} nahrada={variant.logo || variant.company[0]} />
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-navy">{variant.company}</h4>
                       <p className="text-sm text-slate">
-                        {variant.monthly_payment} / mesic
+                        {variant.monthly_payment} / měsíc
                       </p>
                     </div>
                     <button
@@ -549,7 +563,7 @@ export default function PlanEditor({
                           <Input
                             value={paramForm.note}
                             onChange={e => setParamForm(prev => ({ ...prev, note: e.target.value }))}
-                            placeholder="Vysvetlivka..."
+                            placeholder="Vysvětlivka…"
                             className="text-sm"
                           />
                         </div>
@@ -563,7 +577,7 @@ export default function PlanEditor({
                             }}
                             className="rounded-card text-xs"
                           >
-                            Zrusit
+                            Zrušit
                           </Button>
                           <Button
                             size="sm"
@@ -572,7 +586,7 @@ export default function PlanEditor({
                             className="text-white rounded-card text-xs"
                             style={{ backgroundColor: BARVY.mint }}
                           >
-                            Pridat
+                            Přidat
                           </Button>
                         </div>
                       </div>

@@ -1,7 +1,10 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useId } from 'react'
 import { Shield, Save, Plus, Trash2, Loader2, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { partnerPodleNazvu } from '@/lib/partneri'
+import LogoFirmy from '@/components/partneri/LogoFirmy'
+import SeznamPartneru from '@/components/partneri/SeznamPartneru'
 import { RISK_DEFS, RISK_GROUPS, type RiskKey } from '@/lib/income-risks'
 import type { Json } from '@/lib/types/database'
 import { BARVY } from '@/lib/barvy'
@@ -235,6 +238,8 @@ function VariantCard({
   onRemove: () => void
   canRemove: boolean
 }) {
+  const idPartneru = useId()
+  const partner = partnerPodleNazvu(variant.company)
   return (
     <div className="rounded-card border border-line p-4 md:p-5 bg-surface">
       <div className="flex items-center justify-between mb-4">
@@ -252,8 +257,26 @@ function VariantCard({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-        <TextField label="Pojišťovna" value={variant.company} onChange={(v) => onChange('company', v)} placeholder="Kooperativa" />
-        <TextField label="Logo (zkratka/písmeno)" value={variant.logo} onChange={(v) => onChange('logo', v)} placeholder="K" />
+        <TextField
+          label="Pojišťovna"
+          value={variant.company}
+          onChange={(v) => onChange('company', v)}
+          placeholder="Začněte psát, třeba Allianz"
+          list={idPartneru}
+        />
+        <SeznamPartneru id={idPartneru} />
+        {/* Partnera klient uvidí s logem; zkratka jen u ostatních. */}
+        {partner ? (
+          <div>
+            <span className="block text-xs text-navy/70 mb-1">Logo</span>
+            <div className="flex items-center gap-3">
+              <LogoFirmy firma={variant.company} />
+              <span className="text-xs text-slate text-pretty">Klient uvidí logo {partner.nazev}.</span>
+            </div>
+          </div>
+        ) : (
+          <TextField label="Zkratka místo loga" value={variant.logo} onChange={(v) => onChange('logo', v)} placeholder="K" />
+        )}
         <TextField label="Měsíční pojistné" value={variant.monthly_payment} onChange={(v) => onChange('monthly_payment', v)} placeholder="850 Kč" />
       </div>
 
@@ -338,24 +361,27 @@ function VariantCard({
 }
 
 function TextField({
-  label, value, onChange, placeholder,
+  label, value, onChange, placeholder, list,
 }: {
   label: string
   value: string
   onChange: (v: string) => void
   placeholder?: string
+  /** id datalistu s nabídkou hodnot. */
+  list?: string
 }) {
   return (
-    <div>
-      <label className="block text-xs text-navy/70 mb-1">{label}</label>
+    <label className="block">
+      <span className="block text-xs text-navy/70 mb-1">{label}</span>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        list={list}
         className="w-full h-10 px-3 rounded-card border border-line bg-surface text-navy text-[15px] focus:outline-none focus:border-mint focus:ring-2 focus:ring-mint/10 transition-all"
       />
-    </div>
+    </label>
   )
 }
 
