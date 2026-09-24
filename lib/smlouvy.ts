@@ -41,6 +41,76 @@ export interface ObsahSmlouvy {
   platba?: PlatbaSmlouvy
   /** Popisek u přiloženého souboru se smlouvou. */
   souborPopisek?: string
+  /** Varianta plánu, ze které poradce smlouvu převedl – aby šlo poznat, co už je sjednané. */
+  zVarianty?: string
+}
+
+/** Jak často se platí. Stejné hodnoty umí přepočítat součet plateb v lib/payments.ts. */
+export const FREKVENCE_PLATEB = ['Měsíčně', 'Čtvrtletně', 'Pololetně', 'Ročně'] as const
+
+export type TypSmlouvy = 'insurance' | 'pension' | 'invest'
+
+/**
+ * Do které skupiny v Moje smlouvy patří smlouva z dané oblasti plánu.
+ * Bydlení chybí schválně: hypotéka není pojištění, penze ani investice
+ * a v Moje smlouvy pro ni zatím není místo.
+ */
+export const TYP_SMLOUVY_PODLE_SEKCE: Partial<Record<string, TypSmlouvy>> = {
+  income: 'insurance',
+  property: 'insurance',
+  children: 'insurance',
+  retirement: 'pension',
+  investing: 'invest',
+}
+
+/** Jedna částka z textu varianty („1 340 Kč“). Rozpětí („1 200 – 1 450 Kč“) vrací null. */
+export function castkaZTextu(text: string | null | undefined): number | null {
+  const cisla = (text ?? '').replace(/[\s\u00a0]/g, '').match(/\d+(?:[.,]\d+)?/g)
+  if (!cisla || cisla.length !== 1) return null
+  const castka = Number(cisla[0].replace(',', '.'))
+  return Number.isFinite(castka) && castka > 0 ? castka : null
+}
+
+/** Zbytek po dělení 97 pro dlouhé číslo zapsané jako text (IBAN, ISO 13616). */
+function mod97(cislice: string): number {
+  let zbytek = 0
+  for (const znak of cislice) zbytek = (zbytek * 10 + Number(znak)) % 97
+  return zbytek
+}
+
+const naCislice = (text: string) => text.replace(/[A-Z]/g, (z) => String(z.charCodeAt(0) - 55))
+
+/** Kontrolní součet českého čísla účtu (vážený mod 11) – zachytí překlep v jedné číslici. */
+function ceskeCisloPlati(cislo: string, vahy: number[]): boolean {
+  const cislice = cislo.padStart(vahy.length, '0')
+  const soucet = vahy.reduce((s, vaha, i) => s + vaha * Number(cislice[i]), 0)
+  return soucet % 11 === 0
+}
+
+/**
+ * Číslo účtu na IBAN. Bere IBAN i český zápis „předčíslí-číslo/kód banky“, jak
+ * ho pojišťovny píšou na smlouvy, a hlídá kontrolní součty. Překlep v čísle
+ * účtu by jinak skončil QR platbou na cizí nebo neexistující účet.
+ * Vrací IBAN po čtveřicích („CZ65 0800 …“), nebo null.
+ */
+export function naIban(vstup: string): string | null {
+  const text = vstup.replace(/\s/g, '').toUpperCase()
+  let iban: string | null = null
+
+  if (/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(text)) {
+    iban = mod97(naCislice(text.slice(4) + text.slice(0, 4))) === 1 ? text : null
+  } else {
+    const cesky = text.match(/^(?:(\d{1,6})-)?(\d{2,10})\/(\d{4})$/)
+    if (!cesky) return null
+    const [, predcisli = '', cislo, banka] = cesky
+    if (!ceskeCisloPlati(predcisli, [10, 5, 8, 4, 2, 1])) return null
+    if (!ceskeCisloPlati(cislo, [6, 3, 7, 9, 10, 5, 8, 4, 2, 1])) return null
+    const bban = banka + predcisli.padStart(6, '0') + cislo.padStart(10, '0')
+    const kontrola = String(98 - mod97(naCislice(bban + 'CZ00'))).padStart(2, '0')
+    iban = `CZ${kontrola}${bban}`
+  }
+
+  return iban ? iban.replace(/(.{4})/g, '$1 ').trim() : null
 }
 
 /**

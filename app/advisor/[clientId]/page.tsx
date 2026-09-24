@@ -12,6 +12,7 @@ import PendingSubmission from '@/components/advisor/PendingSubmission'
 import AccessLinkButton from '@/components/advisor/AccessLinkButton'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import { BARVY } from '@/lib/barvy'
+import { ctiSmlouvu, TYP_SMLOUVY_PODLE_SEKCE } from '@/lib/smlouvy'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = await params
@@ -37,6 +38,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
     .order('created_at', { ascending: false })
 
   const proposals = proposalsData as Proposal[] | null
+  // Varianty, ze kterých už poradce smlouvu převedl – u nich místo tlačítka štítek.
+  const prevedeneVarianty = new Set(
+    (proposals ?? []).map((p) => ctiSmlouvu(p.content)?.zVarianty).filter((id): id is string => Boolean(id)),
+  )
 
   // Load analysis responses
   const { data: analysisRaw } = await supabase.from('analysis_responses')
@@ -693,8 +698,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                     {selectionRows.map((row) => (
                       <li
                         key={row.variant_id}
-                        className="flex items-center justify-between gap-3 p-3 rounded-card border border-mint/25 bg-mint/5"
+                        className="p-3 rounded-card border border-mint/25 bg-mint/5"
                       >
+                        <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <div className="font-semibold text-navy text-sm truncate">
                             {row.plan_variants?.company || 'Varianta'}
@@ -712,6 +718,22 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                             / měsíc
                           </div>
                         </div>
+                        </div>
+                        {/* Klient vybral – po podpisu ji poradce převede do Moje smlouvy. */}
+                        {prevedeneVarianty.has(row.variant_id) ? (
+                          <p className="mt-2.5 pt-2.5 border-t border-mint/20 flex items-center gap-1.5 text-sm text-navy">
+                            <CheckCircle2 className="w-4 h-4 text-mint-dark" aria-hidden /> Smlouva založena v Moje smlouvy
+                          </p>
+                        ) : (
+                          TYP_SMLOUVY_PODLE_SEKCE[row.plan_variants?.section ?? ''] && (
+                            <Link
+                              href={`/advisor/${clientId}/smlouva?varianta=${row.variant_id}`}
+                              className="mt-2.5 pt-2.5 border-t border-mint/20 flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-mint-dark transition-colors"
+                            >
+                              Převést na smlouvu <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+                            </Link>
+                          )
+                        )}
                       </li>
                     ))}
                   </ul>
