@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import SmlouvaZVariantyForm from '@/components/advisor/SmlouvaZVariantyForm'
 import KrytiPojistky from '@/components/pojisteni/KrytiPojistky'
 import { ctiProdukt } from '@/lib/produkt-varianty'
-import { krytiZVarianty } from '@/lib/smlouva-z-varianty'
+import { krytiZVarianty, volbyZVarianty } from '@/lib/smlouva-z-varianty'
 import { FREKVENCE_PLATEB, TYP_SMLOUVY_PODLE_SEKCE, castkaZTextu, ctiSmlouvu } from '@/lib/smlouvy'
 
 /**
@@ -43,6 +43,7 @@ export default async function SmlouvaZVariantyPage({
   const typ = TYP_SMLOUVY_PODLE_SEKCE[varianta.section]
   const produkt = ctiProdukt(varianta.details)
   const kryti = varianta.section === 'income' ? krytiZVarianty(varianta.details) : undefined
+  const volbyKryti = varianta.section === 'income' ? volbyZVarianty(varianta.details) : undefined
   const existujici = (smlouvy ?? []).find((s) => ctiSmlouvu(s.content)?.zVarianty === varianta.id)
   const frekvence =
     FREKVENCE_PLATEB.find((f) => f.toLowerCase() === produkt?.frekvence?.trim().toLowerCase()) ?? 'Měsíčně'
@@ -135,6 +136,7 @@ export default async function SmlouvaZVariantyPage({
           <div className="mt-8">
             <KrytiPojistky
               castky={kryti}
+              volby={volbyKryti}
               titulek="Sjednané krytí"
               podtitulek="Převezme se z varianty – klient ho uvidí u smlouvy přesně takhle."
               zvyraznit

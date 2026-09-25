@@ -367,7 +367,7 @@ export default async function ClientDetailPage({
                 </h2>
                 <p className="text-xs md:text-sm opacity-90 mt-1.5 max-w-2xl">
                   {hasPlan
-                    ? 'Přepište údaje z analýzy, doplňte varianty pojistek, nastavte krytí pro 10 typů rizik.'
+                    ? 'Přepište údaje z analýzy, doplňte varianty pojistek a nastavte krytí jednotlivých rizik i s volbami plnění.'
                     : 'Klient odpověděl na analýzu. Otevřete editor a postavte mu plán – vstupní data, varianty pojistky a graf života.'}
                 </p>
               </div>

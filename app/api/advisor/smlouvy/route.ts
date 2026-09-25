@@ -240,6 +240,7 @@ export async function PATCH(request: Request) {
           hlaseni: puvodni.hlaseni,
           kontakt: puvodni.kontakt,
           kryti: puvodni.kryti,
+          volbyKryti: puvodni.volbyKryti,
         }
       : udajeOProduktu(body)
     if (!zVarianty && !produkt.spolecnost && !produkt.produkt) {

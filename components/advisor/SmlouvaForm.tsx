@@ -13,6 +13,7 @@ import LogoFirmy from '@/components/partneri/LogoFirmy'
 import SeznamPartneru from '@/components/partneri/SeznamPartneru'
 import { Pole, poleTridy } from '@/components/advisor/PoleFormulare'
 import { partnerPodleNazvu } from '@/lib/partneri'
+import { RISK_GROUPS } from '@/lib/income-risks'
 import {
   FREKVENCE_PLATEB,
   POLOZKY_KRYTI,
@@ -365,63 +366,71 @@ export default function SmlouvaForm({ clientId, smlouva }: { clientId: string; s
           <p className="text-sm text-slate mt-1 mb-4 text-pretty">
             Zaškrtněte, co smlouva kryje, a doplňte částku. Volba u položky říká, od kdy nebo jak se plní.
           </p>
-          <ul className="space-y-2">
-            {POLOZKY_KRYTI.map((p) => {
-              const stav = kryti[p.id]
-              const idPolozky = `${id}-kryti-${p.id}`
-              return (
-                <li
-                  key={p.id}
-                  className={`rounded-card border px-4 py-3 transition-colors ${
-                    stav.zapnuto ? 'border-mint bg-mint/5 inset-ring-1 inset-ring-mint' : 'border-line bg-surface'
-                  }`}
-                >
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <label htmlFor={idPolozky} className="flex items-center gap-3 flex-1 min-w-40 cursor-pointer">
-                      <input
-                        id={idPolozky}
-                        type="checkbox"
-                        checked={stav.zapnuto}
-                        onChange={(e) => upravPolozku(p.id, { zapnuto: e.target.checked })}
-                        className="w-4 h-4 rounded border-line accent-mint"
-                      />
-                      <span className="text-base font-medium text-navy">{p.popisek}</span>
-                    </label>
-                    {stav.zapnuto && (
-                      <div className="flex flex-wrap items-center gap-2">
-                        {p.moznosti && (
-                          <select
-                            aria-label={`${p.popisek} – volba`}
-                            value={stav.moznost}
-                            onChange={(e) => upravPolozku(p.id, { moznost: e.target.value })}
-                            className="h-10 rounded-input border border-line bg-surface px-3 text-sm text-navy focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20"
-                          >
-                            <option value="">Vyberte…</option>
-                            {p.moznosti.map((m) => (
-                              <option key={m} value={m}>
-                                {m}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                        <input
-                          aria-label={`${p.popisek} – částka v ${p.jednotka}`}
-                          inputMode="decimal"
-                          value={stav.castka}
-                          onChange={(e) => upravPolozku(p.id, { castka: e.target.value })}
-                          placeholder="0"
-                          className="w-32 h-10 rounded-input border border-line bg-surface px-3 text-sm text-right text-navy tabular-nums focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20"
-                        />
-                        <span className="w-16 text-xs font-semibold uppercase tracking-[0.1em] text-slate whitespace-nowrap">
-                          {p.jednotka}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
+          {/* Skupiny stejné jako v editoru plánu a na kartách, které klient uvidí. */}
+          <div className="space-y-5">
+            {RISK_GROUPS.map((skupina) => (
+              <div key={skupina.id}>
+                <p className="text-xs uppercase tracking-[0.15em] text-slate font-semibold mb-2">{skupina.label}</p>
+                <ul className="space-y-2">
+                  {POLOZKY_KRYTI.filter((p) => p.skupina === skupina.id).map((p) => {
+                    const stav = kryti[p.id]
+                    const idPolozky = `${id}-kryti-${p.id}`
+                    return (
+                      <li
+                        key={p.id}
+                        className={`rounded-card border px-4 py-3 transition-colors ${
+                          stav.zapnuto ? 'border-mint bg-mint/5 inset-ring-1 inset-ring-mint' : 'border-line bg-surface'
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                          <label htmlFor={idPolozky} className="flex items-center gap-3 flex-1 min-w-40 cursor-pointer">
+                            <input
+                              id={idPolozky}
+                              type="checkbox"
+                              checked={stav.zapnuto}
+                              onChange={(e) => upravPolozku(p.id, { zapnuto: e.target.checked })}
+                              className="w-4 h-4 rounded border-line accent-mint"
+                            />
+                            <span className="text-base font-medium text-navy">{p.popisek}</span>
+                          </label>
+                          {stav.zapnuto && (
+                            <div className="flex flex-wrap items-center gap-2">
+                              {p.moznosti && (
+                                <select
+                                  aria-label={`${p.popisek} – volba`}
+                                  value={stav.moznost}
+                                  onChange={(e) => upravPolozku(p.id, { moznost: e.target.value })}
+                                  className="h-10 rounded-input border border-line bg-surface px-3 text-sm text-navy focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20"
+                                >
+                                  <option value="">Vyberte…</option>
+                                  {p.moznosti.map((m) => (
+                                    <option key={m} value={m}>
+                                      {m}
+                                    </option>
+                                  ))}
+                                </select>
+                              )}
+                              <input
+                                aria-label={`${p.popisek} – částka v ${p.jednotka}`}
+                                inputMode="decimal"
+                                value={stav.castka}
+                                onChange={(e) => upravPolozku(p.id, { castka: e.target.value })}
+                                placeholder="0"
+                                className="w-32 h-10 rounded-input border border-line bg-surface px-3 text-sm text-right text-navy tabular-nums focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20"
+                              />
+                              <span className="w-16 text-xs font-semibold uppercase tracking-[0.1em] text-slate whitespace-nowrap">
+                                {p.jednotka}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
         </fieldset>
       )}
 

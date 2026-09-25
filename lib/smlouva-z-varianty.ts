@@ -1,4 +1,4 @@
-import { RISK_DEFS, type RiskKey } from './income-risks'
+import { RISK_DEFS, ocistiVolbyKryti, type RiskKey, type VolbyKryti } from './income-risks'
 import { ctiProdukt } from './produkt-varianty'
 import type { ObsahSmlouvy, PlatbaSmlouvy } from './smlouvy'
 
@@ -33,6 +33,18 @@ export function krytiZVarianty(details: unknown): Partial<Record<RiskKey, number
   return Object.keys(kryti).length > 0 ? kryti : undefined
 }
 
+/** Volby plnění z varianty (details.volby) – jen u rizik, která varianta opravdu kryje. */
+export function volbyZVarianty(details: unknown): VolbyKryti | undefined {
+  if (!details || typeof details !== 'object') return undefined
+  const volby = ocistiVolbyKryti((details as Record<string, unknown>).volby)
+  const kryti = krytiZVarianty(details) ?? {}
+  const vysledek: VolbyKryti = {}
+  for (const r of RISK_DEFS) {
+    if (volby[r.key] && kryti[r.key]) vysledek[r.key] = volby[r.key]
+  }
+  return Object.keys(vysledek).length > 0 ? vysledek : undefined
+}
+
 export function obsahZVarianty(
   varianta: VariantaProSmlouvu,
   udaje: { cisloSmlouvy?: string; frekvence: string; platba: PlatbaSmlouvy },
@@ -48,6 +60,7 @@ export function obsahZVarianty(
     hlaseni: produkt?.hlaseni,
     kontakt: produkt?.kontakt,
     kryti: varianta.section === 'income' ? krytiZVarianty(varianta.details) : undefined,
+    volbyKryti: varianta.section === 'income' ? volbyZVarianty(varianta.details) : undefined,
     platba: udaje.platba,
     zVarianty: varianta.id,
   }
