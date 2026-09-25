@@ -66,7 +66,9 @@ const CASTKA_KLESAJICI_PEVNA = ['klesající pojistná částka', 'pevná pojist
  * Položky krytí ve formuláři ruční smlouvy – jak je poradce zná z pojistných
  * smluv. `moznosti` jsou volby, které u položky rozhodují o plnění (od
  * kolikátého dne se platí, jestli pojistná částka klesá); dlouhodobá péče
- * žádnou nemá.
+ * žádnou nemá. Invalidita má každý stupeň zvlášť – smlouvy je často kryjí
+ * různě (jen III., nebo II. a III. s jinou částkou); klíče jsou stejné jako
+ * u zajištění příjmu v lib/income-risks.ts.
  */
 export const POLOZKY_KRYTI: ReadonlyArray<{
   id: string
@@ -76,7 +78,9 @@ export const POLOZKY_KRYTI: ReadonlyArray<{
 }> = [
   { id: 'daily_compensation', popisek: 'Denní odškodné', jednotka: 'Kč/den', moznosti: ['od 1. dne', 'od 8. dne', 'od 29. dne'] },
   { id: 'hospitalization', popisek: 'Hospitalizace', jednotka: 'Kč/den', moznosti: ['od 1. dne', 'od 5. dne'] },
-  { id: 'disability', popisek: 'Invalidita', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
+  { id: 'disability_1', popisek: 'Invalidita I. stupně', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
+  { id: 'disability_2', popisek: 'Invalidita II. stupně', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
+  { id: 'disability_3', popisek: 'Invalidita III. stupně', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
   { id: 'permanent_consequences', popisek: 'Trvalé následky', jednotka: 'Kč', moznosti: ['od 0,001 %', 'od 10 %'] },
   { id: 'serious_illness', popisek: 'Závažná onemocnění', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
   { id: 'work_incapacity', popisek: 'Pracovní neschopnost', jednotka: 'Kč/den', moznosti: ['od 14. dne', 'od 29. dne'] },
