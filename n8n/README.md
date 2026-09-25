@@ -32,6 +32,22 @@ Webhook ověřuje token v hlavičce – bez něj by přes něj mohl kdokoli
 rozesílat e-maily naším jménem, protože adresa příjemce přichází
 v požadavku.
 
+## Když e-mail neodejde
+
+Webhook odpoví hned po přijetí, takže aplikace o chybě při odesílání neví.
+Hlídá to error workflow `chyba-upozorneni.json`: při každém spadlém spuštění
+pošle Jakubovi e-mail s chybou a odkazem na spuštění. Jde přes **Gmail**, ne
+přes Resend – kdyby selhal Resend, nedošlo by přes něj ani upozornění.
+
+1. V n8n → nový workflow → vlož obsah `chyba-upozorneni.json` (Cmd+V do
+   plátna, nebo Import from File).
+2. V nodu *Send_Alert* vyber svoje Gmail přihlašovací údaje, případně změň
+   adresu v *To*. Workflow ulož; aktivovat ho není potřeba.
+3. Ve workflow `PoradceDoKapsy_upozorneni_klienta_webhook` → Settings →
+   **Error workflow** vyber `PoradceDoKapsy_chyba_upozorneni_error` a ulož.
+4. Test: v error workflow klikni na *Execute workflow* – Error Trigger dodá
+   ukázková data a do schránky přijde zkušební upozornění.
+
 ## Co chodí na webhook
 
 `POST https://n8n.jevcakn8n.com/webhook/upozorneni-klienta`

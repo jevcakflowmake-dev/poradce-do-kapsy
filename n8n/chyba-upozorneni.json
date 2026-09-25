@@ -1,0 +1,58 @@
+{
+  "name": "PoradceDoKapsy_chyba_upozorneni_error",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "3f0c2b1e-9a57-4d1b-8f7e-5c2a9d6e1a01",
+      "name": "Catch_Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "kuba.jevcak@gmail.com",
+        "subject": "=Poradce do kapsy: upozornění klientovi neodešlo",
+        "emailType": "text",
+        "message": "=Upozornění klientovi z aplikace Poradce do kapsy se nepodařilo odeslat – klient e-mail nedostal.\n\nWorkflow: {{ $json.workflow.name }}\nKde to spadlo: {{ $json.execution.lastNodeExecuted }}\nChyba: {{ $json.execution.error.message }}\nSpuštění: {{ $json.execution.url }}\n\nCo s tím: otevři spuštění, oprav příčinu a dej Retry → Retry with currently saved workflow.\nKomu měl e-mail odejít, najdeš ve vstupu nodu Receive_Upozorneni.",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "8b4d6e2a-1c3f-4e5a-9b7d-2f6c8a0e3b02",
+      "name": "Send_Alert",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        260,
+        0
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": "Gmail"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Catch_Error": {
+      "main": [
+        [
+          {
+            "node": "Send_Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
