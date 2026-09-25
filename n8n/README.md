@@ -19,9 +19,14 @@ n8n e-mail jen odešle.
      SSL/TLS zapnuté, uživatel `resend`, heslo = API klíč z Resendu
      (stejný, jaký máš v Supabase u SMTP).
 4. **Import.** V n8n → Workflows → Import from File → `upozorneni-klienta.json`.
-   V obou nodech vyber přihlašovací údaje z kroku 3, u *Send_Email*
-   zkontroluj odesílatele (doména musí být ověřená v Resendu) a workflow
-   aktivuj.
+   V obou nodech vyber přihlašovací údaje z kroku 3 a workflow aktivuj.
+
+Odesílatel je `noreply@mail.poradcedokapsy.cz`. V Resendu je ověřená jen
+subdoména `mail.poradcedokapsy.cz` (DNS záznamy ve Vercel DNS), ze stejné
+posílá i Supabase. Z kořenové `poradcedokapsy.cz` Resend odmítne e-mail
+chybou „550 This API key is not authorized to send emails from
+poradcedokapsy.cz“. API klíč pro n8n musí mít přístup k doméně
+`mail.poradcedokapsy.cz` (nebo ke všem doménám).
 
 Webhook ověřuje token v hlavičce – bez něj by přes něj mohl kdokoli
 rozesílat e-maily naším jménem, protože adresa příjemce přichází

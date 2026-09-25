@@ -27,7 +27,7 @@
     },
     {
       "parameters": {
-        "fromEmail": "Poradce do kapsy <noreply@poradcedokapsy.cz>",
+        "fromEmail": "Poradce do kapsy <noreply@mail.poradcedokapsy.cz>",
         "toEmail": "={{ $json.body.email }}",
         "subject": "={{ $json.body.predmet }}",
         "emailFormat": "both",
