@@ -25,6 +25,7 @@ export default function ChatWindow({
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [chyba, setChyba] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const supabase = useMemo(() => createClient(), [])
 
@@ -90,12 +91,16 @@ export default function ChatWindow({
             // Vlastní odeslanou zprávu už v seznamu máme z odpovědi insertu.
             setMessages(prev => (prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]))
 
-            // Automaticky označit jako přečtené
+            // Automaticky označit jako přečtené. Dotaz Supabase se odešle až
+            // přes then/await – bez něj by se zpráva nikdy neoznačila.
             if (newMsg.sender_role !== myRole) {
               supabase
                 .from('messages')
                 .update({ is_read: true })
                 .eq('id', newMsg.id)
+                .then(({ error }) => {
+                  if (error) console.warn('[chat] označení přečtení selhalo:', error.message)
+                })
             }
           },
         )
@@ -118,17 +123,27 @@ export default function ChatWindow({
     const text = input.trim()
     if (!text || sending) return
     setSending(true)
-    setInput('')
+    setChyba(null)
 
-    const { error } = await supabase.from('messages').insert({
-      client_id: clientId,
-      sender_role: myRole,
-      content: text,
-    })
+    const { data: ulozena, error } = await supabase
+      .from('messages')
+      .insert({ client_id: clientId, sender_role: myRole, content: text })
+      .select()
+      .single()
+
+    if (error || !ulozena) {
+      // Text necháváme v poli, ať se napsaná zpráva neztratí.
+      setChyba('Zprávu se nepodařilo odeslat. Zkuste to prosím znovu.')
+      setSending(false)
+      return
+    }
+    setInput('')
+    // Zpráva se ukáže hned, i kdyby živé doručování zrovna nešlo.
+    setMessages(prev => (prev.some(m => m.id === ulozena.id) ? prev : [...prev, ulozena as Message]))
 
     // Zprávu od poradce klient uvidí jen v aplikaci – dáme mu vědět e-mailem.
     // Kdy e-mail opravdu odejde (ne u každé zprávy), rozhoduje server.
-    if (!error && myRole === 'advisor') {
+    if (myRole === 'advisor') {
       fetch('/api/advisor/upozorneni', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -207,8 +222,9 @@ export default function ChatWindow({
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white mr-2 shrink-0 mt-1"
                     style={{ background: BARVY.navy }}
+                    aria-hidden
                   >
-                    P
+                    {myRole === 'client' ? 'P' : 'K'}
                   </div>
                 )}
                 {/* Strop šířky: na kontejneru 1 600 px by 75 % dalo řádky přes 1 000 px */}
@@ -234,6 +250,11 @@ export default function ChatWindow({
       </div>
 
       <div className="border-t border-line p-4 bg-surface">
+        {chyba && (
+          <p role="alert" className="mb-3 rounded-card border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">
+            {chyba}
+          </p>
+        )}
         <div className="flex items-end gap-2">
           <textarea
             value={input}
