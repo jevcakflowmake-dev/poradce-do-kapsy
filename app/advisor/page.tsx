@@ -16,7 +16,7 @@ import {
 } from '@/lib/utils'
 import { goalLabel } from '@/lib/analysis-sections'
 import { vyhodnotAnalyzu, POTREBNE_OTAZKY, type AnalyzaOdpovedi } from '@/lib/vyhodnoceni-analyzy'
-import { ctiSmlouvu, dalsiVyroci } from '@/lib/smlouvy'
+import { ctiSmlouvu, dalsiVyroci, TYP_SMLOUVY_PODLE_SEKCE } from '@/lib/smlouvy'
 import type { Profile } from '@/lib/types/database'
 import StatusBadge from '@/components/advisor/StatusBadge'
 import StatusFilter from '@/components/advisor/StatusFilter'
@@ -73,6 +73,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     { data: planInterests },
     { data: planVariantSel },
     { data: variantyRaw },
+    { data: doporuceniRaw },
     { data: smlouvyRaw },
     { data: podani },
     { data: odpovediRaw },
@@ -87,7 +88,9 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
       .limit(3000),
     supabase.from('plan_section_interest').select('client_id, section, status, updated_at').in('status', ['interested', 'question']),
     supabase.from('plan_variant_selection').select('client_id, variant_id, selected_at'),
-    supabase.from('plan_variants').select('id, client_id, company'),
+    supabase.from('plan_variants').select('id, client_id, company, section'),
+    // Plán může stát i jen na doporučeních – i ten jde zveřejnit.
+    supabase.from('plan_recommendations').select('client_id'),
     supabase.from('proposals').select('id, client_id, title, content'),
     supabase.from('public_submissions').select('id, matched_client_id, created_at').eq('status', 'pending'),
     // Flagy z analýzy pro celý seznam. Taháme jen otázky, ze kterých výpočet
@@ -182,17 +185,17 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     })
   }
 
-  const variantyKlienta = new Map<string, number>()
-  const firmaVarianty = new Map<string, string>()
+  const sPlanem = new Set<string>((doporuceniRaw ?? []).map((d) => d.client_id))
+  const varianty = new Map<string, { company: string; section: string }>()
   for (const v of variantyRaw ?? []) {
-    variantyKlienta.set(v.client_id, (variantyKlienta.get(v.client_id) ?? 0) + 1)
-    firmaVarianty.set(v.id, v.company)
+    sPlanem.add(v.client_id)
+    varianty.set(v.id, { company: v.company, section: v.section })
   }
   for (const c of clients) {
-    const pocet = variantyKlienta.get(c.id) ?? 0
-    if (c.onboarding_completed && pocet === 0 && c.status !== 'archiv') {
-      ukoly.push({ klientId: c.id, text: 'Vyplnil analýzu, plán zatím nemá', odkaz: `/advisor/${c.id}/plan`, akce: 'Připravit plán', ikona: FileText })
-    } else if (pocet > 0 && !c.plan_zverejnen_at && c.status !== 'archiv') {
+    const maPlan = sPlanem.has(c.id)
+    if (c.onboarding_completed && !maPlan && c.status !== 'archiv') {
+      ukoly.push({ klientId: c.id, text: 'Analýza je vyplněná, plán zatím není', odkaz: `/advisor/${c.id}/plan`, akce: 'Připravit plán', ikona: FileText })
+    } else if (maPlan && !c.plan_zverejnen_at && c.status !== 'archiv') {
       ukoly.push({ klientId: c.id, text: 'Plán je rozdělaný, klient ho nevidí', odkaz: `/advisor/${c.id}/plan`, akce: 'Zveřejnit', ikona: Send })
     }
   }
@@ -203,10 +206,12 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     if (z) prevedene.add(z)
   }
   for (const v of planVariantSel ?? []) {
-    if (!jeKlient(v.client_id) || prevedene.has(v.variant_id) || !firmaVarianty.has(v.variant_id)) continue
+    const varianta = varianty.get(v.variant_id)
+    // Bydlení se na smlouvu nepřevádí – úkol by nešel nikdy splnit.
+    if (!jeKlient(v.client_id) || prevedene.has(v.variant_id) || !varianta || !TYP_SMLOUVY_PODLE_SEKCE[varianta.section]) continue
     ukoly.push({
       klientId: v.client_id,
-      text: `Vybral variantu ${firmaVarianty.get(v.variant_id)}, smlouva zatím není`,
+      text: `Vybraná varianta ${varianta.company}, smlouva zatím není`,
       odkaz: `/advisor/${v.client_id}/smlouva?varianta=${v.variant_id}`,
       akce: 'Převést na smlouvu',
       ikona: FileText,
@@ -217,7 +222,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     if (!jeKlient(p.matched_client_id)) continue
     ukoly.push({
       klientId: p.matched_client_id,
-      text: 'Poslal novou analýzu, čeká na vaše rozhodnutí',
+      text: 'Nová analýza z formuláře čeká na vaše rozhodnutí',
       odkaz: `/advisor/${p.matched_client_id}`,
       akce: 'Rozhodnout',
       ikona: Inbox,

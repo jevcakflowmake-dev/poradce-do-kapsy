@@ -138,10 +138,12 @@ export default async function ClientDetailPage({
 
   // Existuje už nějaký plán pro klienta?
   // S head: true dotaz nevrací řádky – počet je v `count` vedle `data`, ne uvnitř.
-  const { count: planVariantsCount } = await supabase.from('plan_variants')
-    .select('id', { count: 'exact', head: true })
-    .eq('client_id', clientId)
-  const hasPlan = (planVariantsCount ?? 0) > 0
+  const [{ count: planVariantsCount }, { count: pocetDoporuceni }] = await Promise.all([
+    supabase.from('plan_variants').select('id', { count: 'exact', head: true }).eq('client_id', clientId),
+    supabase.from('plan_recommendations').select('id', { count: 'exact', head: true }).eq('client_id', clientId),
+  ])
+  // Plán může stát i jen na doporučeních – i ten jde zveřejnit a klient ho uvidí.
+  const hasPlan = (planVariantsCount ?? 0) > 0 || (pocetDoporuceni ?? 0) > 0
 
   // Reakce klienta na finanční plán
   const [{ data: interestRaw }, { data: selRaw }] = await Promise.all([

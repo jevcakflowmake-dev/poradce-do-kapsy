@@ -114,9 +114,8 @@ export default function FinancniPlan({ klientId, nahled = false }: { klientId?: 
     setClientId(id)
 
     // Paralelně
-    const [variantsRes, paramsRes, recsRes, interestRes, selectionRes, financialsRes, analyzaRes, profilRes] = await Promise.all([
+    const [variantsRes, recsRes, interestRes, selectionRes, financialsRes, analyzaRes, profilRes] = await Promise.all([
       supabase.from('plan_variants').select('*').eq('client_id', id).order('sort_order'),
-      supabase.from('plan_params').select('*').order('sort_order'),
       supabase.from('plan_recommendations').select('*').eq('client_id', id),
       supabase.from('plan_section_interest').select('section, status').eq('client_id', id),
       supabase.from('plan_variant_selection').select('variant_id').eq('client_id', id),
@@ -202,7 +201,13 @@ export default function FinancniPlan({ klientId, nahled = false }: { klientId?: 
         return d && (!nej || d > nej) ? d : nej
       }, null),
     )
-    const params = paramsRes.data || []
+    // Parametry jen k variantám tohoto klienta: poradce v náhledu smí číst
+    // všechny řádky, takže bez filtru by stáhl parametry všech klientů
+    // a po 1 000 řádcích (limit Supabase) by část chyběla.
+    const idVariant = variants.map((v: { id: string }) => v.id)
+    const params = idVariant.length
+      ? ((await supabase.from('plan_params').select('*').in('variant_id', idVariant).order('sort_order')).data ?? [])
+      : []
     const recs = recsRes.data || []
 
     const sections: PlanSection[] = []
@@ -388,9 +393,12 @@ export default function FinancniPlan({ klientId, nahled = false }: { klientId?: 
               <p className="text-base text-slate mb-7 max-w-md mx-auto">
                 Jakmile vyplníte finanční analýzu, připravím vám osobní plán obvykle do 48 hodin.
               </p>
-              <Link href="/dashboard/analyza" className={buttonVariants({ size: 'lg' })}>
-                Vyplnit analýzu
-              </Link>
+              {/* V náhledu by odkaz otevřel analýzu poradcova vlastního účtu. */}
+              {!nahled && (
+                <Link href="/dashboard/analyza" className={buttonVariants({ size: 'lg' })}>
+                  Vyplnit analýzu
+                </Link>
+              )}
             </>
           )}
         </div>
