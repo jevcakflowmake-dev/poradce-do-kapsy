@@ -120,11 +120,21 @@ export default function ChatWindow({
     setSending(true)
     setInput('')
 
-    await supabase.from('messages').insert({
+    const { error } = await supabase.from('messages').insert({
       client_id: clientId,
       sender_role: myRole,
       content: text,
     })
+
+    // Zprávu od poradce klient uvidí jen v aplikaci – dáme mu vědět e-mailem.
+    // Kdy e-mail opravdu odejde (ne u každé zprávy), rozhoduje server.
+    if (!error && myRole === 'advisor') {
+      fetch('/api/advisor/upozorneni', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ udalost: 'nova_zprava', client_id: clientId }),
+      }).catch(() => console.warn('[chat] upozornění klienta nedoručeno'))
+    }
 
     setSending(false)
   }

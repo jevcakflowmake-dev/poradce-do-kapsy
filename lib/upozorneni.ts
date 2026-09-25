@@ -12,9 +12,14 @@ import { PORADCE } from '@/lib/poradce'
  *
  * Posílá n8n (webhook `upozorneni-klienta`), stejně jako ostatní notifikace
  * aplikace. Předmět, text i HTML skládá aplikace, workflow v n8n je jen
- * odešle (šablona k importu: n8n/upozorneni-klienta.json). Když webhook
- * neodpoví, akce se neruší – smlouva nebo plán jsou uložené, jen se to
- * klient dozví až v aplikaci. Selhání jde do logu.
+ * odešle (šablona k importu a návod: n8n/). Když webhook neodpoví, akce se
+ * neruší – smlouva nebo plán jsou uložené, jen se to klient dozví až
+ * v aplikaci. Selhání jde do logu.
+ *
+ * Webhook posílá e-mail na adresu z požadavku, takže bez ověření by přes
+ * něj kdokoli, kdo zná adresu, rozesílal poštu naším jménem. Aplikace proto
+ * přikládá tajný token (N8N_UPOZORNENI_TOKEN) v hlavičce X-Poradce-Token
+ * a n8n ho ověřuje; bez tokenu se upozornění neposílá vůbec.
  */
 const WEBHOOK = 'https://n8n.jevcakn8n.com/webhook/upozorneni-klienta'
 
@@ -111,6 +116,11 @@ export async function upozornitKlienta(
   klientId: string,
   data: { smlouvaId?: string; nazev?: string } = {},
 ): Promise<boolean> {
+  const token = process.env.N8N_UPOZORNENI_TOKEN
+  if (!token) {
+    console.warn(`[upozorneni] ${udalost}: chybí N8N_UPOZORNENI_TOKEN, e-mail se neposílá`)
+    return false
+  }
   try {
     const admin = createAdminClient()
     const [{ data: uzivatel }, { data: profil }] = await Promise.all([
@@ -128,7 +138,7 @@ export async function upozornitKlienta(
 
     const res = await fetch(WEBHOOK, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Poradce-Token': token },
       body: JSON.stringify({
         udalost,
         client_id: klientId,

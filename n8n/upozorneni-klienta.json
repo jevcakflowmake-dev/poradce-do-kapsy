@@ -1,0 +1,73 @@
+{
+  "name": "PoradceDoKapsy_upozorneni_klienta_webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upozorneni-klienta",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "da457f44-b1dd-484b-9c7d-ce39d87f1282",
+      "name": "Receive_Upozorneni",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "22653103-9287-4dcb-80fe-ee44ae57db47",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Header_PoradceDoKapsy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "Poradce do kapsy <noreply@poradcedokapsy.cz>",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "={{ $json.body.predmet }}",
+        "emailFormat": "both",
+        "text": "={{ $json.body.text }}",
+        "html": "={{ $json.body.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "fe433fa0-320f-452c-80a8-92bdab60a04d",
+      "name": "Send_Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        280,
+        0
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "SMTP_Resend"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Receive_Upozorneni": {
+      "main": [
+        [
+          {
+            "node": "Send_Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}
