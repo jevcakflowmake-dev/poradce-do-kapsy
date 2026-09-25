@@ -24,15 +24,25 @@ export default function StoredFileLink({ bucket, path, children, className }: Pr
       window.open(path, '_blank', 'noopener,noreferrer')
       return
     }
+    // Okno se otevírá hned při kliknutí: Safari (hlavně na iPhonu) okno
+    // otevřené až po čekání na odkaz zablokuje jako vyskakovací.
+    const okno = window.open('', '_blank')
     setLoading(true)
     const supabase = createClient()
     const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60)
     setLoading(false)
     if (error || !data?.signedUrl) {
+      okno?.close()
       alert('Soubor se nepodařilo otevřít. Zkuste to prosím znovu.')
       return
     }
-    window.open(data.signedUrl, '_blank', 'noopener,noreferrer')
+    if (okno) {
+      okno.opener = null
+      okno.location.href = data.signedUrl
+    } else {
+      // Prohlížeč okno zablokoval úplně – otevřeme soubor v téhle záložce.
+      window.location.href = data.signedUrl
+    }
   }
 
   return (

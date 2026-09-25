@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Check, Copy, KeyRound, Link2, Loader2, Mail } from 'lucide-react'
 import { BARVY } from '@/lib/barvy'
 
@@ -40,6 +40,7 @@ export default function AccessLinkButton({ clientId, situace }: Props) {
   const [odeslanoNa, setOdeslanoNa] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const poleOdkazu = useRef<HTMLInputElement>(null)
 
   async function vyzadat(poslat: boolean) {
     setNacita(poslat ? 'email' : 'odkaz')
@@ -72,12 +73,30 @@ export default function AccessLinkButton({ clientId, situace }: Props) {
 
   async function copy() {
     if (!link) return
+    let zkopirovano = false
     try {
       await navigator.clipboard.writeText(link)
+      zkopirovano = true
+    } catch {
+      // Některé prohlížeče (vložené, starší Safari) schránku API nepustí –
+      // pak zkusíme staré kopírování z označeného pole s odkazem.
+      const pole = poleOdkazu.current
+      if (pole) {
+        pole.focus()
+        pole.select()
+        try {
+          zkopirovano = document.execCommand('copy')
+        } catch {
+          zkopirovano = false
+        }
+      }
+    }
+    if (zkopirovano) {
+      setError(null)
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
-    } catch {
-      setError('Zkopírování selhalo – označte odkaz myší a zkopírujte ho ručně.')
+    } else {
+      setError('Zkopírování selhalo – odkaz je označený, zkopírujte ho ručně (Cmd+C nebo Ctrl+C).')
     }
   }
 
@@ -110,6 +129,7 @@ export default function AccessLinkButton({ clientId, situace }: Props) {
       {link && (
         <div className="mb-4 flex items-center gap-2 rounded-card bg-cream border border-line px-3 py-2.5">
           <input
+            ref={poleOdkazu}
             readOnly
             value={link}
             onFocus={e => e.currentTarget.select()}

@@ -106,6 +106,8 @@ export default function PlanEditor({
   const [sablony, setSablony] = useState<SablonaProduktu[]>(katalog)
   const [zeSablony, setZeSablony] = useState<string | null>(null)
   const [mazaniSablony, setMazaniSablony] = useState<string | null>(null)
+  // Smazání varianty vezme i parametry a klientův výběr – potvrzuje se.
+  const [mazaniVarianty, setMazaniVarianty] = useState<string | null>(null)
   const sablonySekce = sablony.filter((s) => s.sekce === activeSection)
   const vybranaSablona = sablony.find((s) => s.id === zeSablony) ?? null
 
@@ -318,6 +320,7 @@ export default function PlanEditor({
 
   async function handleDeleteVariant(variantId: string) {
     const result = await apiCall({ action: 'delete_variant', variant_id: variantId })
+    setMazaniVarianty(null)
     if (result) {
       setVariants(prev => prev.filter(v => v.id !== variantId))
       setParams(prev => prev.filter(p => p.variant_id !== variantId))
@@ -685,13 +688,28 @@ export default function PlanEditor({
                     </button>
                     </div>
                     <button
-                      onClick={() => handleDeleteVariant(variant.id)}
-                      className="order-1 sm:order-2 p-2 text-slate hover:text-red-500 transition-colors rounded-card hover:bg-red-50"
+                      onClick={() => setMazaniVarianty(mazaniVarianty === variant.id ? null : variant.id)}
+                      className="order-1 sm:order-2 p-2 text-slate hover:text-danger transition-colors rounded-card hover:bg-danger/10"
                       title="Smazat variantu"
+                      aria-label={`Smazat variantu ${variant.company}`}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" aria-hidden />
                     </button>
                   </div>
+
+                  {mazaniVarianty === variant.id && (
+                    <div className="px-5 pb-4 flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-medium text-navy">
+                        Smazat variantu {variant.company}? Zmizí i její parametry a výběr klienta.
+                      </span>
+                      <Button size="sm" variant="destructive" disabled={saving} onClick={() => handleDeleteVariant(variant.id)} className="rounded-card">
+                        Smazat
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setMazaniVarianty(null)} className="rounded-card">
+                        Nechat
+                      </Button>
+                    </div>
+                  )}
 
                   {produktProVariantu === variant.id && (
                     <div className="px-5 pb-4 space-y-3 border-t border-line pt-4">
@@ -812,12 +830,14 @@ export default function PlanEditor({
                                 <p className="text-xs text-slate mt-0.5">{param.note}</p>
                               )}
                             </div>
+                            {/* Vidět pořád – na dotykové obrazovce se na něj myší nenajede. */}
                             <button
                               onClick={() => handleDeleteParam(variant.id, param.id)}
-                              className="p-1 text-slate hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                              className="p-2 -m-1 text-slate hover:text-danger rounded-card transition-colors"
                               title="Smazat parametr"
+                              aria-label={`Smazat parametr ${param.param_label}`}
                             >
-                              <X className="w-3.5 h-3.5" />
+                              <X className="w-3.5 h-3.5" aria-hidden />
                             </button>
                           </div>
                         ))}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Save, ChevronDown, ChevronUp, Check, Loader2, UserCog } from 'lucide-react'
 import { BARVY } from '@/lib/barvy'
 import { plural } from '@/lib/utils'
@@ -47,6 +48,7 @@ const DEFAULTS: Omit<ClientFinancials, 'client_id'> = {
 }
 
 export default function ClientFinancialsEditor({ clientId, initial }: Props) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -75,6 +77,9 @@ export default function ClientFinancialsEditor({ clientId, initial }: Props) {
       if (!res.ok) throw new Error(json.error || 'Uložení selhalo')
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
+      // Příjem z těchto dat čte i editor zajištění příjmu (graf života) –
+      // bez obnovení by dál hlásil, že chybí.
+      router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Chyba při ukládání')
     } finally {
