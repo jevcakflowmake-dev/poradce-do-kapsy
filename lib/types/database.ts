@@ -682,6 +682,49 @@ export type Database = {
           }
         ]
       }
+      /** Šablony variant plánu, které si poradce uložil (migrace 020). */
+      katalog_produktu: {
+        Row: {
+          id: string
+          sekce: string
+          nazev: string
+          spolecnost: string
+          logo: string
+          mesicni_platba: string
+          /** Tvar jako plan_variants.details.produkt (ProduktVarianty). */
+          produkt: Json
+          /** Pole { param_label, value, note } jako řádky plan_params. */
+          parametry: Json
+          /** Výnos v % ročně pro graf u investic a důchodu. */
+          vynos: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          sekce: string
+          nazev: string
+          spolecnost: string
+          logo?: string
+          mesicni_platba?: string
+          produkt?: Json
+          parametry?: Json
+          vynos?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          sekce?: string
+          nazev?: string
+          spolecnost?: string
+          logo?: string
+          mesicni_platba?: string
+          produkt?: Json
+          parametry?: Json
+          vynos?: number | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {

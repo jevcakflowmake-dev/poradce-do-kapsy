@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useCallback, useId } from 'react'
+import { useState, useId } from 'react'
 import {
-  Plus, Trash2, Save, ChevronDown, ChevronUp, X,
+  Plus, Trash2, Save, ChevronDown, ChevronUp, X, BookmarkPlus,
   Shield, Home, Clock, Baby, TrendingUp, Building2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import { partnerPodleNazvu } from '@/lib/partneri'
 import { SECTIONS as OTAZKY_ANALYZY, popisOdpovedi } from '@/lib/analysis-sections'
 import { ctiProjekci, ocistiProjekci, spoctiProjekci, SEKCE_S_PROJEKCI } from '@/lib/projekce'
 import { castkaZTextu } from '@/lib/smlouvy'
+import { vychoziVynos, type SablonaProduktu } from '@/lib/katalog'
 import LogoFirmy from '@/components/partneri/LogoFirmy'
 import SeznamPartneru from '@/components/partneri/SeznamPartneru'
 
@@ -66,6 +67,8 @@ interface PlanEditorProps {
   initialParams: Param[]
   initialRecommendations: Recommendation[]
   analysisResponses: Record<string, Record<string, string>>
+  /** Šablony variant z katalogu produktů (migrace 020). */
+  katalog: SablonaProduktu[]
 }
 
 export default function PlanEditor({
@@ -74,6 +77,7 @@ export default function PlanEditor({
   initialParams,
   initialRecommendations,
   analysisResponses,
+  katalog,
 }: PlanEditorProps) {
   const [variants, setVariants] = useState<Variant[]>(initialVariants)
   const [params, setParams] = useState<Param[]>(initialParams)
@@ -98,6 +102,13 @@ export default function PlanEditor({
   // Partnera klient uvidí s logem; zkratka se pak vyplňovat nemusí.
   const novyPartner = partnerPodleNazvu(newCompany)
 
+  // Katalog produktů: šablona předvyplní novou variantu, uložit se do něj dá každá varianta.
+  const [sablony, setSablony] = useState<SablonaProduktu[]>(katalog)
+  const [zeSablony, setZeSablony] = useState<string | null>(null)
+  const [mazaniSablony, setMazaniSablony] = useState<string | null>(null)
+  const sablonySekce = sablony.filter((s) => s.sekce === activeSection)
+  const vybranaSablona = sablony.find((s) => s.id === zeSablony) ?? null
+
   // Editing param state – čte se jen setter, hodnota nikde potřeba není
   const [, setEditingParam] = useState<string | null>(null)
   const [addingParamForVariant, setAddingParamForVariant] = useState<string | null>(null)
@@ -108,8 +119,8 @@ export default function PlanEditor({
   const [recText, setRecText] = useState('')
   const [recStatus, setRecStatus] = useState<'ok' | 'recommendation' | 'action'>('recommendation')
 
-  // Sync rec text when section changes
-  const updateRecText = useCallback((sectionId: SectionId) => {
+  // Sync rec text when section changes (memoizaci obstará React Compiler)
+  function updateRecText(sectionId: SectionId) {
     const rec = recommendations.find(r => r.section === sectionId)
     if (rec) {
       setRecText((rec.items || []).join('\n'))
@@ -118,11 +129,13 @@ export default function PlanEditor({
       setRecText('')
       setRecStatus('recommendation')
     }
-  }, [recommendations])
+  }
 
   const handleSectionChange = (sectionId: SectionId) => {
     setActiveSection(sectionId)
     setShowAddVariant(false)
+    setZeSablony(null)
+    setMazaniSablony(null)
     setShowAnswers(false)
     setAddingParamForVariant(null)
     setEditingParam(null)
@@ -181,8 +194,10 @@ export default function PlanEditor({
       variant.section === 'retirement'
         ? Number(analysisResponses.retirement?.retirement_age) - Number(analysisResponses.personal?.age)
         : NaN
+    const zKatalogu = vychoziVynos(variant.details)
     setProjekceForm({
-      vynos: ulozena ? ulozena.vynos.toLocaleString('cs-CZ') : '',
+      // Bez uloženého grafu se nabídne výnos ze šablony z katalogu.
+      vynos: ulozena ? ulozena.vynos.toLocaleString('cs-CZ') : zKatalogu !== null ? zKatalogu.toLocaleString('cs-CZ') : '',
       roky: ulozena ? String(ulozena.roky) : Number.isInteger(doDuchodu) && doDuchodu > 0 ? String(doDuchodu) : '',
       // Nová projekce začíná měsíční platbou varianty – většinou je to právě vklad.
       mesicne: ulozena ? cislo(ulozena.mesicne) : cislo(castkaZTextu(variant.monthly_payment) ?? undefined),
@@ -218,15 +233,86 @@ export default function PlanEditor({
       logo: newLogo.trim() || newCompany.trim()[0],
       monthly_payment: newPayment.trim(),
       sort_order: sectionVariants.length,
+      ...(zeSablony ? { katalog_id: zeSablony } : {}),
     })
     if (result && result.id) {
-      setVariants(prev => [...prev, result])
+      const { params: noveParametry, ...varianta } = result as Variant & { params?: Param[] }
+      setVariants(prev => [...prev, varianta])
+      if (noveParametry?.length) {
+        setParams(prev => [...prev, ...noveParametry.map(p => ({ ...p, note: p.note ?? '', sort_order: p.sort_order ?? 0 }))])
+      }
       setNewCompany('')
       setNewLogo('')
       setNewPayment('')
+      setZeSablony(null)
       setShowAddVariant(false)
-      setFeedback('Varianta přidána')
+      setFeedback(zeSablony ? 'Varianta přidána ze šablony' : 'Varianta přidána')
       setTimeout(() => setFeedback(null), 2000)
+    }
+  }
+
+  function pouzijSablonu(sablona: SablonaProduktu) {
+    if (zeSablony === sablona.id) {
+      setZeSablony(null)
+      return
+    }
+    setZeSablony(sablona.id)
+    setNewCompany(sablona.spolecnost)
+    setNewLogo(sablona.logo)
+    setNewPayment(sablona.mesicni_platba)
+  }
+
+  /** Je varianta v katalogu? Stejně jako server: oblast, společnost a název produktu. */
+  function jeVKatalogu(variant: Variant) {
+    const spolecnost = variant.company.trim().toLowerCase()
+    const nazev = (ctiProdukt(variant.details)?.nazev ?? variant.company).trim().toLowerCase()
+    return sablony.some(
+      (s) => s.sekce === variant.section && s.spolecnost.toLowerCase() === spolecnost && s.nazev.toLowerCase() === nazev,
+    )
+  }
+
+  async function ulozDoKatalogu(variantId: string) {
+    setSaving(true)
+    setFeedback(null)
+    try {
+      const res = await fetch('/api/advisor/katalog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variant_id: variantId }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.sablona) throw new Error(data.error || 'Šablonu se nepodařilo uložit.')
+      const nahrazene: string[] = data.nahrazene ?? []
+      setSablony(prev => [...prev.filter(s => !nahrazene.includes(s.id)), data.sablona as SablonaProduktu])
+      setFeedback(nahrazene.length ? 'Šablona v katalogu přepsána podle varianty' : 'Uloženo do katalogu – nabídne se při přidání varianty')
+      setTimeout(() => setFeedback(null), 3000)
+    } catch (err) {
+      setFeedback((err as Error).message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function smazSablonu(id: string) {
+    setSaving(true)
+    setFeedback(null)
+    try {
+      const res = await fetch('/api/advisor/katalog', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Šablonu se nepodařilo smazat.')
+      setSablony(prev => prev.filter(s => s.id !== id))
+      if (zeSablony === id) setZeSablony(null)
+      setMazaniSablony(null)
+      setFeedback('Šablona smazána z katalogu')
+      setTimeout(() => setFeedback(null), 2000)
+    } catch (err) {
+      setFeedback((err as Error).message)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -408,6 +494,80 @@ export default function PlanEditor({
         {showAddVariant && (
           <div className="bg-surface rounded-card border-2 border-mint/40 p-5 mb-4 space-y-4">
             <h4 className="font-medium text-navy">Nová varianta</h4>
+            {sablonySekce.length > 0 && (
+              <div>
+                <p className="text-sm font-medium text-slate mb-2">Z katalogu</p>
+                <ul className="space-y-2">
+                  {sablonySekce.map(sablona => {
+                    const vybrana = zeSablony === sablona.id
+                    const popis = [
+                      sablona.spolecnost.toLowerCase() !== sablona.nazev.toLowerCase() ? sablona.spolecnost : null,
+                      sablona.mesicni_platba || null,
+                      sablona.parametry.length > 0
+                        ? `${sablona.parametry.length} ${plural(sablona.parametry.length, 'parametr', 'parametry', 'parametrů')}`
+                        : null,
+                    ].filter(Boolean).join(' · ')
+                    return (
+                      <li
+                        key={sablona.id}
+                        className={`rounded-card border px-3 py-2.5 transition-colors ${vybrana ? 'border-mint bg-mint/8' : 'border-line'}`}
+                      >
+                        {/* Tlačítka spadnou pod název, když by ho na mobilu stlačila. */}
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                          <LogoFirmy firma={sablona.spolecnost} nahrada={sablona.logo || sablona.spolecnost[0]} />
+                          <div className="min-w-0 flex-1 basis-40">
+                            <p className="font-medium text-navy truncate">{sablona.nazev}</p>
+                            {popis && <p className="text-sm text-slate truncate">{popis}</p>}
+                          </div>
+                          <div className="flex items-center gap-1 ml-auto">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant={vybrana ? 'primary' : 'outline'}
+                            aria-pressed={vybrana}
+                            onClick={() => pouzijSablonu(sablona)}
+                            className="rounded-card shrink-0"
+                          >
+                            {vybrana ? 'Vybráno' : 'Použít'}
+                          </Button>
+                          <button
+                            type="button"
+                            onClick={() => setMazaniSablony(mazaniSablony === sablona.id ? null : sablona.id)}
+                            className="shrink-0 inline-flex items-center justify-center w-11 h-11 -mr-2 rounded-card text-slate hover:text-danger hover:bg-danger/10 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" aria-hidden />
+                            <span className="sr-only">Smazat šablonu {sablona.nazev} z katalogu</span>
+                          </button>
+                          </div>
+                        </div>
+                        {mazaniSablony === sablona.id && (
+                          <div className="mt-2 flex flex-wrap items-center gap-2">
+                            <span className="text-sm font-medium text-navy">Smazat šablonu z katalogu? Varianty u klientů zůstanou.</span>
+                            <Button type="button" size="sm" variant="destructive" disabled={saving} onClick={() => smazSablonu(sablona.id)} className="rounded-card">
+                              Smazat
+                            </Button>
+                            <Button type="button" size="sm" variant="outline" onClick={() => setMazaniSablony(null)} className="rounded-card">
+                              Nechat
+                            </Button>
+                          </div>
+                        )}
+                      </li>
+                    )
+                  })}
+                </ul>
+                {vybranaSablona && (
+                  <p className="mt-2 text-sm text-slate text-pretty">
+                    Ze šablony se doplní{' '}
+                    {vyjmenuj([
+                      Object.keys(vybranaSablona.produkt).length > 0 ? 'detail produktu' : null,
+                      vybranaSablona.parametry.length > 0 ? 'parametry' : null,
+                      vybranaSablona.vynos !== null && SEKCE_S_PROJEKCI.includes(activeSection) ? 'výnos pro graf' : null,
+                    ]) || 'společnost a platba'}
+                    . Platbu upravte podle klienta.
+                  </p>
+                )}
+              </div>
+            )}
             <div className="grid sm:grid-cols-3 gap-3">
               <label className="block">
                 <span className="block text-sm font-medium text-slate mb-1">Společnost</span>
@@ -450,7 +610,10 @@ export default function PlanEditor({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowAddVariant(false)}
+                onClick={() => {
+                  setShowAddVariant(false)
+                  setZeSablony(null)
+                }}
                 className="rounded-card"
               >
                 Zrušit
@@ -480,7 +643,8 @@ export default function PlanEditor({
               return (
                 <div key={variant.id} className="bg-surface rounded-card border border-surface overflow-hidden">
                   {/* Variant header */}
-                  <div className="flex items-center gap-4 px-5 py-4">
+                  {/* Na mobilu jdou akce na druhý řádek, koš zůstává vedle názvu. */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
                     {/* Stejná dlaždice, jakou uvidí klient v plánu. */}
                     <LogoFirmy firma={variant.company} nahrada={variant.logo || variant.company[0]} />
                     <div className="flex-1 min-w-0">
@@ -489,6 +653,7 @@ export default function PlanEditor({
                         {variant.monthly_payment} / měsíc
                       </p>
                     </div>
+                    <div className="order-2 sm:order-1 w-full sm:w-auto flex flex-wrap gap-1">
                     <button
                       onClick={() => {
                         const otevrit = produktProVariantu === variant.id ? null : variant.id
@@ -510,8 +675,18 @@ export default function PlanEditor({
                       </button>
                     )}
                     <button
+                      onClick={() => ulozDoKatalogu(variant.id)}
+                      disabled={saving}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-slate hover:text-navy transition-colors rounded-card hover:bg-cream disabled:opacity-50"
+                      title="Uložit jako šablonu – u dalšího klienta ji vyberete při přidání varianty"
+                    >
+                      <BookmarkPlus className="w-4 h-4" aria-hidden />
+                      {jeVKatalogu(variant) ? 'V katalogu ✓' : 'Do katalogu'}
+                    </button>
+                    </div>
+                    <button
                       onClick={() => handleDeleteVariant(variant.id)}
-                      className="p-2 text-slate hover:text-red-500 transition-colors rounded-card hover:bg-red-50"
+                      className="order-1 sm:order-2 p-2 text-slate hover:text-red-500 transition-colors rounded-card hover:bg-red-50"
                       title="Smazat variantu"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -765,6 +940,12 @@ export default function PlanEditor({
       </div>
     </div>
   )
+}
+
+/** „a, b a c“ – výčet, jak se píše česky. */
+function vyjmenuj(polozky: Array<string | null>) {
+  const platne = polozky.filter((p): p is string => Boolean(p))
+  return platne.length > 1 ? `${platne.slice(0, -1).join(', ')} a ${platne.at(-1)}` : (platne[0] ?? '')
 }
 
 function PoleProduktu({

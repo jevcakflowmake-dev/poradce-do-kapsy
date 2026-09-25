@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { ocistiProdukt } from '@/lib/produkt-varianty'
-import { ocistiProjekci } from '@/lib/projekce'
+import { ocistiProjekci, SEKCE_S_PROJEKCI } from '@/lib/projekce'
+import { ctiSablonu } from '@/lib/katalog'
 import type { Database } from '@/lib/types/database'
 
 type ZmenyVarianty = Database['public']['Tables']['plan_variants']['Update']
@@ -28,16 +29,47 @@ export async function POST(request: Request) {
     }
 
     if (action === 'create_variant') {
-      const { client_id, section, company, logo, monthly_payment, sort_order } = data
+      const { client_id, section, company, logo, monthly_payment, sort_order, katalog_id } = data
       if (!client_id || !section || !company) {
         return NextResponse.json({ error: 'Pro vytvoření varianty jsou povinné: client_id, section, company.' }, { status: 400 })
       }
+
+      // Varianta ze šablony z katalogu dostane i detail produktu, parametry
+      // a výnos, který se nabídne v grafu (celý graf ne – doba a vklady
+      // patří klientovi).
+      let sablona: ReturnType<typeof ctiSablonu> | null = null
+      if (typeof katalog_id === 'string' && katalog_id) {
+        const { data: radek } = await supabase.from('katalog_produktu').select('*').eq('id', katalog_id).maybeSingle()
+        if (!radek) return NextResponse.json({ error: 'Šablona z katalogu už neexistuje.' }, { status: 404 })
+        sablona = ctiSablonu(radek)
+      }
+      const details: Record<string, unknown> = {}
+      if (sablona && Object.keys(sablona.produkt).length > 0) details.produkt = sablona.produkt
+      if (sablona?.vynos != null && SEKCE_S_PROJEKCI.includes(section)) details.vychoziVynos = sablona.vynos
+
       const { data: variant, error } = await supabase.from('plan_variants')
-        .insert({ client_id, section, company, logo, monthly_payment, sort_order: sort_order || 0 })
+        .insert({
+          client_id, section, company, logo, monthly_payment, sort_order: sort_order || 0,
+          ...(Object.keys(details).length > 0 ? { details: details as unknown as ZmenyVarianty['details'] } : {}),
+        })
         .select()
         .single()
       if (error) return chybaUlozeni(error)
-      return NextResponse.json(variant)
+
+      if (!sablona || sablona.parametry.length === 0) return NextResponse.json({ ...variant, params: [] })
+      const { data: params, error: chybaParametru } = await supabase.from('plan_params')
+        .insert(sablona.parametry.map((p, i) => ({
+          variant_id: variant.id,
+          param_key: p.param_label.toLowerCase().replace(/\s+/g, '_'),
+          param_label: p.param_label,
+          value: p.value,
+          note: p.note,
+          sort_order: i,
+        })))
+        .select()
+      // Varianta vznikla; parametry poradce v nejhorším doplní ručně.
+      if (chybaParametru) console.error('[variants] parametry ze šablony:', chybaParametru.message)
+      return NextResponse.json({ ...variant, params: params ?? [] })
     }
 
     if (action === 'update_variant') {

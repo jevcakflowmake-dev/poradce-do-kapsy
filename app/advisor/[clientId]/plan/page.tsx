@@ -8,6 +8,7 @@ import ClientFinancialsEditor, { type ClientFinancials } from '@/components/advi
 import IncomeProtectionEditor from '@/components/advisor/IncomeProtectionEditor'
 import ZverejneniPlanu from '@/components/advisor/ZverejneniPlanu'
 import { BARVY } from '@/lib/barvy'
+import { ctiSablonu } from '@/lib/katalog'
 
 export default async function AdvisorPlanPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = await params
@@ -41,6 +42,11 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
       .order('sort_order')
     allParams = paramsData || []
   }
+
+  // Katalog produktů – šablony variant, stejné pro všechny klienty
+  const { data: katalogData } = await supabase.from('katalog_produktu')
+    .select('*')
+    .order('nazev')
 
   // Load recommendations
   const { data: recommendations } = await supabase.from('plan_recommendations')
@@ -145,6 +151,7 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
             items: r.items ?? [],
           }))}
           analysisResponses={analysisResponses}
+          katalog={(katalogData ?? []).map(ctiSablonu)}
         />
       </div>
     </div>
