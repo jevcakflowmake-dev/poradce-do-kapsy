@@ -11,6 +11,7 @@ import StatusControl from '@/components/advisor/StatusControl'
 import PendingSubmission from '@/components/advisor/PendingSubmission'
 import AccessLinkButton, { type SituacePristupu } from '@/components/advisor/AccessLinkButton'
 import SmazaniKlienta from '@/components/advisor/SmazaniKlienta'
+import PoznamkyKlienta, { type Poznamka } from '@/components/advisor/PoznamkyKlienta'
 import ZverejneniPlanu from '@/components/advisor/ZverejneniPlanu'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import { BARVY } from '@/lib/barvy'
@@ -126,6 +127,14 @@ export default async function ClientDetailPage({
       : zalozilPoradce
         ? ucet?.invited_at ? 'pozvan' : 'zalozil_poradce'
         : 'neprihlasen'
+
+  // Interní poznámky poradce – RLS je pustí jen poradci.
+  const { data: poznamkyRaw } = await supabase
+    .from('poznamky_klientu')
+    .select('id, text, created_at')
+    .eq('client_id', clientId)
+    .order('created_at', { ascending: false })
+  const poznamky = (poznamkyRaw as Poznamka[] | null) ?? []
 
   // Existuje už nějaký plán pro klienta?
   // S head: true dotaz nevrací řádky – počet je v `count` vedle `data`, ne uvnitř.
@@ -464,6 +473,8 @@ export default async function ClientDetailPage({
             </Link>
           </div>
         </section>
+
+        <PoznamkyKlienta clientId={clientId} poznamky={poznamky} />
 
         {/* Spočítané doporučení z analýzy */}
         {vyhodnoceni && (

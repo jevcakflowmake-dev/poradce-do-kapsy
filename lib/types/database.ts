@@ -649,6 +649,39 @@ export type Database = {
           }
         ]
       }
+      /** Interní poznámky poradce ke klientovi – klient je nevidí (migrace 019). */
+      poznamky_klientu: {
+        Row: {
+          id: string
+          client_id: string
+          text: string
+          autor: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          text: string
+          autor?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          text?: string
+          autor?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'poznamky_klientu_client_id_fkey'
+            columns: ['client_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -684,3 +717,4 @@ export type ClientFinancials = Database['public']['Tables']['client_financials']
 export type PlanSectionInterest = Database['public']['Tables']['plan_section_interest']['Row']
 export type InterestStatus = PlanSectionInterest['status']
 export type PlanVariantSelection = Database['public']['Tables']['plan_variant_selection']['Row']
+export type PoznamkaKlienta = Database['public']['Tables']['poznamky_klientu']['Row']

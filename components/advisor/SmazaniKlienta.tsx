@@ -53,8 +53,8 @@ export default function SmazaniKlienta({ clientId, potvrzovaciText }: { clientId
       </h2>
       <p className="mt-2 max-w-2xl text-base text-slate text-pretty">
         Smaže účet klienta i všechno, co k němu v aplikaci je: analýzu a nahrané dokumenty, finanční plán, smlouvy
-        s PDF a chat. Hodí se, když klient požádá o výmaz údajů. Vrátit to nejde – pokud klient jen odešel,
-        nastavte mu nahoře stav Archiv.
+        s PDF, chat i vaše poznámky. Hodí se, když klient požádá o výmaz údajů. Vrátit to nejde – pokud klient
+        jen odešel, nastavte mu nahoře stav Archiv.
       </p>
 
       {otevreno ? (
