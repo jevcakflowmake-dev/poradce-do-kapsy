@@ -2,7 +2,7 @@
 
 import { Fragment, useId } from 'react'
 import { Check } from 'lucide-react'
-import { RISK_DEFS, RISK_GROUPS } from '@/lib/income-risks'
+import { RISK_DEFS, RISK_GROUPS, castkaRizika, ocistiVolbyKryti } from '@/lib/income-risks'
 import { ctiProdukt } from '@/lib/produkt-varianty'
 import { plural } from '@/lib/utils'
 import LogoFirmy from '@/components/partneri/LogoFirmy'
@@ -26,6 +26,8 @@ interface Radek {
   popisek: string
   hodnota: (v: IncomeVariant) => number | null
   zobraz: (v: IncomeVariant, n: number) => string
+  /** Volba plnění pod částkou – „od 29. dne“, „pevná pojistná částka“. */
+  volba?: (v: IncomeVariant) => string | undefined
   smer: Smer
 }
 
@@ -96,7 +98,8 @@ const SKUPINY_RIZIK: Skupina[] = RISK_GROUPS.map((g) => ({
     klic: r.key,
     popisek: r.label,
     hodnota: (v: IncomeVariant) => cislo(v.details?.[r.key]),
-    zobraz: (_v: IncomeVariant, n: number) => (r.unit === 'daily' ? `${kc(n)}/den` : kc(n)),
+    zobraz: (_v: IncomeVariant, n: number) => castkaRizika(r, n),
+    volba: (v: IncomeVariant) => ocistiVolbyKryti(v.details?.volby)[r.key],
     smer: 'vyssi' as const,
   })),
 }))
@@ -221,15 +224,20 @@ export default function SrovnaniVariant({
                           {n === null ? (
                             <span className="text-slate">–</span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5">
-                              {r.zobraz(v, n)}
-                              {jeVitez && (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-mint-dark" strokeWidth={2.5} aria-hidden />
-                                  <span className="sr-only">(výhodnější)</span>
-                                </>
+                            <>
+                              <span className="inline-flex items-center gap-1.5">
+                                {r.zobraz(v, n)}
+                                {jeVitez && (
+                                  <>
+                                    <Check className="w-3.5 h-3.5 text-mint-dark" strokeWidth={2.5} aria-hidden />
+                                    <span className="sr-only">(výhodnější)</span>
+                                  </>
+                                )}
+                              </span>
+                              {r.volba?.(v) && (
+                                <span className="block text-xs font-normal text-slate whitespace-normal">{r.volba(v)}</span>
                               )}
-                            </span>
+                            </>
                           )}
                         </td>
                       )

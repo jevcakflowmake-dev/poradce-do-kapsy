@@ -5,7 +5,16 @@ import { Shield, Save, Plus, Trash2, Loader2, Check, ChevronDown, ChevronUp } fr
 import { partnerPodleNazvu } from '@/lib/partneri'
 import LogoFirmy from '@/components/partneri/LogoFirmy'
 import SeznamPartneru from '@/components/partneri/SeznamPartneru'
-import { RISK_DEFS, RISK_GROUPS, type RiskKey } from '@/lib/income-risks'
+import {
+  JEDNOTKA_RIZIKA,
+  RISK_DEFS,
+  RISK_GROUPS,
+  denZVolby,
+  ocistiVolbyKryti,
+  type RiskDef,
+  type RiskKey,
+  type VolbyKryti,
+} from '@/lib/income-risks'
 import type { Json } from '@/lib/types/database'
 import { BARVY } from '@/lib/barvy'
 
@@ -20,6 +29,8 @@ interface VariantInput {
   max_payout_years: number | null
   accident_pn_combine: boolean
   coverage: Coverage
+  /** Volby plnění stejné jako u smlouvy – „od 29. dne“, „pevná pojistná částka“… */
+  volby: VolbyKryti
 }
 
 /** Tvar sloupce `details` (jsonb). Databáze ho nehlídá, hlídá si ho editor. */
@@ -60,6 +71,7 @@ const EMPTY: VariantInput = {
   max_payout_years: null,
   accident_pn_combine: false,
   coverage: {},
+  volby: {},
 }
 
 function extractCoverage(details: ExistingVariant['details']): Coverage {
@@ -88,6 +100,7 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
             max_payout_years: d.max_payout_years ?? null,
             accident_pn_combine: Boolean(d.accident_pn_combine),
             coverage: extractCoverage(d),
+            volby: ocistiVolbyKryti((d as Record<string, unknown>).volby),
           }
         })
       : [{ ...EMPTY }],
@@ -341,7 +354,9 @@ function VariantCard({
         )
       })()}
 
-      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">Pojistné krytí (10 typů rizik)</h4>
+      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate mb-2">
+        Pojistné krytí ({RISK_DEFS.length} typů rizik)
+      </h4>
       <div className="space-y-3">
         {RISK_GROUPS.map((g) => {
           const risks = RISK_DEFS.filter((r) => r.group === g.id)
@@ -350,15 +365,32 @@ function VariantCard({
               <div className="text-[11px] uppercase tracking-[0.15em] text-slate mb-2">{g.label}</div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {risks.map((r) => (
-                  <NumField
-                    key={r.key}
-                    label={r.label}
-                    value={variant.coverage[r.key] ?? null}
-                    onChange={(v) =>
-                      onChange('coverage', { ...variant.coverage, [r.key]: v })
-                    }
-                    suffix={r.unit === 'daily' ? 'Kč/den' : 'Kč'}
-                  />
+                  <div key={r.key} className="space-y-1.5">
+                    <NumField
+                      label={r.label}
+                      value={variant.coverage[r.key] ?? null}
+                      onChange={(v) =>
+                        onChange('coverage', { ...variant.coverage, [r.key]: v })
+                      }
+                      suffix={JEDNOTKA_RIZIKA[r.unit]}
+                    />
+                    {r.moznosti && (
+                      <VolbaRizika
+                        def={r}
+                        value={variant.volby[r.key] ?? ''}
+                        onChange={(volba) => {
+                          const volby = { ...variant.volby }
+                          if (volba) volby[r.key] = volba
+                          else delete volby[r.key]
+                          onChange('volby', volby)
+                          // Neschopenka „od 29. dne“ je karence 29 dní – graf života
+                          // i „Co by vám pojistka zaplatila“ s ní počítají.
+                          const den = denZVolby(volba)
+                          if (r.key === 'daily_sick_leave' && den !== null) onChange('waiting_period_days', den)
+                        }}
+                      />
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -374,6 +406,33 @@ function VariantCard({
         </div>
       </details>
     </div>
+  )
+}
+
+/** Volba plnění u rizika – stejná nabídka jako ve formuláři smlouvy. */
+function VolbaRizika({
+  def,
+  value,
+  onChange,
+}: {
+  def: RiskDef
+  value: string
+  onChange: (volba: string) => void
+}) {
+  return (
+    <select
+      aria-label={`${def.label} – volba`}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full h-9 px-2.5 rounded-card border border-line bg-surface text-navy text-sm focus:outline-none focus:border-mint focus:ring-2 focus:ring-mint/10 transition-all"
+    >
+      <option value="">Volba plnění…</option>
+      {def.moznosti?.map((m) => (
+        <option key={m} value={m}>
+          {m}
+        </option>
+      ))}
+    </select>
   )
 }
 

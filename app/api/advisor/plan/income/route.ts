@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { RISK_DEFS, type RiskKey } from '@/lib/income-risks'
+import { RISK_DEFS, denZVolby, ocistiVolbyKryti, type RiskKey } from '@/lib/income-risks'
 
 interface IncomeVariantInput {
   id?: string                // pokud edituji existing
@@ -11,6 +11,8 @@ interface IncomeVariantInput {
   max_payout_years?: number | null
   accident_pn_combine?: boolean        // sčítat denní odškodné za úraz s PN při úrazu?
   coverage?: Partial<Record<RiskKey, number | null>>
+  /** Volby plnění – „od 29. dne“, „pevná pojistná částka“… */
+  volby?: unknown
 }
 
 const DEFAULT_WAITING_PERIOD_DAYS = 14
@@ -81,7 +83,9 @@ export async function POST(request: Request) {
     // Výpočet měsíční výplaty serverside, ať klient pracuje s konzistentní hodnotou:
     //   60 % (úraz)  = daily_accident × 30   (případně + PN × (30 − karence) pokud accident_pn_combine)
     //   50 % (nemoc) = daily_sick_leave × (30 − karence)   (default karence 14)
-    const karence = toNum(v.waiting_period_days) ?? DEFAULT_WAITING_PERIOD_DAYS
+    // Volba u neschopenky („od 29. dne“) je karence – má přednost před ručně zadanou.
+    const volby = ocistiVolbyKryti(v.volby)
+    const karence = denZVolby(volby.daily_sick_leave) ?? toNum(v.waiting_period_days) ?? DEFAULT_WAITING_PERIOD_DAYS
     const dailyAccident = toNum(v.coverage?.daily_accident) ?? 0
     const dailySickLeave = toNum(v.coverage?.daily_sick_leave) ?? 0
     const accidentPnCombine = Boolean(v.accident_pn_combine)
@@ -102,6 +106,7 @@ export async function POST(request: Request) {
         waiting_period_days: karence,
         max_payout_years: toNum(v.max_payout_years),
         accident_pn_combine: accidentPnCombine,
+        volby,
         ...coverage,
       },
     }

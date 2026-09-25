@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { Shield } from 'lucide-react'
-import { type RiskKey } from '@/lib/income-risks'
+import { type RiskKey, type VolbyKryti } from '@/lib/income-risks'
 import SrovnaniVariant, { VyberVarianty } from './SrovnaniVariant'
 import ScenarePojistky from './ScenarePojistky'
 import { ctiProdukt } from '@/lib/produkt-varianty'
@@ -13,6 +13,8 @@ type IncomeDetails = {
   waiting_period_days?: number | null
   max_payout_years?: number | null
   accident_pn_combine?: boolean
+  /** Volby plnění – „od 29. dne“, „pevná pojistná částka“… */
+  volby?: VolbyKryti | null
 } & Partial<Record<RiskKey, number | null>>
 
 export interface IncomeVariant {

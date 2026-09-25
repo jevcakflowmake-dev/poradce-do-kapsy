@@ -116,14 +116,17 @@ function situace(v: IncomeVariant, zbytekHypoteky: number | null, cistyPrijem: n
     })
   }
 
+  // Ztráta soběstačnosti bývá jednorázová, dlouhodobá péče měsíční – u produktu
+  // může být obojí, pak se sečte do jedné situace.
   const pece = cislo(d.self_sufficiency)
-  if (pece) {
+  const peceMesicne = cislo(d.long_term_care)
+  if (pece || peceMesicne) {
     vysledek.push({
       klic: 'pece',
       ikona: HeartHandshake,
       titulek: 'Potřebujete péči druhých',
-      castka: kc(pece),
-      popis: 'Ztráta soběstačnosti – když se sami nezvládnete obléct nebo najíst',
+      castka: [pece && kc(pece), peceMesicne && `${kc(peceMesicne)} měsíčně`].filter(Boolean).join(' + '),
+      popis: 'Když se sami nezvládnete obléct nebo najíst a potřebujete péči druhého člověka',
     })
   }
 
@@ -159,7 +162,20 @@ function situace(v: IncomeVariant, zbytekHypoteky: number | null, cistyPrijem: n
       const let_ = Math.floor(smrt / (cistyPrijem * 12))
       if (let_ >= 1) popis = `Odpovídá zhruba ${let_} ${let_ === 1 ? 'roku' : 'letům'} vašeho čistého příjmu`
     }
+    const smrtUrazem = cislo(d.death_accident)
+    if (smrtUrazem) popis += `. Při smrti úrazem navíc ${kc(smrtUrazem)}`
     vysledek.push({ klic: 'smrt', ikona: House, titulek: 'Když tu nebudete', castka: kc(smrt), popis, dobre })
+  } else {
+    const smrtUrazem = cislo(d.death_accident)
+    if (smrtUrazem) {
+      vysledek.push({
+        klic: 'smrt',
+        ikona: House,
+        titulek: 'Když tu nebudete kvůli úrazu',
+        castka: kc(smrtUrazem),
+        popis: 'Jednorázově vašim blízkým, jen když smrt způsobí úraz',
+      })
+    }
   }
 
   return vysledek
