@@ -1,21 +1,31 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight, AlertTriangle, Plus, Pencil } from 'lucide-react'
+import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight, AlertTriangle, Plus, Pencil, UserCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, proposalTypeLabel, formatDate, plural } from '@/lib/utils'
 import { goalLabel, SECTIONS, popisOdpovedi } from '@/lib/analysis-sections'
 import { vyhodnotAnalyzu, rozsahVyhodnoceni } from '@/lib/vyhodnoceni-analyzy'
 import type { Profile, Proposal } from '@/lib/types/database'
 import StatusControl from '@/components/advisor/StatusControl'
 import PendingSubmission from '@/components/advisor/PendingSubmission'
-import AccessLinkButton from '@/components/advisor/AccessLinkButton'
+import AccessLinkButton, { type SituacePristupu } from '@/components/advisor/AccessLinkButton'
+import SmazaniKlienta from '@/components/advisor/SmazaniKlienta'
 import ZverejneniPlanu from '@/components/advisor/ZverejneniPlanu'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import { BARVY } from '@/lib/barvy'
 import { ctiSmlouvu, TYP_SMLOUVY_PODLE_SEKCE } from '@/lib/smlouvy'
 
-export default async function ClientDetailPage({ params }: { params: Promise<{ clientId: string }> }) {
+export default async function ClientDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ clientId: string }>
+  /** `novy` = klient právě ručně založený (`pozvan` = s pozvánkou). */
+  searchParams: Promise<{ novy?: string }>
+}) {
   const { clientId } = await params
+  const { novy } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -30,6 +40,13 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   if (!profileData) return notFound()
 
   const profile = profileData as Profile
+
+  // E-mail a přihlášení jsou jen v auth – profil je nemá.
+  const { data: ucetData } = await createAdminClient().auth.admin.getUserById(clientId)
+  const ucet = ucetData?.user ?? null
+  const email = ucet?.email ?? null
+  const prihlasen = Boolean(ucet?.last_sign_in_at)
+  const zalozilPoradce = ucet?.app_metadata?.zalozil_poradce === true
 
   const { data: proposalsData } = await supabase
     .from('proposals')
@@ -101,6 +118,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
   const odeslani = (odeslaniRaw as Array<{ has_password: boolean | null }> | null) ?? []
   const cameFromPublicForm = pendingSubmission !== null || odeslani.length > 0
   const clientHasPassword = odeslani.some((o) => o.has_password)
+  // Kartu s přístupem potřebuje hlavně ten, kdo se ještě nepřihlásil.
+  const situacePristupu: SituacePristupu | null = cameFromPublicForm
+    ? prihlasen ? 'prihlasen' : clientHasPassword ? 'heslo_z_analyzy' : 'analyza_bez_hesla'
+    : prihlasen
+      ? null
+      : zalozilPoradce
+        ? ucet?.invited_at ? 'pozvan' : 'zalozil_poradce'
+        : 'neprihlasen'
 
   // Existuje už nějaký plán pro klienta?
   // S head: true dotaz nevrací řádky – počet je v `count` vedle `data`, ne uvnitř.
@@ -273,6 +298,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
       </nav>
 
       <div className="max-w-shell mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-10 md:py-14 space-y-10">
+        {novy && (
+          <p role="status" className="flex items-start gap-3 rounded-card border border-mint/30 bg-mint/10 p-4 text-base text-navy">
+            <UserCheck className="w-5 h-5 shrink-0 text-mint-dark mt-0.5" aria-hidden />
+            <span>
+              {novy === 'pozvan'
+                ? `Klient je založený a pozvánka odešla na ${email ?? 'jeho e-mail'}.`
+                : 'Klient je založený. Přístup mu pošlete níž, až budete chtít.'}
+            </span>
+          </p>
+        )}
+
         {pendingSubmission && (
           <PendingSubmission
             submissionId={pendingSubmission.id}
@@ -359,6 +395,22 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               </span>
             </div>
             <dl className="space-y-2.5 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-slate shrink-0">E-mail</dt>
+                <dd className="font-medium text-navy min-w-0 truncate">
+                  {email ? (
+                    <a href={`mailto:${email}`} className="underline-offset-4 hover:underline">{email}</a>
+                  ) : '–'}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-slate shrink-0">Telefon</dt>
+                <dd className="font-medium text-navy">
+                  {profile.phone ? (
+                    <a href={`tel:${profile.phone.replace(/\s/g, '')}`} className="underline-offset-4 hover:underline">{profile.phone}</a>
+                  ) : '–'}
+                </dd>
+              </div>
               <div className="flex justify-between">
                 <dt className="text-slate">Věk</dt>
                 <dd className="font-medium text-navy">{profile.age != null ? `${profile.age} let` : '–'}</dd>
@@ -393,9 +445,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             )}
           </div>
 
-          {cameFromPublicForm && (
-            <AccessLinkButton clientId={clientId} hasPassword={clientHasPassword} />
-          )}
+          {situacePristupu && <AccessLinkButton clientId={clientId} situace={situacePristupu} />}
 
           {/* Ruční smlouva má vlastní stránku – formulář s platbou, krytím a kontakty
               by detail klienta natáhl na dvojnásobek. */}
@@ -821,6 +871,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             </div>
           )}
         </section>
+
+        <SmazaniKlienta clientId={clientId} potvrzovaciText={profile.full_name?.trim() || email || 'smazat'} />
       </div>
     </div>
   )

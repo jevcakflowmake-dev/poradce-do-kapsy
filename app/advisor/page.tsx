@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
-  MessageCircle, ArrowUpRight, Sparkles, AlertTriangle, Search, FileText, Send, CalendarClock, Inbox, HelpCircle,
+  MessageCircle, ArrowUpRight, Sparkles, AlertTriangle, Search, FileText, Send, CalendarClock, Inbox, UserPlus, HelpCircle,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -288,6 +288,12 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
               {clients.length} {plural(clients.length, 'klient', 'klienti', 'klientů')}
               <span className="text-slate font-normal text-lead"> ve vaší síti</span>
             </h1>
+            <Link
+              href="/advisor/novy"
+              className="inline-flex items-center gap-2 h-11 px-5 rounded-pill bg-navy text-cream text-base font-semibold transition-colors hover:bg-navy-deep focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 self-start md:self-auto"
+            >
+              <UserPlus className="w-4 h-4" aria-hidden /> Přidat klienta
+            </Link>
           </div>
         </div>
 

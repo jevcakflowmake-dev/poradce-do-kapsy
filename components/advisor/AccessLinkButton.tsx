@@ -4,10 +4,26 @@ import { useState } from 'react'
 import { Check, Copy, KeyRound, Link2, Loader2, Mail } from 'lucide-react'
 import { BARVY } from '@/lib/barvy'
 
+/** Proč poradce přístup řeší – podle toho se vysvětluje, co odkaz udělá. */
+export type SituacePristupu = 'prihlasen' | 'heslo_z_analyzy' | 'analyza_bez_hesla' | 'zalozil_poradce' | 'pozvan' | 'neprihlasen'
+
+const POPIS: Record<SituacePristupu, string> = {
+  prihlasen: 'Klient se do aplikace už přihlásil. Odkaz níž mu nechá nastavit nové heslo – hodí se, když to staré zapomněl.',
+  heslo_z_analyzy:
+    'Klient si při vyplnění analýzy zvolil heslo, takže se po potvrzení e-mailu přihlásit může. Odkaz níž mu heslo nechá nastavit znovu – hodí se, když ho zapomněl.',
+  analyza_bez_hesla:
+    'Klient vyplnil analýzu bez hesla, takže se zatím přihlásit nemůže. Pošlete mu odkaz na nastavení hesla, až bude finanční plán hotový.',
+  zalozil_poradce:
+    'Účet jste klientovi založili vy, takže heslo zatím nemá a přihlásit se nemůže. Pošlete mu odkaz na nastavení hesla, třeba až bude finanční plán hotový.',
+  pozvan:
+    'Klientovi odešla pozvánka, ale zatím si nenastavil heslo. Když mu odkaz vypršel nebo e-mail nenašel, pošlete mu nový.',
+  neprihlasen:
+    'Klient se zaregistroval, ale do aplikace se ještě nepřihlásil. Když mu přihlášení nejde, pošlete mu odkaz na nastavení hesla.',
+}
+
 interface Props {
   clientId: string
-  /** Zvolil si klient heslo hned ve veřejné analýze? Pak přístup už má. */
-  hasPassword: boolean
+  situace: SituacePristupu
 }
 
 /**
@@ -18,7 +34,7 @@ interface Props {
  * Platí vždy jen nejnovější odkaz: e-mail i vygenerovaný odkaz ten
  * předchozí zneplatní, proto to pod tlačítky stojí napsané.
  */
-export default function AccessLinkButton({ clientId, hasPassword }: Props) {
+export default function AccessLinkButton({ clientId, situace }: Props) {
   const [nacita, setNacita] = useState<'email' | 'odkaz' | null>(null)
   const [link, setLink] = useState<string | null>(null)
   const [odeslanoNa, setOdeslanoNa] = useState<string | null>(null)
@@ -66,7 +82,7 @@ export default function AccessLinkButton({ clientId, hasPassword }: Props) {
   }
 
   return (
-    <div className="bg-surface border border-line p-5 md:p-6">
+    <div className="rounded-card bg-surface border border-line p-6 md:p-7">
       <div className="flex items-start gap-3 mb-4">
         <KeyRound className="w-5 h-5 text-navy shrink-0 mt-0.5" strokeWidth={1.8} />
         <div>
@@ -75,28 +91,24 @@ export default function AccessLinkButton({ clientId, hasPassword }: Props) {
           >
             Přístup do aplikace
           </h3>
-          <p className="text-sm text-slate leading-relaxed">
-            {hasPassword
-              ? 'Klient si při vyplnění analýzy zvolil heslo, takže se po potvrzení e-mailu přihlásit může. Odkaz níž mu heslo nechá nastavit znovu – hodí se, když ho zapomněl.'
-              : 'Klient vyplnil analýzu bez hesla, takže se zatím přihlásit nemůže. Pošlete mu odkaz na nastavení hesla, až bude finanční plán hotový.'}
-          </p>
+          <p className="text-sm text-slate leading-relaxed">{POPIS[situace]}</p>
         </div>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-[rgba(194,65,12,0.08)] border border-[rgba(194,65,12,0.3)] text-sm text-danger">
+        <div role="alert" className="mb-4 p-3 rounded-card bg-danger/10 border border-danger/30 text-sm text-danger">
           {error}
         </div>
       )}
 
       {odeslanoNa && (
-        <div role="status" className="mb-4 p-3 bg-mint/10 border border-mint/30 text-sm text-navy">
+        <div role="status" className="mb-4 p-3 rounded-card bg-mint/10 border border-mint/30 text-sm text-navy">
           E-mail s odkazem na nastavení hesla odešel na {odeslanoNa}.
         </div>
       )}
 
       {link && (
-        <div className="mb-4 flex items-center gap-2 bg-cream border border-line px-3 py-2.5">
+        <div className="mb-4 flex items-center gap-2 rounded-card bg-cream border border-line px-3 py-2.5">
           <input
             readOnly
             value={link}
