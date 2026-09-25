@@ -9,6 +9,7 @@ import type { Profile, Proposal } from '@/lib/types/database'
 import StatusControl from '@/components/advisor/StatusControl'
 import PendingSubmission from '@/components/advisor/PendingSubmission'
 import AccessLinkButton from '@/components/advisor/AccessLinkButton'
+import ZverejneniPlanu from '@/components/advisor/ZverejneniPlanu'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import { BARVY } from '@/lib/barvy'
 import { ctiSmlouvu, TYP_SMLOUVY_PODLE_SEKCE } from '@/lib/smlouvy'
@@ -326,6 +327,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
               <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1 shrink-0 hidden sm:block" />
             </div>
           </Link>
+        )}
+
+        {hasPlan && (
+          <ZverejneniPlanu
+            clientId={clientId}
+            zverejneno={profile.plan_zverejnen_at ?? null}
+            maObsah={hasPlan}
+          />
         )}
 
         <section className="grid md:grid-cols-2 gap-5">

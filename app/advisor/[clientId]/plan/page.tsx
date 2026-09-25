@@ -6,6 +6,7 @@ import type { PlanParam } from '@/lib/types/database'
 import PlanEditor from '@/components/advisor/PlanEditor'
 import ClientFinancialsEditor, { type ClientFinancials } from '@/components/advisor/ClientFinancialsEditor'
 import IncomeProtectionEditor from '@/components/advisor/IncomeProtectionEditor'
+import ZverejneniPlanu from '@/components/advisor/ZverejneniPlanu'
 import { BARVY } from '@/lib/barvy'
 
 export default async function AdvisorPlanPage({ params }: { params: Promise<{ clientId: string }> }) {
@@ -18,7 +19,7 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
   // Load client profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, full_name')
+    .select('id, full_name, plan_zverejnen_at')
     .eq('id', clientId)
     .single()
 
@@ -107,6 +108,15 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
             Spravujte varianty, parametry a doporučení pro každý finanční okruh klienta.
           </p>
         </header>
+
+        {/* Klient plán uvidí, až ho tady zveřejníte – do té doby se dá stavět v klidu. */}
+        <div className="mb-8">
+          <ZverejneniPlanu
+            clientId={clientId}
+            zverejneno={(profile as { plan_zverejnen_at: string | null }).plan_zverejnen_at}
+            maObsah={(variants ?? []).length > 0 || (recommendations ?? []).length > 0}
+          />
+        </div>
 
         <ClientFinancialsEditor
           clientId={clientId}

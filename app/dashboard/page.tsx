@@ -24,7 +24,7 @@ export default async function DashboardPage() {
 
   const [{ data: profile }, { data: navrhy }, { data: finance }, { count: pocetVariant }] =
     await Promise.all([
-      supabase.from('profiles').select('full_name, onboarding_completed').eq('id', user.id).single(),
+      supabase.from('profiles').select('full_name, onboarding_completed, plan_zverejnen_at').eq('id', user.id).single(),
       supabase
         .from('proposals')
         .select('*')
@@ -43,7 +43,8 @@ export default async function DashboardPage() {
   const osloveniKlienta = profile?.full_name ? osloveni(profile.full_name) : null
   const smlouvy = (navrhy ?? []) as Proposal[]
   const { celkem } = mesicniPlatby(smlouvy)
-  const maPlan = (pocetVariant ?? 0) > 0
+  // Rozdělaný plán klient nevidí – „připravený“ je až zveřejněný (migrace 017).
+  const maPlan = (pocetVariant ?? 0) > 0 && Boolean(profile?.plan_zverejnen_at)
 
   const uspora = (finance as { possible_savings?: number | null } | null)?.possible_savings ?? null
   const rezerva = (finance as { reserve?: number | null } | null)?.reserve ?? null

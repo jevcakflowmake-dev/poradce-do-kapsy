@@ -21,6 +21,8 @@ export type Database = {
           goals: string[] | null
           onboarding_completed: boolean
           status: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
+          /** Kdy poradce plán zveřejnil; null = klient ho zatím nevidí (migrace 017). */
+          plan_zverejnen_at: string | null
           created_at: string
           updated_at: string
         }
@@ -35,6 +37,7 @@ export type Database = {
           goals?: string[] | null
           onboarding_completed?: boolean
           status?: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
+          plan_zverejnen_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -49,6 +52,7 @@ export type Database = {
           goals?: string[] | null
           onboarding_completed?: boolean
           status?: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
+          plan_zverejnen_at?: string | null
           created_at?: string
           updated_at?: string
         }
