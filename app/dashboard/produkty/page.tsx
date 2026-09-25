@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import MesicniPlatby from '@/components/products/MesicniPlatby'
 import SmlouvaPolozka, { type Product } from '@/components/products/SmlouvaPolozka'
 import { IKONA_DRUHU } from '@/components/products/ikony'
+import { ctiSmlouvu } from '@/lib/smlouvy'
 
 const typeConfig = {
   insurance: {
@@ -46,10 +47,14 @@ export default function ProduktyPage() {
     load()
   }, [supabase])
 
+  // Ukončené smlouvy na konec skupiny – živé jsou to, co klient hledá.
+  const ukoncena = (p: Product) => (ctiSmlouvu(p.content)?.ukonceno ? 1 : 0)
+  const skupina = (typ: Product['type']) =>
+    products.filter((p) => p.type === typ).sort((a, b) => ukoncena(a) - ukoncena(b))
   const grouped = {
-    insurance: products.filter(p => p.type === 'insurance'),
-    pension: products.filter(p => p.type === 'pension'),
-    invest: products.filter(p => p.type === 'invest'),
+    insurance: skupina('insurance'),
+    pension: skupina('pension'),
+    invest: skupina('invest'),
   }
 
 

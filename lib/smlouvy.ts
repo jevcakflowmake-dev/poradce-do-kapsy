@@ -6,9 +6,11 @@
  * totéž. Starší řádky mají jiný, chudší tvar (`sections`); parser vrací
  * `null` a stránka je vykreslí po staru.
  *
- * Krytí se ukládá pod stejnými klíči jako u variant plánu (`RiskKey`), aby
- * klient viděl sjednanou smlouvu popsanou přesně těmi slovy, podle kterých
- * se v plánu rozhodoval.
+ * Krytí ze smlouvy převedené z varianty se ukládá pod stejnými klíči jako
+ * u variant plánu (`RiskKey`), aby klient viděl sjednanou smlouvu popsanou
+ * přesně těmi slovy, podle kterých se v plánu rozhodoval. Ručně zadaná
+ * smlouva má vlastní seznam položek (`POLOZKY_KRYTI`) – ten odpovídá tomu,
+ * jak krytí stojí v pojistné smlouvě, i s volbami typu „od 8. dne“.
  */
 import type { RiskKey } from './income-risks'
 
@@ -43,6 +45,84 @@ export interface ObsahSmlouvy {
   souborPopisek?: string
   /** Varianta plánu, ze které poradce smlouvu převedl – aby šlo poznat, co už je sjednané. */
   zVarianty?: string
+  /** Krytí ručně zadané smlouvy: položka, částka a volba (třeba „od 8. dne“). */
+  polozkyKryti?: PolozkaKryti[]
+  /** Počátek smlouvy (RRRR-MM-DD) – od něj se počítá výročí. */
+  pocatek?: string
+  /** Kdy smlouva skončila (RRRR-MM-DD). Ukončená zůstává v přehledu, ale neplatí se. */
+  ukonceno?: string
+}
+
+export interface PolozkaKryti {
+  /** Klíč z POLOZKY_KRYTI. */
+  id: string
+  castka: number
+  moznost?: string
+}
+
+const CASTKA_KLESAJICI_PEVNA = ['klesající pojistná částka', 'pevná pojistná částka']
+
+/**
+ * Položky krytí ve formuláři ruční smlouvy – jak je poradce zná z pojistných
+ * smluv. `moznosti` jsou volby, které u položky rozhodují o plnění (od
+ * kolikátého dne se platí, jestli pojistná částka klesá); dlouhodobá péče
+ * žádnou nemá.
+ */
+export const POLOZKY_KRYTI: ReadonlyArray<{
+  id: string
+  popisek: string
+  jednotka: string
+  moznosti?: readonly string[]
+}> = [
+  { id: 'daily_compensation', popisek: 'Denní odškodné', jednotka: 'Kč/den', moznosti: ['od 1. dne', 'od 8. dne', 'od 29. dne'] },
+  { id: 'hospitalization', popisek: 'Hospitalizace', jednotka: 'Kč/den', moznosti: ['od 1. dne', 'od 5. dne'] },
+  { id: 'disability', popisek: 'Invalidita', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
+  { id: 'permanent_consequences', popisek: 'Trvalé následky', jednotka: 'Kč', moznosti: ['od 0,001 %', 'od 10 %'] },
+  { id: 'serious_illness', popisek: 'Závažná onemocnění', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
+  { id: 'work_incapacity', popisek: 'Pracovní neschopnost', jednotka: 'Kč/den', moznosti: ['od 14. dne', 'od 29. dne'] },
+  { id: 'death', popisek: 'Smrt', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
+  { id: 'death_accident', popisek: 'Smrt úrazem', jednotka: 'Kč', moznosti: CASTKA_KLESAJICI_PEVNA },
+  { id: 'long_term_care', popisek: 'Dlouhodobá péče', jednotka: 'Kč/měsíc' },
+]
+
+/**
+ * Položky krytí z požadavku: jen známé položky s kladnou částkou a volbou
+ * z nabídky dané položky – cokoliv jiného se tiše zahodí.
+ */
+export function ocistiPolozkyKryti(vstup: unknown): PolozkaKryti[] {
+  if (!Array.isArray(vstup)) return []
+  const vysledek: PolozkaKryti[] = []
+  for (const polozka of POLOZKY_KRYTI) {
+    const z = vstup.find((x): x is Record<string, unknown> => Boolean(x) && typeof x === 'object' && (x as Record<string, unknown>).id === polozka.id)
+    const castka = Number(z?.castka)
+    if (!z || !Number.isFinite(castka) || castka <= 0 || castka > 1_000_000_000) continue
+    const moznost = typeof z.moznost === 'string' && polozka.moznosti?.includes(z.moznost) ? z.moznost : undefined
+    vysledek.push({ id: polozka.id, castka: Math.round(castka), ...(moznost ? { moznost } : {}) })
+  }
+  return vysledek
+}
+
+/** Datum RRRR-MM-DD, které opravdu existuje (žádný 31. únor), jinak null. */
+export function platneDatum(text: unknown): string | null {
+  if (typeof text !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(text)) return null
+  const d = new Date(`${text}T00:00:00Z`)
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === text ? text : null
+}
+
+/**
+ * Nejbližší výročí smlouvy ode dne `od` (včetně). Počátek 29. 2. slaví
+ * v nepřestupných letech 28. 2.
+ */
+export function dalsiVyroci(pocatek: string, od: Date): Date | null {
+  if (!platneDatum(pocatek)) return null
+  const [, mesic, den] = pocatek.split('-').map(Number)
+  const dnes = new Date(Date.UTC(od.getUTCFullYear(), od.getUTCMonth(), od.getUTCDate()))
+  for (const rok of [dnes.getUTCFullYear(), dnes.getUTCFullYear() + 1]) {
+    const posledniDen = new Date(Date.UTC(rok, mesic, 0)).getUTCDate()
+    const vyroci = new Date(Date.UTC(rok, mesic - 1, Math.min(den, posledniDen)))
+    if (vyroci >= dnes && vyroci.getTime() > new Date(`${pocatek}T00:00:00Z`).getTime()) return vyroci
+  }
+  return null
 }
 
 /** Jak často se platí. Stejné hodnoty umí přepočítat součet plateb v lib/payments.ts. */
@@ -134,7 +214,7 @@ export function ctiSmlouvu(content: string | null): ObsahSmlouvy | null {
   const o = data as Record<string, unknown>
   // Starý tvar poznáme podle `sections`; ten umí vykreslit původní komponenta.
   if (Array.isArray(o.sections)) return null
-  if (!o.spolecnost && !o.produkt && !o.kryti && !o.platba) return null
+  if (!o.spolecnost && !o.produkt && !o.kryti && !o.platba && !o.polozkyKryti) return null
   return data as ObsahSmlouvy
 }
 

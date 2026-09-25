@@ -4,7 +4,8 @@ import { QRCodeSVG } from 'qrcode.react'
 import { FileText } from 'lucide-react'
 import KrytiPojistky from '@/components/pojisteni/KrytiPojistky'
 import StoredFileLink from '@/components/files/StoredFileLink'
-import { spaydRetezec, type ObsahSmlouvy } from '@/lib/smlouvy'
+import { POLOZKY_KRYTI, spaydRetezec, type ObsahSmlouvy } from '@/lib/smlouvy'
+import { formatDate } from '@/lib/utils'
 import { odkazNaKontakt } from '@/lib/produkt-varianty'
 import { BARVY } from '@/lib/barvy'
 
@@ -27,9 +28,14 @@ export default function SmlouvaDetail({
 
   const udaje = [
     smlouva.cisloSmlouvy && (['Číslo smlouvy', smlouva.cisloSmlouvy] as const),
+    smlouva.pocatek && (['Počátek', formatDate(smlouva.pocatek)] as const),
+    smlouva.ukonceno && (['Ukončena', formatDate(smlouva.ukonceno)] as const),
     smlouva.doVeku && (['Běží do', smlouva.doVeku] as const),
     smlouva.frekvence && (['Platí se', smlouva.frekvence] as const),
   ].filter(Boolean) as ReadonlyArray<readonly [string, string]>
+  const polozky = (smlouva.polozkyKryti ?? [])
+    .map((p) => ({ ...p, def: POLOZKY_KRYTI.find((d) => d.id === p.id) }))
+    .filter((p) => p.def)
 
   const kontakty = [
     smlouva.hlaseni && (['Hlášení pojistné události', smlouva.hlaseni] as const),
@@ -61,6 +67,24 @@ export default function SmlouvaDetail({
 
       {smlouva.kryti && (
         <KrytiPojistky castky={smlouva.kryti} titulek="Co máte sjednané" zvyraznit />
+      )}
+
+      {/* Ručně zadaná smlouva: položky, jak stojí v pojistné smlouvě, i s volbou („od 8. dne“). */}
+      {polozky.length > 0 && (
+        <div className="rounded-card border border-line bg-surface p-4 md:p-6">
+          <h3 className="text-navy font-display text-base font-semibold">Co máte sjednané</h3>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {polozky.map((p) => (
+              <li key={p.id} className="rounded-input bg-cream px-4 py-3">
+                <p className="text-sm text-slate">{p.def?.popisek}</p>
+                <p className="font-display text-navy text-lg tabular-nums mt-0.5">
+                  {p.castka.toLocaleString('cs-CZ')} {p.def?.jednotka}
+                </p>
+                {p.moznost && <p className="text-sm text-slate mt-0.5">{p.moznost}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {smlouva.platba && (smlouva.platba.castka || smlouva.platba.ucet) && (

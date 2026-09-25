@@ -40,6 +40,8 @@ function platbaZNavrhu(p: NavrhProPlatbu): Platba | null {
 
   const smlouva = ctiSmlouvu(p.content)
   if (smlouva) {
+    // Ukončená smlouva zůstává v přehledu, ale už se neplatí.
+    if (smlouva.ukonceno) return null
     const castka = smlouva.platba?.castka
     const zaRok = PLATEB_ZA_ROK[smlouva.frekvence?.trim().toLocaleLowerCase('cs') ?? '']
     if (!castka || castka <= 0 || !zaRok) return null

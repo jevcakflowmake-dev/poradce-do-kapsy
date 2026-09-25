@@ -1,12 +1,11 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight, AlertTriangle, Plus, Pencil } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { calcHealthScore, incomeLabel, familyLabel, riskLabel, proposalTypeLabel, formatDate, plural } from '@/lib/utils'
 import { goalLabel, SECTIONS, popisOdpovedi } from '@/lib/analysis-sections'
 import { vyhodnotAnalyzu, rozsahVyhodnoceni } from '@/lib/vyhodnoceni-analyzy'
 import type { Profile, Proposal } from '@/lib/types/database'
-import ProposalForm from '@/components/advisor/ProposalForm'
 import StatusControl from '@/components/advisor/StatusControl'
 import PendingSubmission from '@/components/advisor/PendingSubmission'
 import AccessLinkButton from '@/components/advisor/AccessLinkButton'
@@ -385,12 +384,26 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
             )}
           </div>
 
-          {/* Formulář pro nový návrh */}
           {cameFromPublicForm && (
             <AccessLinkButton clientId={clientId} hasPassword={clientHasPassword} />
           )}
 
-          <ProposalForm clientId={clientId} />
+          {/* Ruční smlouva má vlastní stránku – formulář s platbou, krytím a kontakty
+              by detail klienta natáhl na dvojnásobek. */}
+          <div className="rounded-card border border-line bg-surface p-6 md:p-7">
+            <p className="text-xs tracking-[0.25em] uppercase text-slate mb-1.5">Smlouvy · ručně</p>
+            <h2 className="font-display text-navy text-h3">Přidat smlouvu</h2>
+            <p className="mt-2 text-base text-slate text-pretty">
+              Smlouva, kterou klient už má odjinud nebo kterou jste sjednali mimo plán. Klient ji uvidí v sekci Moje
+              smlouvy s platbou a kontakty.
+            </p>
+            <Link
+              href={`/advisor/${clientId}/smlouva/nova`}
+              className="mt-5 inline-flex items-center gap-2 h-12 px-6 rounded-pill bg-navy text-cream text-base font-semibold transition-colors hover:bg-navy-deep focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+            >
+              <Plus className="w-4 h-4" aria-hidden /> Přidat smlouvu
+            </Link>
+          </div>
         </section>
 
         {/* Spočítané doporučení z analýzy */}
@@ -728,13 +741,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         <section>
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">aktivita</p>
-              <h2
-                className="font-display text-navy text-h3"
-              >
-                Odeslané{' '}
-                návrhy
-              </h2>
+              <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">Moje smlouvy klienta</p>
+              <h2 className="font-display text-navy text-h3">Smlouvy</h2>
             </div>
             {proposals && proposals.length > 0 && (
               <span className="text-sm text-slate">
@@ -745,7 +753,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
 
           {!proposals || proposals.length === 0 ? (
             <div className="bg-surface rounded-card border border-line p-10 text-center text-slate text-sm">
-              Zatím žádné návrhy
+              Zatím žádné smlouvy
             </div>
           ) : (
             <div className="bg-surface rounded-card border border-line overflow-hidden">
@@ -767,24 +775,38 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
-                  {proposals.map((p) => (
-                    <tr key={p.id} className="hover:bg-cream transition-colors">
-                      <td className="px-5 py-3.5 text-sm text-navy">{p.title}</td>
-                      <td className="px-4 py-3.5">
-                        <span className="text-xs bg-cream text-navy/70 border border-line px-2.5 py-1 rounded-full">
-                          {proposalTypeLabel(p.type)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        {p.is_read ? (
-                          <span className="text-xs text-navy font-medium">Přečteno</span>
-                        ) : (
-                          <span className="text-xs text-slate">Nepřečteno</span>
-                        )}
-                      </td>
-                      <td className="px-5 py-3.5 text-sm text-slate">{formatDate(p.created_at)}</td>
-                    </tr>
-                  ))}
+                  {proposals.map((p) => {
+                    const ukonceno = ctiSmlouvu(p.content)?.ukonceno
+                    return (
+                      <tr key={p.id} className="hover:bg-cream transition-colors">
+                        <td className="px-5 py-3.5 text-sm">
+                          {/* Celý název je odkaz na úpravu – ukončení i smazání jsou tam. */}
+                          <Link
+                            href={`/advisor/${clientId}/smlouva/${p.id}`}
+                            className="inline-flex items-center gap-2 text-navy font-medium underline-offset-4 hover:underline rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+                          >
+                            {p.title}
+                            <Pencil className="w-3.5 h-3.5 text-slate" aria-hidden />
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <span className="text-xs bg-cream text-navy/70 border border-line px-2.5 py-1 rounded-full">
+                            {proposalTypeLabel(p.type)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          {ukonceno ? (
+                            <span className="text-xs text-slate">Ukončená {formatDate(ukonceno)}</span>
+                          ) : p.is_read ? (
+                            <span className="text-xs text-navy font-medium">Přečteno</span>
+                          ) : (
+                            <span className="text-xs text-slate">Nepřečteno</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3.5 text-sm text-slate">{formatDate(p.created_at)}</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

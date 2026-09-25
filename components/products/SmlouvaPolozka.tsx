@@ -92,10 +92,17 @@ export default function SmlouvaPolozka({ product }: { product: Product }) {
           nahrada={<Ikona className="w-5 h-5 text-slate" strokeWidth={1.8} />}
         />
         <span className="min-w-0">
-          <span className="block font-display text-navy text-lead">{product.title}</span>
-          <span className="block text-base text-slate mt-1">
-            {spolecnost && `${spolecnost} · `}
-            {new Date(product.created_at).toLocaleDateString('cs-CZ')}
+          <span className={`block font-display text-lead ${smlouva?.ukonceno ? 'text-slate' : 'text-navy'}`}>
+            {product.title}
+          </span>
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-base text-slate mt-1">
+            <span>
+              {spolecnost && `${spolecnost} · `}
+              {new Date(product.created_at).toLocaleDateString('cs-CZ')}
+            </span>
+            {smlouva?.ukonceno && (
+              <span className="rounded-pill border border-line bg-cream px-2.5 py-0.5 text-sm text-slate">Ukončená</span>
+            )}
           </span>
         </span>
       </span>

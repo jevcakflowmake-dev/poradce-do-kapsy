@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { mesicniPlatby } from '@/lib/payments'
 import { proposalTypeLabel, osloveni } from '@/lib/utils'
-import { kotvaSmlouvy, spolecnostSmlouvy } from '@/lib/smlouvy'
+import { ctiSmlouvu, kotvaSmlouvy, spolecnostSmlouvy } from '@/lib/smlouvy'
 import PotrebujuVyresit from '@/components/dashboard/PotrebujuVyresit'
 import LogoFirmy from '@/components/partneri/LogoFirmy'
 import { IKONA_DRUHU } from '@/components/products/ikony'
@@ -107,6 +107,7 @@ export default async function DashboardPage() {
           ) : (
             smlouvy.slice(0, 5).map((s) => {
               const spolecnost = spolecnostSmlouvy(s.content)
+              const ukoncena = Boolean(ctiSmlouvu(s.content)?.ukonceno)
               const Ikona = IKONA_DRUHU[s.type] ?? IKONA_DRUHU.insurance
               return (
                 // Celý řádek vede na detail té smlouvy, ne jen na seznam – tam se rovnou otevře.
@@ -134,10 +135,10 @@ export default async function DashboardPage() {
                   <span className="shrink-0 flex items-center gap-3">
                     <span
                       className={`rounded-pill px-3 py-1 text-base whitespace-nowrap ${
-                        s.is_read ? 'bg-mint/15 text-navy' : 'bg-amber/25 text-navy'
+                        ukoncena ? 'bg-cream text-slate' : s.is_read ? 'bg-mint/15 text-navy' : 'bg-amber/25 text-navy'
                       }`}
                     >
-                      {s.is_read ? 'Aktivní' : 'Ke kontrole'}
+                      {ukoncena ? 'Ukončená' : s.is_read ? 'Aktivní' : 'Ke kontrole'}
                     </span>
                     <ChevronRight
                       aria-hidden

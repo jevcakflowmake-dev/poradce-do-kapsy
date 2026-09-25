@@ -9,7 +9,7 @@ import { CheckCircle2, FileText, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Pole, poleTridy } from '@/components/advisor/PoleFormulare'
 import { FREKVENCE_PLATEB, castkaZTextu, naIban, type TypSmlouvy } from '@/lib/smlouvy'
 import { sanitizeFileName, sTypem } from '@/lib/storage'
 
@@ -44,6 +44,7 @@ const schema = z.object({
     .refine((v) => !v || naIban(v) !== null, 'Číslo účtu nevypadá platně – zkontrolujte ho, QR platba by vedla jinam.'),
   vs: z.string().trim().regex(/^\d{0,10}$/, 'Variabilní symbol má nejvýš 10 číslic.'),
   zprava: z.string().trim().max(60, 'Zpráva pro příjemce může mít nejvýš 60 znaků.'),
+  pocatek: z.string().trim(),
 })
 
 type Formular = z.infer<typeof schema>
@@ -54,9 +55,6 @@ export interface VychoziSmlouvy {
   frekvence: (typeof FREKVENCE_PLATEB)[number]
   castka: number | null
 }
-
-const poleTridy =
-  'w-full h-12 rounded-input border border-line bg-surface px-4 text-base text-navy transition-colors focus:outline-none focus:border-mint focus:ring-4 focus:ring-mint/20'
 
 export default function SmlouvaZVariantyForm({
   clientId,
@@ -90,6 +88,7 @@ export default function SmlouvaZVariantyForm({
       ucet: '',
       vs: '',
       zprava: '',
+      pocatek: '',
     },
   })
 
@@ -191,6 +190,10 @@ export default function SmlouvaZVariantyForm({
         </Pole>
       </div>
 
+      <Pole id={`${id}-pocatek`} popisek="Počátek smlouvy" napoveda="Nepovinné. Podle něj vám přehled připomene výročí.">
+        <Input id={`${id}-pocatek`} aria-describedby={`${id}-pocatek-popis`} type="date" className="sm:max-w-xs" {...register('pocatek')} />
+      </Pole>
+
       <div className="grid gap-5 sm:grid-cols-2">
         <Pole
           id={`${id}-castka`}
@@ -265,37 +268,5 @@ export default function SmlouvaZVariantyForm({
         )}
       </Button>
     </form>
-  )
-}
-
-function Pole({
-  id,
-  popisek,
-  napoveda,
-  chyba,
-  children,
-}: {
-  id: string
-  popisek: string
-  napoveda?: string
-  chyba?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div>
-      <Label htmlFor={id}>{popisek}</Label>
-      <div className="mt-2">{children}</div>
-      {chyba ? (
-        <p id={`${id}-popis`} className="mt-1.5 text-base text-danger">
-          {chyba}
-        </p>
-      ) : (
-        napoveda && (
-          <p id={`${id}-popis`} className="mt-1.5 text-sm text-slate text-pretty">
-            {napoveda}
-          </p>
-        )
-      )}
-    </div>
   )
 }
