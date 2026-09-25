@@ -95,6 +95,8 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Uložené varianty, které poradce odebral – smažou se až při uložení.
+  const [odebrane, setOdebrane] = useState<string[]>([])
 
   const update = useCallback(<K extends keyof VariantInput>(idx: number, key: K, value: VariantInput[K]) => {
     setVariants((prev) => prev.map((v, i) => (i === idx ? { ...v, [key]: value } : v)))
@@ -108,6 +110,8 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
   }
 
   const removeVariant = (idx: number) => {
+    const id = variants[idx]?.id
+    if (id) setOdebrane((prev) => [...prev, id])
     setVariants((prev) => prev.filter((_, i) => i !== idx))
     setSaved(false)
   }
@@ -116,14 +120,27 @@ export default function IncomeProtectionEditor({ clientId, initial, monthlyIncom
     setSaving(true)
     setError(null)
     try {
-      const filled = variants.filter((v) => v.company.trim() && v.monthly_payment.trim())
+      const vyplnena = (v: VariantInput) => Boolean(v.company.trim() && v.monthly_payment.trim())
+      const filled = variants.filter(vyplnena)
+      // Uložená varianta, kterou poradce vyprázdnil, se maže stejně jako odebraná.
+      const kOdebrani = [...odebrane, ...variants.filter((v) => v.id && !vyplnena(v)).map((v) => v.id as string)]
       const res = await fetch('/api/advisor/plan/income', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ client_id: clientId, variants: filled }),
+        body: JSON.stringify({ client_id: clientId, variants: filled, odebrane: kOdebrani }),
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Uložení selhalo')
+      // Nově vložené varianty dostanou id, aby další uložení je upravilo, ne zdvojilo.
+      const ulozene = (json.data ?? []) as Array<{ id: string }>
+      setVariants((prev) => {
+        // Počítadlo uvnitř: React smí aktualizaci zavolat dvakrát (Strict Mode).
+        let poradi = 0
+        return prev
+          .filter((v) => vyplnena(v) || !v.id)
+          .map((v) => (vyplnena(v) ? { ...v, id: ulozene[poradi++]?.id ?? v.id } : v))
+      })
+      setOdebrane([])
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch (err) {

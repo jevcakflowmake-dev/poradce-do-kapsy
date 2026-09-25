@@ -19,6 +19,8 @@ const DAYS_IN_MONTH = 30
 interface Payload {
   client_id: string
   variants: IncomeVariantInput[]
+  /** Uložené varianty, které poradce v editoru odebral nebo vyprázdnil. */
+  odebrane?: string[]
 }
 
 function toNum(v: unknown): number | null {
@@ -43,18 +45,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Maximálně 3 varianty.' }, { status: 400 })
   }
 
-  // Smaž existující income varianty (i s params přes ON DELETE CASCADE)
-  const { error: delErr } = await supabase.from('plan_variants')
-    .delete()
-    .eq('client_id', body.client_id)
-    .eq('section', 'income')
-  if (delErr) {
-    console.error('[plan/income] mazání:', delErr.message)
+  const chyba = (kde: string, zprava: string) => {
+    console.error(`[plan/income] ${kde}:`, zprava)
     return NextResponse.json({ error: 'Varianty se nepodařilo uložit. Zkuste to prosím znovu.' }, { status: 500 })
   }
 
-  if (body.variants.length === 0) {
-    return NextResponse.json({ data: [] })
+  // Ukládá se podle id, ne smazáním a novým vložením: na variantu se váže
+  // výběr klienta, parametry, detail produktu, graf i převedená smlouva
+  // (content.zVarianty) a nové id by to všechno odpojilo nebo smazalo.
+  const { data: stavajici, error: chybaCteni } = await supabase.from('plan_variants')
+    .select('id, details')
+    .eq('client_id', body.client_id)
+    .eq('section', 'income')
+  if (chybaCteni) return chyba('čtení', chybaCteni.message)
+  const podleId = new Map((stavajici ?? []).map((v) => [v.id as string, v]))
+
+  // Mažou se jen varianty, které poradce v editoru odebral. Varianty
+  // přidané mezitím jinde (editor plánu) zůstávají.
+  const odebrat = (Array.isArray(body.odebrane) ? body.odebrane : []).filter(
+    (id): id is string => typeof id === 'string' && podleId.has(id),
+  )
+  if (odebrat.length > 0) {
+    const { error } = await supabase.from('plan_variants').delete().in('id', odebrat).eq('client_id', body.client_id)
+    if (error) return chyba('mazání', error.message)
   }
 
   const rows = body.variants.map((v, idx) => {
@@ -94,13 +107,27 @@ export async function POST(request: Request) {
     }
   })
 
-  const { data, error } = await supabase.from('plan_variants')
-    .insert(rows)
-    .select()
-
-  if (error) {
-    console.error('[plan/income] zápis:', error.message)
-    return NextResponse.json({ error: 'Varianty se nepodařilo uložit. Zkuste to prosím znovu.' }, { status: 500 })
+  // Vrací se ve stejném pořadí jako přišly varianty – editor si podle
+  // toho doplní id nově vložených.
+  const data = []
+  for (const [idx, radek] of rows.entries()) {
+    const puvodni = body.variants[idx].id ? podleId.get(body.variants[idx].id as string) : undefined
+    if (puvodni && !odebrat.includes(puvodni.id as string)) {
+      // Detail produktu, graf a další klíče z editoru plánu zůstávají.
+      const details = { ...((puvodni.details ?? {}) as Record<string, unknown>), ...radek.details }
+      const { data: ulozena, error } = await supabase.from('plan_variants')
+        .update({ company: radek.company, logo: radek.logo, monthly_payment: radek.monthly_payment, sort_order: radek.sort_order, details })
+        .eq('id', puvodni.id)
+        .eq('client_id', body.client_id)
+        .select()
+        .single()
+      if (error) return chyba('úprava', error.message)
+      data.push(ulozena)
+    } else {
+      const { data: nova, error } = await supabase.from('plan_variants').insert(radek).select().single()
+      if (error) return chyba('zápis', error.message)
+      data.push(nova)
+    }
   }
 
   return NextResponse.json({ data })
