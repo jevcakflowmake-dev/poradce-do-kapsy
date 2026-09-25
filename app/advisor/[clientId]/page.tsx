@@ -594,7 +594,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ c
         </section>
 
         {/* Reakce klienta na finanční plán */}
-        <section>
+        <section id="reakce" className="scroll-mt-24">
           <div className="flex items-end justify-between mb-5">
             <div>
               <p className="text-xs tracking-[0.3em] uppercase text-slate mb-1">reakce na plán</p>

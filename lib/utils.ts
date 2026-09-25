@@ -103,7 +103,7 @@ export function plural(n: number, one: string, few: string, many: string): strin
 }
 
 // Pipeline status klienta
-export const CLIENT_STATUS_VALUES = ['novy', 'financni_plan', 'podepsano', 'servis', 'zmena'] as const
+export const CLIENT_STATUS_VALUES = ['novy', 'financni_plan', 'podepsano', 'servis', 'zmena', 'archiv'] as const
 export type ClientStatusValue = (typeof CLIENT_STATUS_VALUES)[number]
 
 export const CLIENT_STATUS_META: Record<
@@ -145,6 +145,14 @@ export const CLIENT_STATUS_META: Record<
     dot: BARVY.danger,
     bg: 'rgba(194,65,12,0.10)',
     border: 'rgba(194,65,12,0.30)',
+    text: BARVY.navy,
+  },
+  // Ukončení klienti – v seznamu „vše“ se nezobrazují (migrace 018).
+  archiv: {
+    label: 'Archiv',
+    dot: BARVY.slateSoft,
+    bg: 'rgba(122,135,148,0.08)',
+    border: 'rgba(122,135,148,0.25)',
     text: BARVY.navy,
   },
 }

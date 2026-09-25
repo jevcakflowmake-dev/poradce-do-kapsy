@@ -20,7 +20,7 @@ export type Database = {
           risk_profile: 'conservative' | 'moderate' | 'balanced' | 'aggressive' | null
           goals: string[] | null
           onboarding_completed: boolean
-          status: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
+          status: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena' | 'archiv'
           /** Kdy poradce plán zveřejnil; null = klient ho zatím nevidí (migrace 017). */
           plan_zverejnen_at: string | null
           created_at: string
@@ -36,7 +36,7 @@ export type Database = {
           risk_profile?: 'conservative' | 'moderate' | 'balanced' | 'aggressive' | null
           goals?: string[] | null
           onboarding_completed?: boolean
-          status?: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
+          status?: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena' | 'archiv'
           plan_zverejnen_at?: string | null
           created_at?: string
           updated_at?: string
@@ -51,7 +51,7 @@ export type Database = {
           risk_profile?: 'conservative' | 'moderate' | 'balanced' | 'aggressive' | null
           goals?: string[] | null
           onboarding_completed?: boolean
-          status?: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena'
+          status?: 'novy' | 'financni_plan' | 'podepsano' | 'servis' | 'zmena' | 'archiv'
           plan_zverejnen_at?: string | null
           created_at?: string
           updated_at?: string
