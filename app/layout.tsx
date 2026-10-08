@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import MotionProvider from '@/components/providers/MotionProvider'
 import CookieBar from '@/components/cookies/CookieBar'
+import Mereni from '@/components/mereni/Mereni'
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from '@/lib/site'
 
 // Jedna rodina na celý web: nadpisy nese váha, ne jiný řez.
@@ -63,11 +64,12 @@ export default function RootLayout({
   return (
     <html lang="cs" className={`h-full antialiased ${inter.variable}`}>
       <body className="min-h-full">
-        {/* TODO (až řekne Jakub): sem přijde základní kód Meta Pixelu a GA4.
-            Konverzní událost má své místo na /dekujeme – ta stránka je cíl
-            kampaní. Do té doby web nenačítá žádný měřicí skript. */}
         <MotionProvider>{children}</MotionProvider>
         <CookieBar />
+        {/* Google Analytics: načte se až po souhlasu v liště a jen ve veřejné
+            části webu. Bez NEXT_PUBLIC_GA4_ID nedělá nic. Meta Pixel zatím
+            napojený není. */}
+        <Mereni />
       </body>
     </html>
   )

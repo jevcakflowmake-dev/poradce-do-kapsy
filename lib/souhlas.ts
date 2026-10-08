@@ -8,6 +8,7 @@
  *
  * Jakmile Jakub doplní `NEXT_PUBLIC_GA4_ID` nebo `NEXT_PUBLIC_META_PIXEL_ID`,
  * lišta naběhne sama a skripty se smí načíst teprve po kliknutí na souhlas.
+ * GA4 načítá `lib/mereni.ts`; Meta Pixel zatím napojený není.
  * Pro ukázku bez měření je tu `NEXT_PUBLIC_COOKIE_LISTA=1`.
  */
 
@@ -24,16 +25,32 @@ export type UlozenySouhlas = {
   kdy: string
 }
 
+/**
+ * ID měření GA4 má tvar G-XXXXXXXXXX. Překlep nebo jiný druh ID (GTM-, AW-)
+ * se bere, jako by nebylo: lišta se pak neptá na měření, které by neběželo.
+ */
+function idGa4(hodnota: string | undefined): string {
+  const id = (hodnota ?? '').trim().toUpperCase()
+  return /^G-[A-Z0-9]{6,}$/.test(id) ? id : ''
+}
+
 export const MERENI = {
-  ga4: process.env.NEXT_PUBLIC_GA4_ID ?? '',
+  ga4: idGa4(process.env.NEXT_PUBLIC_GA4_ID),
   metaPixel: process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '',
 } as const
+
+/**
+ * Den, kdy se na webu zapnulo měření. Od něj platí znění zásad cookies a
+ * ochrany údajů, které měření popisuje. Při nastavení `NEXT_PUBLIC_GA4_ID`
+ * ho uprav na skutečný den spuštění.
+ */
+export const MERENI_OD = '8. října 2026'
 
 /** Má se uživatele vůbec na co ptát? */
 export const MERENI_AKTIVNI =
   Boolean(MERENI.ga4 || MERENI.metaPixel) || process.env.NEXT_PUBLIC_COOKIE_LISTA === '1'
 
-/** Událost, na kterou si počká budoucí loader měřicích skriptů. */
+/** Událost po každé změně souhlasu. Přes `useSouhlas` na ni čeká lišta i načtení GA. */
 export const SOUHLAS_UDALOST = 'pdk:souhlas'
 
 export function prectiSouhlas(): UlozenySouhlas | null {
