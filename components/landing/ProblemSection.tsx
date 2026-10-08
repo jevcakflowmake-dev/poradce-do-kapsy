@@ -10,7 +10,7 @@ const OTAZKY = [
 
 export default function ProblemSection() {
   return (
-    <section className="bg-cream py-20 md:py-28">
+    <section data-mereni-videno="sekce_poznavate_se" className="bg-cream py-20 md:py-28">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <h2 className="font-display text-h2 text-navy">Poznáváte se?</h2>
 

@@ -3,9 +3,13 @@ import Link from 'next/link'
 /**
  * Accordion na nativním <details>. Žádný JavaScript: funguje klávesnicí,
  * dá se v něm hledat přes Ctrl+F a nezdrží první vykreslení.
+ *
+ * `udalost` je název, pod kterým se rozbalení otázky ukáže v Google Analytics
+ * (viz components/mereni/Mereni.tsx). U nové otázky ho nezapomeň doplnit.
  */
 const DOTAZY = [
   {
+    udalost: 'faq_zdarma',
     otazka: 'Je to opravdu zdarma?',
     odpoved: (
       <>
@@ -16,6 +20,7 @@ const DOTAZY = [
     ),
   },
   {
+    udalost: 'faq_podpis',
     otazka: 'Musím něco podepsat?',
     odpoved: (
       <>
@@ -25,6 +30,7 @@ const DOTAZY = [
     ),
   },
   {
+    udalost: 'faq_telefon',
     otazka: 'Budete mi volat?',
     odpoved: (
       <>
@@ -34,6 +40,7 @@ const DOTAZY = [
     ),
   },
   {
+    udalost: 'faq_data',
     otazka: 'Co se stane s mými daty?',
     odpoved: (
       <>
@@ -50,6 +57,7 @@ const DOTAZY = [
     ),
   },
   {
+    udalost: 'faq_doba',
     otazka: 'Jak dlouho to trvá?',
     odpoved: (
       <>
@@ -62,13 +70,13 @@ const DOTAZY = [
 
 export default function FaqSection() {
   return (
-    <section id="caste-dotazy" className="bg-cream py-20 md:py-28 scroll-mt-28">
+    <section id="caste-dotazy" data-mereni-videno="sekce_caste_dotazy" className="bg-cream py-20 md:py-28 scroll-mt-28">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <h2 className="font-display text-h2 text-navy">Časté dotazy</h2>
 
         <div className="mt-10 md:mt-14 max-w-3xl divide-y divide-line border-y border-line">
           {DOTAZY.map((d) => (
-            <details key={d.otazka} className="group">
+            <details key={d.otazka} data-mereni-otevreno={d.udalost} className="group">
               <summary className="flex items-center justify-between gap-4 cursor-pointer list-none py-5 text-lead font-medium text-navy marker:hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 rounded-input">
                 {d.otazka}
                 <span

@@ -10,7 +10,7 @@ import { PORADCE } from '@/lib/poradce'
  */
 export default function AboutSection() {
   return (
-    <section className="bg-cream pb-20 md:pb-28">
+    <section data-mereni-videno="sekce_kdo_jsem" className="bg-cream pb-20 md:pb-28">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,26rem)_1fr] lg:gap-16 items-start">
           <div className="relative aspect-4/5 w-full max-w-sm rounded-card overflow-hidden border border-line bg-navy">
@@ -57,6 +57,7 @@ export default function AboutSection() {
                 Registrován u České národní banky pod číslem {PORADCE.cnbCisloRegistrace}.{' '}
                 <a
                   href={PORADCE.cnbRegistrUrl}
+                  data-mereni-klik="klik_cnb_registr"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-navy underline underline-offset-4 hover:text-mint-dark rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"

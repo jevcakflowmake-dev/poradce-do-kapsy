@@ -7,7 +7,7 @@ import { buttonVariants } from '@/components/ui/button'
  */
 export default function CtaSection() {
   return (
-    <section className="bg-navy text-cream py-20 md:py-28 textura-navy">
+    <section data-mereni-videno="sekce_zaver" className="bg-navy text-cream py-20 md:py-28 textura-navy">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <div className="max-w-3xl">
           <h2 className="font-display text-h2 text-cream text-balance">
@@ -17,7 +17,7 @@ export default function CtaSection() {
             Vyplníte analýzu za 15 minut, do 48 hodin dostanete návrh na míru. Bez schůzek, bez tlaku.
           </p>
           <div className="mt-8">
-            <Link href="/analyza" className={buttonVariants({ size: 'lg' })}>
+            <Link href="/analyza" data-mereni-klik="klik_zaver_analyza" className={buttonVariants({ size: 'lg' })}>
               Vyplnit analýzu zdarma
             </Link>
           </div>

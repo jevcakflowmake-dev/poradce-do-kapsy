@@ -36,7 +36,7 @@ const HODNOTY = [
 
 export default function ValuesSection() {
   return (
-    <section id="hodnoty" className="bg-surface py-20 md:py-28 scroll-mt-28">
+    <section id="hodnoty" data-mereni-videno="sekce_hodnoty" className="bg-surface py-20 md:py-28 scroll-mt-28">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <h2 className="font-display text-h2 text-navy">Čeho se držím</h2>
         <p className="text-lead text-slate mt-4 max-w-2xl text-pretty">

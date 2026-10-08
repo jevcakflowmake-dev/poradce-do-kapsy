@@ -13,8 +13,9 @@ export const metadata: Metadata = {
  * Cíl konverze pro Meta i Google Ads. Vlastní URL má smysl právě proto,
  * že jde změřit dokončení a odlišit ho od zobrazení dotazníku.
  *
- * TODO (až řekne Jakub): sem přijde událost pro Meta Pixel a GA4.
- * Skripty samotné patří do app/layout.tsx, ne sem.
+ * Google Analytics dostává událost `analyza_odeslana` už z dotazníku ve
+ * chvíli úspěšného odeslání (app/analyza/AnalysisWizard.tsx), takže tady nic
+ * dalšího není. TODO (až řekne Jakub): událost pro Meta Pixel.
  */
 export default async function DekujemePage({
   searchParams,

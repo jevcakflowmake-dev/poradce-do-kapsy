@@ -19,10 +19,14 @@ export default function HeroSection() {
             Vyplníte analýzu za 15 minut, do 48 hodin dostanete návrh na míru. Bez schůzek, bez tlaku.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Link href="/analyza" className={buttonVariants({ size: 'lg' })}>
+            <Link href="/analyza" data-mereni-klik="klik_hero_analyza" className={buttonVariants({ size: 'lg' })}>
               Vyplnit analýzu zdarma
             </Link>
-            <a href="#jak-to-funguje" className={buttonVariants({ variant: 'onDark', size: 'lg' })}>
+            <a
+              href="#jak-to-funguje"
+              data-mereni-klik="klik_hero_jak_to_funguje"
+              className={buttonVariants({ variant: 'onDark', size: 'lg' })}
+            >
               Jak to funguje
             </a>
           </div>

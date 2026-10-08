@@ -20,6 +20,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PRIJIMANE_PRILOHY } from '@/lib/storage'
+import { zmer } from '@/lib/mereni'
+import { useSouhlas } from '@/lib/pouzijSouhlas'
 
 /** Rozepsaná analýza přežije zavření karty – čtvrt hodiny práce se nesmí ztratit. */
 const DRAFT_KEY = 'pdk-analyza-draft'
@@ -45,6 +47,11 @@ export default function AnalysisWizard() {
   const honeypotRef = useRef<HTMLInputElement>(null)
   const nadpisRef = useRef<HTMLHeadingElement>(null)
   const draftLoaded = useRef(false)
+  // Měření průchodu dotazníkem: krok, kterým tahle návštěva začala, a kroky,
+  // které už do Google Analytics odešly.
+  const startKrok = useRef(0)
+  const zmereneKroky = useRef(new Set<number>())
+  const smiMerit = useSouhlas()?.volba === 'vse'
 
   const sekce = SECTIONS[krok]
   const posledni = krok === SECTIONS.length - 1
@@ -56,7 +63,10 @@ export default function AnalysisWizard() {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage na serveru není, koncept jde obnovit až po připojení
       if (raw) setData(JSON.parse(raw))
       const ulozenyKrok = Number(localStorage.getItem(STEP_KEY))
-      if (ulozenyKrok > 0 && ulozenyKrok < SECTIONS.length) setKrok(ulozenyKrok)
+      if (ulozenyKrok > 0 && ulozenyKrok < SECTIONS.length) {
+        setKrok(ulozenyKrok)
+        startKrok.current = ulozenyKrok
+      }
 
       let klic = localStorage.getItem(KEY_KLIC)
       if (!klic) {
@@ -69,6 +79,16 @@ export default function AnalysisWizard() {
     }
     draftLoaded.current = true
   }, [])
+
+  // Každý krok se počítá jednou za návštěvu a jen směrem vpřed, takže počty
+  // u jednotlivých kroků ukážou, kde lidé dotazník opouštějí. Kdo se vrátil
+  // k rozepsané analýze, počítá se od kroku, u kterého minule skončil.
+  // Musí zůstat až za načtením konceptu, jinak by se započítal i krok 1.
+  useEffect(() => {
+    if (!smiMerit || !draftLoaded.current || krok < startKrok.current) return
+    if (zmereneKroky.current.has(krok)) return
+    if (zmer(`analyza_krok_${krok + 1}`, { sekce: SECTIONS[krok].id })) zmereneKroky.current.add(krok)
+  }, [smiMerit, krok])
 
   useEffect(() => {
     if (!draftLoaded.current) return
@@ -160,6 +180,7 @@ export default function AnalysisWizard() {
       if (!res.ok) {
         setError(payload.error || 'Odeslání se nepodařilo. Zkuste to prosím znovu.')
         setLoading(false)
+        zmer('analyza_chyba_odeslani')
         return
       }
 
@@ -177,11 +198,15 @@ export default function AnalysisWizard() {
       }).catch(() => {})
 
       const stav = payload.status === 'existing' ? 'existujici' : 'novy'
+      // Hlavní cíl webu. Posílá se tady, ne na /dekujeme: tam by ho znovu
+      // započítalo každé obnovení stránky.
+      zmer('analyza_odeslana', { stav })
       const heslo = payload.hasPassword ? '&heslo=1' : payload.slabeHeslo ? '&heslo=slabe' : ''
       router.push(`/dekujeme?stav=${stav}${heslo}`)
     } catch {
       setError('Chyba připojení. Zkontrolujte internet a zkuste to prosím znovu.')
       setLoading(false)
+      zmer('analyza_chyba_odeslani')
     }
   }
 

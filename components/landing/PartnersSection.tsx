@@ -13,7 +13,7 @@ import { ZnakPartnera } from '@/components/partneri/LogoFirmy'
 
 export default function PartnersSection() {
   return (
-    <section id="partneri" className="bg-cream pb-20 md:pb-28 scroll-mt-28">
+    <section id="partneri" data-mereni-videno="sekce_partneri" className="bg-cream pb-20 md:pb-28 scroll-mt-28">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <h2 className="font-display text-h2 text-navy">S kým spolupracuji</h2>
         <p className="text-lead text-slate mt-4 max-w-2xl text-pretty">

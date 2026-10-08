@@ -20,9 +20,9 @@ import { buttonVariants } from '@/components/ui/button'
  * zbývá po kotvách jen kolem 80 px; níž je z přihlášení ikona.
  */
 const ODKAZY = [
-  { href: '#jak-to-funguje', label: 'Jak to funguje' },
-  { href: '#kolik-to-stoji', label: 'Kolik to stojí' },
-  { href: '#caste-dotazy', label: 'Časté dotazy' },
+  { href: '#jak-to-funguje', label: 'Jak to funguje', udalost: 'klik_menu_jak_to_funguje' },
+  { href: '#kolik-to-stoji', label: 'Kolik to stojí', udalost: 'klik_menu_kolik_to_stoji' },
+  { href: '#caste-dotazy', label: 'Časté dotazy', udalost: 'klik_menu_caste_dotazy' },
 ]
 
 export default function SiteHeader() {
@@ -46,6 +46,7 @@ export default function SiteHeader() {
             <a
               key={o.href}
               href={o.href}
+              data-mereni-klik={o.udalost}
               className="text-base whitespace-nowrap text-cream/80 hover:text-cream transition-colors rounded-pill px-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
             >
               {o.label}
@@ -56,6 +57,7 @@ export default function SiteHeader() {
         <div className="shrink-0 flex items-center gap-2 sm:gap-3">
           <Link
             href="/login"
+            data-mereni-klik="klik_menu_prihlaseni"
             aria-label="Přihlásit se"
             title="Přihlásit se"
             // Velikost `icon` (h-11 w-11) schválně místo `sm` s přepsaným
@@ -67,7 +69,7 @@ export default function SiteHeader() {
             <span className="hidden xl:inline">Přihlásit se</span>
           </Link>
 
-          <Link href="/analyza" className={buttonVariants({ size: 'sm' })}>
+          <Link href="/analyza" data-mereni-klik="klik_menu_analyza" className={buttonVariants({ size: 'sm' })}>
             {/* Vedle značky, kotev a přihlášení se celá věta vejde až na širokém displeji */}
             <span className="xl:hidden">Vyplnit analýzu</span>
             <span className="hidden xl:inline">Vyplnit analýzu zdarma</span>
