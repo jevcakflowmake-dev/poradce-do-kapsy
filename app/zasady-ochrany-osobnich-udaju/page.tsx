@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { PravniStranka, Section, P, B, List, Callout, Odkaz } from '@/components/legal/PravniStranka'
 import { PORADCE } from '@/lib/poradce'
+import { MERENI, MERENI_OD } from '@/lib/souhlas'
 
 export const metadata: Metadata = {
   title: 'Zásady ochrany osobních údajů',
@@ -15,9 +16,16 @@ export const metadata: Metadata = {
  */
 const SPRAVCE = PORADCE
 
+/**
+ * TODO (Jakub): pasáže o měření si projdi, jsou to moje návrhy. Ukážou se
+ * až s `NEXT_PUBLIC_GA4_ID`; bez něj zásady dál říkají, že web nic neměří.
+ */
+const GA4 = Boolean(MERENI.ga4)
+
 // Datum, kdy zásady poprvé skutečně identifikovaly správce. Do 31. 8. 2026
-// byly na jeho místě zástupné texty, takže dokument nebyl úplný.
-const UCINNOST_OD = '31. srpna 2026'
+// byly na jeho místě zástupné texty, takže dokument nebyl úplný. Se zapnutým
+// měřením platí znění ode dne, kdy se měření spustilo.
+const UCINNOST_OD = GA4 ? MERENI_OD : '31. srpna 2026'
 
 export default function ZasadyPage() {
   return (
@@ -87,9 +95,21 @@ export default function ZasadyPage() {
                 </>,
                 <>
                   <B>Technické údaje</B> – údaje nutné pro přihlášení a
-                  zabezpečení účtu (relace, čas přihlášení). Nesledujeme vaše
-                  chování na webu a nepoužíváme analytické nástroje.
+                  zabezpečení účtu (relace, čas přihlášení).{' '}
+                  {GA4
+                    ? 'V klientské zóně vaše chování nesledujeme a žádné analytické nástroje tam nepoužíváme.'
+                    : 'Nesledujeme vaše chování na webu a nepoužíváme analytické nástroje.'}
                 </>,
+                ...(GA4
+                  ? [
+                      <>
+                        <B>Údaje o návštěvě webu</B> – jen s vaším souhlasem:
+                        které stránky veřejné části jste otevřeli, na co jste
+                        klikli, z jakého zařízení a odkud jste přišli. Odpovědi
+                        z analýzy k nim nepatří.
+                      </>,
+                    ]
+                  : []),
               ]}
             />
             <P>
@@ -126,6 +146,16 @@ export default function ZasadyPage() {
                   oprávněný zájem na bezpečném provozu aplikace (čl. 6 odst. 1
                   písm. f GDPR).
                 </>,
+                ...(GA4
+                  ? [
+                      <>
+                        <B>Měření návštěvnosti</B> – abychom věděli, jak lidé web
+                        používají a kde ho opouštějí. Právní základ: váš souhlas
+                        (čl. 6 odst. 1 písm. a GDPR), který můžete kdykoliv
+                        odvolat.
+                      </>,
+                    ]
+                  : []),
               ]}
             />
             <P>
@@ -177,7 +207,10 @@ export default function ZasadyPage() {
                   smlouvou o zpracování): Supabase – databáze a úložiště
                   souborů, servery v EU (Stockholm); Vercel – provoz webové
                   aplikace; poskytovatel e-mailové brány pro odeslání
-                  transakčních zpráv (obnovení hesla).
+                  transakčních zpráv (obnovení hesla)
+                  {GA4 &&
+                    '; Google Ireland Limited – měření návštěvnosti veřejné části webu službou Google Analytics, jen s vaším souhlasem'}
+                  .
                 </>,
                 <>
                   <B>Partnerské finanční instituce</B> – pojišťovny, banky
@@ -225,6 +258,15 @@ export default function ZasadyPage() {
                   posledním kroku vyplníte kontakt, abyste o odpovědi nepřišli.
                   Po odeslání analýzy ji mažeme, nejpozději po 60 dnech.
                 </>,
+                ...(GA4
+                  ? [
+                      <>
+                        <B>Údaje z měření návštěvnosti</B> – Google Analytics je
+                        uchovává nejdéle 14 měsíců. Cookies měření zůstávají
+                        v prohlížeči nejdéle dva roky, nebo do odvolání souhlasu.
+                      </>,
+                    ]
+                  : []),
               ]}
             />
           </Section>
@@ -241,13 +283,24 @@ export default function ZasadyPage() {
           </Section>
 
           <Section number="08" title="Cookies">
-            <P>
-              Dnes používáme výhradně technicky nezbytné cookies a úložiště
-              prohlížeče – drží vaše přihlášení a rozepsanou analýzu. Bez nich by
-              aplikace nefungovala, a proto k nim není potřeba souhlas. Analytické
-              ani marketingové cookies zatím nepoužíváme; kdyby přibyly, zeptáme se
-              napřed a bez souhlasu se jejich skripty nenačtou.
-            </P>
+            {GA4 ? (
+              <P>
+                Technicky nezbytné cookies a úložiště prohlížeče drží vaše
+                přihlášení a rozepsanou analýzu. Bez nich by aplikace nefungovala,
+                a proto k nim není potřeba souhlas. Návštěvnost veřejné části webu
+                měříme službou Google Analytics, a to jen s vaším souhlasem: dokud
+                ho nedáte, její skript se nenačte. Marketingové cookies
+                nepoužíváme.
+              </P>
+            ) : (
+              <P>
+                Dnes používáme výhradně technicky nezbytné cookies a úložiště
+                prohlížeče – drží vaše přihlášení a rozepsanou analýzu. Bez nich by
+                aplikace nefungovala, a proto k nim není potřeba souhlas. Analytické
+                ani marketingové cookies zatím nepoužíváme; kdyby přibyly, zeptáme se
+                napřed a bez souhlasu se jejich skripty nenačtou.
+              </P>
+            )}
             <P>
               Podrobný seznam najdete v{' '}
               <Odkaz href="/zasady-cookies">zásadách používání cookies</Odkaz>, kde
