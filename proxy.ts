@@ -40,6 +40,10 @@ export async function proxy(request: NextRequest) {
   if (isProtected && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    // Parametry soukromé adresy (hledání klienta podle jména, ID varianty)
+    // nemají na veřejné stránce co dělat – přihlášení je nečte a jsou tam vidět
+    // pro měření návštěvnosti.
+    url.search = ''
     return NextResponse.redirect(url)
   }
 
