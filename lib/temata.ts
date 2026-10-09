@@ -6,6 +6,9 @@ import { SITE_NAME, SITE_TAGLINE } from '@/lib/site'
  * pro adresy a krátké popisky: čte je sekce na úvodní stránce, prolinkování
  * mezi stránkami i sitemap. Obsah stránek je v `app/<adresa>/page.tsx`.
  *
+ * Investice samostatnou stránku nemají schválně: jsou součástí
+ * /sporeni-a-investice a druhá stránka by s ní soutěžila o stejné dotazy.
+ *
  * `udalost` je název kliknutí na kartu oblasti v Google Analytics.
  */
 export const TEMATA = [
@@ -26,6 +29,18 @@ export const TEMATA = [
     nazev: 'Spoření a investice',
     popis: 'Penzijní spoření a pravidelné investování podle vašich cílů.',
     udalost: 'klik_oblast_sporeni',
+  },
+  {
+    cesta: '/zajisteni-deti',
+    nazev: 'Zajištění dětí',
+    popis: 'Spoření do začátku a pojištění podle věku dítěte.',
+    udalost: 'klik_oblast_deti',
+  },
+  {
+    cesta: '/pojisteni-majetku',
+    nazev: 'Pojištění majetku',
+    popis: 'Nemovitost, domácnost, odpovědnost a auto. I kontrola starších smluv.',
+    udalost: 'klik_oblast_majetek',
   },
 ] as const
 

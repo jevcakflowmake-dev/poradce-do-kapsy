@@ -20,6 +20,11 @@ export type ObsahTematu = {
     odstavce: readonly string[]
     /** Drobná poznámka pod textem, např. upozornění na riziko investic. */
     poznamka?: string
+    /**
+     * Věta zakončená odkazem na příbuznou oblast (hypotéka ↔ pojištění majetku,
+     * životní pojištění ↔ zajištění dětí). Tečku za odkaz doplní stránka.
+     */
+    souvisi?: { veta: string; cesta: CestaTematu; odkaz: string }
   }
   situace: { nadpis: string; karty: readonly Karta[] }
   /** Tři kroky. Lhůty 15 minut a 48 hodin jsou slib celého webu, neměnit. */
@@ -39,6 +44,7 @@ const OBAL = 'max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20'
  */
 export default function TemaStranka({ obsah }: { obsah: ObsahTematu }) {
   const dalsi = TEMATA.filter((t) => t.cesta !== obsah.cesta)
+  const souvisi = obsah.uvod.souvisi
 
   return (
     <div className="min-h-screen bg-cream">
@@ -73,6 +79,19 @@ export default function TemaStranka({ obsah }: { obsah: ObsahTematu }) {
                 <p key={odstavec}>{odstavec}</p>
               ))}
             </div>
+            {souvisi && (
+              <p className="mt-5 text-lead text-navy max-w-3xl text-pretty">
+                {souvisi.veta}{' '}
+                <Link
+                  href={souvisi.cesta}
+                  data-mereni-klik={TEMATA.find((t) => t.cesta === souvisi.cesta)?.udalost}
+                  className="font-semibold underline underline-offset-4 hover:text-mint-dark rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+                >
+                  {souvisi.odkaz}
+                </Link>
+                .
+              </p>
+            )}
             {obsah.uvod.poznamka && (
               <p className="mt-6 text-base text-slate max-w-3xl text-pretty">{obsah.uvod.poznamka}</p>
             )}
