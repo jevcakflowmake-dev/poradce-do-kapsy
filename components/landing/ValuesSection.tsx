@@ -1,3 +1,5 @@
+import { TRANSPARENTNOST } from '@/lib/poradce'
+
 /**
  * Čtyři pilíře služby. Nápad ze srovnávacího návrhu (Google Pomelli), ale
  * v naší řeči: nadpis vlevo jako u ostatních sekcí, žádné eyebrow popisky
@@ -14,12 +16,13 @@
  * z návrhu — jako vázaný zástupce placený provizí nemůžeš nabízet
  * nezávislé poradenství ve smyslu zákona. Až si ověříš, co smíš tvrdit,
  * dá se titulek přepsat; text pod ním sedí s odstavcem v sekci Kdo jsem.
+ *
+ * Ze stejného důvodu karta „Transparentnost" neříká, že výběr „proběhl
+ * nezávisle", ale uvádí fakt, o který se to opírá: stejnou odměnu od všech
+ * společností (lib/poradce.ts).
  */
 const HODNOTY = [
-  {
-    titul: 'Transparentnost',
-    popis: 'U každého doporučení napíšu, proč zrovna tohle a kolik za to dostanu zaplaceno.',
-  },
+  TRANSPARENTNOST,
   {
     titul: 'Dostupnost',
     popis: 'Smlouvy, přehled i chat se mnou máte v mobilu. Bez dojíždění a bez šanonu.',

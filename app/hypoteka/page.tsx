@@ -1,5 +1,6 @@
 import TemaStranka, { type ObsahTematu } from '@/components/landing/TemaStranka'
 import { metadataTematu } from '@/lib/temata'
+import { TRANSPARENTNOST } from '@/lib/poradce'
 
 export const metadata = metadataTematu({
   titulek: 'Hypotéka online a refinancování hypotéky',
@@ -11,8 +12,8 @@ export const metadata = metadataTematu({
 /**
  * TODO (Jakub): text je můj návrh. Je to regulovaný obor, proto v něm nejsou
  * žádné sazby, částky ani sliby typu „nejvýhodnější“ – nic takového nedoplňuj
- * bez podkladu. Zkontroluj hlavně kartu o provizi a odpověď o podpisu smlouvy,
- * ať sedí s tím, co smíš jako vázaný zástupce tvrdit a jak to u bank chodí.
+ * bez podkladu. Zkontroluj hlavně odpověď o podpisu smlouvy, ať sedí s tím,
+ * jak to u bank chodí. Věta o stejné odměně je společná, viz lib/poradce.ts.
  */
 const OBSAH: ObsahTematu = {
   cesta: '/hypoteka',
@@ -77,10 +78,7 @@ const OBSAH: ObsahTematu = {
         titul: 'Vysvětlení',
         popis: 'U každé varianty napíšu, co znamená pro splátku, fixaci a možnost splatit dřív. Bez bankovní hantýrky.',
       },
-      {
-        titul: 'Transparentnost',
-        popis: 'Jsem placený provizí od banky, u které úvěr sjednáte. U návrhu napíšu, kolik za něj dostanu.',
-      },
+      TRANSPARENTNOST,
       {
         titul: 'Bez tlaku',
         popis: 'Za analýzu ani za návrh neplatíte nic. Když se rozhodnete nesjednat nic, nic mi nedlužíte.',
@@ -92,7 +90,7 @@ const OBSAH: ObsahTematu = {
       udalost: 'faq_hypoteka_cena',
       otazka: 'Platím za sjednání hypotéky přes poradce něco navíc?',
       odpoved:
-        'Za analýzu ani za návrh neplatíte nic. Jsem placený provizí od banky, se kterou úvěr nakonec uzavřete, a u návrhu uvidíte, kolik to je.',
+        'Za analýzu ani za návrh neplatíte nic. Jsem placený provizí od banky, se kterou úvěr nakonec uzavřete. Odměnu mám u všech společností stejnou.',
     },
     {
       udalost: 'faq_hypoteka_refinancovani',

@@ -1,5 +1,6 @@
 import TemaStranka, { type ObsahTematu } from '@/components/landing/TemaStranka'
 import { metadataTematu } from '@/lib/temata'
+import { TRANSPARENTNOST } from '@/lib/poradce'
 
 export const metadata = metadataTematu({
   titulek: 'Spoření pro děti a úrazové pojištění dětí',
@@ -79,10 +80,7 @@ const OBSAH: ObsahTematu = {
         titul: 'Celá rodina',
         popis: 'Zajištění dětí řeším spolu s vaším pojištěním a rezervou, aby se krytí nepřekrývalo a nic nechybělo.',
       },
-      {
-        titul: 'Transparentnost',
-        popis: 'U každého doporučení napíšu, proč zrovna tohle a kolik za to dostanu zaplaceno.',
-      },
+      TRANSPARENTNOST,
       {
         titul: 'Úpravy časem',
         popis: 'Dítě roste a potřeby se mění. Když mi napíšete, projdeme nastavení znovu.',

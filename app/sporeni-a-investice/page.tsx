@@ -1,5 +1,6 @@
 import TemaStranka, { type ObsahTematu } from '@/components/landing/TemaStranka'
 import { metadataTematu } from '@/lib/temata'
+import { TRANSPARENTNOST } from '@/lib/poradce'
 
 export const metadata = metadataTematu({
   titulek: 'Penzijní spoření a pravidelné investování',
@@ -80,10 +81,7 @@ const OBSAH: ObsahTematu = {
         titul: 'Plán, ne produkt',
         popis: 'Začínám u cílů a rezervy. Konkrétní produkt přichází až jako poslední krok.',
       },
-      {
-        titul: 'Transparentnost',
-        popis: 'U každého doporučení napíšu, proč zrovna tohle a kolik za to dostanu zaplaceno.',
-      },
+      TRANSPARENTNOST,
       {
         titul: 'Srozumitelnost',
         popis: 'Vysvětlím, co znamenají poplatky, strategie a riziko. Obyčejnou češtinou.',

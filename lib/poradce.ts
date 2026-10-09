@@ -29,3 +29,21 @@ export const PORADCE = {
   /** TODO: přesné znění označení vázaného zástupce do patičky (dodá Jakub). */
   vazanyZastupce: '',
 } as const
+
+/**
+ * Karta „Transparentnost“ na úvodní stránce i na stránkách oblastí. Jedno
+ * místo, ať se kopie nerozejdou.
+ *
+ * Vychází z toho, co uvedl Jakub (9. 10. 2026): odměnu má od všech společností
+ * stejnou, takže ho nic netlačí k jedné z nich. Schválně tu není slovo
+ * „nezávislý“ ani „nezávisle“ – jako vázaný zástupce placený provizí je
+ * v zákonném smyslu použít nesmí. Věta říká totéž fakty.
+ *
+ * Kdyby se odměňování změnilo (jiná provize u některé společnosti), tahle
+ * věta přestane platit a musí pryč.
+ */
+export const TRANSPARENTNOST = {
+  titul: 'Transparentnost',
+  popis:
+    'U každého doporučení napíšu, proč právě tahle varianta. Odměnu mám u všech společností stejnou, takže na výběr nemá vliv.',
+} as const
