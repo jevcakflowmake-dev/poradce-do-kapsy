@@ -40,11 +40,10 @@ export const MERENI = {
 } as const
 
 /**
- * Den, kdy se na webu zapnulo měření. Od něj platí znění zásad cookies a
- * ochrany údajů, které měření popisuje. Při nastavení `NEXT_PUBLIC_GA4_ID`
- * ho uprav na skutečný den spuštění.
+ * Den, kdy se na webu zapnulo měření (ve Vercelu přibylo `NEXT_PUBLIC_GA4_ID`).
+ * Od něj platí znění zásad cookies a ochrany údajů, které měření popisuje.
  */
-export const MERENI_OD = '8. října 2026'
+export const MERENI_OD = '9. října 2026'
 
 /** Má se uživatele vůbec na co ptát? */
 export const MERENI_AKTIVNI =
