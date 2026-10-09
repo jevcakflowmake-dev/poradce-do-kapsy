@@ -6,6 +6,7 @@ import ProblemSection from '@/components/landing/ProblemSection'
 import HowItWorksSection from '@/components/landing/HowItWorksSection'
 import AboutSection from '@/components/landing/AboutSection'
 import PartnersSection from '@/components/landing/PartnersSection'
+import TopicsSection from '@/components/landing/TopicsSection'
 import ValuesSection from '@/components/landing/ValuesSection'
 import PricingSection from '@/components/landing/PricingSection'
 import FaqSection from '@/components/landing/FaqSection'
@@ -28,6 +29,7 @@ export default async function HomePage() {
       <HowItWorksSection />
       <AboutSection />
       <PartnersSection />
+      <TopicsSection />
       <ValuesSection />
       <PricingSection />
       <FaqSection />

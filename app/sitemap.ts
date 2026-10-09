@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { SITE_URL, absoluteUrl } from '@/lib/site'
+import { TEMATA } from '@/lib/temata'
 
 /**
  * Jen veřejné stránky. `lastModified` se vyhodnotí při buildu, takže se
@@ -24,6 +25,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    // Vstupní stránky oblastí (hypotéka, pojištění, spoření a investice).
+    ...TEMATA.map((tema) => ({
+      url: absoluteUrl(tema.cesta),
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
     {
       url: absoluteUrl('/zasady-ochrany-osobnich-udaju'),
       lastModified,
