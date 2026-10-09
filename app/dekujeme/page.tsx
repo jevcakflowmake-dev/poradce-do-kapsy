@@ -82,7 +82,7 @@ export default async function DekujemePage({
         </div>
       </main>
 
-      <SiteFooter />
+      <SiteFooter naUvod />
     </div>
   )
 }
