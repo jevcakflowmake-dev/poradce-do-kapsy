@@ -49,10 +49,14 @@ export default async function DashboardPage() {
   const uspora = (finance as { possible_savings?: number | null } | null)?.possible_savings ?? null
   const rezerva = (finance as { reserve?: number | null } | null)?.reserve ?? null
 
-  const stav = !profile?.onboarding_completed
-    ? 'Začněte vyplněním analýzy. Zabere to kolem patnácti minut a nemusíte ji vyplnit najednou.'
-    : maPlan
-      ? 'Váš finanční plán je připravený. Můžete si ho projít a dát mi vědět, co vás zajímá.'
+  // Kdo analýzu nevyplnil, není do ní tlačen: klient se sjednanými smlouvami
+  // se registruje kvůli nim, ne kvůli dotazníku. Hotový plán má přednost před
+  // vším ostatním – poradce ho stávajícímu klientovi může připravit i bez analýzy.
+  const bezAnalyzy = !profile?.onboarding_completed
+  const stav = maPlan
+    ? 'Váš finanční plán je připravený. Můžete si ho projít a dát mi vědět, co vás zajímá.'
+    : bezAnalyzy
+      ? `${smlouvy.length > 0 ? 'Své smlouvy najdete níže.' : 'Smlouvy vám sem doplním.'} Analýzu můžete vyplnit, až budete chtít – zabere kolem patnácti minut a podle ní vám připravím plán na míru.`
       : 'Analýzu mám. Připravuju vám návrh a ozvu se do 48 hodin.'
 
   const dlazdice = [
@@ -71,8 +75,9 @@ export default async function DashboardPage() {
       <h1 className="font-display text-h2 text-navy">Dobrý den{osloveniKlienta ? `, ${osloveniKlienta}` : ''}.</h1>
       <p className="mt-3 text-lead text-slate max-w-2xl text-pretty">{stav}</p>
 
-      {!profile?.onboarding_completed && (
-        <Link href="/dashboard/analyza" className={`${buttonVariants({ size: 'lg' })} mt-6`}>
+      {bezAnalyzy && !maPlan && (
+        // Obrysové tlačítko schválně: analýza je nabídka, ne podmínka.
+        <Link href="/dashboard/analyza" className={`${buttonVariants({ variant: 'outline', size: 'lg' })} mt-6`}>
           Vyplnit analýzu <ArrowRight className="w-4 h-4" aria-hidden />
         </Link>
       )}
