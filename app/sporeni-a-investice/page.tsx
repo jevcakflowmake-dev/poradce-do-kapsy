@@ -102,6 +102,12 @@ const OBSAH: ObsahTematu = {
         'Většinou dává smysl obojí, jen v různém poměru. Penzijní spoření má státní podporu, ale peníze jsou vázané. Investice jsou dostupnější. Poměr navrhnu podle vašich cílů.',
     },
     {
+      udalost: 'faq_sporeni_dip',
+      otazka: 'Co je lepší: DIP, nebo penzijní spoření?',
+      odpoved:
+        'Obojí má daňovou podporu a u obojího jsou peníze vázané na dlouhou dobu. Penzijní spoření má navíc státní příspěvek, dlouhodobý investiční produkt (DIP) nabízí širší výběr toho, do čeho investovat. Jedno druhé nevylučuje. Co se hodí vám, vyjde z analýzy.',
+    },
+    {
       udalost: 'faq_sporeni_riziko',
       otazka: 'Můžu o peníze přijít?',
       odpoved:

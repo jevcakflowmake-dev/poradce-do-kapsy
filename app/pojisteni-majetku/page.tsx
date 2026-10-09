@@ -3,9 +3,9 @@ import { metadataTematu } from '@/lib/temata'
 import { TRANSPARENTNOST } from '@/lib/poradce'
 
 export const metadata = metadataTematu({
-  titulek: 'Pojištění nemovitosti, domácnosti a auta',
+  titulek: 'Pojištění nemovitosti a domácnosti',
   popis:
-    'Pojištění nemovitosti, domácnosti, odpovědnosti i auta s kontrolou stávajících smluv. Analýzu vyplníte za 15 minut, návrh dostanete do 48 hodin. Zdarma.',
+    'Pojištění nemovitosti a domácnosti, odpovědnosti i auta s kontrolou starších smluv. Analýzu vyplníte za 15 minut, návrh dostanete do 48 hodin. Zdarma.',
   cesta: '/pojisteni-majetku',
 })
 

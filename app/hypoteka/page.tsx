@@ -3,9 +3,9 @@ import { metadataTematu } from '@/lib/temata'
 import { TRANSPARENTNOST } from '@/lib/poradce'
 
 export const metadata = metadataTematu({
-  titulek: 'Hypotéka online a refinancování hypotéky',
+  titulek: 'Hypotéka a refinancování: poradce online',
   popis:
-    'Hypotéka nebo refinancování online, bez obíhání poboček. Analýzu vyplníte za 15 minut a do 48 hodin dostanete porovnání nabídek bank s vysvětlením. Zdarma.',
+    'Nová hypotéka, nebo vám končí fixace? Analýzu vyplníte online za 15 minut a do 48 hodin dostanete porovnání nabídek bank s vysvětlením. Zdarma, bez schůzek.',
   cesta: '/hypoteka',
 })
 

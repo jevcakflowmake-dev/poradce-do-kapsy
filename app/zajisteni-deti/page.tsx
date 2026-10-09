@@ -24,7 +24,7 @@ const OBSAH: ObsahTematu = {
   uvod: {
     nadpis: 'Co zajištění dětí znamená',
     odstavce: [
-      'Zajistit dítě znamená dvě různé věci. Jedna je ochrana pro případ vážného úrazu nebo nemoci, které by změnily život jemu i vám. Druhá jsou peníze do začátku: na studium, první bydlení nebo cokoli, co bude jednou potřebovat.',
+      'Zajistit dítě znamená dvě různé věci. Jedna je ochrana pro případ vážného úrazu nebo nemoci, které by změnily život jemu i vám. Druhá jsou peníze do začátku, tedy spoření nebo investice pro děti: na studium, první bydlení nebo cokoli, co bude dítě jednou potřebovat.',
       'Obojí se nastavuje jinak podle věku. U malého dítěte je před vámi dlouhá doba, takže se dá spořit po menších částkách a s větší tolerancí k výkyvům. U dospívajícího je cíl blízko a víc záleží na jistotě. U pojištění rozhoduje i to, čemu se dítě věnuje, třeba jestli dělá sport, při kterém se úrazy stávají.',
       'Hlavní zajištění dítěte je ale to vaše. Dokud je na vašem příjmu závislé, dopadl by na něj váš výpadek víc než jeho vlastní úraz. Na pojištění dětí se proto dívám spolu s pojištěním rodičů, ne místo něj.',
       'Dětské smlouvy se také snadno zapomenou. Spoření založené po narození běží roky ve stejné strategii a ve stejné výši, i když se mezitím změnil váš rozpočet i to, k čemu má sloužit. V analýze proto uvedete, co už dětem platíte, a já to porovnám s tím, kam to má vést.',
@@ -42,7 +42,7 @@ const OBSAH: ObsahTematu = {
     karty: [
       {
         titul: 'Narodilo se vám dítě',
-        popis: 'Chcete mu začít odkládat a nevíte kolik, kam ani na čí jméno.',
+        popis: 'Chcete mu spořit od narození a nevíte kolik, kam ani na čí jméno.',
       },
       {
         titul: 'Dítě začalo sportovat',
@@ -90,9 +90,9 @@ const OBSAH: ObsahTematu = {
   dotazy: [
     {
       udalost: 'faq_deti_castka',
-      otazka: 'Kolik mám dítěti měsíčně spořit?',
+      otazka: 'Jak spořit dětem a kolik?',
       odpoved:
-        'Záleží na vašem rozpočtu a na tom, k čemu mají peníze sloužit. Víc než na výši částky záleží na tom, začít a vydržet. V návrhu uvidíte doporučení, které se vejde do toho, co si můžete dovolit.',
+        'Záleží na vašem rozpočtu a na tom, k čemu mají peníze sloužit a kdy. Na dlouhou dobu dává smysl investování, na kratší spíš jistota. Víc než na výši částky záleží na tom, začít a vydržet. V návrhu uvidíte doporučení, které se vejde do toho, co si můžete dovolit.',
     },
     {
       udalost: 'faq_deti_pojisteni',

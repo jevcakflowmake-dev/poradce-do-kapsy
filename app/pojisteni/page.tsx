@@ -3,9 +3,9 @@ import { metadataTematu } from '@/lib/temata'
 import { TRANSPARENTNOST } from '@/lib/poradce'
 
 export const metadata = metadataTematu({
-  titulek: 'Životní pojištění a pojištění příjmu',
+  titulek: 'Životní pojištění a výpadek příjmu',
   popis:
-    'Životní pojištění a pojištění příjmu podle vaší situace. Analýzu vyplníte za 15 minut a do 48 hodin dostanete návrh krytí s vysvětlením. Zdarma, bez schůzek.',
+    'Životní pojištění a pojištění výpadku příjmu podle vaší situace. Analýzu vyplníte za 15 minut a do 48 hodin dostanete návrh krytí s vysvětlením. Zdarma.',
   cesta: '/pojisteni',
 })
 
@@ -18,7 +18,7 @@ export const metadata = metadataTematu({
 const OBSAH: ObsahTematu = {
   cesta: '/pojisteni',
   udalostCta: 'klik_pojisteni_analyza',
-  h1: 'Životní pojištění a pojištění příjmu podle vaší situace',
+  h1: 'Životní pojištění a pojištění výpadku příjmu podle vaší situace',
   perex:
     'Pojistka má pokrýt chvíle, kdy přijdete o příjem: dlouhou nemoc, vážný úraz, invaliditu. Z analýzy spočítám, kolik potřebujete, a do 48 hodin pošlu návrh. Bez schůzek, bez tlaku.',
   uvod: {
