@@ -31,6 +31,11 @@ const OBSAH: ObsahTematu = {
     ],
     poznamka:
       'Investování je spojené s rizikem. Hodnota investice může růst i klesat a návratnost vložených peněz není zaručena.',
+    souvisi: {
+      veta: 'Spoříte dětem? Tomu se věnuje stránka',
+      cesta: '/zajisteni-deti',
+      odkaz: 'Zajištění dětí',
+    },
   },
   situace: {
     nadpis: 'Kdy to řešit',

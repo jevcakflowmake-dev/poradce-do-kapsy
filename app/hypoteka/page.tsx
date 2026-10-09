@@ -28,6 +28,11 @@ const OBSAH: ObsahTematu = {
       'Stejné je to s refinancováním. Když se blíží konec fixace, banka pošle novou nabídku. Vyplatí se ji porovnat s tím, co nabízejí jinde, a spočítat, jestli přechod po započtení nákladů dává smysl.',
       'Než podáte žádost, je dobré vědět, kolik zvládnete splácet i ve chvíli, kdy sazba po skončení fixace vzroste nebo vám na čas vypadne příjem. V analýze se proto ptám i na rezervu a na ostatní závazky. Návrh pak počítá s tím, aby vám splátka nechala prostor na běžný život, ne jen s tím, co banka ještě schválí.',
     ],
+    souvisi: {
+      veta: 'K úvěru na bydlení patří i pojištění nemovitosti, které banka obvykle vyžaduje. Víc o něm je na stránce',
+      cesta: '/pojisteni-majetku',
+      odkaz: 'Pojištění majetku',
+    },
   },
   situace: {
     nadpis: 'Kdy se ozvat',

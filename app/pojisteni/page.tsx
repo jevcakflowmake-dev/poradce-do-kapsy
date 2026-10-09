@@ -28,6 +28,11 @@ const OBSAH: ObsahTematu = {
       'Dobré nastavení vychází z vašich čísel: kolik vyděláváte, jakou máte rezervu, co dostanete od státu a kdo je na vašem příjmu závislý. U zaměstnance vypadá jinak než u podnikatele, který si neplatí nemocenské pojištění a v nemoci zůstává bez příjmu.',
       'Návrh proto nezačíná u produktu, ale u otázky, co by se stalo s vaším rozpočtem, kdybyste delší dobu nebo natrvalo nemohli pracovat. Z toho vyjde, která rizika pojistit a na jaké částky. Teprve potom porovnávám, jak je jednotlivé pojišťovny kryjí a kolik za to chtějí. Drobnosti, které zvládnete z rezervy, do návrhu nedávám.',
     ],
+    souvisi: {
+      veta: 'Máte děti? Jejich zajištění navazuje na to vaše. Víc je na stránce',
+      cesta: '/zajisteni-deti',
+      odkaz: 'Zajištění dětí',
+    },
   },
   situace: {
     nadpis: 'Kdy se na pojištění podívat',
