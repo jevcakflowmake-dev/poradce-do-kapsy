@@ -19,6 +19,8 @@ export const metadata = metadataTematu({
 const OBSAH: ObsahTematu = {
   cesta: '/sporeni-a-investice',
   udalostCta: 'klik_sporeni_analyza',
+  // Unsplash (volná licence): https://unsplash.com/photos/couple-walking-on-a-wooden-boardwalk-through-tall-grass-5nSa4Ae3cT4
+  fotka: { src: '/images/temata/sporeni-a-investice.webp', pozice: '80% center' },
   h1: 'Penzijní spoření a pravidelné investování s plánem na míru',
   perex:
     'Kolik odkládat, kam a na jak dlouho. Z analýzy sestavím plán na důchod i na bližší cíle a do 48 hodin vám ho pošlu s vysvětlením. Bez schůzek, bez tlaku.',

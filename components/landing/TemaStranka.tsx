@@ -1,3 +1,4 @@
+import { getImageProps } from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
@@ -15,6 +16,12 @@ export type ObsahTematu = {
   perex: string
   /** Název kliknutí na hlavní tlačítko v Google Analytics, např. klik_hypoteka_analyza. */
   udalostCta: string
+  /**
+   * Fotka do pravé části tmavého úvodu, soubor v public/images/temata.
+   * `pozice` je CSS object-position – kam v záběru leží to podstatné, když se
+   * fotka ořízne (výchozí je střed).
+   */
+  fotka?: { src: string; pozice?: string }
   uvod: {
     nadpis: string
     odstavce: readonly string[]
@@ -35,6 +42,40 @@ export type ObsahTematu = {
 
 const OBAL = 'max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20'
 
+/** Průhledný obrázek 1×1 – na mobilu ho <img> dostane místo fotky, aby nic nestahoval. */
+const PRAZDNY_OBRAZEK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+
+/**
+ * Fotka v pravé části tmavého úvodu. Směrem k textu se ztrácí do navy
+ * (třída `fotka-do-pozadi` v globals.css) a je ztlumená, takže působí jako
+ * pozadí a nadpis zůstává čitelný.
+ *
+ * Jen od `lg`: na mobilu by ležela pod textem. Proto <picture> s podmínkou
+ * na šířku – menší obrazovka fotku vůbec nestáhne, což samotné skrytí přes
+ * CSS nezaručí. Je to dekorace, proto prázdný alt.
+ */
+function FotkaVUvodu({ src, pozice = 'center' }: { src: string; pozice?: string }) {
+  const { props } = getImageProps({ src, alt: '', fill: true, sizes: '(min-width: 1280px) 56vw, 50vw' })
+
+  return (
+    <div
+      aria-hidden
+      className="fotka-do-pozadi pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 lg:block xl:w-[56%]"
+    >
+      <picture>
+        <source media="(min-width: 1024px)" srcSet={props.srcSet} sizes={props.sizes} />
+        <img
+          alt=""
+          src={PRAZDNY_OBRAZEK}
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover opacity-50"
+          style={{ objectPosition: pozice }}
+        />
+      </picture>
+    </div>
+  )
+}
+
 /**
  * Vstupní stránka jedné oblasti (hypotéka, pojištění, spoření a investice).
  * Sekce kopírují úvodní stránku – tmavý úvod, karty, kroky, pilíře, dotazy –
@@ -51,11 +92,13 @@ export default function TemaStranka({ obsah }: { obsah: ObsahTematu }) {
       <SiteHeader naUvod />
 
       <main>
-        <section className="bg-navy text-cream textura-navy">
-          <div className={`${OBAL} pt-14 pb-16 md:pt-20 md:pb-24`}>
+        <section className="relative overflow-hidden bg-navy text-cream textura-navy">
+          {obsah.fotka && <FotkaVUvodu src={obsah.fotka.src} pozice={obsah.fotka.pozice} />}
+          <div className={`relative ${OBAL} pt-14 pb-16 md:pt-20 md:pb-24`}>
             <div className="max-w-4xl">
               <h1 className="font-display text-h2 md:text-display text-cream text-balance">{obsah.h1}</h1>
-              <p className="mt-6 text-lead text-cream/80 max-w-2xl text-pretty">{obsah.perex}</p>
+              {/* Od `lg` užší: delší řádek by zabíhal do světlé části fotky. */}
+              <p className="mt-6 text-lead text-cream/80 max-w-2xl lg:max-w-xl text-pretty">{obsah.perex}</p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
                 <Link href="/analyza" data-mereni-klik={obsah.udalostCta} className={buttonVariants({ size: 'lg' })}>
                   Vyplnit analýzu zdarma

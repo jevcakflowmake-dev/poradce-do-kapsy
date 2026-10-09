@@ -18,6 +18,8 @@ export const metadata = metadataTematu({
 const OBSAH: ObsahTematu = {
   cesta: '/pojisteni-majetku',
   udalostCta: 'klik_majetek_analyza',
+  // Unsplash (volná licence): https://unsplash.com/photos/white-and-gray-sofa-chair-near-window-Kh4tedFdHz4
+  fotka: { src: '/images/temata/pojisteni-majetku.webp', pozice: 'center' },
   h1: 'Pojištění nemovitosti a domácnosti podle toho, co vlastníte',
   perex:
     'Stavba, vybavení domácnosti, odpovědnost a auto jsou čtyři různé pojistky. Z analýzy zjistím, co máte, co chybí a co je nastavené na staré ceny, a do 48 hodin pošlu návrh. Bez schůzek, bez tlaku.',

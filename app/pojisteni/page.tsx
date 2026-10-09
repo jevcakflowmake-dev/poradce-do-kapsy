@@ -18,6 +18,8 @@ export const metadata = metadataTematu({
 const OBSAH: ObsahTematu = {
   cesta: '/pojisteni',
   udalostCta: 'klik_pojisteni_analyza',
+  // Unsplash (volná licence): https://unsplash.com/photos/man-holding-babys-hand-JJ9irt1OZmI
+  fotka: { src: '/images/temata/pojisteni.webp', pozice: '15% center' },
   h1: 'Životní pojištění a pojištění výpadku příjmu podle vaší situace',
   perex:
     'Pojistka má pokrýt chvíle, kdy přijdete o příjem: dlouhou nemoc, vážný úraz, invaliditu. Z analýzy spočítám, kolik potřebujete, a do 48 hodin pošlu návrh. Bez schůzek, bez tlaku.',

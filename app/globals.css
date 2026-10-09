@@ -144,6 +144,15 @@ body {
   background-size: 22px 22px;
 }
 
+/* Fotka v tmavém úvodu stránek oblastí (hypotéka, pojištění…). Směrem k textu
+   se ztrácí do navy, takže působí jako pozadí a nadpis zůstává čitelný.
+   Je to průhledná maska, ne barevný přechod – jediná výjimka z pravidla
+   „žádné gradienty“, Jakub ji schválil 9. 10. 2026. */
+.fotka-do-pozadi {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 70%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 70%);
+}
+
 /* ── Tisk ────────────────────────────────────────────────────────────────
    Finanční plán si klient ukládá přes „Uložit jako PDF" v tiskovém dialogu.
    Na papíře nejde nic kliknout, takže z něj mizí navigace, chat i ovládací

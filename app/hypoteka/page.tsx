@@ -18,6 +18,8 @@ export const metadata = metadataTematu({
 const OBSAH: ObsahTematu = {
   cesta: '/hypoteka',
   udalostCta: 'klik_hypoteka_analyza',
+  // Unsplash (volná licence): https://unsplash.com/photos/hand-holding-keys-with-house-keychain-V7Q94jc04wQ
+  fotka: { src: '/images/temata/hypoteka.webp', pozice: 'center' },
   h1: 'Hypotéka a refinancování online, bez obíhání bank',
   perex:
     'Napíšete mi, co kupujete nebo co už splácíte. Porovnám nabídky bank, se kterými spolupracuji, a do 48 hodin vám pošlu návrh s vysvětlením. Bez schůzek, bez tlaku.',

@@ -18,6 +18,8 @@ export const metadata = metadataTematu({
 const OBSAH: ObsahTematu = {
   cesta: '/zajisteni-deti',
   udalostCta: 'klik_deti_analyza',
+  // Unsplash (volná licence): https://unsplash.com/photos/a-young-girl-is-running-in-the-grass-GthU0larYtA
+  fotka: { src: '/images/temata/zajisteni-deti.webp', pozice: 'center' },
   h1: 'Spoření a pojištění pro děti, nastavené podle jejich věku',
   perex:
     'U každého dítěte se ptám zvlášť, protože batole potřebuje něco jiného než středoškolák. Z analýzy navrhnu, jak mu spořit a co pojistit, a do 48 hodin vám pošlu návrh. Bez schůzek, bez tlaku.',
