@@ -1,13 +1,14 @@
 import Link from 'next/link'
+import FaqSeznam, { type Dotaz } from '@/components/landing/FaqSeznam'
 
 /**
- * Accordion na nativním <details>. Žádný JavaScript: funguje klávesnicí,
- * dá se v něm hledat přes Ctrl+F a nezdrží první vykreslení.
+ * Časté dotazy úvodní stránky. Sazbu accordionu nese `FaqSeznam`, stejný
+ * je i na stránkách oblastí.
  *
  * `udalost` je název, pod kterým se rozbalení otázky ukáže v Google Analytics
  * (viz components/mereni/Mereni.tsx). U nové otázky ho nezapomeň doplnit.
  */
-const DOTAZY = [
+const DOTAZY: Dotaz[] = [
   {
     udalost: 'faq_zdarma',
     otazka: 'Je to opravdu zdarma?',
@@ -74,22 +75,7 @@ export default function FaqSection() {
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20">
         <h2 className="font-display text-h2 text-navy">Časté dotazy</h2>
 
-        <div className="mt-10 md:mt-14 max-w-3xl divide-y divide-line border-y border-line">
-          {DOTAZY.map((d) => (
-            <details key={d.otazka} data-mereni-otevreno={d.udalost} className="group">
-              <summary className="flex items-center justify-between gap-4 cursor-pointer list-none py-5 text-lead font-medium text-navy marker:hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40 rounded-input">
-                {d.otazka}
-                <span
-                  aria-hidden
-                  className="shrink-0 w-8 h-8 rounded-pill border border-line flex items-center justify-center text-navy transition-transform group-open:rotate-45"
-                >
-                  +
-                </span>
-              </summary>
-              <p className="pb-6 pr-12 text-base text-slate text-pretty">{d.odpoved}</p>
-            </details>
-          ))}
-        </div>
+        <FaqSeznam dotazy={DOTAZY} />
       </div>
     </section>
   )

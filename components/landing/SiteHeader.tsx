@@ -18,6 +18,9 @@ import { buttonVariants } from '@/components/ui/button'
  * Šířky: kotvy se vejdou až od `lg` — do té doby se lámaly na tři řádky.
  * Celá věta v CTA a popisek u přihlášení až od `xl`, protože na 1024 px
  * zbývá po kotvách jen kolem 80 px; níž je z přihlášení ikona.
+ *
+ * `naUvod` je pro stránky oblastí (hypotéka, pojištění…): kotvy tam samy
+ * o sobě nikam nevedou, takže míří na sekce úvodní stránky.
  */
 const ODKAZY = [
   { href: '#jak-to-funguje', label: 'Jak to funguje', udalost: 'klik_menu_jak_to_funguje' },
@@ -25,7 +28,10 @@ const ODKAZY = [
   { href: '#caste-dotazy', label: 'Časté dotazy', udalost: 'klik_menu_caste_dotazy' },
 ]
 
-export default function SiteHeader() {
+const TRIDA_KOTVY =
+  'text-base whitespace-nowrap text-cream/80 hover:text-cream transition-colors rounded-pill px-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40'
+
+export default function SiteHeader({ naUvod = false }: { naUvod?: boolean }) {
   return (
     <header className="sticky top-0 z-50 bg-navy border-b border-cream/10">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 h-20 flex items-center justify-between gap-4">
@@ -42,16 +48,17 @@ export default function SiteHeader() {
         </Link>
 
         <nav aria-label="Sekce stránky" className="hidden lg:flex items-center gap-6">
-          {ODKAZY.map((o) => (
-            <a
-              key={o.href}
-              href={o.href}
-              data-mereni-klik={o.udalost}
-              className="text-base whitespace-nowrap text-cream/80 hover:text-cream transition-colors rounded-pill px-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
-            >
-              {o.label}
-            </a>
-          ))}
+          {ODKAZY.map((o) =>
+            naUvod ? (
+              <Link key={o.href} href={`/${o.href}`} data-mereni-klik={o.udalost} className={TRIDA_KOTVY}>
+                {o.label}
+              </Link>
+            ) : (
+              <a key={o.href} href={o.href} data-mereni-klik={o.udalost} className={TRIDA_KOTVY}>
+                {o.label}
+              </a>
+            ),
+          )}
         </nav>
 
         <div className="shrink-0 flex items-center gap-2 sm:gap-3">

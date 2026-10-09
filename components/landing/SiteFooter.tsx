@@ -1,11 +1,23 @@
 import Link from 'next/link'
 import { PORADCE } from '@/lib/poradce'
 
+const TRIDA_ODKAZU =
+  'text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40'
+
+const KOTVY = [
+  { href: '#jak-to-funguje', label: 'Jak to funguje' },
+  { href: '#kolik-to-stoji', label: 'Kolik to stojí' },
+  { href: '#caste-dotazy', label: 'Časté dotazy' },
+]
+
 /**
  * Patička veřejné části. Slot pro označení vázaného zástupce zůstává prázdný,
  * dokud Jakub nedodá přesné znění (lib/poradce.ts) — do té doby se nevykreslí.
+ *
+ * `naUvod` patří všude mimo úvodní stránku: kotvy sekcí tam samy o sobě
+ * nikam nevedou, takže míří na úvodní stránku.
  */
-export default function SiteFooter() {
+export default function SiteFooter({ naUvod = false }: { naUvod?: boolean }) {
   return (
     <footer className="bg-cream border-t border-line">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 py-12 flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
@@ -17,9 +29,17 @@ export default function SiteFooter() {
         </div>
 
         <nav aria-label="Patička" className="flex flex-wrap gap-x-6 gap-y-2">
-          <a href="#jak-to-funguje" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Jak to funguje</a>
-          <a href="#kolik-to-stoji" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Kolik to stojí</a>
-          <a href="#caste-dotazy" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Časté dotazy</a>
+          {KOTVY.map((k) =>
+            naUvod ? (
+              <Link key={k.href} href={`/${k.href}`} className={TRIDA_ODKAZU}>
+                {k.label}
+              </Link>
+            ) : (
+              <a key={k.href} href={k.href} className={TRIDA_ODKAZU}>
+                {k.label}
+              </a>
+            ),
+          )}
           <Link href="/zasady-ochrany-osobnich-udaju" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">
             Ochrana údajů
           </Link>
