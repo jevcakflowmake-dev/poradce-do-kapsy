@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { absoluteUrl } from '@/lib/site'
+import { SITE_URL, absoluteUrl } from '@/lib/site'
 
 /**
  * Jen veřejné stránky. `lastModified` se vyhodnotí při buildu, takže se
@@ -10,7 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: absoluteUrl('/'),
+      // Next normalizuje canonical na kořeni bez koncového lomítka (viz
+      // layout.tsx) – SITE_URL místo absoluteUrl('/'), ať sitemap sedí.
+      url: SITE_URL,
       lastModified,
       changeFrequency: 'monthly',
       priority: 1,
@@ -21,18 +23,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: 'monthly',
       priority: 0.9,
-    },
-    {
-      url: absoluteUrl('/signup'),
-      lastModified,
-      changeFrequency: 'yearly',
-      priority: 0.4,
-    },
-    {
-      url: absoluteUrl('/login'),
-      lastModified,
-      changeFrequency: 'yearly',
-      priority: 0.5,
     },
     {
       url: absoluteUrl('/zasady-ochrany-osobnich-udaju'),

@@ -1,6 +1,14 @@
 export const dynamic = 'force-dynamic'
 
+import type { Metadata } from 'next'
 import LoginForm, { type Upozorneni } from './LoginForm'
+
+// Přihlašovací formulář nemá unikátní obsah pro výsledky vyhledávání –
+// bez noindexu duplikuje title/description homepage.
+export const metadata: Metadata = {
+  title: 'Přihlášení',
+  robots: { index: false, follow: true },
+}
 
 export default async function LoginPage({
   searchParams,

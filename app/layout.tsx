@@ -4,7 +4,8 @@ import './globals.css'
 import MotionProvider from '@/components/providers/MotionProvider'
 import CookieBar from '@/components/cookies/CookieBar'
 import Mereni from '@/components/mereni/Mereni'
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from '@/lib/site'
+import OrganizationSchema from '@/components/seo/OrganizationSchema'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from '@/lib/site'
 
 // Jedna rodina na celý web: nadpisy nese váha, ne jiný řez.
 // latin-ext kvůli české diakritice, variable řez kvůli jedinému stažení.
@@ -34,11 +35,13 @@ export const metadata: Metadata = {
     'online poradenství',
   ],
   authors: [{ name: SITE_NAME }],
-  alternates: { canonical: '/' },
+  // Stejná absoluteUrl() jako v sitemap.ts – jinak canonical a sitemap
+  // nesouhlasí v koncovém lomítku.
+  alternates: { canonical: absoluteUrl('/') },
   openGraph: {
     type: 'website',
     locale: 'cs_CZ',
-    url: SITE_URL,
+    url: absoluteUrl('/'),
     siteName: SITE_NAME,
     title: `${SITE_NAME} – ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
@@ -64,6 +67,7 @@ export default function RootLayout({
   return (
     <html lang="cs" className={`h-full antialiased ${inter.variable}`}>
       <body className="min-h-full">
+        <OrganizationSchema />
         <MotionProvider>{children}</MotionProvider>
         <CookieBar />
         {/* Google Analytics: načte se až po souhlasu v liště a jen ve veřejné
