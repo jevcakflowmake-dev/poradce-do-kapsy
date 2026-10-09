@@ -205,7 +205,9 @@ export default function LoginForm({ upozorneni = null }: { upozorneni?: Upozorne
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Přihlásit se <ArrowRight className="w-4 h-4" /></>)}
             </button>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-1 text-base">
+            {/* Vedle sebe se oba odkazy do karty nevejdou. Zalomit se mají jako celky,
+                ne uprostřed věty. */}
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mt-1 text-base">
               <Link href="/forgot-password" className="text-slate hover:text-navy transition-colors">
                 Zapomenuté heslo?
               </Link>
@@ -248,13 +250,28 @@ export default function LoginForm({ upozorneni = null }: { upozorneni?: Upozorne
         )}
       </div>
 
-      <p className="text-center text-base text-slate mt-6">
-        Ještě u nás nejste?{' '}
-        <Link href="/analyza" className="text-navy hover:text-navy font-semibold transition-colors">
-          Vyplňte analýzu zdarma
-        </Link>
-        {' '}– účet zakládat nemusíte.
-      </p>
+      <div className="mt-6 space-y-2 text-center text-base text-slate text-pretty">
+        {/* Dvě cesty: kdo už klientem je, založí si jen účet; kdo přichází
+            poprvé, začíná analýzou a účet mu vznikne s ní. */}
+        <p>
+          Účet ještě nemáte?{' '}
+          <Link
+            href="/signup"
+            data-mereni-klik="klik_prihlaseni_registrace"
+            className="text-navy hover:text-navy font-semibold transition-colors"
+          >
+            Zaregistrujte se
+          </Link>
+          {' '}– stačí jméno, e-mail, telefon a heslo.
+        </p>
+        <p>
+          Jste tu poprvé?{' '}
+          <Link href="/analyza" className="text-navy hover:text-navy font-semibold transition-colors">
+            Vyplňte analýzu zdarma
+          </Link>
+          {' '}– účet zakládat nemusíte.
+        </p>
+      </div>
     </AuthShell>
   )
 }

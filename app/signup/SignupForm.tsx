@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Loader2, ArrowRight, Eye, EyeOff, Mail } from 'lucide-react'
 import AuthShell from '@/components/auth/AuthShell'
 import Field from '@/components/auth/AuthField'
+import { zmer } from '@/lib/mereni'
 
 const schema = z.object({
   full_name: z.string().min(2, 'Zadejte jméno a příjmení'),
@@ -25,6 +26,8 @@ type FormData = z.infer<typeof schema>
 export default function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Účet s tímhle e-mailem už je – třeba ho klientovi založil poradce.
+  const [existuje, setExistuje] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   // Kam odešel potvrzovací e-mail. Přihlásit se jde až po kliknutí na odkaz.
   const [odeslanoNa, setOdeslanoNa] = useState<string | null>(null)
@@ -36,6 +39,7 @@ export default function SignupForm() {
   async function onSubmit(data: FormData) {
     setLoading(true)
     setError(null)
+    setExistuje(false)
 
     try {
       const res = await fetch('/api/register', {
@@ -53,7 +57,7 @@ export default function SignupForm() {
       }
 
       if (result.exists) {
-        setError('Účet s tímto e-mailem už existuje. Přihlaste se.')
+        setExistuje(true)
         setLoading(false)
         return
       }
@@ -63,6 +67,7 @@ export default function SignupForm() {
       // založit účet na cizí e-mail se svým heslem.
       setOdeslanoNa(result.email ?? data.email.trim().toLowerCase())
       setLoading(false)
+      zmer('registrace_odeslana')
     } catch {
       setError('Chyba připojení. Zkuste to prosím znovu.')
       setLoading(false)
@@ -107,6 +112,20 @@ export default function SignupForm() {
         {error && (
           <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-card text-base text-danger">
             {error}
+          </div>
+        )}
+
+        {existuje && (
+          <div role="status" className="mb-4 p-3 bg-amber/15 border border-amber/40 rounded-card text-base text-navy text-pretty">
+            Účet s tímto e-mailem už existuje.{' '}
+            <Link href="/login" className="font-semibold underline underline-offset-4 hover:text-mint-dark">
+              Přihlaste se
+            </Link>
+            , nebo si heslo nastavte přes{' '}
+            <Link href="/forgot-password" className="font-semibold underline underline-offset-4 hover:text-mint-dark">
+              Zapomenuté heslo
+            </Link>
+            .
           </div>
         )}
 
