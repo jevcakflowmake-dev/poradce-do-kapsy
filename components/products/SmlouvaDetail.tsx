@@ -4,7 +4,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { FileText } from 'lucide-react'
 import KrytiPojistky from '@/components/pojisteni/KrytiPojistky'
 import StoredFileLink from '@/components/files/StoredFileLink'
-import { krytiSmlouvy, spaydRetezec, type ObsahSmlouvy } from '@/lib/smlouvy'
+import { krytiSmlouvy, spaydRetezec, zobrazUcet, type ObsahSmlouvy } from '@/lib/smlouvy'
 import { formatDate } from '@/lib/utils'
 import { odkazNaKontakt } from '@/lib/produkt-varianty'
 import { BARVY } from '@/lib/barvy'
@@ -74,7 +74,7 @@ export default function SmlouvaDetail({
               {smlouva.platba.castka && (
                 <Radek popisek="Předpis" hodnota={kc(smlouva.platba.castka)} />
               )}
-              {smlouva.platba.ucet && <Radek popisek="Účet" hodnota={smlouva.platba.ucet} />}
+              {smlouva.platba.ucet && <Radek popisek="Účet" hodnota={zobrazUcet(smlouva.platba.ucet)} />}
               {smlouva.platba.vs && <Radek popisek="Variabilní symbol" hodnota={smlouva.platba.vs} />}
             </dl>
 

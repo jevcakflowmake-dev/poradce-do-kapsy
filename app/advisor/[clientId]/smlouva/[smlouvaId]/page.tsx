@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import HlavickaPodstranky from '@/components/advisor/HlavickaPodstranky'
 import SmlouvaForm from '@/components/advisor/SmlouvaForm'
 import AkceSmlouvy from '@/components/advisor/AkceSmlouvy'
-import { FREKVENCE_PLATEB, ctiSmlouvu, type TypSmlouvy } from '@/lib/smlouvy'
+import { FREKVENCE_PLATEB, ctiSmlouvu, type TypSmlouvy, zobrazUcet } from '@/lib/smlouvy'
 
 /** Úprava, ukončení a smazání smlouvy klienta. */
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -70,7 +70,7 @@ export default async function UpravaSmlouvyPage({
                   pocatek: obsah.pocatek,
                   castka: obsah.platba?.castka ?? null,
                   frekvence,
-                  ucet: obsah.platba?.ucet,
+                  ucet: zobrazUcet(obsah.platba?.ucet) || undefined,
                   vs: obsah.platba?.vs,
                   zprava: obsah.platba?.zprava,
                   polozkyKryti: obsah.polozkyKryti,

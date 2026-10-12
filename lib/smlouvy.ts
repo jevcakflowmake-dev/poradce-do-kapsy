@@ -15,7 +15,7 @@
 import { JEDNOTKA_RIZIKA, RISK_DEFS, ocistiVolbyKryti, type RiskGroup, type RiskKey, type VolbyKryti } from './income-risks'
 
 export interface PlatbaSmlouvy {
-  /** Číslo účtu ve formátu IBAN — z něj se skládá QR platba. */
+  /** Číslo účtu ve formátu IBAN — z něj se skládá QR platba. Zobrazuje se přes `zobrazUcet`. */
   ucet?: string
   /** Předpis částky v Kč. */
   castka?: number
@@ -205,6 +205,23 @@ export function naIban(vstup: string): string | null {
   }
 
   return iban ? iban.replace(/(.{4})/g, '$1 ').trim() : null
+}
+
+/**
+ * Číslo účtu, jak ho lidé znají ze smlouvy: český účet jako
+ * „předčíslí-číslo/kód banky“, zahraniční jako IBAN.
+ *
+ * Uvnitř se u smlouvy drží IBAN – potřebuje ho QR platba a hlídá překlepy.
+ * Klient ani poradce ho ale u českého účtu vidět nemají: na smlouvě od
+ * pojišťovny stojí „2700/2700“ a stejné číslo má být i v aplikaci.
+ */
+export function zobrazUcet(ucet: string | null | undefined): string {
+  const text = (ucet ?? '').replace(/\s/g, '').toUpperCase()
+  const cesky = text.match(/^CZ\d{2}(\d{4})(\d{6})(\d{10})$/)
+  if (!cesky) return (ucet ?? '').trim()
+  const [, banka, predcisli, cislo] = cesky
+  const bezNul = (c: string) => c.replace(/^0+/, '')
+  return `${bezNul(predcisli) ? `${bezNul(predcisli)}-` : ''}${bezNul(cislo) || '0'}/${banka}`
 }
 
 /**

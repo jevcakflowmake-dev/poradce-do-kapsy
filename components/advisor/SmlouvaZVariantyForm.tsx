@@ -95,9 +95,9 @@ export default function SmlouvaZVariantyForm({
   const ucet = useWatch({ control, name: 'ucet' })
   const cisloSmlouvy = useWatch({ control, name: 'cisloSmlouvy' })
   const frekvence = useWatch({ control, name: 'frekvence' })
-  const iban = ucet ? naIban(ucet) : null
-  // Hláška jen u převodu z českého zápisu – u IBANu by jen opakovala, co tam je.
-  const prevedeno = iban && ucet.replace(/\s/g, '').toUpperCase() !== iban.replace(/\s/g, '')
+  // Účet zůstává napsaný tak, jak je na smlouvě. IBAN se z něj skládá jen
+  // uvnitř pro QR platbu, poradci ani klientovi se neukazuje.
+  const ucetPlati = Boolean(ucet && naIban(ucet))
   const vychoziVs = cisloSmlouvy.replace(/\D/g, '').slice(0, 10)
 
   function vyberSoubor(e: React.ChangeEvent<HTMLInputElement>) {
@@ -217,11 +217,7 @@ export default function SmlouvaZVariantyForm({
       <Pole
         id={`${id}-ucet`}
         popisek="Číslo účtu pojišťovny"
-        napoveda={
-          prevedeno
-            ? `Převedeno na IBAN: ${iban}`
-            : 'IBAN, nebo český zápis 123456789/0800. Bez účtu se klientovi QR platba neukáže.'
-        }
+        napoveda={ucetPlati ? 'Číslo účtu sedí. Klient u smlouvy dostane i QR platbu.' : 'Jak je na smlouvě, třeba 123456789/0800 (jde i IBAN). Bez účtu se klientovi QR platba neukáže.'}
         chyba={errors.ucet?.message}
       >
         <Input id={`${id}-ucet`} aria-describedby={`${id}-ucet-popis`} {...register('ucet')} autoComplete="off" aria-invalid={errors.ucet ? true : undefined} />
