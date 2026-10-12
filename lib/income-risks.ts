@@ -19,6 +19,7 @@ import {
 
 export type RiskKey =
   | 'daily_accident'
+  | 'daily_accident_short'
   | 'daily_sick_leave'
   | 'daily_hospitalization'
   | 'permanent_consequences'
@@ -30,6 +31,7 @@ export type RiskKey =
   | 'long_term_care'
   | 'death'
   | 'death_accident'
+  | 'death_traffic'
 
 export type RiskUnit = 'daily' | 'monthly' | 'lump'
 export type RiskGroup = 'daily' | 'health-events' | 'disability' | 'death'
@@ -63,6 +65,20 @@ export const RISK_DEFS: RiskDef[] = [
     color: BARVY.mint,
     moznosti: ['od 1. dne', 'od 8. dne', 'od 29. dne'],
   },
+  // Některé pojišťovny (Allianz „28-“ a „29+“) mají denní odškodné jako dvě
+  // připojištění s různou částkou: jedno na kratší léčení, druhé na delší.
+  // Proto vlastní řádek – jedna položka nese jen jednu částku.
+  {
+    key: 'daily_accident_short',
+    label: 'Denní odškodné – úraz do 28. dne',
+    short: 'Úraz do 28. dne',
+    description:
+      'Vyplácí se za každý den léčení úrazu, které netrvá déle než 28 dnů. Na delší léčení bývá zvlášť sjednané denní odškodné od 29. dne.',
+    group: 'daily',
+    unit: 'daily',
+    icon: Bandage,
+    color: BARVY.mint,
+  },
   {
     key: 'daily_sick_leave',
     label: 'Pracovní neschopnost',
@@ -72,7 +88,7 @@ export const RISK_DEFS: RiskDef[] = [
     unit: 'daily',
     icon: Activity,
     color: BARVY.mint,
-    moznosti: ['od 14. dne', 'od 29. dne'],
+    moznosti: ['od 14. dne', 'od 15. dne', 'od 29. dne'],
   },
   {
     key: 'daily_hospitalization',
@@ -96,7 +112,7 @@ export const RISK_DEFS: RiskDef[] = [
     unit: 'lump',
     icon: Bandage,
     color: BARVY.navySoft,
-    moznosti: ['od 0,001 %', 'od 10 %'],
+    moznosti: ['od 0,001 %', 'od 0,1 %', 'od 10 %'],
   },
   {
     key: 'serious_illness',
@@ -182,6 +198,19 @@ export const RISK_DEFS: RiskDef[] = [
     label: 'Smrt úrazem',
     short: 'Smrt úrazem',
     description: 'Plnění pro pozůstalé navíc, když smrt způsobí úraz.',
+    group: 'death',
+    unit: 'lump',
+    icon: Skull,
+    color: BARVY.navy,
+    moznosti: KLESAJICI_PEVNA,
+  },
+  // Užší než „Smrt úrazem“: plní se jen po dopravní nehodě. Zapsat to pod
+  // obecnou smrt úrazem by klientovi ukazovalo širší krytí, než má.
+  {
+    key: 'death_traffic',
+    label: 'Smrt při dopravní nehodě',
+    short: 'Smrt při nehodě',
+    description: 'Plnění pro pozůstalé navíc, když smrt způsobí úraz při dopravní nehodě.',
     group: 'death',
     unit: 'lump',
     icon: Skull,
