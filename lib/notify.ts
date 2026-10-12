@@ -19,3 +19,18 @@ export function notifyAdvisor(payload: Record<string, unknown>): void {
       console.warn('[n8n] notifikace poradci nedoručena – webhook nedostupný (zájem je ale uložen v databázi)')
     })
 }
+
+/**
+ * Dá serveru vědět, že klient poslal zprávu. Jestli poradci odejde e-mail,
+ * rozhoduje server (/api/zpravy/upozorneni) – ne každá zpráva ho potřebuje.
+ *
+ * keepalive: požadavek doběhne, i když klient hned po odeslání stránku zavře.
+ */
+export function upozorniNaZpravu(zpravaId: string): void {
+  fetch('/api/zpravy/upozorneni', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ zprava_id: zpravaId }),
+    keepalive: true,
+  }).catch(() => console.warn('[chat] upozornění poradce nedoručeno (zpráva je ale uložená)'))
+}

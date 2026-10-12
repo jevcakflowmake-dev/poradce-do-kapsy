@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Check, ChevronDown, LifeBuoy, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { upozorniNaZpravu } from '@/lib/notify'
 import { Card } from '@/components/ui/card'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -86,15 +87,20 @@ export default function PotrebujuVyresit({ clientId }: { clientId: string }) {
 
   async function odeslat(data: Formular) {
     setChybaOdeslani(false)
-    const { error } = await createClient().from('messages').insert({
-      client_id: clientId,
-      sender_role: 'client',
-      content: textZpravy(data),
-    })
-    if (error) {
+    const { data: ulozena, error } = await createClient()
+      .from('messages')
+      .insert({
+        client_id: clientId,
+        sender_role: 'client',
+        content: textZpravy(data),
+      })
+      .select('id')
+      .single()
+    if (error || !ulozena) {
       setChybaOdeslani(true)
       return
     }
+    upozorniNaZpravu(ulozena.id)
     reset()
     setOdeslano(true)
   }

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Message } from '@/lib/types/database'
 import { BARVY } from '@/lib/barvy'
+import { upozorniNaZpravu } from '@/lib/notify'
 
 function formatTime(dateStr: string) {
   return new Intl.DateTimeFormat('cs-CZ', {
@@ -149,6 +150,9 @@ export default function ChatWindow({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ udalost: 'nova_zprava', client_id: clientId }),
       }).catch(() => console.warn('[chat] upozornění klienta nedoručeno'))
+    } else {
+      // A naopak: poradce se o zprávě klienta dozví e-mailem, i když nemá panel otevřený.
+      upozorniNaZpravu(ulozena.id)
     }
 
     setSending(false)

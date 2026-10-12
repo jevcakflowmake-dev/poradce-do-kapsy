@@ -1,9 +1,24 @@
-# Upozornění klienta e-mailem (n8n)
+# Upozornění e-mailem (n8n)
 
 Aplikace posílá klientovi e-mail, když poradce zveřejní nebo upraví plán,
 přidá smlouvu nebo napíše do chatu (u chatu jen první zpráva po dvou
 hodinách ticha). Předmět, text i HTML skládá aplikace (`lib/upozorneni.ts`),
 n8n e-mail jen odešle.
+
+Stejným workflow chodí i e-mail opačným směrem: **poradci, když mu klient
+napíše** (chat a formulář „Potřebuju něco vyřešit“). V n8n se kvůli tomu
+nic nenastavuje – workflow pošle e-mail na adresu z požadavku a tou je
+tady přihlašovací e-mail účtu s rolí poradce. Pravidla jsou v
+`app/api/zpravy/upozorneni/route.ts`:
+
+- aplikace 20 vteřin počká; když poradce zprávu mezitím přečte (má
+  konverzaci otevřenou), e-mail neodejde,
+- když v konverzaci už čeká starší nepřečtená zpráva z posledních dvou
+  hodin, další e-mail neodejde (tři zprávy za sebou = jeden e-mail),
+- text zprávy v e-mailu není, jen jméno klienta a odkaz do chatu.
+
+Dotaz k plánu a zájem o variantu hlásí poradci jiný webhook
+(`klient-zajem`, `lib/notify.ts`), ten s tímhle nesouvisí.
 
 ## Zapojení
 
@@ -54,7 +69,8 @@ přes Resend – kdyby selhal Resend, nedošlo by přes něj ani upozornění.
 
 | pole | obsah |
 | --- | --- |
-| `udalost` | `plan_zverejnen`, `plan_upraven`, `nova_smlouva`, `nova_zprava` |
-| `email`, `jmeno`, `client_id` | příjemce |
+| `udalost` | klientovi: `plan_zverejnen`, `plan_upraven`, `nova_smlouva`, `nova_zprava`; poradci: `zprava_od_klienta` |
+| `email` | příjemce – klient, u `zprava_od_klienta` poradce |
+| `jmeno`, `client_id` | klient, kterého se e-mail týká |
 | `predmet`, `text`, `html` | hotový e-mail |
 | `odkaz` | kam vede tlačítko v e-mailu |
