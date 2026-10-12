@@ -17,9 +17,11 @@ import {
 import { goalLabel } from '@/lib/analysis-sections'
 import { vyhodnotAnalyzu, POTREBNE_OTAZKY, type AnalyzaOdpovedi } from '@/lib/vyhodnoceni-analyzy'
 import { ctiSmlouvu, dalsiVyroci, TYP_SMLOUVY_PODLE_SEKCE } from '@/lib/smlouvy'
+import { sestavKonverzace } from '@/lib/konverzace'
 import type { Profile } from '@/lib/types/database'
 import StatusBadge from '@/components/advisor/StatusBadge'
 import StatusFilter from '@/components/advisor/StatusFilter'
+import PrehledZprav from '@/components/advisor/PrehledZprav'
 
 type PageProps = {
   searchParams: Promise<{ status?: string; q?: string }>
@@ -69,7 +71,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
   const [
     { data: clientsData },
     { data: usersData },
-    { data: zpravyKlientu },
+    { data: zpravy },
     { data: planInterests },
     { data: planVariantSel },
     { data: variantyRaw },
@@ -80,10 +82,11 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
   ] = await Promise.all([
     supabase.from('profiles').select('*').order('created_at', { ascending: false }),
     createAdminClient().auth.admin.listUsers({ perPage: 1000 }),
+    // Obě strany konverzace: z klientových zpráv se počítají nepřečtené
+    // a aktivita, poslední zpráva (i moje) jde do přehledu „Zprávy“.
     supabase
       .from('messages')
-      .select('client_id, is_read, created_at')
-      .eq('sender_role', 'client')
+      .select('client_id, sender_role, content, is_read, created_at')
       .order('created_at', { ascending: false })
       .limit(3000),
     supabase.from('plan_section_interest').select('client_id, section, status, updated_at').in('status', ['interested', 'question']),
@@ -115,11 +118,13 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
   const posun = (id: string, iso: string | null | undefined) => {
     if (iso && (!aktivita[id] || iso > aktivita[id])) aktivita[id] = iso
   }
-  for (const m of zpravyKlientu ?? []) {
+  for (const m of zpravy ?? []) {
+    if (m.sender_role !== 'client') continue
     if (!m.is_read) unreadCounts[m.client_id] = (unreadCounts[m.client_id] || 0) + 1
     posun(m.client_id, m.created_at)
   }
   for (const c of clients) posun(c.id, auth.get(c.id)?.last_sign_in_at)
+  const konverzace = sestavKonverzace(zpravy ?? [], unreadCounts, jmeno, nyni)
 
   // Reakce na plán – počet sekcí se zájmem nebo dotazem + vybrané varianty.
   const reactionCounts: Record<string, number> = {}
@@ -302,41 +307,46 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
           </div>
         </div>
 
-        {/* K vyřízení */}
-        <section aria-labelledby="k-vyrizeni" className="mb-8 rounded-card border border-line bg-surface p-5 md:p-6">
-          <h2 id="k-vyrizeni" className="font-display text-navy text-h3 flex items-center gap-2">
-            K vyřízení
-            {ukoly.length > 0 && (
-              <span className="text-base font-sans font-semibold rounded-pill bg-amber/25 px-2.5 py-0.5 tabular-nums">{ukoly.length}</span>
-            )}
-          </h2>
-          {ukoly.length === 0 ? (
-            <p className="mt-2 text-base text-slate">Teď nic nečeká. Nové zprávy, reakce na plán i výročí smluv se objeví tady.</p>
-          ) : (
-            <ul className="mt-4 divide-y divide-line">
-              {ukoly.map((u, i) => (
-                <li key={`${u.klientId}-${i}`} className="flex items-start gap-3 py-3">
-                  <u.ikona className="w-4 h-4 text-slate shrink-0 mt-1" aria-hidden />
-                  {/* Na mobilu akce pod textem – vedle by text stlačila do úzkého sloupce. */}
-                  <div className="min-w-0 flex-1 sm:flex sm:items-center sm:gap-4">
-                    <p className="min-w-0 sm:flex-1">
-                      <Link href={`/advisor/${u.klientId}`} className="font-semibold text-navy hover:underline underline-offset-4">
-                        {jmeno.get(u.klientId)}
+        {/* K vyřízení a vedle něj zprávy – obojí je vidět hned po otevření panelu.
+            items-start: karty se nenatahují na výšku té delší. */}
+        <div className="mb-8 grid gap-6 items-start lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
+          <section aria-labelledby="k-vyrizeni" className="rounded-card border border-line bg-surface p-5 md:p-6">
+            <h2 id="k-vyrizeni" className="font-display text-navy text-h3 flex items-center gap-2">
+              K vyřízení
+              {ukoly.length > 0 && (
+                <span className="text-base font-sans font-semibold rounded-pill bg-amber/25 px-2.5 py-0.5 tabular-nums">{ukoly.length}</span>
+              )}
+            </h2>
+            {ukoly.length === 0 ? (
+              <p className="mt-2 text-base text-slate">Teď nic nečeká. Nové zprávy, reakce na plán i výročí smluv se objeví tady.</p>
+            ) : (
+              <ul className="mt-4 divide-y divide-line">
+                {ukoly.map((u, i) => (
+                  <li key={`${u.klientId}-${i}`} className="flex items-start gap-3 py-3">
+                    <u.ikona className="w-4 h-4 text-slate shrink-0 mt-1" aria-hidden />
+                    {/* Na mobilu akce pod textem – vedle by text stlačila do úzkého sloupce. */}
+                    <div className="min-w-0 flex-1 sm:flex sm:items-center sm:gap-4">
+                      <p className="min-w-0 sm:flex-1">
+                        <Link href={`/advisor/${u.klientId}`} className="font-semibold text-navy hover:underline underline-offset-4">
+                          {jmeno.get(u.klientId)}
+                        </Link>
+                        <span className="text-slate"> · {u.text}</span>
+                      </p>
+                      <Link
+                        href={u.odkaz}
+                        className="mt-1 sm:mt-0 inline-flex items-center gap-1 text-sm font-semibold text-navy whitespace-nowrap rounded-pill hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+                      >
+                        {u.akce} <ArrowUpRight className="w-3.5 h-3.5" aria-hidden />
                       </Link>
-                      <span className="text-slate"> · {u.text}</span>
-                    </p>
-                    <Link
-                      href={u.odkaz}
-                      className="mt-1 sm:mt-0 inline-flex items-center gap-1 text-sm font-semibold text-navy whitespace-nowrap rounded-pill hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
-                    >
-                      {u.akce} <ArrowUpRight className="w-3.5 h-3.5" aria-hidden />
-                    </Link>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <PrehledZprav konverzace={konverzace} />
+        </div>
 
         {/* Filter bar */}
         <div className="advisor-hero mb-8 p-5 md:p-6 rounded-card bg-surface border border-line shadow-[0_1px_0_rgba(15,42,68,0.03)] space-y-4">
