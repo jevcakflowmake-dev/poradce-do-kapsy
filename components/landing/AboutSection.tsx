@@ -53,8 +53,8 @@ export default function AboutSection() {
               <p>
                 Jmenuji se {PORADCE.jmeno} a&nbsp;finančnímu poradenství se věnuji {delkaPraxe}.
                 Za tu dobu jsem pracoval s&nbsp;klienty z&nbsp;Jihočeského a&nbsp;Plzeňského kraje
-                a&nbsp;z&nbsp;Prahy a&nbsp;pomáhal jim s&nbsp;hypotékou, pojištěním pro případ nemoci
-                a&nbsp;úrazu, spořením na důchod i&nbsp;zajištěním dětí.
+                a&nbsp;z&nbsp;Prahy. Pomáhám jim s&nbsp;hypotékou, pojištěním pro případ výpadku příjmu,
+                investicemi, přípravou na stáří a&nbsp;spořením na důchod i&nbsp;zajištěním dětí.
               </p>
               <p>
                 Pracuji přes síť ProfiFP a&nbsp;OVB Allfinanz a&nbsp;spolupracuji s&nbsp;řadou bank,
