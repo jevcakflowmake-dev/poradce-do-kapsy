@@ -20,6 +20,13 @@ export const PORADCE = {
 
   fotka: '/images/poradce.webp',
 
+  /**
+   * Odkdy se věnuje finančnímu poradenství. Datum je začátek podnikání podle
+   * ARES; Jakub 14. 10. 2026 napsal „věnuji se 9 let“, což s ním sedí.
+   * Roky v sekci Kdo jsem se z něj počítají, aby číslo samo nezestárlo.
+   */
+  praxeOd: '2017-06-30',
+
   /** TODO: číslo registrace vázaného zástupce u ČNB. */
   cnbCisloRegistrace: '',
 
@@ -29,6 +36,14 @@ export const PORADCE = {
   /** TODO: přesné znění označení vázaného zástupce do patičky (dodá Jakub). */
   vazanyZastupce: '',
 } as const
+
+/** Celé roky praxe k danému dni (`dnes` předává volající, viz React Compiler). */
+export function rokyPraxe(dnes: Date): number {
+  const od = new Date(PORADCE.praxeOd)
+  const uzMelVyroci =
+    dnes.getMonth() > od.getMonth() || (dnes.getMonth() === od.getMonth() && dnes.getDate() >= od.getDate())
+  return dnes.getFullYear() - od.getFullYear() - (uzMelVyroci ? 0 : 1)
+}
 
 /**
  * Karta „Transparentnost“ na úvodní stránce i na stránkách oblastí. Jedno
