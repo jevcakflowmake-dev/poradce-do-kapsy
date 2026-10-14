@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { OTAZKA_DOPORUCENI, syncDoporuceni } from '@/lib/doporuceni'
 import { SECTIONS, uklidVsechnySekce, type VsechnyOdpovedi } from './analysis-sections'
 
 /**
@@ -96,6 +97,10 @@ export async function applyResponses(
     .upsert(rows, { onConflict: 'client_id,section,question_id' })
 
   if (error) throw new Error(`Uložení odpovědí selhalo: ${error.message}`)
+
+  // Kdo klienta doporučil → věrnostní bod. Všechny tři cesty ukládání
+  // analýzy jdou sem, proto to není v jednotlivých routách.
+  await syncDoporuceni(admin, clientId, responses.personal?.[OTAZKA_DOPORUCENI])
 }
 
 /**

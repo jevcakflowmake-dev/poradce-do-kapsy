@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight, AlertTriangle, Plus, Pencil, UserCheck } from 'lucide-react'
@@ -13,11 +12,12 @@ import PendingSubmission from '@/components/advisor/PendingSubmission'
 import AccessLinkButton, { type SituacePristupu } from '@/components/advisor/AccessLinkButton'
 import SmazaniKlienta from '@/components/advisor/SmazaniKlienta'
 import PoznamkyKlienta, { type Poznamka } from '@/components/advisor/PoznamkyKlienta'
+import DoporuceniKlienta from '@/components/advisor/DoporuceniKlienta'
 import ZverejneniPlanu from '@/components/advisor/ZverejneniPlanu'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import { BARVY } from '@/lib/barvy'
 import { ctiSmlouvu, TYP_SMLOUVY_PODLE_SEKCE } from '@/lib/smlouvy'
-import { OTAZKA_DOPORUCENI, jednoznacnaJmena, normalizujJmeno } from '@/lib/doporuceni'
+import { OTAZKA_DOPORUCENI, jednoznacnaJmena, normalizujJmeno, stavDoporuceni, klientiSeSmlouvou, type RadekDoporuceni } from '@/lib/doporuceni'
 
 export default async function ClientDetailPage({
   params,
@@ -76,25 +76,21 @@ export default async function ClientDetailPage({
 
   const hasAnalysis = Object.keys(analysisResponses).length > 0
 
-  // Doporučení: od koho klient přišel a koho doporučil on sám. Jména
-  // z analýzy se párují se jmény klientů (lib/doporuceni.ts).
-  const [{ data: profilyRaw }, { data: doporuceniRaw }] = await Promise.all([
+  // Doporučení a věrnostní body (lib/doporuceni.ts, migrace 021): od koho
+  // klient přišel a body za lidi, které doporučil on. Stav bodu se počítá
+  // ze smluv doporučeného.
+  const [{ data: profilyRaw }, { data: odKohoRaw }, { data: bodyRaw }] = await Promise.all([
     supabase.from('profiles').select('id, full_name').neq('id', user.id),
-    supabase.from('analysis_responses').select('client_id, value').eq('section', 'personal').eq('question_id', OTAZKA_DOPORUCENI),
+    supabase.from('doporuceni').select('*').eq('doporuceny_id', clientId).maybeSingle(),
+    supabase.from('doporuceni').select('*').eq('doporucitel_id', clientId).order('created_at'),
   ])
   const profily = profilyRaw ?? []
   const jmenoProfilu = new Map(profily.map((p) => [p.id, p.full_name || '(bez jména)']))
-  const podleJmena = jednoznacnaJmena(profily)
-  const doporucilJmeno = analysisResponses.personal?.[OTAZKA_DOPORUCENI]?.trim() || null
-  const doporucilNajity = doporucilJmeno ? podleJmena.get(normalizujJmeno(doporucilJmeno)) : undefined
-  const doporucilId = doporucilNajity !== clientId ? doporucilNajity : undefined
-  const mojeJmeno = normalizujJmeno(profile.full_name ?? '')
-  const doporucilKlienty =
-    mojeJmeno && podleJmena.get(mojeJmeno) === clientId
-      ? (doporuceniRaw ?? [])
-          .filter((r) => r.client_id !== clientId && normalizujJmeno(r.value) === mojeJmeno)
-          .map((r) => ({ id: r.client_id, jmeno: jmenoProfilu.get(r.client_id) ?? '(bez jména)' }))
-      : []
+  const uvedeneJmeno = analysisResponses.personal?.[OTAZKA_DOPORUCENI]?.trim() || null
+  const navrhDoporucitele = uvedeneJmeno ? jednoznacnaJmena(profily).get(normalizujJmeno(uvedeneJmeno)) : undefined
+  const odKoho = odKohoRaw as RadekDoporuceni | null
+  const bodyKlienta = (bodyRaw ?? []) as RadekDoporuceni[]
+  const sSmlouvou = await klientiSeSmlouvou(supabase, bodyKlienta.map((b) => b.doporuceny_id))
 
   // Vyhodnocení se počítá při každém načtení – je to čistá funkce nad
   // odpověďmi, takže nemůže zastarat. Bez čistého příjmu vrací null.
@@ -281,7 +277,7 @@ export default async function ClientDetailPage({
       full_name: 'Jméno',
       email: 'E-mail',
       phone: 'Telefon',
-      referred_by: 'Doporučení od',
+      referred_by: 'Doporučil(a)',
       age: 'Věk',
       height: 'Výška',
       weight: 'Váha',
@@ -461,35 +457,6 @@ export default async function ClientDetailPage({
                 <dt className="text-slate">Rizikový profil</dt>
                 <dd className="font-medium text-navy">{riskLabel(profile.risk_profile)}</dd>
               </div>
-              {doporucilJmeno && (
-                <div className="flex justify-between gap-4">
-                  <dt className="text-slate shrink-0">Doporučení od</dt>
-                  <dd className="font-medium text-navy text-right min-w-0">
-                    {doporucilId ? (
-                      <Link href={`/advisor/${doporucilId}`} className="underline underline-offset-4 hover:text-mint-dark">
-                        {jmenoProfilu.get(doporucilId)}
-                      </Link>
-                    ) : (
-                      doporucilJmeno
-                    )}
-                  </dd>
-                </div>
-              )}
-              {doporucilKlienty.length > 0 && (
-                <div className="flex justify-between gap-4">
-                  <dt className="text-slate shrink-0">Doporučil(a) klienty</dt>
-                  <dd className="font-medium text-navy text-right min-w-0">
-                    {doporucilKlienty.map((k, i) => (
-                      <Fragment key={k.id}>
-                        {i > 0 && ', '}
-                        <Link href={`/advisor/${k.id}`} className="underline underline-offset-4 hover:text-mint-dark">
-                          {k.jmeno}
-                        </Link>
-                      </Fragment>
-                    ))}
-                  </dd>
-                </div>
-              )}
             </dl>
             {(profile.goals ?? []).length > 0 && (
               <div className="mt-5 pt-5 border-t border-line">
@@ -526,6 +493,33 @@ export default async function ClientDetailPage({
               <Plus className="w-4 h-4" aria-hidden /> Přidat smlouvu
             </Link>
           </div>
+
+          <DoporuceniKlienta
+            clientId={clientId}
+            uvedeneJmeno={uvedeneJmeno}
+            odKoho={
+              odKoho
+                ? {
+                    doporucitelId: odKoho.doporucitel_id,
+                    jmeno: jmenoProfilu.get(odKoho.doporucitel_id) ?? '(bez jména)',
+                    stav: stavDoporuceni(odKoho, (proposals ?? []).length > 0),
+                    rucne: odKoho.prirazeno_rucne,
+                  }
+                : null
+            }
+            navrh={navrhDoporucitele && navrhDoporucitele !== clientId ? navrhDoporucitele : null}
+            klienti={profily
+              .filter((p) => p.id !== clientId)
+              .map((p) => ({ id: p.id, jmeno: p.full_name || '(bez jména)' }))
+              .sort((a, b) => a.jmeno.localeCompare(b.jmeno, 'cs'))}
+            body={bodyKlienta.map((b) => ({
+              doporucenyId: b.doporuceny_id,
+              jmeno: jmenoProfilu.get(b.doporuceny_id) ?? '(bez jména)',
+              stav: stavDoporuceni(b, sSmlouvou.has(b.doporuceny_id)),
+              odmenaKc: b.odmena_kc,
+              vyplacenoAt: b.vyplaceno_at,
+            }))}
+          />
         </section>
 
         <PoznamkyKlienta clientId={clientId} poznamky={poznamky} />

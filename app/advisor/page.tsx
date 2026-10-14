@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
-  MessageCircle, ArrowUpRight, Sparkles, AlertTriangle, Search, FileText, Send, CalendarClock, Inbox, UserPlus, HelpCircle,
+  MessageCircle, ArrowUpRight, Sparkles, AlertTriangle, Search, FileText, Send, CalendarClock, Inbox, UserPlus, HelpCircle, Gift,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -18,6 +18,7 @@ import { goalLabel } from '@/lib/analysis-sections'
 import { vyhodnotAnalyzu, POTREBNE_OTAZKY, type AnalyzaOdpovedi } from '@/lib/vyhodnoceni-analyzy'
 import { ctiSmlouvu, dalsiVyroci, TYP_SMLOUVY_PODLE_SEKCE } from '@/lib/smlouvy'
 import { sestavKonverzace } from '@/lib/konverzace'
+import { stavDoporuceni } from '@/lib/doporuceni'
 import type { Profile } from '@/lib/types/database'
 import StatusBadge from '@/components/advisor/StatusBadge'
 import StatusFilter from '@/components/advisor/StatusFilter'
@@ -79,6 +80,7 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     { data: smlouvyRaw },
     { data: podani },
     { data: odpovediRaw },
+    { data: bodyRaw },
   ] = await Promise.all([
     supabase.from('profiles').select('*').order('created_at', { ascending: false }),
     createAdminClient().auth.admin.listUsers({ perPage: 1000 }),
@@ -99,6 +101,8 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
     // Flagy z analýzy pro celý seznam. Taháme jen otázky, ze kterých výpočet
     // čte – ne celou analýzu všech klientů.
     supabase.from('analysis_responses').select('client_id, section, question_id, value').in('question_id', POTREBNE_OTAZKY),
+    // Věrnostní body za doporučení – k proplacení jsou, když doporučený má smlouvu.
+    supabase.from('doporuceni').select('doporuceny_id, doporucitel_id, odmena_kc, vyplaceno_at'),
   ])
 
   // Profil zakládá trigger pro každý účet, tedy i pro poradce, a role je jen
@@ -231,6 +235,23 @@ export default async function AdvisorPage({ searchParams }: PageProps) {
       odkaz: `/advisor/${p.matched_client_id}`,
       akce: 'Rozhodnout',
       ikona: Inbox,
+    })
+  }
+
+  const sSmlouvou = new Set((smlouvyRaw ?? []).map((s) => s.client_id))
+  const kProplaceni = new Map<string, { pocet: number; kc: number }>()
+  for (const d of bodyRaw ?? []) {
+    if (!jeKlient(d.doporucitel_id) || stavDoporuceni(d, sSmlouvou.has(d.doporuceny_id)) !== 'k_proplaceni') continue
+    const soucet = kProplaceni.get(d.doporucitel_id) ?? { pocet: 0, kc: 0 }
+    kProplaceni.set(d.doporucitel_id, { pocet: soucet.pocet + 1, kc: soucet.kc + d.odmena_kc })
+  }
+  for (const [id, { pocet, kc }] of kProplaceni) {
+    ukoly.push({
+      klientId: id,
+      text: `Za doporučení ${pocet} ${plural(pocet, 'poukázka', 'poukázky', 'poukázek')} k proplacení (${kc.toLocaleString('cs-CZ')} Kč)`,
+      odkaz: `/advisor/${id}#doporuceni`,
+      akce: 'Poslat poukázku',
+      ikona: Gift,
     })
   }
 

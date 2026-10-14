@@ -725,6 +725,49 @@ export type Database = {
         }
         Relationships: []
       }
+      /** Kdo koho doporučil a vyplacené poukázky (migrace 021). Jen poradce. */
+      doporuceni: {
+        Row: {
+          doporuceny_id: string
+          doporucitel_id: string
+          odmena_kc: number
+          prirazeno_rucne: boolean
+          vyplaceno_at: string | null
+          created_at: string
+        }
+        Insert: {
+          doporuceny_id: string
+          doporucitel_id: string
+          odmena_kc?: number
+          prirazeno_rucne?: boolean
+          vyplaceno_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          doporuceny_id?: string
+          doporucitel_id?: string
+          odmena_kc?: number
+          prirazeno_rucne?: boolean
+          vyplaceno_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'doporuceni_doporuceny_id_fkey'
+            columns: ['doporuceny_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'doporuceni_doporucitel_id_fkey'
+            columns: ['doporucitel_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {

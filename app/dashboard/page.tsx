@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { ArrowRight, ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -8,6 +9,9 @@ import { mesicniPlatby } from '@/lib/payments'
 import { proposalTypeLabel, osloveni } from '@/lib/utils'
 import { ctiSmlouvu, kotvaSmlouvy, spolecnostSmlouvy } from '@/lib/smlouvy'
 import PotrebujuVyresit from '@/components/dashboard/PotrebujuVyresit'
+import VernostniBody, { type SouhrnBodu } from '@/components/dashboard/VernostniBody'
+import { klientiSeSmlouvou, stavDoporuceni } from '@/lib/doporuceni'
+import { absoluteUrl } from '@/lib/site'
 import LogoFirmy from '@/components/partneri/LogoFirmy'
 import { IKONA_DRUHU } from '@/components/products/ikony'
 import type { Proposal } from '@/lib/types/database'
@@ -22,7 +26,10 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: profile }, { data: navrhy }, { data: finance }, { count: pocetVariant }] =
+  // Body za doporučení čte server se service role: tabulka je jen pro poradce
+  // (migrace 021) a klient z ní dostane jen počty, ne kdo koho doporučil.
+  const admin = createAdminClient()
+  const [{ data: profile }, { data: navrhy }, { data: finance }, { count: pocetVariant }, { data: mojeBody }] =
     await Promise.all([
       supabase.from('profiles').select('full_name, onboarding_completed, plan_zverejnen_at').eq('id', user.id).single(),
       supabase
@@ -37,7 +44,20 @@ export default async function DashboardPage() {
         .from('plan_variants')
         .select('id', { count: 'exact', head: true })
         .eq('client_id', user.id),
+      admin.from('doporuceni').select('doporuceny_id, odmena_kc, vyplaceno_at').eq('doporucitel_id', user.id),
     ])
+
+  const sSmlouvou = await klientiSeSmlouvou(admin, (mojeBody ?? []).map((b) => b.doporuceny_id))
+  const souhrnBodu: SouhrnBodu = { ceka: 0, kProplaceni: { pocet: 0, kc: 0 }, vyplaceno: { pocet: 0, kc: 0 } }
+  for (const b of mojeBody ?? []) {
+    const stav = stavDoporuceni(b, sSmlouvou.has(b.doporuceny_id))
+    if (stav === 'ceka_na_smlouvu') souhrnBodu.ceka += 1
+    else {
+      const cil = stav === 'k_proplaceni' ? souhrnBodu.kProplaceni : souhrnBodu.vyplaceno
+      cil.pocet += 1
+      cil.kc += b.odmena_kc
+    }
+  }
 
   // Bez jména jen „Dobrý den.“ – „Dobrý den, Klient.“ by nebylo ani oslovení.
   const osloveniKlienta = profile?.full_name ? osloveni(profile.full_name) : null
@@ -162,6 +182,8 @@ export default async function DashboardPage() {
       <div className="mt-10">
         <PotrebujuVyresit clientId={user.id} />
       </div>
+
+      <VernostniBody souhrn={souhrnBodu} odkaz={absoluteUrl('/analyza')} />
     </div>
   )
 }

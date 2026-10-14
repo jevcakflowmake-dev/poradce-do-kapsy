@@ -153,7 +153,9 @@ export default function ZasadyPage() {
                 </>,
                 <>
                   <B>Evidence doporučení</B> – abychom věděli, kdo nám koho
-                  doporučil, a mohli mu poděkovat. Právní základ: oprávněný
+                  doporučil, a mohli mu připsat věrnostní bod a poslat
+                  poukázku. Doporučitel v aplikaci vidí jen počet svých bodů,
+                  ne údaje o tom, koho doporučil. Právní základ: oprávněný
                   zájem (čl. 6 odst. 1 písm. f GDPR).
                 </>,
                 ...(GA4
