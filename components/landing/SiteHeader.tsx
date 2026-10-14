@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { LogIn } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
+import LogoOdkaz from '@/components/landing/LogoOdkaz'
 
 /**
  * Hlavička landingu. Jeden cíl stránky = jeden cíl hlavičky, proto tu jsou
@@ -35,8 +36,8 @@ export default function SiteHeader({ naUvod = false }: { naUvod?: boolean }) {
   return (
     <header className="sticky top-0 z-50 bg-navy border-b border-cream/10">
       <div className="max-w-8xl mx-auto px-6 md:px-10 lg:px-16 xl:px-20 h-20 flex items-center justify-between gap-4">
-        <Link
-          href="/"
+        {/* Na úvodní stránce vyjede nahoru k hero, jinde na ni přejde (LogoOdkaz). */}
+        <LogoOdkaz
           // Pod sm je vidět jen dlaždice, takže odkaz potřebuje vlastní název
           aria-label="Poradce do kapsy – úvodní stránka"
           className="shrink-0 flex items-center gap-2.5 rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
@@ -45,7 +46,7 @@ export default function SiteHeader({ naUvod = false }: { naUvod?: boolean }) {
             <span className="block w-1.5 h-1.5 rounded-pill bg-navy" />
           </span>
           <span className="font-display text-cream text-lg whitespace-nowrap hidden sm:block">Poradce do kapsy</span>
-        </Link>
+        </LogoOdkaz>
 
         <nav aria-label="Sekce stránky" className="hidden lg:flex items-center gap-6">
           {ODKAZY.map((o) =>
