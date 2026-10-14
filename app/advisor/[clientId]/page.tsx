@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, FileText, MessageCircle, Shield, CheckCircle2, HelpCircle, Clock, Heart, Sparkles, ArrowRight, AlertTriangle, Plus, Pencil, UserCheck } from 'lucide-react'
@@ -16,6 +17,7 @@ import ZverejneniPlanu from '@/components/advisor/ZverejneniPlanu'
 import StoredFileLink from '@/components/files/StoredFileLink'
 import { BARVY } from '@/lib/barvy'
 import { ctiSmlouvu, TYP_SMLOUVY_PODLE_SEKCE } from '@/lib/smlouvy'
+import { OTAZKA_DOPORUCENI, jednoznacnaJmena, normalizujJmeno } from '@/lib/doporuceni'
 
 export default async function ClientDetailPage({
   params,
@@ -73,6 +75,26 @@ export default async function ClientDetailPage({
   }
 
   const hasAnalysis = Object.keys(analysisResponses).length > 0
+
+  // Doporučení: od koho klient přišel a koho doporučil on sám. Jména
+  // z analýzy se párují se jmény klientů (lib/doporuceni.ts).
+  const [{ data: profilyRaw }, { data: doporuceniRaw }] = await Promise.all([
+    supabase.from('profiles').select('id, full_name').neq('id', user.id),
+    supabase.from('analysis_responses').select('client_id, value').eq('section', 'personal').eq('question_id', OTAZKA_DOPORUCENI),
+  ])
+  const profily = profilyRaw ?? []
+  const jmenoProfilu = new Map(profily.map((p) => [p.id, p.full_name || '(bez jména)']))
+  const podleJmena = jednoznacnaJmena(profily)
+  const doporucilJmeno = analysisResponses.personal?.[OTAZKA_DOPORUCENI]?.trim() || null
+  const doporucilNajity = doporucilJmeno ? podleJmena.get(normalizujJmeno(doporucilJmeno)) : undefined
+  const doporucilId = doporucilNajity !== clientId ? doporucilNajity : undefined
+  const mojeJmeno = normalizujJmeno(profile.full_name ?? '')
+  const doporucilKlienty =
+    mojeJmeno && podleJmena.get(mojeJmeno) === clientId
+      ? (doporuceniRaw ?? [])
+          .filter((r) => r.client_id !== clientId && normalizujJmeno(r.value) === mojeJmeno)
+          .map((r) => ({ id: r.client_id, jmeno: jmenoProfilu.get(r.client_id) ?? '(bez jména)' }))
+      : []
 
   // Vyhodnocení se počítá při každém načtení – je to čistá funkce nad
   // odpověďmi, takže nemůže zastarat. Bez čistého příjmu vrací null.
@@ -259,6 +281,7 @@ export default async function ClientDetailPage({
       full_name: 'Jméno',
       email: 'E-mail',
       phone: 'Telefon',
+      referred_by: 'Doporučení od',
       age: 'Věk',
       height: 'Výška',
       weight: 'Váha',
@@ -438,6 +461,35 @@ export default async function ClientDetailPage({
                 <dt className="text-slate">Rizikový profil</dt>
                 <dd className="font-medium text-navy">{riskLabel(profile.risk_profile)}</dd>
               </div>
+              {doporucilJmeno && (
+                <div className="flex justify-between gap-4">
+                  <dt className="text-slate shrink-0">Doporučení od</dt>
+                  <dd className="font-medium text-navy text-right min-w-0">
+                    {doporucilId ? (
+                      <Link href={`/advisor/${doporucilId}`} className="underline underline-offset-4 hover:text-mint-dark">
+                        {jmenoProfilu.get(doporucilId)}
+                      </Link>
+                    ) : (
+                      doporucilJmeno
+                    )}
+                  </dd>
+                </div>
+              )}
+              {doporucilKlienty.length > 0 && (
+                <div className="flex justify-between gap-4">
+                  <dt className="text-slate shrink-0">Doporučil(a) klienty</dt>
+                  <dd className="font-medium text-navy text-right min-w-0">
+                    {doporucilKlienty.map((k, i) => (
+                      <Fragment key={k.id}>
+                        {i > 0 && ', '}
+                        <Link href={`/advisor/${k.id}`} className="underline underline-offset-4 hover:text-mint-dark">
+                          {k.jmeno}
+                        </Link>
+                      </Fragment>
+                    ))}
+                  </dd>
+                </div>
+              )}
             </dl>
             {(profile.goals ?? []).length > 0 && (
               <div className="mt-5 pt-5 border-t border-line">

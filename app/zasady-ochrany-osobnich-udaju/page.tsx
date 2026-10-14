@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { PravniStranka, Section, P, B, List, Callout, Odkaz } from '@/components/legal/PravniStranka'
 import { PORADCE } from '@/lib/poradce'
-import { MERENI, MERENI_OD } from '@/lib/souhlas'
+import { MERENI } from '@/lib/souhlas'
 
 export const metadata: Metadata = {
   title: 'Zásady ochrany osobních údajů',
@@ -22,10 +22,10 @@ const SPRAVCE = PORADCE
  */
 const GA4 = Boolean(MERENI.ga4)
 
-// Datum, kdy zásady poprvé skutečně identifikovaly správce. Do 31. 8. 2026
-// byly na jeho místě zástupné texty, takže dokument nebyl úplný. Se zapnutým
-// měřením platí znění ode dne, kdy se měření spustilo.
-const UCINNOST_OD = GA4 ? MERENI_OD : '31. srpna 2026'
+// Do 31. 8. 2026 byly na místě správce zástupné texty, od 9. 10. 2026 platí
+// znění s měřením návštěvnosti a od 14. 10. 2026 s evidencí doporučení
+// (jméno doporučitele v analýze). Datum se posouvá s každou změnou zpracování.
+const UCINNOST_OD = '14. října 2026'
 
 export default function ZasadyPage() {
   return (
@@ -94,6 +94,11 @@ export default function ZasadyPage() {
                   a reakce k finančnímu plánu.
                 </>,
                 <>
+                  <B>Doporučení</B> – když ve finanční analýze uvedete, kdo
+                  vám nás doporučil, jméno a příjmení té osoby. Vyplnit ho
+                  nemusíte.
+                </>,
+                <>
                   <B>Technické údaje</B> – údaje nutné pro přihlášení a
                   zabezpečení účtu (relace, čas přihlášení).{' '}
                   {GA4
@@ -145,6 +150,11 @@ export default function ZasadyPage() {
                   <B>Zabezpečení a ochrana před zneužitím</B> – právní základ:
                   oprávněný zájem na bezpečném provozu aplikace (čl. 6 odst. 1
                   písm. f GDPR).
+                </>,
+                <>
+                  <B>Evidence doporučení</B> – abychom věděli, kdo nám koho
+                  doporučil, a mohli mu poděkovat. Právní základ: oprávněný
+                  zájem (čl. 6 odst. 1 písm. f GDPR).
                 </>,
                 ...(GA4
                   ? [

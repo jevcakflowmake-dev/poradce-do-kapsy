@@ -639,6 +639,15 @@ export const SECTIONS: Section[] = [
       { id: 'full_name', label: 'Jméno a příjmení', type: 'text', placeholder: 'Jan Novák' },
       { id: 'email', label: 'E-mail', type: 'text', placeholder: 'jan@email.cz' },
       { id: 'phone', label: 'Telefon', type: 'text', placeholder: '+420 777 123 456' },
+      // Jméno, ne jen ano/ne: poradce podle něj páruje, kdo koho doporučil
+      // (lib/doporuceni.ts) – podklad pro věrnostní body za doporučení.
+      {
+        id: 'referred_by',
+        label: 'Kdo vám mě doporučil?',
+        type: 'text',
+        placeholder: 'Jméno a příjmení',
+        help: 'Nepovinné. Když jste přišli na doporučení, napište jméno – ať vím, komu poděkovat.',
+      },
       { id: 'age', label: 'Věk', type: 'number', placeholder: '35' },
       // Dřív se ptal úvodní wizard na /onboarding; ten je zrušený, ale poradce
       // rodinný stav vidí v panelu a počítá se do skóre – proto je tady.
