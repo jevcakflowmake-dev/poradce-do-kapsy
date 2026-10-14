@@ -11,8 +11,9 @@ function dnes() {
  * Kdo za tím stojí. Fotka vlevo, text vpravo, v první osobě.
  *
  * Text stojí na tom, co o sobě napsal Jakub (14. 10. 2026): poradenství
- * 9 let, klienti z Jihočeského a Plzeňského kraje a z Prahy. Kraje jsou
- * v textu i v řádku s fakty – když se změní, mění se na obou místech.
+ * 9 let, klienti z Jihočeského, Plzeňského a Jihomoravského kraje a z Prahy
+ * (Jihomoravský doplnil týž den). Kraje jsou v textu i v řádku s fakty –
+ * když se změní, mění se na obou místech.
  *
  * Číslo registrace u ČNB doplň v `lib/poradce.ts`; dokud tam není, blok
  * o registraci se skryje.
@@ -52,8 +53,8 @@ export default function AboutSection() {
             <div className="mt-6 space-y-5 text-lead text-navy max-w-2xl text-pretty">
               <p>
                 Jmenuji se {PORADCE.jmeno} a&nbsp;finančnímu poradenství se věnuji {delkaPraxe}.
-                Za tu dobu jsem pracoval s&nbsp;klienty z&nbsp;Jihočeského a&nbsp;Plzeňského kraje
-                a&nbsp;z&nbsp;Prahy. Pomáhám jim s&nbsp;hypotékou, pojištěním pro případ výpadku příjmu,
+                Za tu dobu jsem pracoval s&nbsp;klienty z&nbsp;Jihočeského, Plzeňského
+                a&nbsp;Jihomoravského kraje a&nbsp;z&nbsp;Prahy. Pomáhám jim s&nbsp;hypotékou, pojištěním pro případ výpadku příjmu,
                 investicemi, přípravou na stáří a&nbsp;spořením na důchod i&nbsp;zajištěním dětí.
               </p>
               <p>
@@ -77,8 +78,8 @@ export default function AboutSection() {
                 <dd className="order-1 font-display text-h3 text-navy">{delkaPraxe}</dd>
               </div>
               <div className="flex flex-col">
-                <dt className="order-2 mt-1 text-base text-slate text-pretty">jižní Čechy, Plzeňsko a&nbsp;Praha</dt>
-                <dd className="order-1 font-display text-h3 text-navy">3 kraje</dd>
+                <dt className="order-2 mt-1 text-base text-slate text-pretty">jižní Čechy, Plzeňsko, jižní Morava a&nbsp;Praha</dt>
+                <dd className="order-1 font-display text-h3 text-navy">4 kraje</dd>
               </div>
             </dl>
 
