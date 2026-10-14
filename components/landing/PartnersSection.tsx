@@ -3,8 +3,8 @@ import { ZnakPartnera } from '@/components/partneri/LogoFirmy'
 
 /**
  * S kým spolupracuji – banky, pojišťovny a investiční společnosti. Hned pod
- * Kdo jsem, kde stojí, že nejsem vázaný na jednu pojišťovnu: loga jsou k té
- * větě doklad.
+ * Kdo jsem, kde stojí, že spolupracuji s řadou z nich: loga jsou k té větě
+ * doklad.
  *
  * Jednobarevně v navy. Barevná loga by se s paletou stránky tloukla a osmnáct
  * značek vedle sebe by působilo jako reklamní plocha. Stejné značky jsou

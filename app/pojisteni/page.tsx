@@ -74,7 +74,7 @@ const OBSAH: ObsahTematu = {
     karty: [
       {
         titul: 'Porovnání',
-        popis: 'Nejsem vázaný na jednu pojišťovnu, takže nabídky porovnám mezi sebou.',
+        popis: 'Spolupracuji s více pojišťovnami, takže jejich nabídky postavím vedle sebe a ukážu, v čem se liší.',
       },
       {
         titul: 'Krytí podle čísel',

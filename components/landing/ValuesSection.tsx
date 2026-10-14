@@ -16,6 +16,9 @@ import { TRANSPARENTNOST } from '@/lib/poradce'
  * z návrhu — jako vázaný zástupce placený provizí nemůžeš nabízet
  * nezávislé poradenství ve smyslu zákona. Až si ověříš, co smíš tvrdit,
  * dá se titulek přepsat; text pod ním sedí s odstavcem v sekci Kdo jsem.
+ * Říká, s kým spolupracuji, ne „nejsem vázaný“ – u vázaného zástupce by
+ * to znělo zavádějícím dojmem (Jakub 14. 10. 2026: ať to sedí s Kdo jsem).
+ * Stejně jsou postavené karty Porovnání na stránkách oblastí.
  *
  * Ze stejného důvodu karta „Transparentnost" neříká, že výběr „proběhl
  * nezávisle", ale uvádí fakt, o který se to opírá: stejnou odměnu od všech
@@ -29,7 +32,7 @@ const HODNOTY = [
   },
   {
     titul: 'Porovnání',
-    popis: 'Nejsem vázaný na jednu pojišťovnu, takže nabídky porovnám mezi sebou.',
+    popis: 'Spolupracuji s řadou bank, pojišťoven a investičních společností, takže nabídky porovnám mezi sebou.',
   },
   {
     titul: 'Flexibilita',
