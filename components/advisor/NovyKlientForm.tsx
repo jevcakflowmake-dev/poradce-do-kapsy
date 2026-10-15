@@ -125,7 +125,7 @@ export default function NovyKlientForm() {
           {chyba.existuje && (
             <>
               {' '}
-              <Link href="/advisor" className="font-semibold underline underline-offset-4">
+              <Link href="/advisor/klienti" className="font-semibold underline underline-offset-4">
                 Seznam klientů
               </Link>
             </>

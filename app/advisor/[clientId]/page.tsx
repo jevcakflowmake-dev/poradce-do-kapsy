@@ -295,7 +295,7 @@ export default async function ClientDetailPage({
       <nav className="bg-surface border-b border-line px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-8xl mx-auto flex items-center gap-3">
           <Link
-            href="/advisor"
+            href="/advisor/klienti"
             className="inline-flex items-center gap-2 text-slate hover:text-navy transition-colors text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -317,7 +317,7 @@ export default async function ClientDetailPage({
             <span className="hidden md:inline">Finanční plán</span>
           </Link>
           <Link
-            href={`/advisor/${clientId}/chat`}
+            href={`/advisor/zpravy?klient=${clientId}`}
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-card text-sm font-semibold text-white"
             style={{ background: BARVY.navy }}
           >

@@ -218,7 +218,7 @@ export async function upozornitPoradce(klientId: string): Promise<boolean> {
       nadpis: klient ? `${klient} vám píše` : 'Klient vám píše',
       odstavce: ['V chatu na vás čeká nová zpráva. Její text v e-mailu není, přečtete si ho po přihlášení.'],
       tlacitko: 'Otevřít chat',
-      cesta: `/advisor/${klientId}/chat`,
+      cesta: `/advisor/zpravy?klient=${klientId}`,
     }
     const odkaz = absoluteUrl(z.cesta)
     const telo = {

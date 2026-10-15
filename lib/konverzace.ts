@@ -9,13 +9,14 @@
 export interface Konverzace {
   klientId: string
   jmeno: string
+  /** null = konverzace, kterou poradce teprve začíná (zatím bez zpráv). */
   posledni: {
     /** Začátek zprávy na jeden řádek. */
     text: string
     odPoradce: boolean
     /** „14:32“, „včera“ nebo datum. */
     cas: string
-  }
+  } | null
   neprectene: number
 }
 

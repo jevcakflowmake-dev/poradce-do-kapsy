@@ -92,7 +92,7 @@ export default async function AdvisorPlanPage({ params }: { params: Promise<{ cl
             {clientName} · Finanční plán
           </span>
           <Link
-            href={`/advisor/${clientId}/chat`}
+            href={`/advisor/zpravy?klient=${clientId}`}
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-card text-sm font-semibold text-white"
             style={{ background: BARVY.navy }}
           >

@@ -21,7 +21,7 @@ export default function StatusFilter({ counts, total }: Props) {
     if (s) next.set('status', s)
     else next.delete('status')
     const qs = next.toString()
-    startTransition(() => router.push(qs ? `/advisor?${qs}` : '/advisor'))
+    startTransition(() => router.push(qs ? `/advisor/klienti?${qs}` : '/advisor/klienti'))
   }
 
   return (
@@ -34,7 +34,9 @@ export default function StatusFilter({ counts, total }: Props) {
         disabled={pending}
         onSelect={setStatus}
       />
-      {CLIENT_STATUS_VALUES.map((s) => {
+      {/* Jen stavy, ve kterých někdo je (a ten právě vybraný) – šest nul
+          vedle sebe byl jen šum. Prázdný stav je vidět v Pipeline v Přehledu. */}
+      {CLIENT_STATUS_VALUES.filter((s) => (counts[s] ?? 0) > 0 || active === s).map((s) => {
         const meta = CLIENT_STATUS_META[s]
         return (
           <Chip

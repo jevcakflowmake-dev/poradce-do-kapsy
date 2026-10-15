@@ -15,7 +15,7 @@ export default async function NovyKlientPage() {
       <nav className="bg-surface border-b border-line px-6 md:px-10 lg:px-16 xl:px-20 py-4 sticky top-0 z-30">
         <div className="max-w-8xl mx-auto flex items-center gap-3">
           <Link
-            href="/advisor"
+            href="/advisor/klienti"
             className="inline-flex items-center gap-1 text-slate hover:text-navy transition-colors text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" aria-hidden />

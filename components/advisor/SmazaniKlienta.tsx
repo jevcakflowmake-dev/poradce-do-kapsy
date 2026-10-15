@@ -38,7 +38,7 @@ export default function SmazaniKlienta({ clientId, potvrzovaciText }: { clientId
         setPracuje(false)
         return
       }
-      router.push('/advisor')
+      router.push('/advisor/klienti')
       router.refresh()
     } catch {
       setChyba('Chyba připojení. Zkuste to prosím znovu.')
