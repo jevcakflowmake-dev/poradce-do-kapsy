@@ -1,13 +1,19 @@
 import type { MetadataRoute } from 'next'
 import { SITE_URL, absoluteUrl } from '@/lib/site'
 import { TEMATA } from '@/lib/temata'
+import { nactiNovinky } from '@/lib/novinky'
 
 /**
  * Jen veřejné stránky. `lastModified` se vyhodnotí při buildu, takže se
  * datum posune s každým nasazením – pro web této velikosti to stačí.
+ * Novinky mají datum zveřejnění; po novém článku sitemap obnoví
+ * /api/novinky, hodina je pojistka.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 3600
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date()
+  const novinky = await nactiNovinky(500)
 
   return [
     {
@@ -32,6 +38,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),
+    // Výpis Novinek až s prvním článkem – prázdnou stránku do vyhledávačů neposílat.
+    ...(novinky.length > 0
+      ? [
+          {
+            url: absoluteUrl('/novinky'),
+            lastModified: new Date(novinky[0].zverejneno_at),
+            changeFrequency: 'weekly' as const,
+            priority: 0.6,
+          },
+          ...novinky.map((n) => ({
+            url: absoluteUrl(`/novinky/${n.slug}`),
+            lastModified: new Date(n.zverejneno_at),
+            changeFrequency: 'yearly' as const,
+            priority: 0.5,
+          })),
+        ]
+      : []),
     {
       url: absoluteUrl('/zasady-ochrany-osobnich-udaju'),
       lastModified,

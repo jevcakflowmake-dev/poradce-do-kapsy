@@ -725,6 +725,40 @@ export type Database = {
         }
         Relationships: []
       }
+      /** Články na /novinky (migrace 022). Veřejnost čte jen zveřejněné. */
+      novinky: {
+        Row: {
+          id: string
+          slug: string
+          titulek: string
+          perex: string
+          obsah: string
+          zdroje: Json
+          zverejneno_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          slug: string
+          titulek: string
+          perex: string
+          obsah: string
+          zdroje?: Json
+          zverejneno_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          slug?: string
+          titulek?: string
+          perex?: string
+          obsah?: string
+          zdroje?: Json
+          zverejneno_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       /** Kdo koho doporučil a vyplacené poukázky (migrace 021). Jen poradce. */
       doporuceni: {
         Row: {

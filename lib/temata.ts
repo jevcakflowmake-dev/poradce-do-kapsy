@@ -55,14 +55,24 @@ export type CestaTematu = (typeof TEMATA)[number]['cesta']
  * oblast nesl titulek i adresu úvodní stránky. Ze stejného důvodu se musí
  * znovu uvést i náhledový obrázek – jinak ze sdíleného odkazu zmizí.
  */
-export function metadataTematu({
+export function metadataTematu(udaje: { titulek: string; popis: string; cesta: CestaTematu }): Metadata {
+  return metadataStranky(udaje)
+}
+
+/**
+ * Metadata veřejné stránky se společným náhledem webu. Stránka, která
+ * nastaví vlastní openGraph, přepíše ten z layoutu celý i s obrázkem
+ * (Next slučuje metadata jen do hloubky jedné úrovně) – proto ho
+ * přidáváme znovu. Používají ho i Novinky.
+ */
+export function metadataStranky({
   titulek,
   popis,
   cesta,
 }: {
   titulek: string
   popis: string
-  cesta: CestaTematu
+  cesta: string
 }): Metadata {
   const celyTitulek = `${titulek} · ${SITE_NAME}`
   // Společný náhled webu z app/opengraph-image.tsx (a jeho dvojče pro X).

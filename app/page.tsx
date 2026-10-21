@@ -10,6 +10,7 @@ import TopicsSection from '@/components/landing/TopicsSection'
 import ValuesSection from '@/components/landing/ValuesSection'
 import PricingSection from '@/components/landing/PricingSection'
 import FaqSection from '@/components/landing/FaqSection'
+import NovinkySection from '@/components/landing/NovinkySection'
 import CtaSection from '@/components/landing/CtaSection'
 import SiteFooter from '@/components/landing/SiteFooter'
 
@@ -32,6 +33,7 @@ export default async function HomePage() {
       <TopicsSection />
       <ValuesSection />
       <PricingSection />
+      <NovinkySection />
       <FaqSection />
       <CtaSection />
       <SiteFooter />
