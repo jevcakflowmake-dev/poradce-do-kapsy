@@ -74,3 +74,60 @@ přes Resend – kdyby selhal Resend, nedošlo by přes něj ani upozornění.
 | `jmeno`, `client_id` | klient, kterého se e-mail týká |
 | `predmet`, `text`, `html` | hotový e-mail |
 | `odkaz` | kam vede tlačítko v e-mailu |
+
+---
+
+# Novinky z finančního světa (n8n + Claude)
+
+Workflow `novinky-clanek.json` (`PoradceDoKapsy_novinky_clanek_kazde_2_tydny`)
+jednou za dva týdny v pondělí v 8:00:
+
+1. načte zprávy z RSS Měšec.cz, Peníze.cz a ČT24 Ekonomika (posledních 15 dní,
+   nejvýš 45 zpráv; zdroj, který zrovna neodpoví, se přeskočí),
+2. Claude (`claude-opus-5-5`) z nich napíše krátký článek pro běžné domácnosti
+   – bez investičních doporučení, jen z údajů ve zprávách,
+3. pošle ho e-mailem na `kuba.jevcak@gmail.com` s tlačítky **Zveřejnit** / **Zamítnout**,
+4. po Zveřejnit ho pošle na `POST https://poradcedokapsy.cz/api/novinky`,
+   článek se hned objeví na `/novinky` a na úvodní stránce, a přijde potvrzení
+   s odkazem. Bez odpovědi do 7 dní se článek zahodí.
+
+RSS dávají jen posledních pár desítek zpráv, takže článek stojí hlavně na
+zprávách z posledních dní před spuštěním.
+
+## Zapojení
+
+1. **Klíč pro web.** Vygeneruj nový náhodný řetězec (`openssl rand -hex 32`),
+   jiný než u upozornění klientů.
+2. **Vercel.** Projekt poradce-do-kapsy → Settings → Environment Variables:
+   `N8N_NOVINKY_TOKEN` = ten klíč (Production, Sensitive), pak redeploy.
+   Bez něj web články odmítne (503).
+3. **n8n – přihlašovací údaje:**
+   - *Header Auth* `Header_PoradceDoKapsy_Novinky`: Name `X-Poradce-Token`,
+     Value = klíč z kroku 1.
+   - *Header Auth* `Anthropic_PoradceDoKapsy`: Name `x-api-key`, Value = API klíč
+     z console.anthropic.com.
+   - *SMTP* `SMTP_Resend` už existuje (upozornění klientů).
+4. **Import.** Workflows → Import from File → `novinky-clanek.json`. V uzlech
+   `Napsat_clanek`, `Zverejnit_clanek`, `Poslat_ke_schvaleni` a `Poslat_potvrzeni`
+   vyber přihlašovací údaje z kroku 3. Settings → Error workflow:
+   `PoradceDoKapsy_chyba_upozorneni_error`. Workflow aktivuj.
+5. **Zkouška.** Spusť ho ručně (`Spustit_rucne`). Do pár minut přijde e-mail ke
+   schválení. Když článek nechceš, klikni Zamítnout a nic se nezveřejní.
+
+## Kdyby bylo potřeba článek stáhnout
+
+Zatím v Supabase: tabulka `novinky`, u článku vymazat `zverejneno_at` (nebo
+řádek smazat). Výpis na webu se obnoví nejpozději do hodiny.
+
+## Co chodí na web
+
+`POST https://poradcedokapsy.cz/api/novinky`, hlavička `X-Poradce-Token`:
+
+| pole | obsah |
+| --- | --- |
+| `titulek` | do 160 znaků |
+| `perex` | do 600 znaků |
+| `obsah` | prostý text: odstavce oddělené prázdným řádkem, `## ` mezititulek, `- ` odrážka |
+| `zdroje` | `[{ "nazev": "…", "url": "https://…" }]`, jen adresy, které byly v zadání |
+
+Adresu článku složí web z titulku. Odpověď: `201 { ok, slug, url }`.

@@ -1,0 +1,425 @@
+{
+  "name": "PoradceDoKapsy_novinky_clanek_kazde_2_tydny",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 2,
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "3f277518-10b4-412c-908d-0d7c43ca3eed",
+      "name": "Spustit_kazde_2_tydny",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -460,
+        -100
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "76185298-64b2-48cd-bf54-f71dea45ba15",
+      "name": "Spustit_rucne",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.mesec.cz/rss/clanky/",
+        "options": {}
+      },
+      "id": "cd929709-23dc-4c99-8075-4b565955d88e",
+      "name": "Nacist_Mesec",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -220,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://www.penize.cz/rss",
+        "options": {}
+      },
+      "id": "a007967d-48a1-42f4-a20f-a939454b033c",
+      "name": "Nacist_Penize",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "url": "https://ct24.ceskatelevize.cz/rss/ekonomika",
+        "options": {}
+      },
+      "id": "36063161-9c34-48f9-830a-cb6ed4ccece6",
+      "name": "Nacist_CT24",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Zprávy ze tří RSS za posledních 15 dní → zadání pro Clauda.\n// Zdroj, který zrovna neodpověděl, se přeskočí (RSS uzly mají „pokračovat při chybě“).\nconst ZDROJE = [\n  { uzel: 'Nacist_Mesec', nazev: 'Měšec.cz' },\n  { uzel: 'Nacist_Penize', nazev: 'Peníze.cz' },\n  { uzel: 'Nacist_CT24', nazev: 'ČT24' },\n];\nconst OD = Date.now() - 15 * 24 * 60 * 60 * 1000;\nconst bezHtml = (t) => String(t ?? '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\\s+/g, ' ').trim();\n// Odkaz bez sledovacích parametrů (utm_…) – do zdrojů článku patří čistá adresa.\nconst cistyOdkaz = (url) => {\n  try {\n    const u = new URL(String(url).replace(/&amp;/g, '&'));\n    for (const klic of [...u.searchParams.keys()]) if (klic.startsWith('utm_')) u.searchParams.delete(klic);\n    return u.toString();\n  } catch (e) { return null; }\n};\n\nconst zpravy = [];\nfor (const zdroj of ZDROJE) {\n  let polozky = [];\n  try { polozky = $(zdroj.uzel).all(); } catch (e) { continue; }\n  for (const { json: j } of polozky) {\n    const datum = new Date(j.isoDate || j.pubDate || 0);\n    const odkaz = cistyOdkaz(j.link);\n    if (!j.title || !odkaz || isNaN(datum.getTime()) || datum.getTime() < OD) continue;\n    zpravy.push({\n      zdroj: zdroj.nazev,\n      titulek: bezHtml(j.title),\n      popis: bezHtml(j.contentSnippet || j.content || j.description).slice(0, 400),\n      odkaz,\n      datum: datum.toISOString().slice(0, 10),\n    });\n  }\n}\nzpravy.sort((a, b) => b.datum.localeCompare(a.datum));\nconst vybrane = zpravy.slice(0, 45);\nif (vybrane.length < 3) {\n  throw new Error(`Za posledních 15 dní jsou jen ${vybrane.length} zprávy – článek se tentokrát nepíše.`);\n}\n\nconst seznam = vybrane\n  .map((z, i) => `${i + 1}. [${z.zdroj}] ${z.datum} – ${z.titulek}\\n${z.popis}\\n${z.odkaz}`)\n  .join('\\n\\n');\n\nconst SYSTEM = \"Píšeš krátké články do sekce Novinky na webu poradcedokapsy.cz. Autorem je Jakub Jevčák, finanční poradce, který lidem pomáhá s hypotékou, pojištěním, spořením a investicemi. Čtenáři jsou běžné domácnosti, ne odborníci.\\n\\nÚkol: Z přiložených zpráv za poslední dva týdny vyber jedno až tři témata, která se nejvíc dotýkají peněz běžných domácností (hypotéky a úroky, pojištění, spoření a penzijní spoření, investice, ceny a inflace, daně a státní podpora). Napiš o nich jeden článek: co se stalo a co to znamená pro čtenáře.\\n\\nPravidla:\\n- Piš česky, srozumitelně a krátkými větami, čtenáři vykej. Odborný pojem vysvětli.\\n- Vycházej jen z údajů ve zprávách. Nepřidávej čísla, data, jména ani tvrzení, která ve zprávách nejsou. Když něco nevíš jistě, nepiš to.\\n- Zprávy nepřebírej doslova, napiš vlastní text.\\n- Nedávej investiční doporučení: nedoporučuj konkrétní produkt, banku, pojišťovnu, fond ani akcii a nepiš, co si má čtenář koupit nebo prodat. Můžeš napsat, na co se zaměřit nebo co si ověřit ve vlastní smlouvě.\\n- Žádné sliby výnosů ani úspor, žádné superlativy, vykřičníky ani emoji. Nepoužívej slova „nezávislý“ a „nezávisle“.\\n\\nFormát odpovědi (JSON podle schématu):\\n- titulek: věcný, do 90 znaků, bez lákání na kliknutí.\\n- perex: jedna až dvě věty do 250 znaků, o čem článek je.\\n- obsah: 250 až 450 slov. Odstavce odděl prázdným řádkem. Mezititulek dej na samostatný řádek začínající „## “, odrážky začínají „- “. Žádné jiné formátování: bez tučného písma, odkazů a HTML.\\n- zdroje: zprávy, ze kterých článek vychází – název média a přesná adresa článku ze seznamu.\";\nconst SCHEMA = {\n  \"type\": \"object\",\n  \"properties\": {\n    \"titulek\": {\n      \"type\": \"string\"\n    },\n    \"perex\": {\n      \"type\": \"string\"\n    },\n    \"obsah\": {\n      \"type\": \"string\"\n    },\n    \"zdroje\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"nazev\": {\n            \"type\": \"string\"\n          },\n          \"url\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"nazev\",\n          \"url\"\n        ],\n        \"additionalProperties\": false\n      }\n    }\n  },\n  \"required\": [\n    \"titulek\",\n    \"perex\",\n    \"obsah\",\n    \"zdroje\"\n  ],\n  \"additionalProperties\": false\n};\n\nreturn [{\n  json: {\n    odkazy: vybrane.map((z) => z.odkaz),\n    pozadavek: {\n      model: 'claude-opus-5-5',\n      max_tokens: 16000,\n      // Když bezpečnostní filtr požadavek odmítne, API ho samo zopakuje na doporučeném záložním modelu.\n      fallbacks: 'default',\n      output_config: { effort: 'high', format: { type: 'json_schema', schema: SCHEMA } },\n      system: SYSTEM,\n      messages: [{ role: 'user', content: `Zprávy z posledních dvou týdnů:\\n\\n${seznam}` }],\n    },\n  },\n}];\n"
+      },
+      "id": "49e9e9f0-5e1c-4104-80d9-683ca46f26a3",
+      "name": "Pripravit_zpravy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "anthropic-beta",
+              "value": "server-side-fallback-2026-07-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.pozadavek) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "9eed585f-e968-4853-b01d-49c198489c95",
+      "name": "Napsat_clanek",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Anthropic_PoradceDoKapsy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Odpověď Clauda → článek a text e-mailu ke schválení.\nconst odpoved = $input.first().json;\nif (odpoved.stop_reason === 'refusal') throw new Error('Claude článek odmítl napsat (refusal). Zkuste workflow spustit znovu.');\nif (odpoved.stop_reason === 'max_tokens') throw new Error('Článek se nevešel do limitu odpovědi.');\n\n// Model s myšlením vrací před textem i bloky „thinking“ – článek je v bloku typu text.\nconst text = (odpoved.content || []).find((b) => b.type === 'text')?.text;\nif (!text) throw new Error('V odpovědi chybí text článku.');\nconst clanek = JSON.parse(text);\nfor (const pole of ['titulek', 'perex', 'obsah']) {\n  if (!String(clanek[pole] || '').trim()) throw new Error(`Článku chybí ${pole}.`);\n}\n\n// Jen zdroje, které byly opravdu v zadání – vymyšlená adresa na web nesmí.\nconst povolene = new Set($('Pripravit_zpravy').first().json.odkazy);\nclanek.zdroje = (clanek.zdroje || []).filter((z) => povolene.has(z.url)).slice(0, 10);\n\n// E-mail se schválením je prostý text (n8n HTML escapuje) – mezititulky velkými písmeny.\nconst obsahEmailu = clanek.obsah.replace(/^#{2,3}\\s+(.*)$/gm, (_, t) => t.toUpperCase());\nconst zdroje = clanek.zdroje.map((z) => `- ${z.nazev}: ${z.url}`).join('\\n') || '- (bez zdrojů)';\nconst zprava = [\n  'Nový článek do Novinek na poradcedokapsy.cz čeká na schválení.',\n  '',\n  clanek.titulek,\n  '',\n  clanek.perex,\n  '',\n  obsahEmailu,\n  '',\n  'Zdroje:',\n  zdroje,\n  '',\n  'Zveřejnit = článek se hned objeví na webu. Když do 7 dní nerozhodnete, zahodí se.',\n].join('\\n');\n\nreturn [{ json: { clanek, predmet: `Ke schválení: ${clanek.titulek}`, zprava } }];\n"
+      },
+      "id": "2c258626-0984-4153-99ae-a90b1559a493",
+      "name": "Zpracovat_clanek",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "fromEmail": "Poradce do kapsy <noreply@mail.poradcedokapsy.cz>",
+        "toEmail": "kuba.jevcak@gmail.com",
+        "subject": "={{ $json.predmet }}",
+        "message": "={{ $json.zprava }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Zveřejnit",
+            "disapproveLabel": "Zamítnout"
+          }
+        },
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "limitType": "afterTimeInterval",
+              "resumeAmount": 7,
+              "resumeUnit": "days"
+            }
+          },
+          "appendAttribution": false
+        }
+      },
+      "id": "985ce346-cd37-450e-bc92-747abecc259e",
+      "name": "Poslat_ke_schvaleni",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1100,
+        0
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "SMTP_Resend"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "e051aefc-0ac0-4da7-b944-d71a18b0c53c",
+              "leftValue": "={{ $json.data?.approved === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "514a2975-c65b-4250-8b39-fbb7fd6bafdb",
+      "name": "Je_schvaleno",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://poradcedokapsy.cz/api/novinky",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Zpracovat_clanek').first().json.clanek) }}",
+        "options": {}
+      },
+      "id": "11e438ac-6860-4c1d-a2c6-0b128909a79c",
+      "name": "Zverejnit_clanek",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Header_PoradceDoKapsy_Novinky"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "Poradce do kapsy <noreply@mail.poradcedokapsy.cz>",
+        "toEmail": "kuba.jevcak@gmail.com",
+        "subject": "=Zveřejněno: {{ $('Zpracovat_clanek').first().json.clanek.titulek }}",
+        "emailFormat": "text",
+        "text": "=Článek je na webu: {{ $json.url }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "c209dd2c-b77e-4ae9-833d-c83925fac323",
+      "name": "Poslat_potvrzeni",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1760,
+        -100
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "SMTP_Resend"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "d68c599e-5d81-45a3-ae64-4e880e59f569",
+      "name": "Zamitnuto",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Spustit_kazde_2_tydny": {
+      "main": [
+        [
+          {
+            "node": "Nacist_Mesec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spustit_rucne": {
+      "main": [
+        [
+          {
+            "node": "Nacist_Mesec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nacist_Mesec": {
+      "main": [
+        [
+          {
+            "node": "Nacist_Penize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nacist_Penize": {
+      "main": [
+        [
+          {
+            "node": "Nacist_CT24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nacist_CT24": {
+      "main": [
+        [
+          {
+            "node": "Pripravit_zpravy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pripravit_zpravy": {
+      "main": [
+        [
+          {
+            "node": "Napsat_clanek",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Napsat_clanek": {
+      "main": [
+        [
+          {
+            "node": "Zpracovat_clanek",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zpracovat_clanek": {
+      "main": [
+        [
+          {
+            "node": "Poslat_ke_schvaleni",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poslat_ke_schvaleni": {
+      "main": [
+        [
+          {
+            "node": "Je_schvaleno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Je_schvaleno": {
+      "main": [
+        [
+          {
+            "node": "Zverejnit_clanek",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Zamitnuto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zverejnit_clanek": {
+      "main": [
+        [
+          {
+            "node": "Poslat_potvrzeni",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Prague"
+  },
+  "active": false
+}
