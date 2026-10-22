@@ -6,10 +6,11 @@ import { nactiNovinky } from '@/lib/novinky'
 /**
  * Jen veřejné stránky. `lastModified` se vyhodnotí při buildu, takže se
  * datum posune s každým nasazením – pro web této velikosti to stačí.
- * Novinky mají datum zveřejnění; po novém článku sitemap obnoví
- * /api/novinky, hodina je pojistka.
+ * Novinky mají datum zveřejnění. Sitemap se skládá při každém stažení
+ * (jeden dotaz do databáze, vyhledávače ji stahují zřídka) – jako cachovanou
+ * ji revalidatePath('/sitemap.xml') po novém článku neobnovil.
  */
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date()

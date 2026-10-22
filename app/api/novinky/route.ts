@@ -59,11 +59,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Článek se nepodařilo uložit.' }, { status: 500 })
   }
 
-  // Výpis i sitemap jsou statické – obnoví se při další návštěvě.
-  // Úvodní stránka se vykresluje pokaždé, tu není třeba.
+  // Výpis a článek jsou statické – obnoví se při další návštěvě.
+  // Úvodní stránka i sitemap se skládají pokaždé, ty není třeba.
   revalidatePath('/novinky')
   revalidatePath(`/novinky/${slug}`)
-  revalidatePath('/sitemap.xml')
 
   return NextResponse.json({ ok: true, slug, url: absoluteUrl(`/novinky/${slug}`) }, { status: 201 })
 }
