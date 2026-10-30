@@ -27,14 +27,21 @@ export const PORADCE = {
    */
   praxeOd: '2017-06-30',
 
-  /** TODO: číslo registrace vázaného zástupce u ČNB. */
+  /**
+   * TODO: číslo registrace vázaného zástupce u ČNB. Web z něj vypisuje „Registrován
+   * u České národní banky pod číslem…“, proto sem nepatří číslo u OVB níže, dokud
+   * Jakub nepotvrdí, že jde o totéž. Registr ČNB je za CAPTCHA, ověřit to musí sám.
+   */
   cnbCisloRegistrace: '',
 
   /** Veřejný seznam regulovaných a registrovaných subjektů ČNB. */
   cnbRegistrUrl: 'https://apl.cnb.cz/apljerrsdad/JERRS.WEB07.INTRO_PAGE',
 
-  /** TODO: přesné znění označení vázaného zástupce do patičky (dodá Jakub). */
-  vazanyZastupce: '',
+  /**
+   * Patička a přihlášení. Číslo u OVB dodal Jakub 30. 10. 2026, název a IČO OVB
+   * jsou ověřené proti ARES. Znění je návrh, přesné označení může chtít OVB jiné.
+   */
+  vazanyZastupce: 'Vázaný zástupce společnosti OVB Allfinanz, a.s., IČO 48040410. Číslo u OVB: 4206460.',
 } as const
 
 /** Celé roky praxe k danému dni (`dnes` předává volající, viz React Compiler). */

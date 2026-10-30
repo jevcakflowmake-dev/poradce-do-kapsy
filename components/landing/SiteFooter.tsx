@@ -11,8 +11,8 @@ const KOTVY = [
 ]
 
 /**
- * Patička veřejné části. Slot pro označení vázaného zástupce zůstává prázdný,
- * dokud Jakub nedodá přesné znění (lib/poradce.ts) — do té doby se nevykreslí.
+ * Patička veřejné části. Označení vázaného zástupce je v lib/poradce.ts; kdyby
+ * tam bylo prázdné, řádek se nevykreslí.
  *
  * `naUvod` patří všude mimo úvodní stránku: kotvy sekcí tam samy o sobě
  * nikam nevedou, takže míří na úvodní stránku.

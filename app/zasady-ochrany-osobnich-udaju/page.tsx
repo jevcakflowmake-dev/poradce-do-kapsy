@@ -23,9 +23,10 @@ const SPRAVCE = PORADCE
 const GA4 = Boolean(MERENI.ga4)
 
 // Do 31. 8. 2026 byly na místě správce zástupné texty, od 9. 10. 2026 platí
-// znění s měřením návštěvnosti a od 14. 10. 2026 s evidencí doporučení
-// (jméno doporučitele v analýze). Datum se posouvá s každou změnou zpracování.
-const UCINNOST_OD = '14. října 2026'
+// znění s měřením návštěvnosti, od 14. 10. 2026 s evidencí doporučení (jméno
+// doporučitele v analýze) a od 30. 10. 2026 s oslovením živnostníků SMS z veřejných
+// zdrojů (bod 10, Scout FP). Datum se posouvá s každou změnou zpracování.
+const UCINNOST_OD = '30. října 2026'
 
 export default function ZasadyPage() {
   return (
@@ -38,6 +39,7 @@ export default function ZasadyPage() {
           Abychom vám mohli připravit finanční plán na míru, potřebujeme o vás
           vědět docela dost – včetně údajů o zdraví. Tady je přehledně, co
           sbíráme, proč, jak dlouho si to necháváme a co s tím můžete udělat.
+          Pokud jste od nás dostali SMS, všechno potřebné najdete v bodě 10.
         </p>
       }
     >
@@ -157,6 +159,11 @@ export default function ZasadyPage() {
                   poukázku. Doporučitel v aplikaci vidí jen počet svých bodů,
                   ne údaje o tom, koho doporučil. Právní základ: oprávněný
                   zájem (čl. 6 odst. 1 písm. f GDPR).
+                </>,
+                <>
+                  <B>Oslovení živnostníků SMS</B> – nabídka služby lidem, kteří
+                  nám kontakt nedali sami. Právní základ: oprávněný zájem
+                  (čl. 6 odst. 1 písm. f GDPR). Podrobnosti jsou v bodě 10.
                 </>,
                 ...(GA4
                   ? [
@@ -372,7 +379,65 @@ export default function ZasadyPage() {
             </P>
           </Section>
 
-          <Section number="10" title="Změny těchto zásad">
+          {/* TODO (Jakub): znění je můj návrh, projdi ho. Lhůtu 12 měsíců skript Scout FP
+              zatím sám nehlídá: listy Kontakty a Hledání a složku .cache je potřeba promazat ručně. */}
+          <Section number="10" title="Když jste od nás dostali SMS">
+            <P>
+              Živnostníkům v řemeslných oborech posíláme SMS s nabídkou služby
+              Poradce do kapsy. Jejich kontakt nemáme přímo od nich, proto tady
+              popisujeme, odkud ho máme a co s ním děláme.
+            </P>
+            <List
+              items={[
+                <>
+                  <B>Odkud údaje máme</B> – z veřejných zdrojů. Z rejstříku ARES
+                  a živnostenského rejstříku: jméno a příjmení, IČO, sídlo, živnost,
+                  obor a datum vzniku podnikání. Z veřejného záznamu firmy na
+                  Googlu: telefon.
+                </>,
+                <>
+                  <B>Proč a na jakém základě</B> – abychom vám mohli službu
+                  nabídnout (přímý marketing). Právní základ: oprávněný zájem
+                  (čl. 6 odst. 1 písm. f GDPR).
+                </>,
+                <>
+                  <B>Jak vybíráme, koho oslovit</B> – podle oboru, doby podnikání
+                  a okresu. Pořadí sestavuje skript a žádné právní účinky to pro vás
+                  nemá. Telefon přiřadíme jen tehdy, když jsme si jistí, že záznam
+                  na Googlu patří právě vám. Datum narození, DIČ ani údaje
+                  o insolvenci neukládáme.
+                </>,
+                <>
+                  <B>Komu se údaje dostanou</B> – seznam vedeme v tabulce Google
+                  Sheets (Google Ireland Limited) a zapisujeme ho přes vlastní
+                  automatizační server (n8n) za službou Cloudflare. Při hledání
+                  telefonu posíláme Googlu jméno a obec. Nikomu údaje neprodáváme.
+                </>,
+                <>
+                  <B>Jak dlouho je uchováváme</B> – v seznamu jste nejdéle 12 měsíců
+                  od oslovení. Pokud jsme vás neoslovili, evidujeme jen IČO, datum
+                  a výsledek hledání, také nejdéle 12 měsíců. Stejně dlouho držíme
+                  i kopii údajů z rejstříků. Když se rozhodnete službu využít, platí
+                  pro vaše údaje ostatní body těchto zásad.
+                </>,
+                <>
+                  <B>Jak to zastavit</B> – odepište na SMS „NE“ nebo napište na{' '}
+                  <a
+                    href={`mailto:${SPRAVCE.email}`}
+                    className="text-navy hover:text-navy font-semibold transition-colors"
+                  >
+                    {SPRAVCE.email}
+                  </a>
+                  . Proti přímému marketingu můžete vznést námitku kdykoliv a bez
+                  udání důvodu. Vyřadíme vás a už vás neoslovíme. Aby to platilo
+                  i příště, necháme si jen IČO a telefon v seznamu odhlášených.
+                </>,
+              ]}
+            />
+            <P>Další vaše práva popisuje bod 09.</P>
+          </Section>
+
+          <Section number="11" title="Změny těchto zásad">
             <P>
               Pokud se způsob zpracování změní, aktualizujeme tento dokument
               a posuneme datum účinnosti nahoře. U podstatných změn vás
