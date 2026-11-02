@@ -141,6 +141,14 @@ propadlý (`invalid_grant`) a notifikace tiše nechodily ze všech tří workflo
 Kdyby se to opakovalo po ~7 dnech, má OAuth consent screen v Google Cloudu stav
 *Testing* — ten ruší refresh tokeny týdně, řeší se přepnutím na *In production*.
 
+**2. 11. 2026:** Gmail credential propadl znovu, e-maily o novém klientovi
+a o zájmu klienta tiše neodcházely. `Email poradci` v `novy-klient`
+a `klient-zajem` je proto přepnutý z Gmailu na Resend SMTP („SMTP account“,
+odesílatel `noreply@mail.poradcedokapsy.cz`), stejně jako upozornění klientům.
+Na Gmailu dnes visí už jen error workflow `PoradceDoKapsy_chyba_upozorneni_error`
+(`kulmjBamGq9eZ57C`, napojený na `upozorneni-klienta`). Ten Gmail používá
+záměrně, aby ho nepoložil výpadek Resendu. `novy-navrh` aplikace už nevolá.
+
 Pozn.: `novy-klient` a `novy-navrh` existují v n8n **dvakrát** se stejnou cestou
 (vždy jeden aktivní, jeden vypnutý) — při úpravách sáhnout do toho aktivního.
 
