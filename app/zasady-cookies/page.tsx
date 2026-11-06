@@ -58,7 +58,7 @@ export default function ZasadyCookiesPage() {
             </>,
             <>
               <B>Rozepsaná analýza</B> – v úložišti prohlížeče si držíme vaše
-              odpovědi a číslo kroku, abyste mohli dotazník dokončit později a
+              odpovědi a číslo kroku, abyste mohli analýzu dokončit později a
               nezačínali znovu. Zůstávají ve vašem zařízení, dokud analýzu
               neodešlete nebo si prohlížeč nevyčistíte.
             </>,
@@ -74,7 +74,7 @@ export default function ZasadyCookiesPage() {
               <B>Měření návštěvnosti</B> – jen s vaším souhlasem. Používáme Google
               Analytics od společnosti Google Ireland Limited. Vidíme díky němu,
               kolik lidí na web přišlo a odkud, které části úvodní stránky si
-              prošli, na co klikli a u kterého kroku dotazníku skončili.
+              prošli, na co klikli a u kterého kroku analýzy skončili.
             </P>
             <List
               items={[
@@ -84,7 +84,7 @@ export default function ZasadyCookiesPage() {
                   nejdéle dva roky.
                 </>,
                 <>
-                  <B>Co do Analytics neposíláme</B> – odpovědi z dotazníku, jméno
+                  <B>Co do Analytics neposíláme</B> – odpovědi z analýzy, jméno
                   ani e-mail. V klientské zóně se neměří nic.
                 </>,
                 <>

@@ -81,7 +81,7 @@ function FotkaVUvodu({ src, pozice = 'center' }: { src: string; pozice?: string 
  * Sekce kopírují úvodní stránku – tmavý úvod, karty, kroky, pilíře, dotazy –
  * a všechny tři stránky sdílejí tuhle kostru, aby se sazba nerozešla.
  *
- * Cíl je stejný jako na úvodní stránce: dotazník na /analyza.
+ * Cíl je stejný jako na úvodní stránce: analýza na /analyza.
  */
 export default function TemaStranka({ obsah }: { obsah: ObsahTematu }) {
   const dalsi = TEMATA.filter((t) => t.cesta !== obsah.cesta)

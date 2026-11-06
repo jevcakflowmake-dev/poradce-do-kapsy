@@ -47,7 +47,7 @@ export default function AnalysisWizard() {
   const honeypotRef = useRef<HTMLInputElement>(null)
   const nadpisRef = useRef<HTMLHeadingElement>(null)
   const draftLoaded = useRef(false)
-  // Měření průchodu dotazníkem: krok, kterým tahle návštěva začala, a kroky,
+  // Měření průchodu analýzou: krok, kterým tahle návštěva začala, a kroky,
   // které už do Google Analytics odešly.
   const startKrok = useRef(0)
   const zmereneKroky = useRef(new Set<number>())
@@ -81,7 +81,7 @@ export default function AnalysisWizard() {
   }, [])
 
   // Každý krok se počítá jednou za návštěvu a jen směrem vpřed, takže počty
-  // u jednotlivých kroků ukážou, kde lidé dotazník opouštějí. Kdo se vrátil
+  // u jednotlivých kroků ukážou, kde lidé analýzu opouštějí. Kdo se vrátil
   // k rozepsané analýze, počítá se od kroku, u kterého minule skončil.
   // Musí zůstat až za načtením konceptu, jinak by se započítal i krok 1.
   useEffect(() => {

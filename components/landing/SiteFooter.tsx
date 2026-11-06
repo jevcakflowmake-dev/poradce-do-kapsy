@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { PORADCE } from '@/lib/poradce'
 
+// min-h-11: klikací plocha 44 px i na mobilu, kde jsou odkazy blízko sebe
 const TRIDA_ODKAZU =
-  'text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40'
+  'inline-flex items-center min-h-11 text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40'
 
 const KOTVY = [
   { href: '#jak-to-funguje', label: 'Jak to funguje' },
@@ -28,7 +29,7 @@ export default function SiteFooter({ naUvod = false }: { naUvod?: boolean }) {
           <span className="font-display text-navy">Poradce do kapsy</span>
         </div>
 
-        <nav aria-label="Patička" className="flex flex-wrap gap-x-6 gap-y-2">
+        <nav aria-label="Patička" className="flex flex-wrap gap-x-6">
           {KOTVY.map((k) =>
             naUvod ? (
               <Link key={k.href} href={`/${k.href}`} className={TRIDA_ODKAZU}>
@@ -40,14 +41,14 @@ export default function SiteFooter({ naUvod = false }: { naUvod?: boolean }) {
               </a>
             ),
           )}
-          <Link href="/zasady-ochrany-osobnich-udaju" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">
+          <Link href="/zasady-ochrany-osobnich-udaju" className={TRIDA_ODKAZU}>
             Ochrana údajů
           </Link>
-          <Link href="/obchodni-podminky" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">
+          <Link href="/obchodni-podminky" className={TRIDA_ODKAZU}>
             Obchodní podmínky
           </Link>
-          <Link href="/zasady-cookies" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Cookies</Link>
-          <Link href="/login" className="text-base text-slate hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40">Přihlášení</Link>
+          <Link href="/zasady-cookies" className={TRIDA_ODKAZU}>Cookies</Link>
+          <Link href="/login" className={TRIDA_ODKAZU}>Přihlášení</Link>
         </nav>
 
         <div className="md:text-right space-y-1.5">
@@ -61,7 +62,7 @@ export default function SiteFooter({ naUvod = false }: { naUvod?: boolean }) {
               href="https://www.robology.io/"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-4 hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+              className="inline-flex items-center min-h-11 underline underline-offset-4 hover:text-navy transition-colors rounded-pill focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
             >
               &gt;robology
             </a>

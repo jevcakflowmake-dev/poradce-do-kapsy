@@ -17,7 +17,7 @@ import { vypniMereni, zapniMereni, zmer } from '@/lib/mereni'
  *
  * Atribut funguje i v serverových komponentách, takže kvůli měření nemusí
  * být žádná část úvodní stránky klientská. Co se měří jinak než atributem
- * (kroky dotazníku), volá `zmer()` z `lib/mereni.ts` přímo.
+ * (kroky analýzy), volá `zmer()` z `lib/mereni.ts` přímo.
  */
 export default function Mereni() {
   // Bez ID měření tu není co dělat a web žádný cizí skript nenačítá.

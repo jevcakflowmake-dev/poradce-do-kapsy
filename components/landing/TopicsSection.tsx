@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { TEMATA } from '@/lib/temata'
 
 /**
- * Rozcestník na stránky oblastí. Úvodní stránka má jediný cíl – dotazník –
+ * Rozcestník na stránky oblastí. Úvodní stránka má jediný cíl – analýzu –
  * a tahle sekce od něj nemá odvádět: je až pod partnery a karty vedou na
  * stránky, které končí stejným tlačítkem. Slouží hlavně tomu, kdo chce
  * o jedné oblasti vědět víc, a vyhledávačům jako vnitřní odkaz.

@@ -55,7 +55,7 @@ export default function ObchodniPodminkyPage() {
         <List
           items={[
             <>
-              <B>Analýza</B> – online dotazník o vaší situaci, cílech a smlouvách.
+              <B>Analýza</B> – online formulář o vaší situaci, cílech a smlouvách.
               Vyplníte ho bez registrace.
             </>,
             <>

@@ -4,7 +4,7 @@
  */
 const KROKY = [
   {
-    titul: 'Vyplníte online dotazník.',
+    titul: 'Vyplníte online analýzu.',
     popis: 'Patnáct minut, kdykoliv, i večer po uložení dětí.',
   },
   {

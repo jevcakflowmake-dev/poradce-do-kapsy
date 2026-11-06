@@ -70,7 +70,7 @@ export default async function DashboardPage() {
   const rezerva = (finance as { reserve?: number | null } | null)?.reserve ?? null
 
   // Kdo analýzu nevyplnil, není do ní tlačen: klient se sjednanými smlouvami
-  // se registruje kvůli nim, ne kvůli dotazníku. Hotový plán má přednost před
+  // se registruje kvůli nim, ne kvůli analýze. Hotový plán má přednost před
   // vším ostatním – poradce ho stávajícímu klientovi může připravit i bez analýzy.
   const bezAnalyzy = !profile?.onboarding_completed
   const stav = maPlan

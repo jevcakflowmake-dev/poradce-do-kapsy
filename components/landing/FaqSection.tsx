@@ -35,7 +35,7 @@ const DOTAZY: Dotaz[] = [
     otazka: 'Budete mi volat?',
     odpoved: (
       <>
-        Ne, pokud si to sami nevyžádáte. Telefon je v dotazníku nepovinný. Ozvu se e-mailem
+        Ne, pokud si to sami nevyžádáte. Telefon je v analýze nepovinný. Ozvu se e-mailem
         a dál si píšeme v aplikaci.
       </>
     ),

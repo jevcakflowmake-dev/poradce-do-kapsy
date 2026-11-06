@@ -3,7 +3,7 @@ import { buttonVariants } from '@/components/ui/button'
 import PhoneMockup from '@/components/landing/PhoneMockup'
 
 /**
- * Hero má jediný úkol: dostat člověka do dotazníku. Text vlevo, produkt vpravo.
+ * Hero má jediný úkol: dostat člověka do analýzy. Text vlevo, produkt vpravo.
  * Na mobilu text nahoře a telefon pod ním. Bez animací a bez videa — hero se
  * musí vykreslit hned, ne až doběhne skript.
  */

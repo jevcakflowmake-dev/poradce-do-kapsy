@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
 
 /**
- * Rozepsaná veřejná analýza. Ukládá se až od posledního kroku dotazníku,
+ * Rozepsaná veřejná analýza. Ukládá se až od posledního kroku analýzy,
  * kdy je znám e-mail a člověk na obrazovce vidí, že odpovědi držíme.
  *
  * Do tabulky se z prohlížeče nedá sáhnout (RLS bez politik), proto tahle

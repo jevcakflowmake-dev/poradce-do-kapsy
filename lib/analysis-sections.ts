@@ -230,7 +230,7 @@ export function uklidVsechnySekce(vsechny: VsechnyOdpovedi): VsechnyOdpovedi {
 /**
  * Volba „jen úraz“ v prvním kroku. Úrazové pojištění nepotřebuje otázky
  * na nemocenskou, odpracované roky, invaliditu ani zdravotní historii –
- * a kdo chce jen levnou úrazovku, toho by dlouhý dotazník odradil.
+ * a kdo chce jen levnou úrazovku, toho by dlouhá analýza odradila.
  */
 export const JEN_URAZ = 'Jen úrazové pojištění'
 /** Pro otázky ve stejné sekci jako volba – jde posoudit i bez celé analýzy. */

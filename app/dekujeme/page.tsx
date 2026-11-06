@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 
 /**
  * Cíl konverze pro Meta i Google Ads. Vlastní URL má smysl právě proto,
- * že jde změřit dokončení a odlišit ho od zobrazení dotazníku.
+ * že jde změřit dokončení a odlišit ho od zobrazení analýzy.
  *
- * Google Analytics dostává událost `analyza_odeslana` už z dotazníku ve
+ * Google Analytics dostává událost `analyza_odeslana` už z analýzy ve
  * chvíli úspěšného odeslání (app/analyza/AnalysisWizard.tsx), takže tady nic
  * dalšího není. TODO (až řekne Jakub): událost pro Meta Pixel.
  */

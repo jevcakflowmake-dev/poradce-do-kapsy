@@ -25,7 +25,7 @@ export default async function NovinkySection() {
           <Link
             href="/novinky"
             data-mereni-klik="klik_novinky_vse"
-            className="inline-flex items-center gap-1.5 text-base font-semibold text-navy rounded-pill hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
+            className="inline-flex items-center gap-1.5 min-h-11 text-base font-semibold text-navy rounded-pill hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
           >
             Všechny novinky <ArrowRight className="w-4 h-4" aria-hidden />
           </Link>
