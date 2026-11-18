@@ -33,8 +33,9 @@ interface Zprava {
   predmet: string
   nadpis: string
   odstavce: string[]
-  tlacitko: string
-  cesta: string
+  /** Bez tlačítka jde e-mail jen s textem (potvrzení přijaté analýzy). */
+  tlacitko?: string
+  cesta?: string
 }
 
 function slozZpravu(udalost: UdalostKlienta, data: { smlouvaId?: string; nazev?: string }): Zprava {
@@ -94,6 +95,8 @@ interface Obal {
 
 const PATICKA_KLIENTA =
   'Tento e-mail vám poslala aplikace Poradce do kapsy (poradcedokapsy.cz). Na e-mail neodpovídejte, s poradcem se spojíte v aplikaci.'
+const PATICKA_PRIJETI =
+  'Tento e-mail vám poslala aplikace Poradce do kapsy (poradcedokapsy.cz), protože někdo s touto adresou odeslal na webu finanční analýzu. Na e-mail neodpovídejte.'
 const PATICKA_PORADCE =
   'Tento e-mail vám poslala aplikace Poradce do kapsy (poradcedokapsy.cz), protože vám klient napsal do chatu. Na e-mail neodpovídejte, klientovi odpovíte v aplikaci.'
 
@@ -114,10 +117,10 @@ function html(z: Zprava, odkaz: string, obal: Obal): string {
 </tr></table>
 <h1 style="margin:28px 0 12px;font-family:${PISMO};font-size:22px;line-height:1.3;font-weight:700;color:#0F2A44;">${escapuj(z.nadpis)}</h1>
 ${[obal.pozdrav, ...z.odstavce].filter((t): t is string => Boolean(t)).map(odstavec).join('\n')}
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"><tr>
+${z.tlacitko ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;"><tr>
 <td style="border-radius:999px;background-color:#1FB58F;"><a href="${escapuj(odkaz)}" style="display:inline-block;padding:14px 28px;font-family:${PISMO};font-size:16px;font-weight:600;color:#0F2A44;text-decoration:none;border-radius:999px;">${escapuj(z.tlacitko)}</a></td>
 </tr></table>
-${obal.podpis ? `<p style="margin:0;font-family:${PISMO};font-size:14px;line-height:1.6;color:#64707D;">${escapuj(obal.podpis)}</p>\n` : ''}</td></tr></table>
+` : ''}${obal.podpis ? `<p style="margin:0;font-family:${PISMO};font-size:14px;line-height:1.6;color:#64707D;">${escapuj(obal.podpis)}</p>\n` : ''}</td></tr></table>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;"><tr>
 <td style="padding:16px 4px 0;font-family:${PISMO};font-size:12px;line-height:1.5;color:#64707D;">${escapuj(obal.paticka)}</td>
 </tr></table>
@@ -161,7 +164,7 @@ export async function upozornitKlienta(
     const z = slozZpravu(udalost, data)
     const jmeno = profil?.full_name?.trim() || null
     const pozdrav = jmeno ? `Dobrý den, ${osloveni(jmeno)},` : 'Dobrý den,'
-    const odkaz = absoluteUrl(z.cesta)
+    const odkaz = absoluteUrl(z.cesta ?? '/')
     const text = [pozdrav, '', ...z.odstavce, '', `${z.tlacitko}: ${odkaz}`, '', PORADCE.jmeno].join('\n')
 
     return await predejN8n(udalost, token, {
@@ -220,7 +223,7 @@ export async function upozornitPoradce(klientId: string): Promise<boolean> {
       tlacitko: 'Otevřít chat',
       cesta: `/advisor/zpravy?klient=${klientId}`,
     }
-    const odkaz = absoluteUrl(z.cesta)
+    const odkaz = absoluteUrl(z.cesta ?? '/')
     const telo = {
       client_id: klientId,
       jmeno: klient,
@@ -233,6 +236,77 @@ export async function upozornitPoradce(klientId: string): Promise<boolean> {
     return prevzato.every(Boolean)
   } catch (err) {
     console.warn(`[upozorneni] ${ZPRAVA_OD_KLIENTA}: nedoručeno –`, err instanceof Error ? err.message : err)
+    return false
+  }
+}
+
+/**
+ * Jak dopadlo odeslání veřejné analýzy. S platným heslem chodí potvrzovací
+ * e-mail ze Supabase, tady jsou ostatní případy.
+ */
+export type PrijetiAnalyzy = 'bez_hesla' | 'slabe_heslo' | 'existujici'
+
+const PRIJATA_ANALYZA = 'analyza_prijata'
+
+/**
+ * Potvrzení, že analýza dorazila. Děkovací stránka ukazuje všem stejný
+ * text („poslal jsem vám e-mail“) a co se s analýzou stalo, se člověk
+ * dozví až tady – v e-mailové schránce, kam se dostane jen majitel adresy.
+ * Dřív stránka každému ukázala „S tímhle e-mailem už účet existuje“, takže
+ * kdokoli mohl zadat cizí e-mail a zjistit, že dotyčný je klientem.
+ *
+ * Text analýzy ani zdravotní údaje v e-mailu nejsou.
+ */
+export async function potvrditPrijetiAnalyzy(
+  email: string,
+  jmeno: string | null,
+  varianta: PrijetiAnalyzy,
+): Promise<boolean> {
+  const token = process.env.N8N_UPOZORNENI_TOKEN
+  if (!token) {
+    console.warn(`[upozorneni] ${PRIJATA_ANALYZA}: chybí N8N_UPOZORNENI_TOKEN, e-mail se neposílá`)
+    return false
+  }
+  const pozdrav = jmeno ? `Dobrý den, ${osloveni(jmeno)},` : 'Dobrý den,'
+  const navrh = 'Projdu vaše odpovědi i přílohy a do 48 hodin vám pošlu návrh. Když mi něco nebude jasné, napíšu vám.'
+  const cizi = `Pokud jste analýzu neodesílali vy, napište mi prosím na ${PORADCE.email}.`
+  const z: Zprava =
+    varianta === 'existujici'
+      ? {
+          predmet: 'Analýzu jsem dostal',
+          nadpis: 'Analýzu mám',
+          odstavce: [
+            'Děkuji za vyplněnou analýzu. U mě už účet máte, takže jsem odpovědi zatím nikam nepřepisoval – projdu je a do 48 hodin se vám ozvu.',
+            'Do aplikace se přihlásíte svým heslem. Když si ho nepamatujete, na přihlašovací stránce si nastavíte nové.',
+            cizi,
+          ],
+          tlacitko: 'Přihlásit se',
+          cesta: '/login',
+        }
+      : {
+          predmet: 'Analýzu jsem dostal',
+          nadpis: 'Analýzu mám',
+          odstavce: [
+            `Děkuji za vyplněnou analýzu. ${navrh}`,
+            varianta === 'slabe_heslo'
+              ? 'Heslo, které jste zvolili, jsem nepoužil – objevilo se v únicích dat z jiných webů, takže by nebylo bezpečné. S hotovým plánem vám pošlu odkaz, kterým si nastavíte jiné.'
+              : 'S hotovým plánem vám pošlu odkaz, kterým si nastavíte heslo a plán si prohlédnete online.',
+            cizi,
+          ],
+        }
+  const odkaz = absoluteUrl(z.cesta ?? '/')
+  const text = [pozdrav, '', ...z.odstavce, ...(z.tlacitko ? ['', `${z.tlacitko}: ${odkaz}`] : []), '', PORADCE.jmeno].join('\n')
+  try {
+    return await predejN8n(PRIJATA_ANALYZA, token, {
+      email,
+      jmeno,
+      predmet: z.predmet,
+      text,
+      html: html(z, odkaz, { pozdrav, podpis: PORADCE.jmeno, paticka: PATICKA_PRIJETI }),
+      odkaz,
+    })
+  } catch (err) {
+    console.warn(`[upozorneni] ${PRIJATA_ANALYZA}: nedoručeno –`, err instanceof Error ? err.message : err)
     return false
   }
 }

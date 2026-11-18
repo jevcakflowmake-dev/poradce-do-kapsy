@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
   applyResponses,
@@ -15,6 +15,7 @@ import { MAX_FILE_SIZE, jePovolenaPriloha, sanitizeFileName, sTypem } from '@/li
 import { ipPozadavku, vytvorLimit } from '@/lib/rate-limit'
 import { createPublicClient } from '@/lib/supabase/verejny'
 import { absoluteUrl } from '@/lib/site'
+import { potvrditPrijetiAnalyzy } from '@/lib/upozorneni'
 import type { Json } from '@/lib/types/database'
 
 /**
@@ -29,6 +30,13 @@ const MAX_FILES = 10
 
 /** Pět odeslání za deset minut z jedné adresy – víc člověk nepotřebuje. */
 const rateLimited = vytvorLimit({ oknoMs: 10 * 60 * 1000, max: 5 })
+
+/**
+ * Odpověď je pro všechny případy stejná – nový účet, existující účet,
+ * odmítnuté heslo. Podle rozdílné odpovědi by šlo zjistit, jestli má
+ * cizí e-mail u poradce účet. Co se stalo, se člověk dozví z e-mailu.
+ */
+const PRIJATO = { status: 'ok' } as const
 
 async function notifyAdvisor(payload: Record<string, unknown>): Promise<void> {
   // Awaitujeme – fire-and-forget fetch se v serverless funkci nemusí stihnout
@@ -187,7 +195,8 @@ export async function POST(request: Request) {
         client_id: existing.id,
       })
 
-      return NextResponse.json({ status: 'existing' })
+      after(() => potvrditPrijetiAnalyzy(email, fullName || null, 'existujici'))
+      return NextResponse.json(PRIJATO)
     }
 
     // 4) Nový člověk → založíme účet. Bez hesla se přihlásit nedá; přístup
@@ -220,7 +229,7 @@ export async function POST(request: Request) {
       console.error('[analyza] založení klienta selhalo:', createError?.message)
       // Odpovědi jsou uložené v public_submissions, takže se nic neztratilo –
       // poradce je uvidí mezi čekajícími odesláními.
-      return NextResponse.json({ status: 'existing' })
+      return NextResponse.json(PRIJATO)
     }
 
     const clientId = created.user.id
@@ -264,7 +273,9 @@ export async function POST(request: Request) {
       ma_heslo: maHeslo,
     })
 
-    return NextResponse.json({ status: 'created', hasPassword: maHeslo, slabeHeslo })
+    // S platným heslem odešel potvrzovací e-mail ze Supabase, jinak potvrdíme sami.
+    if (!maHeslo) after(() => potvrditPrijetiAnalyzy(email, fullName || null, slabeHeslo ? 'slabe_heslo' : 'bez_hesla'))
+    return NextResponse.json(PRIJATO)
   } catch (err) {
     console.error('[analyza] neočekávaná chyba:', err instanceof Error ? err.message : err)
     return NextResponse.json(

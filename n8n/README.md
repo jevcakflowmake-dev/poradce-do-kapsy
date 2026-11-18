@@ -69,11 +69,16 @@ přes Resend – kdyby selhal Resend, nedošlo by přes něj ani upozornění.
 
 | pole | obsah |
 | --- | --- |
-| `udalost` | klientovi: `plan_zverejnen`, `plan_upraven`, `nova_smlouva`, `nova_zprava`; poradci: `zprava_od_klienta` |
-| `email` | příjemce – klient, u `zprava_od_klienta` poradce |
-| `jmeno`, `client_id` | klient, kterého se e-mail týká |
+| `udalost` | klientovi: `plan_zverejnen`, `plan_upraven`, `nova_smlouva`, `nova_zprava`; poradci: `zprava_od_klienta`; potvrzení odeslané analýzy: `analyza_prijata` |
+| `email` | příjemce – klient, u `zprava_od_klienta` poradce, u `analyza_prijata` adresa z analýzy |
+| `jmeno`, `client_id` | klient, kterého se e-mail týká (`analyza_prijata` nemá `client_id`) |
 | `predmet`, `text`, `html` | hotový e-mail |
-| `odkaz` | kam vede tlačítko v e-mailu |
+| `odkaz` | kam vede tlačítko v e-mailu (`analyza_prijata` bez hesla tlačítko nemá) |
+
+`analyza_prijata` posílá web po odeslání veřejné analýzy (kromě případu s platným
+heslem, kdy chodí potvrzovací e-mail ze Supabase). Děkovací stránka je pro všechny
+stejná, aby nešlo zadáním cizího e-mailu zjistit, kdo je klientem – podrobnosti
+proto dostane jen majitel adresy. Ve workflow se nic měnit nemusí.
 
 ---
 

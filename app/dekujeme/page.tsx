@@ -17,33 +17,20 @@ export const metadata: Metadata = {
  * chvíli úspěšného odeslání (app/analyza/AnalysisWizard.tsx), takže tady nic
  * dalšího není. TODO (až řekne Jakub): událost pro Meta Pixel.
  */
-export default async function DekujemePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ stav?: string; heslo?: string }>
-}) {
-  const { stav, heslo } = await searchParams
-  const existujici = stav === 'existujici'
-  const maHeslo = heslo === '1'
-  // Heslo, které Supabase odmítl jako uniklé nebo slabé – účet vznikl bez něj.
-  const slabeHeslo = heslo === 'slabe'
-
+export default function DekujemePage() {
+  // Stejný text pro všechny: kdyby stránka říkala „účet už existuje“, šlo by
+  // zadáním cizího e-mailu zjistit, kdo je klientem. Podrobnosti (heslo,
+  // přihlášení, odmítnuté heslo) dostane jen majitel adresy e-mailem.
   return (
     <div className="min-h-screen bg-cream flex flex-col">
       <main className="flex-1 mx-auto w-full max-w-4xl px-6 py-16 md:py-24">
-        <p className="text-base text-slate">
-          {existujici ? 'Přijato · ozvu se vám' : 'Hotovo · analýzu mám'}
-        </p>
+        <p className="text-base text-slate">Hotovo · analýzu mám</p>
         <h1 className="font-display text-h2 text-navy mt-3">Analýza odeslána.</h1>
 
         <p className="mt-6 text-lead text-navy max-w-2xl text-pretty">
-          {existujici
-            ? 'S tímhle e-mailem už účet existuje, takže odpovědi zatím nikam nepřepisuju. Projdu je a ozvu se vám. Pokud jste to vy a heslo si pamatujete, můžete se rovnou přihlásit.'
-            : maHeslo
-              ? 'Účet máte založený. Poslal jsem vám e-mail s potvrzovacím odkazem – po kliknutí na něj se přihlásíte a plán uvidíte hned, jak bude hotový.'
-              : slabeHeslo
-                ? 'Zvolené heslo jsem nepoužil – objevilo se v únicích dat z jiných webů, takže by nebylo bezpečné. Jakmile bude plán hotový, pošlu vám odkaz, kterým si nastavíte jiné.'
-                : 'Jakmile bude plán hotový, pošlu vám na e-mail odkaz, kterým si nastavíte heslo a plán si prohlédnete online.'}
+          Na zadaný e-mail jsem vám poslal potvrzení a co bude dál. Když jste si zvolili heslo,
+          najdete v e-mailu odkaz, kterým účet aktivujete. Kdyby e-mail do pár minut nedorazil,
+          podívejte se do složky hromadné pošty nebo spamu.
         </p>
 
         <section className="mt-12">
@@ -71,11 +58,6 @@ export default async function DekujemePage({
         </section>
 
         <div className="mt-10 flex flex-col sm:flex-row gap-3">
-          {(existujici || maHeslo) && (
-            <Link href="/login" className={buttonVariants({ size: 'lg' })}>
-              Přihlásit se
-            </Link>
-          )}
           <Link href="/" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
             Zpět na úvod
           </Link>

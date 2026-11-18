@@ -304,7 +304,7 @@ export default function AnalysisWizard() {
       const res = await fetch('/api/analyza/odeslat', { method: 'POST', body: form })
       // Odmítnutí od Vercelu (413 a podobné) nepřijde jako JSON – nesmí skončit
       // hláškou o připojení, když je chyba jinde.
-      const payload: { error?: string; status?: string; hasPassword?: boolean; slabeHeslo?: boolean } =
+      const payload: { error?: string } =
         await res.json().catch(() => ({}))
 
       if (!res.ok) {
@@ -331,12 +331,11 @@ export default function AnalysisWizard() {
         body: JSON.stringify({ draftKey: klicRef.current }),
       }).catch(() => {})
 
-      const stav = payload.status === 'existing' ? 'existujici' : 'novy'
       // Hlavní cíl webu. Posílá se tady, ne na /dekujeme: tam by ho znovu
-      // započítalo každé obnovení stránky.
-      zmer('analyza_odeslana', { stav })
-      const heslo = payload.hasPassword ? '&heslo=1' : payload.slabeHeslo ? '&heslo=slabe' : ''
-      router.push(`/dekujeme?stav=${stav}${heslo}`)
+      // započítalo každé obnovení stránky. Jak odeslání dopadlo (nový nebo
+      // existující účet), server schválně neříká – viz /api/analyza/odeslat.
+      zmer('analyza_odeslana')
+      router.push('/dekujeme')
     } catch {
       setError('Chyba připojení. Zkontrolujte internet a zkuste to prosím znovu.')
       setLoading(false)
