@@ -13,33 +13,105 @@ import {
   spojHodnoty,
   rozdelSkupinu,
   spojSkupinu,
+  zvoleneOblasti,
+  vRozsahu,
+  oblastZeStranky,
+  OBLASTI,
+  VSE,
+  ZAMER_SEKCE,
+  ZAMER_OTAZKA,
   type Question,
   type SectionData,
+  type VsechnyOdpovedi,
 } from '@/lib/analysis-sections'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { PRIJIMANE_PRILOHY } from '@/lib/storage'
+import { PRIJIMANE_PRILOHY, jePovolenaPriloha } from '@/lib/storage'
 import { zmer } from '@/lib/mereni'
 import { useSouhlas } from '@/lib/pouzijSouhlas'
 
 /** Rozepsaná analýza přežije zavření karty – čtvrt hodiny práce se nesmí ztratit. */
 const DRAFT_KEY = 'pdk-analyza-draft'
-const STEP_KEY = 'pdk-analyza-krok'
+/**
+ * Sekce, u které člověk skončil. Ukládá se id, ne pořadí: kroky se mění
+ * podle výběru v rozcestníku. Starší klíč s číslem kroku ('pdk-analyza-krok')
+ * se už nečte – koncept zůstane, jen se začne od rozcestníku.
+ */
+const STEP_KEY = 'pdk-analyza-sekce'
+const STARY_STEP_KEY = 'pdk-analyza-krok'
 /** Náhodný klíč konceptu. Podle něj se na serveru přepisuje jeden a ten samý řádek. */
 const KEY_KLIC = 'pdk-analyza-klic'
 
 type PendingFile = { name: string; size: number; section: string; file: File }
 
+/**
+ * Celá analýza i s přílohami jde jedním požadavkem přes funkci na Vercelu
+ * a ta přijme nejvýš 4,5 MB. Větší odeslání skončilo chybou až v posledním
+ * kroku, proto hlídáme součet příloh hned při výběru (s rezervou na odpovědi).
+ */
+const LIMIT_PRILOH = 4 * 1024 * 1024
+const PRILOHY_MOC_VELKE =
+  'Přílohy jsou dohromady moc velké. Odešlete analýzu bez nich a smlouvy mi pošlete později – po odeslání vám napíšu, kam je nahrát.'
+
+/** Delší strana fotky po zmenšení. Smlouva je pořád dobře čitelná. */
+const MAX_STRANA_FOTKY = 2000
+
+/**
+ * Fotku dokladu z mobilu (běžně 3–8 MB) zmenší na JPEG kolem půl megabajtu.
+ * Když to prohlížeč neumí nebo výsledek není menší, vrátí původní soubor.
+ */
+async function zmensiFotku(file: File): Promise<File> {
+  if (!/^image\/(jpeg|png)$/.test(file.type) || file.size < 600 * 1024) return file
+  try {
+    const bitmapa = await createImageBitmap(file)
+    const pomer = Math.min(1, MAX_STRANA_FOTKY / Math.max(bitmapa.width, bitmapa.height))
+    const platno = document.createElement('canvas')
+    platno.width = Math.round(bitmapa.width * pomer)
+    platno.height = Math.round(bitmapa.height * pomer)
+    const ctx = platno.getContext('2d')
+    if (!ctx) return file
+    // PNG s průhledností by v JPEG zčernal – podklad bílý jako papír.
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, platno.width, platno.height)
+    ctx.drawImage(bitmapa, 0, 0, platno.width, platno.height)
+    bitmapa.close()
+    const blob = await new Promise<Blob | null>((r) => platno.toBlob(r, 'image/jpeg', 0.85))
+    if (!blob || blob.size >= file.size) return file
+    return new File([blob], file.name.replace(/\.(png|jpe?g)$/i, '') + '.jpg', { type: 'image/jpeg' })
+  } catch {
+    return file
+  }
+}
+
+/**
+ * Odpovědi, které z průvodce odejdou: jen kroky a otázky z vybraných
+ * oblastí. Kdo si v rozcestníku oblast odškrtl, tomu odpovědi zůstanou
+ * v konceptu (kdyby si to rozmyslel), ale poradci se nepošlou.
+ */
+function odpovediVRozsahu(data: VsechnyOdpovedi): VsechnyOdpovedi {
+  const zvolene = zvoleneOblasti(data)
+  const vysledek: VsechnyOdpovedi = {}
+  for (const s of SECTIONS) {
+    if (!data[s.id] || !vRozsahu(s, zvolene)) continue
+    const povolene = new Set(s.questions.filter((q) => vRozsahu(q, zvolene)).map((q) => q.id))
+    const sekce = Object.fromEntries(Object.entries(data[s.id]).filter(([id]) => povolene.has(id)))
+    if (Object.keys(sekce).length > 0) vysledek[s.id] = sekce
+  }
+  return uklidVsechnySekce(vysledek)
+}
+
 export default function AnalysisWizard() {
   const router = useRouter()
-  const [krok, setKrok] = useState(0)
+  const [sekceId, setSekceId] = useState(SECTIONS[0].id)
   const [data, setData] = useState<Record<string, SectionData>>({})
   const [files, setFiles] = useState<PendingFile[]>([])
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [chybaPrilohy, setChybaPrilohy] = useState<string | null>(null)
+  const [zpracovavam, setZpracovavam] = useState(false)
 
   const fileRef = useRef<HTMLInputElement>(null)
   const klicRef = useRef('')
@@ -53,20 +125,37 @@ export default function AnalysisWizard() {
   const zmereneKroky = useRef(new Set<number>())
   const smiMerit = useSouhlas()?.volba === 'vse'
 
-  const sekce = SECTIONS[krok]
-  const posledni = krok === SECTIONS.length - 1
+  // Kroky podle rozcestníku. Práce a příjem a Osobní údaje jsou vždy.
+  const zvolene = zvoleneOblasti(data)
+  const kroky = SECTIONS.filter((s) => vRozsahu(s, zvolene))
+  const krok = Math.max(0, kroky.findIndex((s) => s.id === sekceId))
+  const sekce = kroky[krok]
+  const posledni = krok === kroky.length - 1
 
   // Načtení rozepsaného konceptu včetně kroku, u kterého člověk skončil
   useEffect(() => {
     try {
       const raw = localStorage.getItem(DRAFT_KEY)
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage na serveru není, koncept jde obnovit až po připojení
-      if (raw) setData(JSON.parse(raw))
-      const ulozenyKrok = Number(localStorage.getItem(STEP_KEY))
-      if (ulozenyKrok > 0 && ulozenyKrok < SECTIONS.length) {
-        setKrok(ulozenyKrok)
-        startKrok.current = ulozenyKrok
+      const koncept: VsechnyOdpovedi = raw ? JSON.parse(raw) : {}
+
+      // Přišel ze stránky oblasti (/analyza?oblast=hypoteka) a v rozcestníku
+      // ještě nic nemá: oblast mu předvybereme, zbytek si může přidat.
+      const zeStranky = oblastZeStranky(new URLSearchParams(window.location.search).get('oblast'))
+      if (zeStranky && !koncept[ZAMER_SEKCE]?.[ZAMER_OTAZKA]) {
+        const nazev = OBLASTI.find((o) => o.id === zeStranky)?.nazev
+        if (nazev) koncept[ZAMER_SEKCE] = { ...koncept[ZAMER_SEKCE], [ZAMER_OTAZKA]: nazev }
       }
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage na serveru není, koncept jde obnovit až po připojení
+      setData(koncept)
+
+      const ulozenaSekce = localStorage.getItem(STEP_KEY)
+      const kRozsahu = SECTIONS.filter((s) => vRozsahu(s, zvoleneOblasti(koncept)))
+      const index = kRozsahu.findIndex((s) => s.id === ulozenaSekce)
+      if (index > 0) {
+        setSekceId(kRozsahu[index].id)
+        startKrok.current = index
+      }
+      localStorage.removeItem(STARY_STEP_KEY)
 
       let klic = localStorage.getItem(KEY_KLIC)
       if (!klic) {
@@ -87,18 +176,18 @@ export default function AnalysisWizard() {
   useEffect(() => {
     if (!smiMerit || !draftLoaded.current || krok < startKrok.current) return
     if (zmereneKroky.current.has(krok)) return
-    if (zmer(`analyza_krok_${krok + 1}`, { sekce: SECTIONS[krok].id })) zmereneKroky.current.add(krok)
-  }, [smiMerit, krok])
+    if (zmer(`analyza_krok_${krok + 1}`, { sekce: sekce.id })) zmereneKroky.current.add(krok)
+  }, [smiMerit, krok, sekce.id])
 
   useEffect(() => {
     if (!draftLoaded.current) return
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(data))
-      localStorage.setItem(STEP_KEY, String(krok))
+      localStorage.setItem(STEP_KEY, sekce.id)
     } catch {
       // Plný nebo zakázaný localStorage – formulář musí fungovat i tak.
     }
-  }, [data, krok])
+  }, [data, sekce.id])
 
   // Kopie u poradce vzniká až od posledního kroku, kdy je znám e-mail a člověk
   // na obrazovce vidí, že odpovědi ukládáme. Dřív by se zdravotní údaje ocitly
@@ -113,7 +202,7 @@ export default function AnalysisWizard() {
       fetch('/api/analyza/koncept', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ draftKey: klicRef.current, responses: data, step: krok, email }),
+        body: JSON.stringify({ draftKey: klicRef.current, responses: odpovediVRozsahu(data), step: krok, email }),
         // Hlavní kopie leží v localStorage, takže selhání jen ignorujeme.
       }).catch(() => {})
     }, 1500)
@@ -124,6 +213,15 @@ export default function AnalysisWizard() {
   }, [data, krok, posledni])
 
   function uprav(questionId: string, hodnota: string) {
+    // „Chci projít všechno“ se s jednotlivými oblastmi vylučuje: kdo ho
+    // zaškrtne, ruší výběr oblastí, a kdo pak vybere oblast, ruší „všechno“.
+    if (sekce.id === ZAMER_SEKCE && questionId === ZAMER_OTAZKA) {
+      const predtim = rozdelHodnoty(data[ZAMER_SEKCE]?.[ZAMER_OTAZKA])
+      const ted = rozdelHodnoty(hodnota)
+      if (ted.includes(VSE) && !predtim.includes(VSE)) hodnota = VSE
+      else if (ted.includes(VSE) && ted.length > 1) hodnota = spojHodnoty(ted.filter((v) => v !== VSE))
+    }
+    setError(null)
     setData((prev) => {
       // Odpověď, která se právě schovala, nemá odejít poradci. Úklid jde přes
       // celou analýzu: volba „jen úraz“ v prvním kroku schovává otázky
@@ -133,25 +231,51 @@ export default function AnalysisWizard() {
   }
 
   function prejdi(smer: 1 | -1) {
-    const cil = krok + smer
-    if (cil < 0 || cil >= SECTIONS.length) return
+    const cil = kroky[krok + smer]
+    if (!cil) return
+    if (smer === 1 && sekce.id === ZAMER_SEKCE && !data[ZAMER_SEKCE]?.[ZAMER_OTAZKA]) {
+      setError('Vyberte prosím aspoň jednu oblast. Když si nejste jistí, zvolte „Chci projít všechno“.')
+      return
+    }
     setError(null)
-    setKrok(cil)
+    setSekceId(cil.id)
     window.scrollTo({ top: 0 })
     // Po přepnutí kroku patří ohnisko na nový nadpis, jinak čtečka zůstane dole u tlačítka.
     requestAnimationFrame(() => nadpisRef.current?.focus())
   }
 
-  function vyberSoubory(e: React.ChangeEvent<HTMLInputElement>) {
+  async function vyberSoubory(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files) return
-    const vybrane = Array.from(e.target.files).map((f) => ({
-      name: f.name,
-      size: f.size,
-      section: sekce.id,
-      file: f,
-    }))
-    setFiles((prev) => [...prev, ...vybrane])
+    const puvodni = Array.from(e.target.files)
     e.target.value = ''
+    setChybaPrilohy(null)
+    setZpracovavam(true)
+
+    const pridane: PendingFile[] = []
+    const odmitnute: string[] = []
+    let soucet = files.reduce((n, f) => n + f.size, 0)
+    for (const f of puvodni) {
+      if (!jePovolenaPriloha(f)) {
+        odmitnute.push(`${f.name} (jen PDF, JPG nebo PNG)`)
+        continue
+      }
+      const soubor = await zmensiFotku(f)
+      if (soucet + soubor.size > LIMIT_PRILOH) {
+        odmitnute.push(f.name)
+        continue
+      }
+      soucet += soubor.size
+      pridane.push({ name: soubor.name, size: soubor.size, section: sekce.id, file: soubor })
+    }
+
+    setFiles((prev) => [...prev, ...pridane])
+    setZpracovavam(false)
+    if (odmitnute.length > 0) {
+      const presLimit = odmitnute.some((n) => !n.endsWith('(jen PDF, JPG nebo PNG)'))
+      setChybaPrilohy(
+        `Nepřiložil jsem: ${odmitnute.join(', ')}. ${presLimit ? PRILOHY_MOC_VELKE : ''}`.trim(),
+      )
+    }
   }
 
   async function odesli() {
@@ -164,21 +288,31 @@ export default function AnalysisWizard() {
     setLoading(true)
     setError(null)
 
+    const odpovedi = odpovediVRozsahu(data)
+    const sekceVRozsahu = new Set(kroky.map((s) => s.id))
     const form = new FormData()
-    form.set('responses', JSON.stringify(data))
+    form.set('responses', JSON.stringify(odpovedi))
     form.set('password', password)
     form.set('website', honeypotRef.current?.value ?? '')
-    for (const f of files) {
+    // Přílohy jen z kroků, které člověk v rozcestníku nechal.
+    for (const f of files.filter((x) => sekceVRozsahu.has(x.section))) {
       form.append('files', f.file)
       form.append('fileSections', f.section)
     }
 
     try {
       const res = await fetch('/api/analyza/odeslat', { method: 'POST', body: form })
-      const payload = await res.json()
+      // Odmítnutí od Vercelu (413 a podobné) nepřijde jako JSON – nesmí skončit
+      // hláškou o připojení, když je chyba jinde.
+      const payload: { error?: string; status?: string; hasPassword?: boolean; slabeHeslo?: boolean } =
+        await res.json().catch(() => ({}))
 
       if (!res.ok) {
-        setError(payload.error || 'Odeslání se nepodařilo. Zkuste to prosím znovu.')
+        setError(
+          res.status === 413
+            ? PRILOHY_MOC_VELKE
+            : payload.error || 'Odeslání se nepodařilo. Zkuste to prosím znovu.',
+        )
         setLoading(false)
         zmer('analyza_chyba_odeslani')
         return
@@ -210,7 +344,7 @@ export default function AnalysisWizard() {
     }
   }
 
-  const postup = Math.round(((krok + 1) / SECTIONS.length) * 100)
+  const postup = Math.round(((krok + 1) / kroky.length) * 100)
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
@@ -227,7 +361,7 @@ export default function AnalysisWizard() {
             <span className="font-display text-navy hidden sm:block">Poradce do kapsy</span>
           </Link>
           <p className="text-base text-slate tabular-nums" aria-live="polite">
-            Krok {krok + 1} z {SECTIONS.length}
+            Krok {krok + 1} z {kroky.length}
           </p>
         </div>
         <div className="h-1 bg-line" role="presentation">
@@ -252,7 +386,9 @@ export default function AnalysisWizard() {
         )}
 
         <div className="mt-8 md:mt-10 space-y-8">
-          {viditelneOtazky(sekce, data[sekce.id], data).map((q) => (
+          {viditelneOtazky(sekce, data[sekce.id], data)
+            .filter((q) => vRozsahu(q, zvolene))
+            .map((q) => (
             <Otazka
               key={q.id}
               otazka={q}
@@ -260,9 +396,10 @@ export default function AnalysisWizard() {
               onChange={(v) => uprav(q.id, v)}
               povinne={sekce.id === HEALTH_SECTION_ID && (q.id === 'full_name' || q.id === 'email')}
             />
-          ))}
+            ))}
         </div>
 
+        {sekce.id !== ZAMER_SEKCE && (
         <div className="mt-10 rounded-card border border-dashed border-line bg-surface p-5">
           <p className="text-base text-navy">Máte k téhle oblasti smlouvu nebo pojistku?</p>
           <p className="text-base text-slate mt-1">
@@ -276,9 +413,28 @@ export default function AnalysisWizard() {
             className="hidden"
             onChange={vyberSoubory}
           />
-          <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => fileRef.current?.click()}>
-            <Paperclip className="w-4 h-4" aria-hidden /> Přiložit dokument
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-4"
+            disabled={zpracovavam}
+            onClick={() => fileRef.current?.click()}
+          >
+            {zpracovavam ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> Připravuji přílohu…
+              </>
+            ) : (
+              <>
+                <Paperclip className="w-4 h-4" aria-hidden /> Přiložit dokument
+              </>
+            )}
           </Button>
+          <p className="mt-2 text-sm text-slate">Fotky zmenším sám, PDF dohromady do 4 MB.</p>
+          <p aria-live="polite" className="text-base text-danger empty:hidden mt-3">
+            {chybaPrilohy}
+          </p>
 
           {files.filter((f) => f.section === sekce.id).length > 0 && (
             <ul className="mt-4 space-y-2">
@@ -289,7 +445,10 @@ export default function AnalysisWizard() {
                     <span className="truncate">{f.name}</span>
                     <button
                       type="button"
-                      onClick={() => setFiles((prev) => prev.filter((x) => x.name !== f.name))}
+                      onClick={() => {
+                        setFiles((prev) => prev.filter((x) => x.name !== f.name))
+                        setChybaPrilohy(null)
+                      }}
                       className="text-slate hover:text-navy rounded-pill p-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-mint/40"
                       aria-label={`Odebrat ${f.name}`}
                     >
@@ -300,6 +459,7 @@ export default function AnalysisWizard() {
             </ul>
           )}
         </div>
+        )}
 
         {posledni && (
           <div className="mt-8 rounded-card border border-line bg-surface p-6">
@@ -348,7 +508,10 @@ export default function AnalysisWizard() {
               >
                 zásady ochrany osobních údajů
               </Link>
-              . Vyplněním údajů o zdraví zároveň udělujete výslovný souhlas s jejich zpracováním.
+              .
+              {/* Na zdraví se ptám jen u Zajištění příjmu – jinde by věta strašila zbytečně. */}
+              {vRozsahu({ oblasti: ['ochrana'] }, zvolene) &&
+                ' Vyplněním údajů o zdraví zároveň udělujete výslovný souhlas s jejich zpracováním.'}
             </p>
           </div>
         )}

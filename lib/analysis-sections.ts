@@ -1,5 +1,5 @@
 import {
-  Shield, Home, Clock, Baby, TrendingUp, Building2, UserCircle, Briefcase,
+  Shield, Home, Clock, Baby, TrendingUp, Building2, UserCircle, Briefcase, Compass,
 } from 'lucide-react'
 
 /**
@@ -48,6 +48,12 @@ export interface Question {
   itemLabel?: string
   /** Popisek tlačítka, kterým se přidává další položka. */
   addLabel?: string
+
+  /**
+   * Oblasti z rozcestníku, ke kterým otázka patří. Bez uvedení platí vždy.
+   * Řídí jen veřejného průvodce (viz `vRozsahu`), ne úklid na serveru.
+   */
+  oblasti?: OblastId[]
 }
 
 /** Jedna položka opakovatelné skupiny: { id podotázky: hodnota }. */
@@ -59,6 +65,8 @@ export interface Section {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
   color: string
   questions: Question[]
+  /** Oblast z rozcestníku, ke které patří celá sekce. Bez uvedení platí vždy. */
+  oblast?: OblastId
 }
 
 /** Sekce, která sbírá zvláštní kategorie údajů dle čl. 9 GDPR. */
@@ -228,6 +236,65 @@ export function uklidVsechnySekce(vsechny: VsechnyOdpovedi): VsechnyOdpovedi {
 }
 
 /**
+ * Rozcestník na začátku analýzy: člověk vybere, s čím chce pomoct, a průvodce
+ * mu ukáže jen kroky a otázky k těm oblastem. Práce a příjem a Osobní údaje
+ * jsou vždy (bez příjmu a výdajů nejde poradit s ničím), ale jen jejich obecná
+ * část – nemocenská, invalidita nebo zdravotní otázky jsou u Zajištění příjmu.
+ *
+ * Výběr se ukládá jako běžná odpověď (sekce `zamer`), poradce ho tak vidí
+ * v detailu klienta. Skrývání podle oblastí dělá JEN veřejný průvodce
+ * (`vRozsahu`), ne `otazkaViditelna`: úklid na serveru by jinak u stávajícího
+ * klienta smazal odpovědi z oblastí, které v nové analýze nevybral.
+ */
+export const OBLASTI = [
+  { id: 'ochrana', nazev: 'Zajištění příjmu a zdraví', tema: '/pojisteni' },
+  { id: 'bydleni', nazev: 'Hypotéka a bydlení', tema: '/hypoteka' },
+  { id: 'duchod', nazev: 'Příprava na důchod', tema: null },
+  { id: 'deti', nazev: 'Děti', tema: '/zajisteni-deti' },
+  { id: 'investice', nazev: 'Spoření a investice', tema: '/sporeni-a-investice' },
+  { id: 'majetek', nazev: 'Pojištění majetku a auta', tema: '/pojisteni-majetku' },
+] as const
+
+export type OblastId = (typeof OBLASTI)[number]['id']
+
+export const ZAMER_SEKCE = 'zamer'
+export const ZAMER_OTAZKA = 'oblasti'
+export const VSE = 'Chci projít všechno'
+
+/**
+ * Oblasti vybrané v rozcestníku. `null` = bez omezení: nic nevybráno (starší
+ * rozepsané analýzy) nebo „Chci projít všechno“.
+ */
+export function zvoleneOblasti(vsechny: VsechnyOdpovedi | undefined): Set<OblastId> | null {
+  const volby = rozdelHodnoty(vsechny?.[ZAMER_SEKCE]?.[ZAMER_OTAZKA], ZAMER_VOLBY)
+  if (volby.length === 0 || volby.includes(VSE)) return null
+  const ids = OBLASTI.filter((o) => volby.includes(o.nazev)).map((o) => o.id)
+  return ids.length > 0 ? new Set(ids) : null
+}
+
+/** Patří sekce nebo otázka do oblastí, které člověk vybral? */
+export function vRozsahu(
+  polozka: { oblast?: OblastId; oblasti?: readonly OblastId[] },
+  zvolene: Set<OblastId> | null,
+): boolean {
+  if (!zvolene) return true
+  if (polozka.oblast && !zvolene.has(polozka.oblast)) return false
+  if (polozka.oblasti && !polozka.oblasti.some((o) => zvolene.has(o))) return false
+  return true
+}
+
+/** Oblast podle vstupní stránky, ze které člověk přišel (/analyza?oblast=hypoteka). */
+export function oblastZeStranky(adresa: string | null): OblastId | null {
+  if (!adresa) return null
+  return OBLASTI.find((o) => o.tema === `/${adresa}`)?.id ?? null
+}
+
+const ZAMER_VOLBY: string[] = [...OBLASTI.map((o) => o.nazev), VSE]
+
+/** Jen pro Zajištění příjmu – u hypotéky nebo investic se na to neptáme. */
+const OCHRANA: OblastId[] = ['ochrana']
+
+/**
  * Volba „jen úraz“ v prvním kroku. Úrazové pojištění nepotřebuje otázky
  * na nemocenskou, odpracované roky, invaliditu ani zdravotní historii –
  * a kdo chce jen levnou úrazovku, toho by dlouhá analýza odradila.
@@ -240,6 +307,21 @@ const KDYZ_JEN_URAZ: Podminka = { sekce: 'income', id: 'cover_scope', value: [JE
 
 export const SECTIONS: Section[] = [
   {
+    id: ZAMER_SEKCE,
+    title: 'S čím vám mám pomoct?',
+    icon: Compass,
+    color: 'bg-navy',
+    questions: [
+      {
+        id: ZAMER_OTAZKA,
+        label: 'Vyberte, co teď řešíte. Klidně víc věcí najednou.',
+        type: 'checkbox',
+        options: ZAMER_VOLBY,
+        help: 'Ukážu vám jen otázky, které se vás týkají. Další oblast můžete kdykoli přidat.',
+      },
+    ],
+  },
+  {
     id: 'income',
     title: 'Práce a příjem',
     icon: Briefcase,
@@ -251,16 +333,18 @@ export const SECTIONS: Section[] = [
     questions: [
       {
         id: 'cover_scope',
-        label: 'Co chcete řešit?',
+        oblasti: OCHRANA,
+        label: 'Jaké pojištění chcete řešit?',
         type: 'select',
         options: ['Zajištění příjmu – nemoc i úraz', JEN_URAZ],
         help: 'Úrazové pojištění nevyplácí při nemoci – a právě nemoci stojí za většinou invalidit.',
       },
       { id: 'employment', label: 'Jaký je váš pracovní poměr?', type: 'select', options: ['Zaměstnanec', 'OSVČ', 'Vlastní firma (s.r.o.)', 'Kombinace', 'Student', 'Důchodce'] },
       { id: 'monthly_income', label: 'Čistý měsíční příjem (Kč)', type: 'number', placeholder: '35 000', help: 'U podnikání berte to, co si reálně vyplácíte pro sebe, ne obrat.' },
-      { id: 'income_variable', label: 'Jak velkou část příjmu tvoří odměny, provize nebo bonusy?', type: 'select', options: ['Skoro žádnou, mám pevný plat', 'Do třetiny', 'Většinu – když nepracuji, nevydělávám'], hideIf: KDYZ_JEN_URAZ_ZDE },
+      { id: 'income_variable', label: 'Jak velkou část příjmu tvoří odměny, provize nebo bonusy?', type: 'select', options: ['Skoro žádnou, mám pevný plat', 'Do třetiny', 'Většinu – když nepracuji, nevydělávám'], hideIf: KDYZ_JEN_URAZ_ZDE, oblasti: OCHRANA },
       {
         id: 'sick_pay_osvc',
+        oblasti: OCHRANA,
         label: 'Platíte si dobrovolné nemocenské pojištění?',
         type: 'select',
         options: ['Ano', 'Ne', 'Nevím'],
@@ -270,6 +354,7 @@ export const SECTIONS: Section[] = [
       },
       {
         id: 'sick_pay_base',
+        oblasti: OCHRANA,
         label: 'Z jakého měsíčního základu si nemocenské platíte? (Kč)',
         type: 'number',
         help: 'Najdete na přehledu pro ČSSZ. Když nevíte, nechte prázdné.',
@@ -278,6 +363,7 @@ export const SECTIONS: Section[] = [
       },
       {
         id: 'social_contributions',
+        oblasti: OCHRANA,
         label: 'Platíte na sociálním pojištění spíš minimum, nebo víc?',
         type: 'select',
         options: ['Minimum / paušální daň', 'Více než minimum', 'Nevím'],
@@ -287,22 +373,24 @@ export const SECTIONS: Section[] = [
       },
       {
         id: 'employer_benefits',
+        oblasti: OCHRANA,
         label: 'Co vám zaměstnavatel při nemoci dává navíc?',
         type: 'checkbox',
         options: ['Sick days (placené dny nemoci)', 'Doplatek nemocenské do plné mzdy', 'Příspěvek na životní pojištění', 'Nic z toho / nevím'],
         showIf: { id: 'employment', value: ['Zaměstnanec', 'Kombinace'] },
         hideIf: KDYZ_JEN_URAZ_ZDE,
       },
-      { id: 'work_years', label: 'Kolik let celkem pracujete nebo podnikáte?', type: 'select', options: ['Méně než 5 let', '5–15 let', 'Více než 15 let'], help: 'Nárok na invalidní důchod od státu závisí na odpracovaných letech.', hideIf: KDYZ_JEN_URAZ_ZDE },
-      { id: 'work_risk', label: 'Co nejlépe vystihuje vaši práci?', type: 'select', options: ['Převážně u počítače / v kanceláři', 'Hodně na nohou, ale bez fyzické námahy', 'Fyzická práce, řemeslo, výroba', 'Riziková (výšky, těžké stroje, hasiči, policie…)', 'Profesionální řidič / hodně za volantem'], help: 'Určuje, jaké zranění by vás vyřadilo z práce – a jak pojišťovna hodnotí riziko.' },
+      { id: 'work_years', label: 'Kolik let celkem pracujete nebo podnikáte?', type: 'select', options: ['Méně než 5 let', '5–15 let', 'Více než 15 let'], help: 'Nárok na invalidní důchod od státu závisí na odpracovaných letech.', hideIf: KDYZ_JEN_URAZ_ZDE, oblasti: OCHRANA },
+      { id: 'work_risk', label: 'Co nejlépe vystihuje vaši práci?', type: 'select', options: ['Převážně u počítače / v kanceláři', 'Hodně na nohou, ale bez fyzické námahy', 'Fyzická práce, řemeslo, výroba', 'Riziková (výšky, těžké stroje, hasiči, policie…)', 'Profesionální řidič / hodně za volantem'], help: 'Určuje, jaké zranění by vás vyřadilo z práce – a jak pojišťovna hodnotí riziko.', oblasti: OCHRANA },
       { id: 'essential_expenses', label: 'Kolik měsíčně musí vaše domácnost nutně zaplatit? (Kč)', type: 'number', placeholder: '35 000', help: 'Bydlení, energie, jídlo, děti, auto, splátky, pojistky. Bez dovolených a zábavy.' },
-      { id: 'income_drop', label: 'Když vám klesne příjem na 60 %, kolik Kč chcete dostat, aby peníze nebyly problém?', type: 'number', placeholder: '20 000', hideIf: KDYZ_JEN_URAZ_ZDE },
-      { id: 'reserve_months', label: 'Jak dlouho byste vydrželi z úspor, kdyby vám přestal chodit příjem?', type: 'select', options: ['Méně než měsíc', '1–3 měsíce', '3–6 měsíců', 'Více než 6 měsíců'], help: 'Podle toho nastavíme, od kterého dne nemoci má pojistka platit. Delší rezerva = levnější pojistka.', hideIf: KDYZ_JEN_URAZ_ZDE },
+      { id: 'income_drop', label: 'Když vám klesne příjem na 60 %, kolik Kč chcete dostat, aby peníze nebyly problém?', type: 'number', placeholder: '20 000', hideIf: KDYZ_JEN_URAZ_ZDE, oblasti: OCHRANA },
+      { id: 'reserve_months', label: 'Jak dlouho byste vydrželi z úspor, kdyby vám přestal chodit příjem?', type: 'select', options: ['Méně než měsíc', '1–3 měsíce', '3–6 měsíců', 'Více než 6 měsíců'], help: 'Rezerva je základ, od kterého se odvíjí všechno další – kolik můžete splácet, odkládat nebo od kterého dne nemoci má platit pojistka.', hideIf: KDYZ_JEN_URAZ_ZDE },
       { id: 'other_loans', label: 'Ostatní úvěry a půjčky – kolik zbývá doplatit celkem? (Kč)', type: 'number', placeholder: '0', help: 'Auto, spotřebitelské úvěry, kreditky. Hypotéku řešíme v sekci Bydlení.' },
     ],
   },
   {
     id: 'income_cover',
+    oblast: 'ochrana',
     title: 'Co chcete zajistit',
     icon: Shield,
     color: 'bg-navy',
@@ -359,6 +447,7 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 'housing',
+    oblast: 'bydleni',
     title: 'Bydlení',
     icon: Home,
     color: 'bg-navy',
@@ -479,6 +568,7 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 'retirement',
+    oblast: 'duchod',
     title: 'Příprava na důchod',
     icon: Clock,
     color: 'bg-navy',
@@ -496,6 +586,7 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 'children',
+    oblast: 'deti',
     title: 'Děti',
     icon: Baby,
     color: 'bg-navy',
@@ -522,6 +613,7 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 'investing',
+    oblast: 'investice',
     title: 'Investice',
     icon: TrendingUp,
     color: 'bg-navy',
@@ -546,6 +638,7 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 'property',
+    oblast: 'majetek',
     title: 'Pojištění majetku',
     icon: Building2,
     color: 'bg-navy',
@@ -655,29 +748,31 @@ export const SECTIONS: Section[] = [
       // Volby téhle otázky plní `profiles.family_status` – viz FAMILY_STATUS_MAP
       // v lib/submissions.ts.
       { id: 'family_status', label: 'Rodinná situace', type: 'select', options: ['Bez partnera a dětí', 'S partnerem/partnerkou', 'Rodina s dětmi', 'Samoživitel/samoživitelka'] },
-      { id: 'height', label: 'Výška (cm)', type: 'number', placeholder: '178' },
-      { id: 'weight', label: 'Váha (kg)', type: 'number', placeholder: '80' },
-      { id: 'smoking', label: 'Kouříte?', type: 'select', options: ['Ne, nikdy', 'Přestal/a jsem před více než rokem', 'Ano (včetně e-cigaret a nikotinových sáčků)'] },
-      { id: 'treatment', label: 'Léčíte se s něčím, nebo berete pravidelně léky?', type: 'checkbox', options: ['Ne, jsem zdravý/á', 'Vysoký tlak, srdce, cholesterol', 'Cukrovka', 'Záda, klouby, páteř', 'Psychika (úzkosti, deprese, vyhoření)', 'Štítná žláza, hormony', 'Onkologické onemocnění (i vyléčené)', 'Něco jiného'], help: 'Nepotřebujeme detaily, jen orientaci. Vše je důvěrné.', hideIf: KDYZ_JEN_URAZ },
+      { id: 'height', label: 'Výška (cm)', type: 'number', placeholder: '178', oblasti: OCHRANA },
+      { id: 'weight', label: 'Váha (kg)', type: 'number', placeholder: '80', oblasti: OCHRANA },
+      { id: 'smoking', label: 'Kouříte?', type: 'select', options: ['Ne, nikdy', 'Přestal/a jsem před více než rokem', 'Ano (včetně e-cigaret a nikotinových sáčků)'], oblasti: OCHRANA },
+      { id: 'treatment', label: 'Léčíte se s něčím, nebo berete pravidelně léky?', type: 'checkbox', options: ['Ne, jsem zdravý/á', 'Vysoký tlak, srdce, cholesterol', 'Cukrovka', 'Záda, klouby, páteř', 'Psychika (úzkosti, deprese, vyhoření)', 'Štítná žláza, hormony', 'Onkologické onemocnění (i vyléčené)', 'Něco jiného'], help: 'Nepotřebujeme detaily, jen orientaci. Vše je důvěrné.', hideIf: KDYZ_JEN_URAZ, oblasti: OCHRANA },
       {
         id: 'treatment_other',
+        oblasti: OCHRANA,
         label: 'Můžete stručně napsat, s čím se léčíte?',
         type: 'text',
         placeholder: 'nepovinné',
         showIf: { id: 'treatment', value: ['Něco jiného'] },
       },
-      { id: 'serious_illness', label: 'Vážné nemoci za posledních 5 let?', type: 'text', placeholder: 'Žádné / popište…', hideIf: KDYZ_JEN_URAZ },
-      { id: 'injury', label: 'Úraz za posledních 5 let?', type: 'text', placeholder: 'Žádný / popište…' },
-      { id: 'family_history', label: 'Objevilo se u rodičů nebo sourozenců některé z těchto onemocnění před 60. rokem?', type: 'checkbox', options: ['Ne / nevím o tom', 'Rakovina', 'Infarkt nebo mrtvice', 'Cukrovka', 'Roztroušená skleróza, Parkinson, Alzheimer'], help: 'Dědičná zátěž rozhoduje, jak moc posílit pojištění závažných nemocí.', hideIf: KDYZ_JEN_URAZ },
-      { id: 'sports', label: 'Jaké sporty děláte pravidelně?', type: 'checkbox', options: ['Žádné / jen procházky', 'Běh, kolo, plavání, fitness, míčové hry', 'Lyže, snowboard', 'Bojové sporty', 'Motorka, motokáry, závody', 'Horolezectví, ferraty, skialpinismus', 'Paragliding, potápění, rafting, kite', 'Jezdectví nebo jiný rizikový sport'], help: 'Některé sporty pojišťovny vylučují nebo zdražují. Lepší vědět předem.' },
+      { id: 'serious_illness', label: 'Vážné nemoci za posledních 5 let?', type: 'text', placeholder: 'Žádné / popište…', hideIf: KDYZ_JEN_URAZ, oblasti: OCHRANA },
+      { id: 'injury', label: 'Úraz za posledních 5 let?', type: 'text', placeholder: 'Žádný / popište…', oblasti: OCHRANA },
+      { id: 'family_history', label: 'Objevilo se u rodičů nebo sourozenců některé z těchto onemocnění před 60. rokem?', type: 'checkbox', options: ['Ne / nevím o tom', 'Rakovina', 'Infarkt nebo mrtvice', 'Cukrovka', 'Roztroušená skleróza, Parkinson, Alzheimer'], help: 'Dědičná zátěž rozhoduje, jak moc posílit pojištění závažných nemocí.', hideIf: KDYZ_JEN_URAZ, oblasti: OCHRANA },
+      { id: 'sports', label: 'Jaké sporty děláte pravidelně?', type: 'checkbox', options: ['Žádné / jen procházky', 'Běh, kolo, plavání, fitness, míčové hry', 'Lyže, snowboard', 'Bojové sporty', 'Motorka, motokáry, závody', 'Horolezectví, ferraty, skialpinismus', 'Paragliding, potápění, rafting, kite', 'Jezdectví nebo jiný rizikový sport'], help: 'Některé sporty pojišťovny vylučují nebo zdražují. Lepší vědět předem.', oblasti: OCHRANA },
       {
         id: 'sports_level',
+        oblasti: OCHRANA,
         label: 'Na jaké úrovni sportujete?',
         type: 'select',
         options: ['Rekreačně', 'Registrovaně / závodně (amatér)', 'Profesionálně nebo za peníze'],
         showIf: { id: 'sports', value: ['Běh, kolo, plavání, fitness, míčové hry', 'Lyže, snowboard', 'Bojové sporty', 'Motorka, motokáry, závody', 'Horolezectví, ferraty, skialpinismus', 'Paragliding, potápění, rafting, kite', 'Jezdectví nebo jiný rizikový sport'] },
       },
-      { id: 'occupation', label: 'Jaké je vaše zaměstnání?', type: 'text', placeholder: 'Účetní, řidič, IT…' },
+      { id: 'occupation', label: 'Jaké je vaše zaměstnání?', type: 'text', placeholder: 'Účetní, řidič, IT…', oblasti: OCHRANA },
     ],
   },
 ]

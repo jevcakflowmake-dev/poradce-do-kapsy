@@ -9,12 +9,15 @@ import AnalysisAccordion, {
   type PendingFile,
   type StoredAnalysisFile,
 } from '@/components/analysis/AnalysisAccordion'
-import { uklidVsechnySekce, SECTIONS, type SectionData } from '@/lib/analysis-sections'
+import { uklidVsechnySekce, SECTIONS, ZAMER_SEKCE, type SectionData } from '@/lib/analysis-sections'
 import { BARVY } from '@/lib/barvy'
+
+/** Rozcestník je první sekce, ale přihlášený klient začíná rovnou prací a příjmem. */
+const PRVNI_OBLAST = SECTIONS.find((s) => s.id !== ZAMER_SEKCE)!.id
 
 export default function AnalyzaPage() {
   const [data, setData] = useState<Record<string, SectionData>>({})
-  const [expandedSections, setExpandedSections] = useState<string[]>([SECTIONS[0].id])
+  const [expandedSections, setExpandedSections] = useState<string[]>([PRVNI_OBLAST])
   const [files, setFiles] = useState<PendingFile[]>([])
   const [existingFiles, setExistingFiles] = useState<StoredAnalysisFile[]>([])
   const [fileError, setFileError] = useState<string | null>(null)
@@ -24,7 +27,7 @@ export default function AnalyzaPage() {
   const [userId, setUserId] = useState<string | null>(null)
 
   const fileRef = useRef<HTMLInputElement>(null)
-  const activeUploadSection = useRef<string>(SECTIONS[0].id)
+  const activeUploadSection = useRef<string>(PRVNI_OBLAST)
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const supabase = useMemo(() => createClient(), [])
 
@@ -142,7 +145,7 @@ export default function AnalyzaPage() {
 
       await supabase.from('profiles').update({
         onboarding_completed: true,
-        goals: Object.keys(data),
+        goals: Object.keys(data).filter((k) => k !== ZAMER_SEKCE),
       }).eq('id', user.id)
     }
     setSubmitted(true)

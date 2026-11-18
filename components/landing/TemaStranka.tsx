@@ -100,7 +100,7 @@ export default function TemaStranka({ obsah }: { obsah: ObsahTematu }) {
               {/* Od `lg` užší: delší řádek by zabíhal do světlé části fotky. */}
               <p className="mt-6 text-lead text-cream/80 max-w-2xl lg:max-w-xl text-pretty">{obsah.perex}</p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                <Link href="/analyza" data-mereni-klik={obsah.udalostCta} className={buttonVariants({ size: 'lg' })}>
+                <Link href={`/analyza?oblast=${obsah.cesta.slice(1)}`} data-mereni-klik={obsah.udalostCta} className={buttonVariants({ size: 'lg' })}>
                   Vyplnit analýzu zdarma
                 </Link>
                 <a href="#jak-to-probiha" className={buttonVariants({ variant: 'onDark', size: 'lg' })}>

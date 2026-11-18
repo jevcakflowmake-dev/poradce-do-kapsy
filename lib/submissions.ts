@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { OTAZKA_DOPORUCENI, syncDoporuceni } from '@/lib/doporuceni'
-import { SECTIONS, uklidVsechnySekce, type VsechnyOdpovedi } from './analysis-sections'
+import { SECTIONS, ZAMER_SEKCE, uklidVsechnySekce, type VsechnyOdpovedi } from './analysis-sections'
 
 /**
  * Práce s odesláními z veřejného formuláře (/analyza).
@@ -222,7 +222,8 @@ export async function syncProfileFromResponses(
 
   const updates: Record<string, unknown> = {
     // `goals` drží ID vyplněných sekcí – stejně jako verze pro přihlášené.
-    goals: Object.keys(responses),
+    // Rozcestník není oblast, jen výběr, které oblasti člověk vyplňoval.
+    goals: Object.keys(responses).filter((k) => k !== ZAMER_SEKCE),
     updated_at: new Date().toISOString(),
   }
   if (markCompleted) updates.onboarding_completed = true
