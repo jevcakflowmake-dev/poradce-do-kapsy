@@ -1,4 +1,6 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { ZAKLADNI_OG, absoluteUrl } from '@/lib/site'
 import { createClient } from '@/lib/supabase/server'
 import SiteHeader from '@/components/landing/SiteHeader'
 import HeroSection from '@/components/landing/HeroSection'
@@ -13,6 +15,13 @@ import FaqSection from '@/components/landing/FaqSection'
 import NovinkySection from '@/components/landing/NovinkySection'
 import CtaSection from '@/components/landing/CtaSection'
 import SiteFooter from '@/components/landing/SiteFooter'
+
+// Stejná absoluteUrl() jako v sitemap.ts – jinak canonical a sitemap
+// nesouhlasí v koncovém lomítku.
+export const metadata: Metadata = {
+  alternates: { canonical: absoluteUrl('/') },
+  openGraph: { ...ZAKLADNI_OG, url: absoluteUrl('/') },
+}
 
 export default async function HomePage() {
   const supabase = await createClient()

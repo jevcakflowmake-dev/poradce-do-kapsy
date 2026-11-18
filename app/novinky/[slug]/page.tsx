@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import SiteHeader from '@/components/landing/SiteHeader'
 import SiteFooter from '@/components/landing/SiteFooter'
 import CtaSection from '@/components/landing/CtaSection'
-import { datumNovinky, minutCteni, nactiNovinku, nactiNovinky, rozdelObsah } from '@/lib/novinky'
+import { datumNovinky, minutCteni, nactiNovinku, nactiNovinky, rozdelObsah, svazMezery } from '@/lib/novinky'
 import { metadataStranky } from '@/lib/temata'
 import { PORADCE } from '@/lib/poradce'
 import { SITE_NAME, absoluteUrl } from '@/lib/site'
@@ -65,23 +65,23 @@ export default async function NovinkaPage({ params }: Props) {
             <p className="mt-8 text-base text-slate">
               <time dateTime={novinka.zverejneno_at}>{datumNovinky(novinka.zverejneno_at)}</time> · {minutCteni(novinka)} min čtení
             </p>
-            <h1 className="mt-3 font-display text-h2 text-navy text-balance">{novinka.titulek}</h1>
-            <p className="mt-6 text-lead text-navy font-medium text-pretty">{novinka.perex}</p>
+            <h1 className="mt-3 font-display text-h2 text-navy text-balance">{svazMezery(novinka.titulek)}</h1>
+            <p className="mt-6 text-lead text-navy font-medium text-pretty">{svazMezery(novinka.perex)}</p>
 
             <div className="mt-8 space-y-5 text-lead text-navy text-pretty">
               {rozdelObsah(novinka.obsah).map((blok, i) =>
                 blok.typ === 'nadpis' ? (
                   <h2 key={i} className="pt-4 font-display text-h3 text-navy">
-                    {blok.text}
+                    {svazMezery(blok.text)}
                   </h2>
                 ) : blok.typ === 'seznam' ? (
                   <ul key={i} className="list-disc pl-6 space-y-2 marker:text-slate">
                     {blok.polozky.map((p, j) => (
-                      <li key={j}>{p}</li>
+                      <li key={j}>{svazMezery(p)}</li>
                     ))}
                   </ul>
                 ) : (
-                  <p key={i}>{blok.text}</p>
+                  <p key={i}>{svazMezery(blok.text)}</p>
                 ),
               )}
             </div>

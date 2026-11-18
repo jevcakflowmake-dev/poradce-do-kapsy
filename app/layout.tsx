@@ -5,7 +5,7 @@ import MotionProvider from '@/components/providers/MotionProvider'
 import CookieBar from '@/components/cookies/CookieBar'
 import Mereni from '@/components/mereni/Mereni'
 import OrganizationSchema from '@/components/seo/OrganizationSchema'
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, absoluteUrl } from '@/lib/site'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, ZAKLADNI_OG } from '@/lib/site'
 
 // Jedna rodina na celý web: nadpisy nese váha, ne jiný řez.
 // latin-ext kvůli české diakritice, variable řez kvůli jedinému stažení.
@@ -35,17 +35,10 @@ export const metadata: Metadata = {
     'online poradenství',
   ],
   authors: [{ name: SITE_NAME }],
-  // Stejná absoluteUrl() jako v sitemap.ts – jinak canonical a sitemap
-  // nesouhlasí v koncovém lomítku.
-  alternates: { canonical: absoluteUrl('/') },
-  openGraph: {
-    type: 'website',
-    locale: 'cs_CZ',
-    url: absoluteUrl('/'),
-    siteName: SITE_NAME,
-    title: `${SITE_NAME} – ${SITE_TAGLINE}`,
-    description: SITE_DESCRIPTION,
-  },
+  // Canonical a og:url tu schválně nejsou: zdědila by je každá stránka bez
+  // vlastních metadat a prohlásila se za kopii úvodu (/forgot-password,
+  // nové stránky). Úvod je má v app/page.tsx, ostatní ve svých metadatech.
+  openGraph: ZAKLADNI_OG,
   twitter: {
     card: 'summary_large_image',
     title: `${SITE_NAME} – ${SITE_TAGLINE}`,

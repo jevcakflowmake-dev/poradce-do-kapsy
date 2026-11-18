@@ -84,23 +84,53 @@ export function slugZNadpisu(titulek: string): string {
 /** Prostý text článku na bloky (nadpisy, odstavce, odrážky). */
 export function rozdelObsah(obsah: string): Blok[] {
   const bloky: Blok[] = []
+  const odrazka = /^[-•*]\s+/
+  const nadpis = /^#{2,3}\s+/
   for (const kus of obsah.replace(/\r\n?/g, '\n').split(/\n\s*\n/)) {
     const radky = kus.split('\n').map((r) => r.trim()).filter(Boolean)
-    if (radky.length === 0) continue
-    if (radky.every((r) => /^[-•*]\s+/.test(r))) {
-      bloky.push({ typ: 'seznam', polozky: radky.map((r) => r.replace(/^[-•*]\s+/, '')) })
-    } else if (radky.length === 1 && /^#{2,3}\s+/.test(radky[0])) {
-      bloky.push({ typ: 'nadpis', text: radky[0].replace(/^#{2,3}\s+/, '') })
-    } else {
-      // Nadpis hned nad odstavcem bez prázdného řádku mezi nimi.
-      if (/^#{2,3}\s+/.test(radky[0])) {
-        bloky.push({ typ: 'nadpis', text: radky[0].replace(/^#{2,3}\s+/, '') })
-        radky.shift()
-      }
-      bloky.push({ typ: 'odstavec', text: radky.join(' ') })
+    // Blok jde po řádcích: nadpis, souvislý text a odrážky. AI často píše
+    // „Zaměřte se na:“ a odrážky hned pod tím bez prázdného řádku – dřív se
+    // celý blok slil do jednoho odstavce s pomlčkami.
+    let text: string[] = []
+    let seznam: string[] = []
+    const uzavri = () => {
+      if (text.length) bloky.push({ typ: 'odstavec', text: text.join(' ') })
+      if (seznam.length) bloky.push({ typ: 'seznam', polozky: seznam })
+      text = []
+      seznam = []
     }
+    for (const radek of radky) {
+      if (nadpis.test(radek)) {
+        uzavri()
+        bloky.push({ typ: 'nadpis', text: radek.replace(nadpis, '') })
+      } else if (odrazka.test(radek)) {
+        if (text.length) {
+          bloky.push({ typ: 'odstavec', text: text.join(' ') })
+          text = []
+        }
+        seznam.push(radek.replace(odrazka, ''))
+      } else if (seznam.length) {
+        // Pokračování odrážky na dalším řádku.
+        seznam[seznam.length - 1] += ` ${radek}`
+      } else {
+        text.push(radek)
+      }
+    }
+    uzavri()
   }
   return bloky
+}
+
+/**
+ * Pevné mezery, aby se „4 %“, „250 Kč“ nebo „v roce“ nerozdělily na konci
+ * řádku. Texty článků píše AI a ukládají se jako prostý text, proto až při
+ * vykreslení.
+ */
+export function svazMezery(text: string): string {
+  return text
+    .replace(/(\d)\s+(%|Kč|let|roků|roky|rok|měsíců|měsíce|dní|tis\.|mil\.|mld\.)(?=[\s.,;:!?)]|$)/g, '$1\u00a0$2')
+    // Lookbehind místo zachycení: „a v roce“ má svázat obě předložky.
+    .replace(/(?<=^|[\s(„])([ksvzouaiKSVZOUAI])\s+/g, '$1\u00a0')
 }
 
 /** „21. října 2026“ – pevně pražský čas, server běží v UTC. */

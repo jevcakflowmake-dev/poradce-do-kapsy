@@ -23,3 +23,16 @@ export const SITE_TAGLINE = 'finanční poradce, kterého máte v mobilu'
 export function absoluteUrl(path: string): string {
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`
 }
+
+/**
+ * Společný základ Open Graph. Stránka, která metadata `openGraph` nastaví
+ * sama, ten z layoutu celý přepíše (Next objekty neslučuje), proto ho úvod
+ * skládá z této konstanty a přidává jen svou adresu.
+ */
+export const ZAKLADNI_OG = {
+  type: 'website',
+  locale: 'cs_CZ',
+  siteName: SITE_NAME,
+  title: `${SITE_NAME} – ${SITE_TAGLINE}`,
+  description: SITE_DESCRIPTION,
+} as const
