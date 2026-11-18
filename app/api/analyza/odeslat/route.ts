@@ -25,6 +25,9 @@ import type { Json } from '@/lib/types/database'
  * hodnot, počet i velikost příloh a držíme jednoduchý rate limit.
  */
 
+/** Na upozornění poradci se v `after()` čeká až 35 s (opakované pokusy). */
+export const maxDuration = 60
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_FILES = 10
 
@@ -38,22 +41,33 @@ const rateLimited = vytvorLimit({ oknoMs: 10 * 60 * 1000, max: 5 })
  */
 const PRIJATO = { status: 'ok' } as const
 
+/** Pauzy před pokusy o upozornění: hned, po 5 s a po 30 s. */
+const POKUSY_UPOZORNENI = [0, 5_000, 30_000]
+
+/**
+ * Upozornění poradci přes n8n (webhook novy-klient). Běží v `after()`, tedy
+ * až po odpovědi návštěvníkovi, a krátký výpadek n8n přečká opakováním.
+ * Když neprojde ani třetí pokus, analýza se neztratí: je v databázi
+ * a v panelu poradce ji ukáže „K vyřízení“. Chybí jen e-mail.
+ */
 async function notifyAdvisor(payload: Record<string, unknown>): Promise<void> {
-  // Awaitujeme – fire-and-forget fetch se v serverless funkci nemusí stihnout
-  // odeslat. Selhání nesmí shodit odeslání: data už jsou v databázi.
-  try {
-    const res = await fetch('https://n8n.jevcakn8n.com/webhook/novy-klient', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...payload, created_at: new Date().toISOString() }),
-      signal: AbortSignal.timeout(5000),
-    })
-    if (!res.ok) {
-      console.error(`[analyza] n8n webhook selhal: HTTP ${res.status} – odeslání je uložené, jen o něm nepřišla notifikace`)
+  const telo = JSON.stringify({ ...payload, created_at: new Date().toISOString() })
+  for (const [i, pauza] of POKUSY_UPOZORNENI.entries()) {
+    if (pauza) await new Promise((r) => setTimeout(r, pauza))
+    try {
+      const res = await fetch('https://n8n.jevcakn8n.com/webhook/novy-klient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: telo,
+        signal: AbortSignal.timeout(5000),
+      })
+      if (res.ok) return
+      console.warn(`[analyza] n8n webhook, pokus ${i + 1}: HTTP ${res.status}`)
+    } catch (err) {
+      console.warn(`[analyza] n8n webhook, pokus ${i + 1}: nedostupný –`, err instanceof Error ? err.message : err)
     }
-  } catch (err) {
-    console.error('[analyza] n8n webhook nedostupný:', err instanceof Error ? err.message : err)
   }
+  console.error('[analyza] upozornění poradci neodešlo ani na třetí pokus – analýza je uložená, poradce ji uvidí v panelu')
 }
 
 export async function POST(request: Request) {
@@ -186,14 +200,16 @@ export async function POST(request: Request) {
         .update({ matched_client_id: existing.id })
         .eq('id', submissionId)
 
-      await notifyAdvisor({
+      after(() =>
+        notifyAdvisor({
         typ: 'analyza_stavajici_klient',
         full_name: fullName,
         email,
         phone,
         submission_id: submissionId,
         client_id: existing.id,
-      })
+        }),
+      )
 
       after(() => potvrditPrijetiAnalyzy(email, fullName || null, 'existujici'))
       return NextResponse.json(PRIJATO)
@@ -263,7 +279,8 @@ export async function POST(request: Request) {
       })
       .eq('id', submissionId)
 
-    await notifyAdvisor({
+    after(() =>
+      notifyAdvisor({
       typ: 'analyza_novy_klient',
       full_name: fullName,
       email,
@@ -271,7 +288,8 @@ export async function POST(request: Request) {
       submission_id: submissionId,
       client_id: clientId,
       ma_heslo: maHeslo,
-    })
+      }),
+    )
 
     // S platným heslem odešel potvrzovací e-mail ze Supabase, jinak potvrdíme sami.
     if (!maHeslo) after(() => potvrditPrijetiAnalyzy(email, fullName || null, slabeHeslo ? 'slabe_heslo' : 'bez_hesla'))
