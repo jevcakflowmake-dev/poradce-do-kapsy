@@ -52,6 +52,8 @@ type PendingFile = { name: string; size: number; section: string; file: File }
  * kroku, proto hlídáme součet příloh hned při výběru (s rezervou na odpovědi).
  */
 const LIMIT_PRILOH = 4 * 1024 * 1024
+/** Stejná kontrola jako na serveru (/api/analyza/odeslat). */
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PRILOHY_MOC_VELKE =
   'Přílohy jsou dohromady moc velké. Odešlete analýzu bez nich a smlouvy mi pošlete později – po odeslání vám napíšu, kam je nahrát.'
 
@@ -112,6 +114,8 @@ export default function AnalysisWizard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [chybaPrilohy, setChybaPrilohy] = useState<string | null>(null)
+  /** Chyby u konkrétních polí posledního kroku – hláška patří k poli, ne pod formulář. */
+  const [chybyPoli, setChybyPoli] = useState<Record<string, string>>({})
   const [zpracovavam, setZpracovavam] = useState(false)
 
   const fileRef = useRef<HTMLInputElement>(null)
@@ -223,6 +227,7 @@ export default function AnalysisWizard() {
       else if (ted.includes(VSE) && ted.length > 1) hodnota = spojHodnoty(ted.filter((v) => v !== VSE))
     }
     setError(null)
+    if (chybyPoli[questionId]) setChybyPoli(({ [questionId]: _, ...zbytek }) => zbytek)
     setData((prev) => {
       // Odpověď, která se právě schovala, nemá odejít poradci. Úklid jde přes
       // celou analýzu: volba „jen úraz“ v prvním kroku schovává otázky
@@ -281,8 +286,16 @@ export default function AnalysisWizard() {
 
   async function odesli() {
     const osobni = data[HEALTH_SECTION_ID] ?? {}
-    if (!osobni.full_name?.trim() || !osobni.email?.trim()) {
-      setError('Vyplňte prosím jméno a e-mail – bez nich vám nemám kam poslat návrh.')
+    const chyby: Record<string, string> = {}
+    if ((osobni.full_name?.trim().length ?? 0) < 2) chyby.full_name = 'Napište prosím jméno a příjmení.'
+    const email = osobni.email?.trim() ?? ''
+    if (!email) chyby.email = 'Napište prosím e-mail, bez něj vám nemám kam poslat návrh.'
+    else if (!EMAIL_REGEX.test(email)) chyby.email = 'E-mail nevypadá úplně, zkontrolujte ho prosím (např. jan@email.cz).'
+    setChybyPoli(chyby)
+    const prvni = Object.keys(chyby)[0]
+    if (prvni) {
+      setError('Doplňte prosím označená pole.')
+      document.getElementById(prvni)?.focus()
       return
     }
 
@@ -389,13 +402,18 @@ export default function AnalysisWizard() {
           {viditelneOtazky(sekce, data[sekce.id], data)
             .filter((q) => vRozsahu(q, zvolene))
             .map((q) => (
+            <div key={q.id} className="space-y-8">
+            {q.uvod && (
+              <p className="rounded-card border border-line bg-surface p-5 text-base text-navy text-pretty">{q.uvod}</p>
+            )}
             <Otazka
-              key={q.id}
               otazka={q}
               hodnota={data[sekce.id]?.[q.id] ?? ''}
               onChange={(v) => uprav(q.id, v)}
               povinne={sekce.id === HEALTH_SECTION_ID && (q.id === 'full_name' || q.id === 'email')}
+              chyba={chybyPoli[q.id]}
             />
+            </div>
             ))}
         </div>
 
@@ -582,11 +600,13 @@ function Otazka({
   povinne,
   idPrefix = '',
   kompaktni = false,
+  chyba,
 }: {
   otazka: Question
   hodnota: string
   onChange: (v: string) => void
   povinne: boolean
+  chyba?: string
   /** Odlišuje pole uvnitř opakovatelné skupiny – jinak by si přepínače
    *  u druhé položky přebíraly výběr té první (stejný `name`). */
   idPrefix?: string
@@ -703,23 +723,45 @@ function Otazka({
     )
   }
 
+  const id = `${idPrefix}${otazka.id}`
+  const cislo = otazka.type === 'number'
+  // Čísla jako text s desetinnou klávesnicí: type="number" na iPhonu nedá
+  // napsat čárku (sazba 4,9) a v Chromu mění hodnotu kolečkem myši.
+  // Do hodnoty pustíme jen číslice, mezery a desetinnou čárku či tečku.
+  const typ = otazka.vstup === 'email' ? 'email' : otazka.vstup === 'tel' ? 'tel' : 'text'
+  const doplneni = otazka.vstup === 'jmeno' ? 'name' : otazka.vstup === 'email' ? 'email' : otazka.vstup === 'tel' ? 'tel' : undefined
+  const popisy = [otazka.help && `${id}-napoveda`, chyba && `${id}-chyba`].filter(Boolean).join(' ') || undefined
+
   return (
     <div>
-      <Label htmlFor={`${idPrefix}${otazka.id}`} className={kompaktni ? undefined : 'text-lead'}>
+      <Label htmlFor={id} className={kompaktni ? undefined : 'text-lead'}>
         {otazka.label}
         {povinne && <span className="text-slate"> · povinné</span>}
       </Label>
-      {otazka.help && <p className="mt-1 text-base text-slate">{otazka.help}</p>}
+      {otazka.help && (
+        <p id={`${id}-napoveda`} className="mt-1 text-base text-slate">
+          {otazka.help}
+        </p>
+      )}
       <Input
-        id={`${idPrefix}${otazka.id}`}
-        type={otazka.type === 'number' ? 'number' : 'text'}
-        inputMode={otazka.type === 'number' ? 'numeric' : undefined}
+        id={id}
+        type={typ}
+        inputMode={cislo ? 'decimal' : undefined}
+        autoComplete={doplneni}
+        spellCheck={otazka.vstup === 'email' ? false : undefined}
         value={hodnota}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(cislo ? e.target.value.replace(/[^\d\s,.]/g, '') : e.target.value)}
         placeholder={otazka.placeholder}
         required={povinne}
-        className="mt-3 max-w-md"
+        aria-invalid={chyba ? true : undefined}
+        aria-describedby={popisy}
+        className={`mt-3 max-w-md ${chyba ? 'border-danger' : ''}`}
       />
+      {chyba && (
+        <p id={`${id}-chyba`} className="mt-2 text-base text-danger">
+          {chyba}
+        </p>
+      )}
     </div>
   )
 }

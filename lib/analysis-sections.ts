@@ -35,6 +35,10 @@ export interface Question {
   options?: string[]
   /** Krátké „proč se ptáme“ pod otázkou. */
   help?: string
+  /** Druh textového pole: správná klávesnice na mobilu a automatické vyplnění. */
+  vstup?: 'jmeno' | 'email' | 'tel'
+  /** Odstavec před otázkou, který uvede celou skupinu (zdravotní otázky). */
+  uvod?: string
   showIf?: Podminka
   /**
    * Opak `showIf`: schovej, když podmínka platí. Nezodpovězená řídicí otázka
@@ -730,9 +734,9 @@ export const SECTIONS: Section[] = [
     icon: UserCircle,
     color: 'bg-navy',
     questions: [
-      { id: 'full_name', label: 'Jméno a příjmení', type: 'text', placeholder: 'Jan Novák' },
-      { id: 'email', label: 'E-mail', type: 'text', placeholder: 'jan@email.cz' },
-      { id: 'phone', label: 'Telefon', type: 'text', placeholder: '+420 777 123 456' },
+      { id: 'full_name', label: 'Jméno a příjmení', type: 'text', placeholder: 'Jan Novák', vstup: 'jmeno' },
+      { id: 'email', label: 'E-mail', type: 'text', placeholder: 'jan@email.cz', vstup: 'email', help: 'Sem vám pošlu návrh. Nic jiného vám posílat nebudu.' },
+      { id: 'phone', label: 'Telefon', type: 'text', placeholder: '+420 777 123 456', vstup: 'tel', help: 'Nepovinné. Zavolám jen tehdy, když si o to sami řeknete.' },
       // Jméno, ne jen ano/ne: podle něj se doporučiteli připíše věrnostní
       // bod (lib/doporuceni.ts). Nápověda říká doporučenému, co se s jménem
       // stane – doporučitel uvidí jen počet bodů.
@@ -751,7 +755,14 @@ export const SECTIONS: Section[] = [
       // Volby téhle otázky plní `profiles.family_status` – viz FAMILY_STATUS_MAP
       // v lib/submissions.ts.
       { id: 'family_status', label: 'Rodinná situace', type: 'select', options: ['Bez partnera a dětí', 'S partnerem/partnerkou', 'Rodina s dětmi', 'Samoživitel/samoživitelka'] },
-      { id: 'height', label: 'Výška (cm)', type: 'number', placeholder: '178', oblasti: OCHRANA },
+      {
+        id: 'height',
+        label: 'Výška (cm)',
+        type: 'number',
+        placeholder: '178',
+        oblasti: OCHRANA,
+        uvod: 'Teď pár otázek na zdraví. Pojišťovny podle nich určují cenu i výluky, takže díky nim navrhnu pojistku, kterou vám opravdu sjednají. Na detaily se neptám, odpovědi uvidím jen já a použiju je jen pro návrh pojištění.',
+      },
       { id: 'weight', label: 'Váha (kg)', type: 'number', placeholder: '80', oblasti: OCHRANA },
       { id: 'smoking', label: 'Kouříte?', type: 'select', options: ['Ne, nikdy', 'Přestal/a jsem před více než rokem', 'Ano (včetně e-cigaret a nikotinových sáčků)'], oblasti: OCHRANA },
       { id: 'treatment', label: 'Léčíte se s něčím, nebo berete pravidelně léky?', type: 'checkbox', options: ['Ne, jsem zdravý/á', 'Vysoký tlak, srdce, cholesterol', 'Cukrovka', 'Záda, klouby, páteř', 'Psychika (úzkosti, deprese, vyhoření)', 'Štítná žláza, hormony', 'Onkologické onemocnění (i vyléčené)', 'Něco jiného'], help: 'Nepotřebujeme detaily, jen orientaci. Vše je důvěrné.', hideIf: KDYZ_JEN_URAZ, oblasti: OCHRANA },
