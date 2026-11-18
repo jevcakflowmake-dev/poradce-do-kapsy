@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import PhoneMockup from '@/components/landing/PhoneMockup'
+import VizitkaPoradce from '@/components/landing/VizitkaPoradce'
 
 /**
  * Hero má jediný úkol: dostat člověka do analýzy. Text vlevo, produkt vpravo.
@@ -33,6 +34,11 @@ export default function HeroSection() {
           <p className="mt-6 text-base text-cream/60">
             Zdarma a nezávazně · Nic nepodepisujete · Data v EU
           </p>
+          <VizitkaPoradce
+            naTmavem
+            popis="Analýzu čtu a návrh připravuji osobně."
+            className="mt-8 pt-8 border-t border-cream/10 max-w-xl"
+          />
         </div>
 
         <PhoneMockup />

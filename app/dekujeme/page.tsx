@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import SiteFooter from '@/components/landing/SiteFooter'
+import VizitkaPoradce from '@/components/landing/VizitkaPoradce'
 
 export const metadata: Metadata = {
   title: 'Analýza odeslána',
@@ -32,6 +33,7 @@ export default function DekujemePage() {
           najdete v e-mailu odkaz, kterým účet aktivujete. Kdyby e-mail do pár minut nedorazil,
           podívejte se do složky hromadné pošty nebo spamu.
         </p>
+        <VizitkaPoradce popis="Děkuji za důvěru. Ozvu se vám do 48 hodin." className="mt-8" />
 
         <section className="mt-12">
           <h2 className="font-display text-h3 text-navy">Co bude dál</h2>

@@ -1,4 +1,5 @@
 import { getImageProps } from 'next/image'
+import VizitkaPoradce from '@/components/landing/VizitkaPoradce'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
@@ -110,6 +111,11 @@ export default function TemaStranka({ obsah }: { obsah: ObsahTematu }) {
               <p className="mt-6 text-base text-cream/60">
                 Zdarma a nezávazně · Nic nepodepisujete · Data v EU
               </p>
+              <VizitkaPoradce
+                naTmavem
+                popis="Analýzu čtu a návrh připravuji osobně."
+                className="mt-8 pt-8 border-t border-cream/10 max-w-xl"
+              />
             </div>
           </div>
         </section>

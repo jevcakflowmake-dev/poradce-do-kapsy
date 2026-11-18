@@ -25,6 +25,7 @@ import {
   type VsechnyOdpovedi,
 } from '@/lib/analysis-sections'
 import { Button } from '@/components/ui/button'
+import VizitkaPoradce from '@/components/landing/VizitkaPoradce'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PRIJIMANE_PRILOHY, jePovolenaPriloha } from '@/lib/storage'
@@ -397,6 +398,13 @@ export default function AnalysisWizard() {
             />
             ))}
         </div>
+
+        {sekce.id === ZAMER_SEKCE && (
+          <VizitkaPoradce
+            popis="Odpovědi čtu osobně já a do 48 hodin vám pošlu návrh. Nikdo vám nebude volat."
+            className="mt-10 rounded-card border border-line bg-surface p-5"
+          />
+        )}
 
         {sekce.id !== ZAMER_SEKCE && (
         <div className="mt-10 rounded-card border border-dashed border-line bg-surface p-5">
