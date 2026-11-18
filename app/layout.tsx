@@ -57,6 +57,18 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
   formatDetection: { telephone: false },
+  // Ověření vlastnictví webu v nástrojích vyhledávačů. Kódy nejsou tajné,
+  // ale patří do Vercelu, ne do kódu: když Jakub ověření obnoví, nemusí se
+  // nic nasazovat. Bez proměnné se značka nevypíše.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: Object.fromEntries(
+      Object.entries({
+        'seznam-wmt': process.env.SEZNAM_SITE_VERIFICATION,
+        'msvalidate.01': process.env.BING_SITE_VERIFICATION,
+      }).filter((x): x is [string, string] => Boolean(x[1])),
+    ),
+  },
 }
 
 export default function RootLayout({

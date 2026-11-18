@@ -1,9 +1,10 @@
 import { timingSafeEqual } from 'node:crypto'
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { ocistiNovinku, slugZNadpisu } from '@/lib/novinky'
 import { absoluteUrl } from '@/lib/site'
+import { ohlasZmenu } from '@/lib/indexnow'
 
 /**
  * Zveřejnění článku v Novinkách. Volá ho n8n, až Jakub článek schválí
@@ -63,6 +64,8 @@ export async function POST(request: Request) {
   // Úvodní stránka i sitemap se skládají pokaždé, ty není třeba.
   revalidatePath('/novinky')
   revalidatePath(`/novinky/${slug}`)
+  // Seznam a Bing se o článku dozví hned, ne až při dalším procházení webu.
+  after(() => ohlasZmenu([`/novinky/${slug}`, '/novinky', '/']))
 
   return NextResponse.json({ ok: true, slug, url: absoluteUrl(`/novinky/${slug}`) }, { status: 201 })
 }
