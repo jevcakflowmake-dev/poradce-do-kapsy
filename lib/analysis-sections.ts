@@ -1,6 +1,7 @@
 import {
   Shield, Home, Clock, Baby, TrendingUp, Building2, UserCircle, Briefcase, Compass,
 } from 'lucide-react'
+import { ODMENA_SCHVALENA } from './doporuceni'
 
 /**
  * Jediná definice finanční analýzy – sdílí ji veřejný formulář na /analyza
@@ -740,7 +741,9 @@ export const SECTIONS: Section[] = [
         label: 'Kdo vám mě doporučil?',
         type: 'text',
         placeholder: 'Jméno a příjmení',
-        help: 'Nepovinné. Když jste přišli na doporučení, napište jméno – připíšu mu za vás věrnostní bod. Uvidí jen počet bodů, ne vaše údaje.',
+        help: ODMENA_SCHVALENA
+          ? 'Nepovinné. Když jste přišli na doporučení, napište jméno – připíšu mu za vás věrnostní bod. Uvidí jen počet bodů, ne vaše údaje.'
+          : 'Nepovinné. Když jste přišli na doporučení, napište, kdo vás poslal. Vaše údaje mu neukážu.',
       },
       { id: 'age', label: 'Věk', type: 'number', placeholder: '35' },
       // Dřív se ptal úvodní wizard na /onboarding; ten je zrušený, ale poradce

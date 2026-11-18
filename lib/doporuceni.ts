@@ -16,6 +16,14 @@ import type { SupabaseClient } from '@supabase/supabase-js'
  */
 export const OTAZKA_DOPORUCENI = 'referred_by'
 
+/**
+ * Smí klient vidět slib odměny (bod = poukázka)? Akci musí schválit
+ * compliance OVB – do té doby web odměnu neslibuje nikde (přehled klienta,
+ * nápověda v analýze). Párování doporučení i karta u poradce běží dál,
+ * poradce tak ví, kdo koho poslal. Po schválení stačí přepnout na true.
+ */
+export const ODMENA_SCHVALENA = false
+
 /** Hodnota poukázky za jedno doporučení. Ukládá se ke každému řádku zvlášť. */
 export const ODMENA_KC = 250
 

@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card'
 import PoslatOdkaz from '@/components/dashboard/PoslatOdkaz'
-import { ODMENA_KC } from '@/lib/doporuceni'
+import { ODMENA_KC, ODMENA_SCHVALENA } from '@/lib/doporuceni'
 import { plural } from '@/lib/utils'
 
 export interface SouhrnBodu {
@@ -19,7 +19,8 @@ const bodu = (n: number) => `${n} ${plural(n, 'bod', 'body', 'bodů')}`
  * „Kdo vám mě doporučil?“ v analýze.
  */
 export default function VernostniBody({ souhrn, odkaz }: { souhrn: SouhrnBodu; odkaz: string }) {
-  const maBody = souhrn.ceka + souhrn.kProplaceni.pocet + souhrn.vyplaceno.pocet > 0
+  // Před schválením akce compliance OVB body ani poukázku neukazujeme.
+  const maBody = ODMENA_SCHVALENA && souhrn.ceka + souhrn.kProplaceni.pocet + souhrn.vyplaceno.pocet > 0
   const polozky = [
     { popisek: 'Čeká na smlouvu', hodnota: bodu(souhrn.ceka), pozn: null },
     { popisek: 'K proplacení', hodnota: bodu(souhrn.kProplaceni.pocet), pozn: souhrn.kProplaceni.kc > 0 ? kc(souhrn.kProplaceni.kc) : null },
@@ -30,11 +31,18 @@ export default function VernostniBody({ souhrn, odkaz }: { souhrn: SouhrnBodu; o
     <section className="mt-10">
       <h2 className="font-display text-h3 text-navy">Doporučte mě známým</h2>
       <Card className="mt-5 p-6 md:p-7">
-        <p className="text-base text-navy max-w-2xl text-pretty">
-          Za každého, koho mi doporučíte a kdo u mě uzavře smlouvu, dostanete věrnostní bod: poukázku
-          v&nbsp;hodnotě {kc(ODMENA_KC)}. Stačí, když při vyplňování analýzy napíše do kolonky „Kdo vám mě
-          doporučil?“ vaše jméno a&nbsp;příjmení.
-        </p>
+        {ODMENA_SCHVALENA ? (
+          <p className="text-base text-navy max-w-2xl text-pretty">
+            Za každého, koho mi doporučíte a kdo u mě uzavře smlouvu, dostanete věrnostní bod: poukázku
+            v&nbsp;hodnotě {kc(ODMENA_KC)}. Stačí, když při vyplňování analýzy napíše do kolonky „Kdo vám mě
+            doporučil?“ vaše jméno a&nbsp;příjmení.
+          </p>
+        ) : (
+          <p className="text-base text-navy max-w-2xl text-pretty">
+            Znáte někoho, komu by se přehled financí hodil? Pošlete mu odkaz na analýzu. Je zdarma
+            a&nbsp;nezávazná a&nbsp;nikdo mu nebude volat.
+          </p>
+        )}
         <PoslatOdkaz odkaz={odkaz} />
 
         {maBody && (
